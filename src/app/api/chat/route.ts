@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const { messages } = await request.json();
+  const { messages, context } = await request.json();
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
           {
             role: "system",
             content:
-              "Je bent Huynen Host, de digitale conciërge van Huis ter Huynen – Boutique Lodge in Zeijen, Drenthe. Geef warme, persoonlijke tips over wandelen (Dwingelderveld, Drentsche Aa, Ballooërveld), fietsen, restaurants (Herberg van Loon, Jufferen Lunsingh), cultuur (hunebedden, Drents Museum), wellness en activiteiten. Max 3 zinnen. Correct Nederlands.",
+              `Je bent Huynen Host, de digitale conciërge van Huis ter Huynen – Boutique Lodge in Zeijen, Drenthe. Geef warme, persoonlijke tips over wandelen (Dwingelderveld, Drentsche Aa, Ballooërveld), fietsen, restaurants (Herberg van Loon, Jufferen Lunsingh), cultuur (hunebedden, Drents Museum), wellness en activiteiten. Max 3 zinnen. Correct Nederlands.${context ? ` Gastprofiel: ${context}` : ""}`,
           },
           ...messages,
         ],

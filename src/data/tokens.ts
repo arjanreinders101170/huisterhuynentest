@@ -47,6 +47,8 @@ export type ChatMsg = {
 
 export type DoorStatus = "locked" | "opening" | "open" | "error";
 
+export type GuestProfile = "stel" | "gezin" | "actief" | "rust" | null;
+
 export type CategoryItem = {
   id: string;
   naam: string;

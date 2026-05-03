@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type { Route, ChatMsg, DoorStatus } from "@/data/tokens";
+import type { Route, ChatMsg, DoorStatus, GuestProfile } from "@/data/tokens";
 import { T } from "@/data/tokens";
 import { DATA, CATEGORY_KEYS, UPSELLS } from "@/data/categories";
+import { PROFILES } from "@/data/profiles";
 import { Header } from "@/components/Header";
+import { Onboarding } from "@/components/Onboarding";
 import { Home } from "@/components/Home";
 import { Verblijf } from "@/components/Verblijf";
 import { Chat } from "@/components/Chat";
@@ -14,8 +16,37 @@ import { DetailPage } from "@/components/DetailPage";
 import { Nav } from "@/components/Nav";
 
 export default function Page() {
-  /* ═══ SINGLE ROUTE STATE — no duplicates ═══ */
+  /* ═══ ROUTE ═══ */
   const [route, setRoute] = useState<Route>("home");
+
+  /* ═══ PROFILE — persisted in localStorage ═══ */
+  const [profile, setProfile] = useState<GuestProfile>(null);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("hth-profile");
+      if (saved && ["stel", "gezin", "actief", "rust"].includes(saved)) {
+        setProfile(saved as GuestProfile);
+      }
+    } catch {
+      // localStorage not available — proceed without profile
+    }
+    setProfileLoaded(true);
+  }, []);
+
+  const selectProfile = (p: GuestProfile) => {
+    setProfile(p);
+    try {
+      if (p) {
+        localStorage.setItem("hth-profile", p);
+      } else {
+        localStorage.setItem("hth-profile", "skipped");
+      }
+    } catch {
+      // localStorage not available
+    }
+  };
 
   /* ═══ FEATURE STATE ═══ */
   const [msgs, setMsgs] = useState<ChatMsg[]>([
@@ -32,17 +63,15 @@ export default function Page() {
     weekday: "long", day: "numeric", month: "long",
   });
 
-  // Scroll chat to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs, chatBusy]);
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [route]);
 
-  /* ═══ CHAT — with timeout ═══ */
+  /* ═══ CHAT — with profile context + timeout ═══ */
   const sendChat = async () => {
     if (!chatInput.trim() || chatBusy) return;
     const q = chatInput.trim();
@@ -53,6 +82,11 @@ export default function Page() {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
 
+    // Build profile context for the AI
+    const profileContext = profile && profile in PROFILES
+      ? PROFILES[profile as Exclude<GuestProfile, null>].chatContext
+      : null;
+
     try {
       const r = await fetch("/api/chat", {
         method: "POST",
@@ -60,6 +94,7 @@ export default function Page() {
         body: JSON.stringify({
           messages: [...msgs.map(m => ({ role: m.role, content: m.text })),
             { role: "user", content: q }],
+          context: profileContext,
         }),
         signal: controller.signal,
       });
@@ -76,7 +111,7 @@ export default function Page() {
     setChatBusy(false);
   };
 
-  /* ═══ NUKI — with 10s timeout + auto-fallback ═══ */
+  /* ═══ NUKI ═══ */
   const unlockDoor = async () => {
     setDoor("opening");
     const controller = new AbortController();
@@ -89,21 +124,22 @@ export default function Page() {
       });
       clearTimeout(timeout);
       const d = await r.json();
-      setDoor(d.success ? "open" : "error");
+      if (d.success) {
+        setDoor("open");
+      } else {
+        setDoor("error");
+        setTimeout(() => setDoor("locked"), 5000);
+      }
     } catch {
       clearTimeout(timeout);
       setDoor("error");
-    }
-
-    // Auto-reset error after 5s
-    if (door === "error") {
       setTimeout(() => setDoor("locked"), 5000);
     }
   };
 
   /* ═══ BOOKING ═══ */
   const handleBook = async (product: string) => {
-    if (booked === product) return; // prevent double-click
+    if (booked === product) return;
     setBooked(product);
     try {
       await fetch("/api/booking", {
@@ -132,9 +168,18 @@ export default function Page() {
   const detailKey = route.startsWith("detail:") ? route.split(":")[1] : null;
   const detailData = detailKey ? DATA[detailKey] : null;
 
+  // Don't render until we've checked localStorage (prevents flash)
+  if (!profileLoaded) return null;
+
+  // Show onboarding if no profile yet
+  const needsOnboarding = !profile && profileLoaded;
+  const showOnboarding = needsOnboarding && route === "home" && !detailData;
+
   /* ═══ RENDER ═══ */
   return (
     <>
+      {showOnboarding && <Onboarding onSelect={selectProfile} />}
+
       <Header today={today} />
 
       {detailData ? (
@@ -149,6 +194,7 @@ export default function Page() {
             <Home
               onNavigate={(r: Route) => setRoute(r)}
               categoryKeys={CATEGORY_KEYS}
+              profile={profile}
             />
           )}
           {route === "verblijf" && (
