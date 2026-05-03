@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@mollie/api-client": "^4.5.0",
     "next": "^15.1.0",
     "picnic-api": "^4.3.0",
     "react": "^19.0.0",

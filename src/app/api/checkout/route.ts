@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 /*
- * Mollie Checkout API
- * Creates an iDEAL payment and returns the checkout URL.
+ * Mollie Checkout — uses REST API directly (no SDK)
+ * This avoids serverless function size limits on Vercel.
  * 
  * Requires: MOLLIE_API_KEY in environment variables
- * Get your key at https://www.mollie.com/dashboard/developers/api-keys
  */
 
 export async function POST(request: NextRequest) {
@@ -21,7 +20,6 @@ export async function POST(request: NextRequest) {
 
     if (!mollieKey) {
       // No Mollie key — fallback to email-only booking
-      // Send booking email instead
       try {
         await fetch(`${appUrl}/api/booking`, {
           method: "POST",
@@ -36,24 +34,48 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create Mollie payment
-    const { createMollieClient } = await import("@mollie/api-client");
-    const mollie = createMollieClient({ apiKey: mollieKey });
-
-    const payment = await mollie.payments.create({
-      amount: {
-        currency: "EUR",
-        value: parseFloat(amount).toFixed(2),
+    // Create payment via Mollie REST API
+    const mollieResponse = await fetch("https://api.mollie.com/v2/payments", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${mollieKey}`,
+        "Content-Type": "application/json",
       },
-      description: description || `Huis ter Huynen — ${product}`,
-      redirectUrl: `${appUrl}/betaald?product=${encodeURIComponent(product)}`,
-      metadata: {
-        product,
-        gastNaam: gastNaam || "",
-        gastEmail: gastEmail || "",
-        ...(metadata || {}),
-      },
+      body: JSON.stringify({
+        amount: {
+          currency: "EUR",
+          value: parseFloat(amount).toFixed(2),
+        },
+        description: description || `Huis ter Huynen — ${product}`,
+        redirectUrl: `${appUrl}/betaald?product=${encodeURIComponent(product)}`,
+        metadata: {
+          product,
+          gastNaam: gastNaam || "",
+          gastEmail: gastEmail || "",
+          ...(metadata || {}),
+        },
+      }),
     });
+
+    if (!mollieResponse.ok) {
+      const err = await mollieResponse.json();
+      console.error("Mollie error:", err);
+      // Fallback to email booking
+      try {
+        await fetch(`${appUrl}/api/booking`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ product, prijs: `€ ${amount}`, gastNaam, gastEmail }),
+        });
+      } catch {}
+      return NextResponse.json({
+        success: true,
+        fallback: true,
+        message: "Boeking ontvangen. Betaling wordt per e-mail afgehandeld.",
+      });
+    }
+
+    const payment = await mollieResponse.json();
 
     // Also send booking email
     try {
@@ -74,11 +96,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      checkoutUrl: payment.getCheckoutUrl(),
+      checkoutUrl: payment._links?.checkout?.href || null,
       paymentId: payment.id,
     });
   } catch (err) {
-    console.error("Mollie error:", err);
+    console.error("Checkout error:", err);
     return NextResponse.json(
       { error: "Betaling kon niet worden aangemaakt" },
       { status: 500 }
