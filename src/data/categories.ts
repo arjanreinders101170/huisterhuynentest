@@ -75,6 +75,8 @@ ontspanning: { title:"Ontspanning & Luxe", sub:"wellness en verwennerij", filter
 export const CATEGORY_KEYS = ["natuur", "eten", "actief", "kinderen", "cultuur", "ontspanning"] as const;
 
 export const UPSELLS = [
+  { id: "welkomst", title: "Welkomstpakket Drenthe", sub: "Lokaal bier, kaas, worst & meer", price: "€ 27,50" },
+  { id: "boodschappen", title: "Boodschappenpakket", sub: "Basis: brood, melk, eieren, boter, koffie", price: "€ 19,50" },
   { id: "fiets", title: "Fietsverhuur", sub: "E-bikes voor een dag", price: "€ 12,50" },
   { id: "wellness", title: "Wellness arrangement", sub: "Sauna + massage", price: "€ 65,00" },
   { id: "ontbijt", title: "Ontbijt op bed", sub: "Lokale producten", price: "€ 17,50" },

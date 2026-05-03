@@ -1,6 +1,7 @@
 "use client";
+import { useState, useEffect } from "react";
 import { T, cardStyle, iconBox, type Route, type DoorStatus } from "@/data/tokens";
-import { IcLock, IcUnlock, IcKey, IcCopy, IcCheck, IcCar, IcInfo } from "./icons";
+import { IcLock, IcUnlock, IcKey, IcCopy, IcCheck, IcCar, IcInfo, IcClock, IcHeart, IcSquare, IcCheckSquare } from "./icons";
 
 type Props = {
   door: DoorStatus;
@@ -10,7 +11,56 @@ type Props = {
   onNavigate: (r: Route) => void;
 };
 
+/* ═══ CHECKOUT CHECKLIST ═══ */
+const CHECKLIST = [
+  { id: "afwas", label: "Afwas gedaan of vaatwasser aan" },
+  { id: "afval", label: "Afval gescheiden in de keuken" },
+  { id: "ramen", label: "Ramen en deuren dicht" },
+  { id: "verwarming", label: "Verwarming laag gezet" },
+  { id: "spullen", label: "Persoonlijke spullen ingepakt" },
+];
+
 export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }: Props) {
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [countdown, setCountdown] = useState("");
+
+  /* ═══ COUNTDOWN to 11:00 ═══ */
+  useEffect(() => {
+    if (!showCheckout) return;
+
+    const tick = () => {
+      const now = new Date();
+      const target = new Date();
+      target.setHours(11, 0, 0, 0);
+
+      const diff = target.getTime() - now.getTime();
+      if (diff <= 0) {
+        setCountdown("Check-out tijd!");
+        return;
+      }
+
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      setCountdown(`Nog ${h} uur en ${m} min`);
+    };
+
+    tick();
+    const interval = setInterval(tick, 30000); // update every 30s
+    return () => clearInterval(interval);
+  }, [showCheckout]);
+
+  const toggleCheck = (id: string) => {
+    setChecked(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const allDone = checked.size === CHECKLIST.length;
+
   return (
     <div style={{ padding: "0 20px 110px" }}>
       <div style={{ paddingTop: 28 }}>
@@ -86,6 +136,140 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
           </div>
         </div>
       ))}
+
+      {/* ═══════════════════════════════════
+          CHECK-OUT SECTION
+          ═══════════════════════════════════ */}
+      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Vertrek</h2>
+
+      {!showCheckout ? (
+        /* Collapsed state — tap to expand */
+        <div
+          className="tile-tap"
+          onClick={() => setShowCheckout(true)}
+          style={{
+            ...cardStyle,
+            padding: "18px 20px",
+            display: "flex", alignItems: "center", gap: 14,
+            cursor: "pointer",
+          }}
+        >
+          <div style={{ ...iconBox, width: 44, height: 44, borderRadius: 12, color: T.gold, background: "rgba(180,154,94,.1)" }}>
+            <IcClock />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: T.serif, fontSize: 15, fontWeight: 600, color: T.text, marginBottom: 2 }}>
+              Check-out om 11:00
+            </div>
+            <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 300 }}>
+              Tik hier voor je vertrekchecklist
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.gold} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.6 }}>
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </div>
+      ) : (
+        /* Expanded state — countdown + checklist */
+        <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
+          {/* Countdown header */}
+          <div style={{
+            background: `linear-gradient(135deg, ${T.green} 0%, ${T.green2} 100%)`,
+            padding: "20px 22px",
+            textAlign: "center",
+          }}>
+            <div style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.5)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 6 }}>
+              Check-out
+            </div>
+            <div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: "#fff", marginBottom: 4 }}>
+              {countdown || "11:00"}
+            </div>
+            <div style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.6)", fontWeight: 300 }}>
+              {allDone ? "Alles klaar — fijne reis!" : `${checked.size} van ${CHECKLIST.length} afgevinkt`}
+            </div>
+          </div>
+
+          {/* Checklist */}
+          <div style={{ padding: "16px 20px" }}>
+            {CHECKLIST.map(item => {
+              const done = checked.has(item.id);
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => toggleCheck(item.id)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "13px 0",
+                    borderBottom: `1px solid ${T.border}`,
+                    cursor: "pointer",
+                    WebkitTapHighlightColor: "transparent",
+                    transition: "opacity .15s",
+                    opacity: done ? 0.5 : 1,
+                  }}
+                >
+                  <span style={{ color: done ? T.green : T.muted, flexShrink: 0 }}>
+                    {done ? <IcCheckSquare /> : <IcSquare />}
+                  </span>
+                  <span style={{
+                    fontFamily: T.sans, fontSize: 14, color: T.text,
+                    fontWeight: 300,
+                    textDecoration: done ? "line-through" : "none",
+                  }}>
+                    {item.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Review CTA — appears when all checked */}
+          {allDone && (
+            <div style={{
+              padding: "0 20px 22px",
+              textAlign: "center",
+              animation: "fadeUp .4s ease both",
+            }}>
+              <div style={{
+                background: "rgba(180,154,94,.08)",
+                borderRadius: 14, padding: "20px 18px",
+              }}>
+                <div style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 600, color: T.text, marginBottom: 6 }}>
+                  Bedankt voor je verblijf!
+                </div>
+                <p style={{ fontFamily: T.sans, fontSize: 13, color: T.muted, fontWeight: 300, lineHeight: 1.5, margin: "0 0 16px" }}>
+                  We hopen dat je genoten hebt. Wil je ons helpen met een korte review?
+                </p>
+                <button
+                  onClick={() => onNavigate("info")}
+                  style={{
+                    width: "100%", padding: 14, borderRadius: 14,
+                    border: "none", background: T.green, color: "#fff",
+                    fontFamily: T.sans, fontSize: 15, fontWeight: 500,
+                    cursor: "pointer", display: "flex", alignItems: "center",
+                    justifyContent: "center", gap: 8,
+                  }}
+                >
+                  <IcHeart /> Review achterlaten
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Collapse button */}
+          <div style={{ padding: "0 20px 16px", textAlign: "center" }}>
+            <button
+              onClick={() => setShowCheckout(false)}
+              style={{
+                background: "none", border: "none",
+                fontFamily: T.sans, fontSize: 12, color: T.muted,
+                fontWeight: 300, cursor: "pointer",
+              }}
+            >
+              Inklappen
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
