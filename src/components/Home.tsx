@@ -1,0 +1,87 @@
+"use client";
+import { T, cardStyle, iconBox, type Route } from "@/data/tokens";
+import { SheepSvg, IcTrees, IcFork, IcBike, IcFamily, IcTemple, IcLotus, IcChat, IcArrow, IcLeaf, IcPin, IcWifi, IcCar, IcClock } from "./icons";
+
+const cats = [
+  { icon: <IcTrees />, t: "Natuur & Wandelen", s: "Ontdek de mooiste plekken" },
+  { icon: <IcFork />, t: "Eten & Drinken", s: "Lekker eten in de omgeving" },
+  { icon: <IcBike />, t: "Actief & Avontuur", s: "Fietsen, MTB, varen en meer" },
+  { icon: <IcFamily />, t: "Met Kinderen", s: "Leuke uitjes voor jong & oud" },
+  { icon: <IcTemple />, t: "Cultuur & Ontdekken", s: "Musea, dorpen en verhalen" },
+  { icon: <IcLotus />, t: "Ontspanning & Luxe", s: "Wellness, sauna's en extra's" },
+];
+
+type Props = {
+  onNavigate: (r: Route) => void;
+  categoryKeys: readonly string[];
+};
+
+export function Home({ onNavigate, categoryKeys }: Props) {
+  return (
+    <div style={{ padding: "0 20px 110px" }}>
+      <div style={{ paddingTop: 32, paddingBottom: 8 }}>
+        <h1 style={{ fontFamily: T.serif, fontSize: 36, fontWeight: 700, color: T.text, lineHeight: 1.1, margin: "0 0 10px" }}>Welkom</h1>
+        <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, margin: 0 }}>Waar mogen we je vandaag mee inspireren?</p>
+      </div>
+
+      {/* Chatbot CTA */}
+      <div onClick={() => onNavigate("chat")} style={{
+        marginTop: 20, borderRadius: 16, padding: 20, display: "flex", alignItems: "center", gap: 16, cursor: "pointer",
+        background: `linear-gradient(135deg, ${T.green} 0%, ${T.green2} 100%)`, boxShadow: "0 8px 32px rgba(47,79,62,.2)",
+      }}>
+        <SheepSvg size={56} />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 600, color: "#fff", marginBottom: 4 }}>Vraag het aan Huynen Host</div>
+          <div style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.6)", fontWeight: 300 }}>Ik help je graag op weg</div>
+        </div>
+        <div style={{ width: 42, height: 42, borderRadius: 12, background: "rgba(255,255,255,.15)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", flexShrink: 0 }}>
+          <IcChat />
+        </div>
+      </div>
+
+      {/* Tiles */}
+      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Ontdek</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        {cats.map((c, i) => (
+          <div key={i} className="tile-tap" onClick={() => onNavigate(`detail:${categoryKeys[i]}`)} style={{ ...cardStyle, padding: "18px 16px", cursor: "pointer" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+              <div style={iconBox}>{c.icon}</div>
+              <span className="tile-arrow" style={{ color: T.gold, opacity: 0.7, transition: "all .15s" }}><IcArrow /></span>
+            </div>
+            <div style={{ fontFamily: T.serif, fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4, lineHeight: 1.25 }}>{c.t}</div>
+            <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300, lineHeight: 1.4 }}>{c.s}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Popular */}
+      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Populair vandaag</h2>
+      <div className="tile-tap" style={{ ...cardStyle, padding: 16, display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }} onClick={() => onNavigate("detail:natuur")}>
+        <div style={{ ...iconBox, background: "rgba(180,154,94,.15)" }}><IcLeaf /></div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontFamily: T.serif, fontSize: 15, fontWeight: 600, color: T.text, marginBottom: 3 }}>Wandeling Dwingelderveld</div>
+          <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300, display: "flex", alignItems: "center", gap: 4 }}><IcPin /> 10 min rijden · Heide in bloei</div>
+        </div>
+        <span style={{ color: T.green }}><IcArrow /></span>
+      </div>
+
+      {/* Info bar */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 24 }}>
+        {[
+          { ic: <IcWifi />, l: "Wifi", v: "HuynenGast" },
+          { ic: <IcCar />, l: "Parkeren", v: "Gratis op terrein" },
+          { ic: <IcClock />, l: "Check-in", v: "15:00" },
+          { ic: <IcClock />, l: "Check-out", v: "11:00" },
+        ].map((x, i) => (
+          <div key={i} style={{ background: "rgba(47,79,62,.06)", borderRadius: 12, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ color: T.green }}>{x.ic}</span>
+            <div>
+              <div style={{ fontFamily: T.sans, fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>{x.l}</div>
+              <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>{x.v}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

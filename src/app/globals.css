@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+*, *::before, *::after { box-sizing: border-box; }
+::-webkit-scrollbar { width: 0; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes dotPulse {
+  0%, 100% { opacity: .3; }
+  50% { opacity: 1; }
+}
+@keyframes unlockPulse {
+  0% { box-shadow: 0 0 0 0 rgba(47,79,62,.3); }
+  70% { box-shadow: 0 0 0 16px rgba(47,79,62,0); }
+  100% { box-shadow: 0 0 0 0 rgba(47,79,62,0); }
+}
+
+/* Interactive tiles */
+.tile-tap {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tile-tap:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 6px rgba(47,79,62,.1) !important;
+}
+@media (hover: hover) {
+  .tile-tap:hover {
+    box-shadow: 0 6px 20px rgba(47,79,62,.12) !important;
+    border-color: #B49A5E !important;
+  }
+  .tile-tap:hover .tile-arrow {
+    color: #2F4F3E !important;
+    opacity: 1 !important;
+  }
+}
