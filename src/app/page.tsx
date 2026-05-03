@@ -21,28 +21,30 @@ export default function Page() {
 
   /* ═══ PROFILE — persisted in localStorage ═══ */
   const [profile, setProfile] = useState<GuestProfile>(null);
-  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [onboarded, setOnboarded] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem("hth-profile");
-      if (saved && ["stel", "gezin", "actief", "rust"].includes(saved)) {
+      if (saved === "skipped") {
+        setOnboarded(true);
+      } else if (saved && ["stel", "gezin", "actief", "rust"].includes(saved)) {
         setProfile(saved as GuestProfile);
+        setOnboarded(true);
       }
     } catch {
-      // localStorage not available — proceed without profile
+      // localStorage not available — skip onboarding entirely
+      setOnboarded(true);
     }
-    setProfileLoaded(true);
+    setReady(true);
   }, []);
 
   const selectProfile = (p: GuestProfile) => {
     setProfile(p);
+    setOnboarded(true);
     try {
-      if (p) {
-        localStorage.setItem("hth-profile", p);
-      } else {
-        localStorage.setItem("hth-profile", "skipped");
-      }
+      localStorage.setItem("hth-profile", p || "skipped");
     } catch {
       // localStorage not available
     }
@@ -169,11 +171,10 @@ export default function Page() {
   const detailData = detailKey ? DATA[detailKey] : null;
 
   // Don't render until we've checked localStorage (prevents flash)
-  if (!profileLoaded) return null;
+  if (!ready) return null;
 
-  // Show onboarding if no profile yet
-  const needsOnboarding = !profile && profileLoaded;
-  const showOnboarding = needsOnboarding && route === "home" && !detailData;
+  // Show onboarding only on first visit
+  const showOnboarding = !onboarded && route === "home" && !detailData;
 
   /* ═══ RENDER ═══ */
   return (
