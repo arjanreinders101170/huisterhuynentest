@@ -6,7 +6,7 @@ const items = [
   { icon: <IcHome />, label: "Home", page: "home" as Route },
   { icon: <IcKey />, label: "Verblijf", page: "verblijf" as Route },
   { icon: <IcChat />, label: "", page: "chat" as Route },
-  { icon: <IcCart />, label: "Boeken", page: "reserveren" as Route },
+  { icon: <IcCart />, label: "Extra's", page: "reserveren" as Route },
   { icon: <IcInfo />, label: "Info", page: "info" as Route },
 ];
 

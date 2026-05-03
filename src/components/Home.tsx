@@ -1,8 +1,7 @@
 "use client";
-import { useState } from "react";
 import { T, cardStyle, iconBox, type Route, type GuestProfile, type Weather } from "@/data/tokens";
 import { PROFILES } from "@/data/profiles";
-import { SheepSvg, IcTrees, IcFork, IcBike, IcFamily, IcTemple, IcLotus, IcChat, IcArrow, IcLeaf, IcPin, IcWifi, IcCar, IcClock, IcSun, IcCloud, IcRain } from "./icons";
+import { SheepSvg, IcTrees, IcFork, IcBike, IcFamily, IcTemple, IcLotus, IcChat, IcArrow, IcLeaf, IcPin, IcSun, IcCloud, IcRain, IcGift } from "./icons";
 import type { ReactNode } from "react";
 
 /* ═══ CATEGORY VISUAL MAP ═══ */
@@ -25,7 +24,6 @@ type Props = {
 };
 
 export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
-  const [showWifiQR, setShowWifiQR] = useState(false);
   /* ═══ PERSONALIZATION ═══ */
   const cfg = profile && profile in PROFILES
     ? PROFILES[profile as Exclude<GuestProfile, null>]
@@ -215,123 +213,38 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
         <span style={{ color: T.green }}><IcArrow /></span>
       </div>
 
-      {/* Info bar */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 24 }}>
-        {/* Wifi — clickable, opens QR */}
-        <div
-          onClick={() => setShowWifiQR(true)}
-          className="tile-tap"
-          style={{
-            background: "rgba(47,79,62,.06)", borderRadius: 12,
-            padding: "12px 14px", display: "flex", alignItems: "center", gap: 10,
-            cursor: "pointer",
-          }}
-        >
-          <span style={{ color: T.green }}><IcWifi /></span>
-          <div>
-            <div style={{ fontFamily: T.sans, fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>Wifi</div>
-            <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>HuynenGast</div>
+      {/* Welkomstpakket upsell */}
+      <div
+        className="tile-tap"
+        onClick={() => onNavigate("reserveren")}
+        style={{
+          marginTop: 16,
+          padding: "16px 18px",
+          borderRadius: 14,
+          background: "rgba(180,154,94,.08)",
+          border: `1px solid rgba(180,154,94,.2)`,
+          display: "flex", alignItems: "center", gap: 14,
+          cursor: "pointer",
+        }}
+      >
+        <div style={{
+          width: 42, height: 42, borderRadius: 12,
+          background: "rgba(180,154,94,.12)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: T.gold, flexShrink: 0,
+        }}>
+          <IcGift />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontFamily: T.serif, fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 2 }}>
+            Welkomstpakket Drenthe
+          </div>
+          <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300 }}>
+            Lokaal bier, kaas & worst · € 27,50
           </div>
         </div>
-        {[
-          { ic: <IcCar />, l: "Parkeren", v: "Gratis op terrein" },
-          { ic: <IcClock />, l: "Check-in", v: "15:00" },
-          { ic: <IcClock />, l: "Check-out", v: "11:00" },
-        ].map((x, i) => (
-          <div key={i} style={{
-            background: "rgba(47,79,62,.06)", borderRadius: 12,
-            padding: "12px 14px", display: "flex", alignItems: "center", gap: 10,
-          }}>
-            <span style={{ color: T.green }}>{x.ic}</span>
-            <div>
-              <div style={{ fontFamily: T.sans, fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>{x.l}</div>
-              <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>{x.v}</div>
-            </div>
-          </div>
-        ))}
+        <span style={{ color: T.gold, opacity: 0.6, flexShrink: 0 }}><IcArrow /></span>
       </div>
-
-      {/* Wifi QR Modal */}
-      {showWifiQR && (
-        <div
-          onClick={() => setShowWifiQR(false)}
-          style={{
-            position: "fixed", inset: 0, zIndex: 100,
-            background: "rgba(42,36,24,.6)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: 24,
-          }}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            style={{
-              background: T.card, borderRadius: 20,
-              padding: "32px 28px", maxWidth: 320, width: "100%",
-              textAlign: "center",
-              boxShadow: "0 20px 60px rgba(47,79,62,.2)",
-              animation: "fadeUp .3s ease",
-            }}
-          >
-            <div style={{ color: T.green, marginBottom: 16 }}>
-              <IcWifi />
-            </div>
-            <div style={{
-              fontFamily: T.serif, fontSize: 20, fontWeight: 600,
-              color: T.text, marginBottom: 6,
-            }}>
-              Wifi verbinden
-            </div>
-            <p style={{
-              fontFamily: T.sans, fontSize: 13, color: T.muted,
-              fontWeight: 300, marginBottom: 24, lineHeight: 1.5,
-            }}>
-              Scan de QR-code met je camera om automatisch te verbinden
-            </p>
-
-            {/* QR code — uses WIFI: protocol for auto-connect */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent("WIFI:T:WPA;S:HuynenGast;P:HuynenGast2024;;")}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`}
-              alt="Wifi QR code"
-              width={180}
-              height={180}
-              style={{
-                borderRadius: 14, border: `1px solid ${T.border}`,
-                margin: "0 auto 20px", display: "block",
-              }}
-            />
-
-            {/* Manual fallback */}
-            <div style={{
-              background: "rgba(47,79,62,.04)", borderRadius: 12,
-              padding: "14px 16px", textAlign: "left",
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>Netwerk</span>
-                <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>HuynenGast</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>Wachtwoord</span>
-                <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>HuynenGast2024</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                navigator.clipboard?.writeText("HuynenGast2024");
-                setShowWifiQR(false);
-              }}
-              style={{
-                marginTop: 16, width: "100%", padding: 14, borderRadius: 14,
-                border: "none", background: T.green, color: "#fff",
-                fontFamily: T.sans, fontSize: 15, fontWeight: 500, cursor: "pointer",
-              }}
-            >
-              Kopieer wachtwoord
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

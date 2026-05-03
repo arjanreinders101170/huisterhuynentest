@@ -251,6 +251,17 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
                 >
                   <IcHeart /> Review achterlaten
                 </button>
+                <button
+                  onClick={() => onNavigate("terugkomen")}
+                  style={{
+                    width: "100%", padding: 12, borderRadius: 14, marginTop: 8,
+                    border: `1px solid ${T.border}`, background: T.card,
+                    fontFamily: T.sans, fontSize: 13, color: T.text,
+                    fontWeight: 300, cursor: "pointer",
+                  }}
+                >
+                  Of plan je volgende verblijf →
+                </button>
               </div>
             </div>
           )}

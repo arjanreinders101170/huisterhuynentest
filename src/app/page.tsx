@@ -230,6 +230,7 @@ export default function Page() {
               onSend={sendChat}
               busy={chatBusy}
               endRef={chatEndRef}
+              profile={profile}
             />
           )}
           {route === "reserveren" && (
