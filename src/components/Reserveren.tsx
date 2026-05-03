@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { T, cardStyle, iconBox } from "@/data/tokens";
+import { T, cardStyle } from "@/data/tokens";
 import { IcBike, IcClock, IcCheck, IcGift, IcBasket } from "./icons";
 
 type Upsell = { id: string; title: string; sub: string; price: string };
@@ -34,6 +34,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [gastNaam, setGastNaam] = useState("");
   const [gastEmail, setGastEmail] = useState("");
+  const [gastDatum, setGastDatum] = useState("");
   const [sending, setSending] = useState(false);
   const [confirmed, setConfirmed] = useState<string | null>(null);
   const [showForm, setShowForm] = useState<string | null>(null);
@@ -61,7 +62,18 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
   };
 
   const hasBikeSelected = Object.entries(fietsSelection).some(([id, qty]) => qty > 0 && id !== "zitje");
+  const fietsTotal = calcFietsPrice();
+  const fietsSummary = Object.entries(fietsSelection)
+    .filter(([, q]) => q > 0)
+    .map(([id, q]) => `${FIETSEN.find(f => f.id === id)?.naam} x${q}`)
+    .join(", ");
 
+  // Tomorrow's date as min for date picker
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split("T")[0];
+
+  /* ═══ PAYMENT ═══ */
   const startPayment = async (product: string, amount: number, meta?: Record<string, unknown>) => {
     if (!gastNaam.trim() || !gastEmail.includes("@") || sending) return;
     setSending(true);
@@ -72,110 +84,22 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
         body: JSON.stringify({
           product, amount: amount.toFixed(2),
           description: `Huis ter Huynen — ${product}`,
-          gastNaam: gastNaam.trim(), gastEmail: gastEmail.trim(), metadata: meta,
+          gastNaam: gastNaam.trim(), gastEmail: gastEmail.trim(),
+          metadata: { ...meta, datum: gastDatum || undefined },
         }),
       });
       const d = await r.json();
       if (d.checkoutUrl) { window.location.href = d.checkoutUrl; return; }
-      if (d.fallback) { onBook(product); setConfirmed(product); setShowForm(null); setExpanded(null); }
+      if (d.fallback || d.success) { onBook(product); setConfirmed(product); setShowForm(null); setExpanded(null); }
     } catch { onBook(product); setConfirmed(product); }
     setSending(false);
   };
 
-  /* ═══ BOOKING FORM ═══ */
-  const renderForm = (product: string, amount: number, meta?: Record<string, unknown>) => {
-    if (showForm !== product) return null;
-    const canSubmit = gastNaam.trim().length > 0 && gastEmail.includes("@");
-    return (
-      <div style={{ padding: "16px 18px 18px", borderTop: `1px solid ${T.border}`, animation: "fadeUp .25s ease both" }}>
-        <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 12 }}>
-          Gegevens & afrekenen
-        </div>
-        <input value={gastNaam} onChange={e => setGastNaam(e.target.value)} placeholder="Naam (bijv. Martijn & Lisa)"
-          style={{ width: "100%", padding: "11px 14px", borderRadius: 12, marginBottom: 8, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 300, outline: "none", boxSizing: "border-box" }} />
-        <input value={gastEmail} onChange={e => setGastEmail(e.target.value)} placeholder="E-mailadres" type="email"
-          style={{ width: "100%", padding: "11px 14px", borderRadius: 12, marginBottom: 14, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 300, outline: "none", boxSizing: "border-box" }} />
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => setShowForm(null)} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>Annuleren</button>
-          <button onClick={() => startPayment(product, amount, meta)} disabled={!canSubmit || sending} style={{
-            flex: 2, padding: 12, borderRadius: 12, border: "none",
-            background: canSubmit && !sending ? T.green : T.border,
-            fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "#fff",
-            cursor: canSubmit && !sending ? "pointer" : "not-allowed",
-          }}>
-            {sending ? "Doorsturen..." : `Afrekenen · € ${amount.toFixed(2)}`}
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  /* ═══ FIETS CONFIGURATOR ═══ */
-  const renderFiets = () => {
-    const total = calcFietsPrice();
-    const hasItems = total > 0;
-    return (
-      <div style={{ padding: "0 16px 18px", borderTop: `1px solid ${T.border}`, animation: "fadeUp .25s ease both" }}>
-        <div style={{ padding: "14px 0 12px" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 10 }}>Huurperiode</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
-            {[1, 2, 3, 7].map(d => (
-              <button key={d} onClick={() => setFietsDagen(d)} style={{
-                padding: "10px 4px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
-                fontWeight: fietsDagen === d ? 600 : 300,
-                background: fietsDagen === d ? T.green : T.card,
-                color: fietsDagen === d ? "#fff" : T.text,
-                border: fietsDagen === d ? "none" : `1px solid ${T.border}`,
-                cursor: "pointer", whiteSpace: "nowrap",
-              }}>{d === 7 ? "Week" : `${d} dag${d > 1 ? "" : ""}`}</button>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>Kies je fiets</div>
-        {FIETSEN.map(f => {
-          const qty = fietsSelection[f.id] || 0;
-          const isWeek = fietsDagen >= 7;
-          const price = isWeek ? f.week : f.dag;
-          const disabled = f.needsBike && !hasBikeSelected;
-          return (
-            <div key={f.id} style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "10px 0", borderBottom: `1px solid ${T.border}`,
-              opacity: disabled ? 0.4 : 1,
-            }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 400 }}>{f.naam}</div>
-                <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300 }}>€ {price.toFixed(2)} / {isWeek ? "week" : "dag"}</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                <button disabled={disabled || qty === 0} onClick={() => setFietsSelection(p => ({ ...p, [f.id]: Math.max(0, qty - 1) }))}
-                  style={{ width: 30, height: 30, borderRadius: 8, border: `1px solid ${T.border}`, background: T.card, fontSize: 15, color: T.text, cursor: disabled || qty === 0 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
-                <span style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, width: 18, textAlign: "center" }}>{qty}</span>
-                <button disabled={disabled} onClick={() => setFietsSelection(p => ({ ...p, [f.id]: qty + 1 }))}
-                  style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: disabled ? T.border : T.green, fontSize: 15, color: "#fff", cursor: disabled ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
-              </div>
-            </div>
-          );
-        })}
-        <div style={{ fontFamily: T.sans, fontSize: 10, color: T.muted, fontWeight: 300, marginTop: 8 }}>* Zitje uitsluitend in combinatie met huurfiets · Legitimatie verplicht</div>
-        <div style={{ background: "rgba(180,154,94,.08)", borderRadius: 10, padding: "9px 12px", marginTop: 10, fontFamily: T.sans, fontSize: 11, color: T.gold, fontWeight: 400 }}>
-          ⏰ Reservering minimaal 24 uur van tevoren gewenst
-        </div>
-        {hasItems && (
-          <>
-            <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 0", borderTop: `2px solid ${T.border}`, marginTop: 12 }}>
-              <span style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500 }}>Totaal</span>
-              <span style={{ fontFamily: T.sans, fontSize: 18, fontWeight: 600, color: T.green }}>€ {total.toFixed(2)}</span>
-            </div>
-            <button onClick={() => setShowForm("fiets")} style={{
-              width: "100%", padding: 14, borderRadius: 14, border: "none", background: T.green, color: "#fff",
-              fontFamily: T.sans, fontSize: 15, fontWeight: 500, cursor: "pointer",
-            }}>Reserveren & afrekenen</button>
-          </>
-        )}
-      </div>
-    );
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "11px 14px", borderRadius: 12,
+    border: `1px solid ${T.border}`, background: T.card,
+    fontFamily: T.sans, fontSize: 14, color: T.text,
+    fontWeight: 300, outline: "none", boxSizing: "border-box",
   };
 
   return (
@@ -199,20 +123,16 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
               ...cardStyle, padding: 0, overflow: "hidden",
               border: isExp ? `1px solid ${T.gold}` : `1px solid ${T.border}`,
             }}>
-              {/* ═══ CARD HEADER — title full width, price on row 2 ═══ */}
-              <div
-                onClick={() => isExpandable ? setExpanded(isExp ? null : u.id) : undefined}
-                style={{ padding: "16px", cursor: isExpandable ? "pointer" : "default" }}
-              >
+              {/* ═══ CARD HEADER ═══ */}
+              <div onClick={() => isExpandable ? setExpanded(isExp ? null : u.id) : undefined}
+                style={{ padding: "16px", cursor: isExpandable ? "pointer" : "default" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
                   <div style={{
                     width: 42, height: 42, borderRadius: 12,
                     background: isExp ? "rgba(180,154,94,.12)" : "rgba(47,79,62,.06)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     color: T.green, flexShrink: 0,
-                  }}>
-                    {icons[u.id] || <IcClock />}
-                  </div>
+                  }}>{icons[u.id] || <IcClock />}</div>
                   <div style={{ fontFamily: T.serif, fontSize: 16, fontWeight: 600, color: T.text }}>{u.title}</div>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 54 }}>
@@ -228,26 +148,38 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                       </svg>
                     )}
                     {!isExpandable && !done && (
-                      <button onClick={() => setShowForm(u.title)} style={{
+                      <button onClick={() => setShowForm(u.id)} style={{
                         padding: "6px 16px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
                         cursor: "pointer", fontWeight: 500,
                         background: "transparent", color: T.green, border: `1px solid ${T.green}`,
                       }}>Boek</button>
                     )}
                     {!isExpandable && done && (
-                      <span style={{
-                        padding: "6px 12px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
-                        fontWeight: 500, background: T.green, color: "#fff",
-                      }}>✓</span>
+                      <span style={{ padding: "6px 12px", borderRadius: 10, fontFamily: T.sans, fontSize: 12, fontWeight: 500, background: T.green, color: "#fff" }}>✓</span>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Non-expandable form */}
-              {!isExpandable && renderForm(u.title, priceNum)}
+              {/* ═══ LATE CHECKOUT FORM ═══ */}
+              {!isExpandable && showForm === u.id && (
+                <div style={{ padding: "16px", borderTop: `1px solid ${T.border}`, animation: "fadeUp .25s ease both" }}>
+                  <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 12 }}>Gegevens & afrekenen</div>
+                  <input value={gastNaam} onChange={e => setGastNaam(e.target.value)} placeholder="Naam" style={{ ...inputStyle, marginBottom: 8 }} />
+                  <input value={gastEmail} onChange={e => setGastEmail(e.target.value)} placeholder="E-mailadres" type="email" style={{ ...inputStyle, marginBottom: 14 }} />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={() => setShowForm(null)} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>Annuleren</button>
+                    <button onClick={() => startPayment(u.title, priceNum)} disabled={!gastNaam.trim() || !gastEmail.includes("@") || sending} style={{
+                      flex: 2, padding: 12, borderRadius: 12, border: "none",
+                      background: gastNaam.trim() && gastEmail.includes("@") && !sending ? T.green : T.border,
+                      fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "#fff",
+                      cursor: gastNaam.trim() && gastEmail.includes("@") && !sending ? "pointer" : "not-allowed",
+                    }}>{sending ? "Doorsturen..." : `Afrekenen · ${u.price}`}</button>
+                  </div>
+                </div>
+              )}
 
-              {/* Package expanded */}
+              {/* ═══ PACKAGE EXPANDED ═══ */}
               {isPkg && isExp && (
                 <div style={{ padding: "0 16px 18px", borderTop: `1px solid ${T.border}`, animation: "fadeUp .25s ease both" }}>
                   <div style={{ padding: "14px 0 16px" }}>
@@ -261,7 +193,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                     ))}
                   </div>
                   {!done ? (
-                    <button onClick={() => setShowForm(u.title)} style={{
+                    <button onClick={() => setShowForm(u.id)} style={{
                       width: "100%", padding: 14, borderRadius: 14, border: "none", background: T.green, color: "#fff",
                       fontFamily: T.sans, fontSize: 15, fontWeight: 500, cursor: "pointer", marginBottom: 10,
                     }}>Bestel & betaal · {u.price}</button>
@@ -271,7 +203,22 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                       display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 10,
                     }}><IcCheck /> Besteld & betaald</div>
                   )}
-                  {showForm === u.title && renderForm(u.title, priceNum)}
+                  {/* Package booking form */}
+                  {showForm === u.id && (
+                    <div style={{ padding: "14px 0", borderTop: `1px solid ${T.border}`, animation: "fadeUp .2s ease both" }}>
+                      <input value={gastNaam} onChange={e => setGastNaam(e.target.value)} placeholder="Naam" style={{ ...inputStyle, marginBottom: 8 }} />
+                      <input value={gastEmail} onChange={e => setGastEmail(e.target.value)} placeholder="E-mailadres" type="email" style={{ ...inputStyle, marginBottom: 14 }} />
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={() => setShowForm(null)} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>Annuleren</button>
+                        <button onClick={() => startPayment(u.title, priceNum)} disabled={!gastNaam.trim() || !gastEmail.includes("@") || sending} style={{
+                          flex: 2, padding: 12, borderRadius: 12, border: "none",
+                          background: gastNaam.trim() && gastEmail.includes("@") && !sending ? T.green : T.border,
+                          fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "#fff",
+                          cursor: gastNaam.trim() && gastEmail.includes("@") && !sending ? "pointer" : "not-allowed",
+                        }}>{sending ? "Doorsturen..." : `Afrekenen · ${u.price}`}</button>
+                      </div>
+                    </div>
+                  )}
                   <a href="https://picnic.app/nl/" target="_blank" rel="noopener noreferrer" style={{
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                     width: "100%", padding: 12, borderRadius: 14,
@@ -286,12 +233,110 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                 </div>
               )}
 
-              {/* Fiets expanded */}
-              {isFi && isExp && renderFiets()}
-              {isFi && isExp && showForm === "fiets" && renderForm("Fietsverhuur", calcFietsPrice(), {
-                fietsen: Object.entries(fietsSelection).filter(([, q]) => q > 0).map(([id, q]) => `${FIETSEN.find(f => f.id === id)?.naam} x${q}`).join(", "),
-                dagen: fietsDagen,
-              })}
+              {/* ═══ FIETS EXPANDED ═══ */}
+              {isFi && isExp && (
+                <div style={{ padding: "0 16px 18px", borderTop: `1px solid ${T.border}`, animation: "fadeUp .25s ease both" }}>
+                  {/* Period selector */}
+                  <div style={{ padding: "14px 0 12px" }}>
+                    <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 10 }}>Huurperiode</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+                      {[1, 2, 3, 7].map(d => (
+                        <button key={d} onClick={() => setFietsDagen(d)} style={{
+                          padding: "10px 4px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
+                          fontWeight: fietsDagen === d ? 600 : 300,
+                          background: fietsDagen === d ? T.green : T.card,
+                          color: fietsDagen === d ? "#fff" : T.text,
+                          border: fietsDagen === d ? "none" : `1px solid ${T.border}`,
+                          cursor: "pointer",
+                        }}>{d === 7 ? "Week" : `${d} dag`}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bike selector */}
+                  <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>Kies je fiets</div>
+                  {FIETSEN.map(f => {
+                    const qty = fietsSelection[f.id] || 0;
+                    const isWeek = fietsDagen >= 7;
+                    const price = isWeek ? f.week : f.dag;
+                    const disabled = f.needsBike && !hasBikeSelected;
+                    return (
+                      <div key={f.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${T.border}`, opacity: disabled ? 0.4 : 1 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 400 }}>{f.naam}</div>
+                          <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300 }}>€ {price.toFixed(2)} / {isWeek ? "week" : "dag"}</div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                          <button disabled={disabled || qty === 0} onClick={() => setFietsSelection(p => ({ ...p, [f.id]: Math.max(0, qty - 1) }))}
+                            style={{ width: 30, height: 30, borderRadius: 8, border: `1px solid ${T.border}`, background: T.card, fontSize: 15, color: T.text, cursor: disabled || qty === 0 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                          <span style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, width: 18, textAlign: "center" }}>{qty}</span>
+                          <button disabled={disabled} onClick={() => setFietsSelection(p => ({ ...p, [f.id]: qty + 1 }))}
+                            style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: disabled ? T.border : T.green, fontSize: 15, color: "#fff", cursor: disabled ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div style={{ fontFamily: T.sans, fontSize: 10, color: T.muted, fontWeight: 300, marginTop: 8 }}>* Zitje uitsluitend in combinatie met huurfiets · Legitimatie verplicht</div>
+                  <div style={{ background: "rgba(180,154,94,.08)", borderRadius: 10, padding: "9px 12px", marginTop: 10, fontFamily: T.sans, fontSize: 11, color: T.gold }}>
+                    ⏰ Reservering minimaal 24 uur van tevoren gewenst
+                  </div>
+
+                  {/* Total + Book button */}
+                  {fietsTotal > 0 && showForm !== "fiets" && (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 0", borderTop: `2px solid ${T.border}`, marginTop: 12 }}>
+                        <span style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500 }}>Totaal</span>
+                        <span style={{ fontFamily: T.sans, fontSize: 18, fontWeight: 600, color: T.green }}>€ {fietsTotal.toFixed(2)}</span>
+                      </div>
+                      <button onClick={() => setShowForm("fiets")} style={{
+                        width: "100%", padding: 14, borderRadius: 14, border: "none", background: T.green, color: "#fff",
+                        fontFamily: T.sans, fontSize: 15, fontWeight: 500, cursor: "pointer",
+                      }}>Reserveren & afrekenen</button>
+                    </>
+                  )}
+
+                  {/* ═══ FIETS BOOKING FORM ═══ */}
+                  {showForm === "fiets" && fietsTotal > 0 && (
+                    <div style={{ marginTop: 14, padding: "16px 0 0", borderTop: `2px solid ${T.border}`, animation: "fadeUp .25s ease both" }}>
+                      {/* Order summary */}
+                      <div style={{ background: "rgba(47,79,62,.04)", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+                        <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8, fontWeight: 500 }}>Je reservering</div>
+                        <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 400, marginBottom: 4 }}>{fietsSummary}</div>
+                        <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 300 }}>{fietsDagen} {fietsDagen === 1 ? "dag" : fietsDagen === 7 ? "week" : "dagen"}</div>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingTop: 8, borderTop: `1px solid ${T.border}` }}>
+                          <span style={{ fontFamily: T.sans, fontSize: 14, fontWeight: 500 }}>Totaal</span>
+                          <span style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 600, color: T.green }}>€ {fietsTotal.toFixed(2)}</span>
+                        </div>
+                      </div>
+
+                      <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 500, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 10 }}>Jouw gegevens</div>
+                      <input value={gastNaam} onChange={e => setGastNaam(e.target.value)} placeholder="Naam" style={{ ...inputStyle, marginBottom: 8 }} />
+                      <input value={gastEmail} onChange={e => setGastEmail(e.target.value)} placeholder="E-mailadres" type="email" style={{ ...inputStyle, marginBottom: 8 }} />
+                      <div style={{ marginBottom: 14 }}>
+                        <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 300, marginBottom: 4 }}>Gewenste datum ophalen</div>
+                        <input value={gastDatum} onChange={e => setGastDatum(e.target.value)} type="date" min={minDate}
+                          style={{ ...inputStyle }} />
+                      </div>
+
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={() => setShowForm(null)} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>Annuleren</button>
+                        <button
+                          onClick={() => startPayment("Fietsverhuur", fietsTotal, { fietsen: fietsSummary, dagen: fietsDagen, datum: gastDatum })}
+                          disabled={!gastNaam.trim() || !gastEmail.includes("@") || !gastDatum || sending}
+                          style={{
+                            flex: 2, padding: 12, borderRadius: 12, border: "none",
+                            background: gastNaam.trim() && gastEmail.includes("@") && gastDatum && !sending ? T.green : T.border,
+                            fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "#fff",
+                            cursor: gastNaam.trim() && gastEmail.includes("@") && gastDatum && !sending ? "pointer" : "not-allowed",
+                          }}
+                        >
+                          {sending ? "Doorsturen..." : `Afrekenen · € ${fietsTotal.toFixed(2)}`}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}

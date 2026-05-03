@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
   const apiKey = process.env.OPENAI_API_KEY;
 
-  if (!apiKey) {
+  if (!apiKey || apiKey.length < 20) {
     // Fallback: keyword-matching
     const fallbacks: Record<string, string> = {
       wandel: "Het Dwingelderveld is prachtig! Slechts 10 minuten rijden. Ook de Veentjesroute vanuit Zeijen is een aanrader 🌿",

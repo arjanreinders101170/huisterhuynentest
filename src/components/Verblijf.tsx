@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { T, cardStyle, iconBox, type Route, type DoorStatus } from "@/data/tokens";
-import { IcLock, IcUnlock, IcKey, IcCopy, IcCheck, IcCar, IcInfo, IcClock, IcHeart, IcSquare, IcCheckSquare, IcWifi } from "./icons";
+import { IcLock, IcUnlock, IcKey, IcCopy, IcCheck, IcCar, IcInfo, IcClock, IcHeart, IcSquare, IcCheckSquare, IcWifi, IcPlug } from "./icons";
 
 type Props = {
   door: DoorStatus;
@@ -184,6 +184,7 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
       <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Praktisch</h2>
       {[
         { ic: <IcCar />, t: "Parkeren", s: "Gratis op eigen terrein" },
+        { ic: <IcPlug />, t: "Laadpaal", s: "Laadpaal aanwezig voor elektrische auto's" },
         { ic: <IcInfo />, t: "Huisregels", s: "Niet roken · Huisdieren welkom · Rust na 22:00" },
       ].map((x, i) => (
         <div key={i} style={{ ...cardStyle, padding: "14px 16px", marginBottom: 10, display: "flex", alignItems: "center", gap: 14 }}>
