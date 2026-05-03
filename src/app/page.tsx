@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type { Route, ChatMsg, DoorStatus, GuestProfile } from "@/data/tokens";
+import type { Route, ChatMsg, DoorStatus, GuestProfile, Weather } from "@/data/tokens";
 import { T } from "@/data/tokens";
 import { DATA, CATEGORY_KEYS, UPSELLS } from "@/data/categories";
 import { PROFILES } from "@/data/profiles";
@@ -59,11 +59,20 @@ export default function Page() {
   const [door, setDoor] = useState<DoorStatus>("locked");
   const [wifiCopied, setWifiCopied] = useState(false);
   const [booked, setBooked] = useState<string | null>(null);
+  const [weather, setWeather] = useState<Weather | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toLocaleDateString("nl-NL", {
     weekday: "long", day: "numeric", month: "long",
   });
+
+  /* ═══ WEATHER — fetch on mount ═══ */
+  useEffect(() => {
+    fetch("/api/weather")
+      .then(r => r.json())
+      .then(d => setWeather(d))
+      .catch(() => {/* silent — header shows fallback */});
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,10 +93,14 @@ export default function Page() {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
 
-    // Build profile context for the AI
+    // Build context for the AI
     const profileContext = profile && profile in PROFILES
       ? PROFILES[profile as Exclude<GuestProfile, null>].chatContext
       : null;
+    const weatherContext = weather
+      ? `Het is nu ${weather.temp}°C en ${weather.description} in Zeijen.`
+      : null;
+    const fullContext = [profileContext, weatherContext].filter(Boolean).join(" ") || null;
 
     try {
       const r = await fetch("/api/chat", {
@@ -96,7 +109,7 @@ export default function Page() {
         body: JSON.stringify({
           messages: [...msgs.map(m => ({ role: m.role, content: m.text })),
             { role: "user", content: q }],
-          context: profileContext,
+          context: fullContext,
         }),
         signal: controller.signal,
       });
@@ -181,7 +194,7 @@ export default function Page() {
     <>
       {showOnboarding && <Onboarding onSelect={selectProfile} />}
 
-      <Header today={today} />
+      <Header today={today} weather={weather} />
 
       {detailData ? (
         <DetailPage
@@ -196,6 +209,7 @@ export default function Page() {
               onNavigate={(r: Route) => setRoute(r)}
               categoryKeys={CATEGORY_KEYS}
               profile={profile}
+              weather={weather}
             />
           )}
           {route === "verblijf" && (

@@ -1,7 +1,7 @@
 "use client";
-import { T, cardStyle, iconBox, type Route, type GuestProfile } from "@/data/tokens";
+import { T, cardStyle, iconBox, type Route, type GuestProfile, type Weather } from "@/data/tokens";
 import { PROFILES } from "@/data/profiles";
-import { SheepSvg, IcTrees, IcFork, IcBike, IcFamily, IcTemple, IcLotus, IcChat, IcArrow, IcLeaf, IcPin, IcWifi, IcCar, IcClock } from "./icons";
+import { SheepSvg, IcTrees, IcFork, IcBike, IcFamily, IcTemple, IcLotus, IcChat, IcArrow, IcLeaf, IcPin, IcWifi, IcCar, IcClock, IcSun, IcCloud, IcRain } from "./icons";
 import type { ReactNode } from "react";
 
 /* ═══ CATEGORY VISUAL MAP ═══ */
@@ -20,9 +20,10 @@ type Props = {
   onNavigate: (r: Route) => void;
   categoryKeys: readonly string[];
   profile: GuestProfile;
+  weather: Weather | null;
 };
 
-export function Home({ onNavigate, categoryKeys, profile }: Props) {
+export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
   /* ═══ PERSONALIZATION ═══ */
   const cfg = profile && profile in PROFILES
     ? PROFILES[profile as Exclude<GuestProfile, null>]
@@ -91,6 +92,51 @@ export function Home({ onNavigate, categoryKeys, profile }: Props) {
           <IcChat />
         </div>
       </div>
+
+      {/* Weather tip — contextual suggestion */}
+      {weather?.tip && (
+        <div
+          onClick={() => {
+            const isIndoor = weather.icon === "rain" || weather.icon === "storm" || weather.icon === "snow";
+            onNavigate(isIndoor ? "detail:kinderen" : "detail:natuur");
+          }}
+          className="tile-tap"
+          style={{
+            marginTop: 16,
+            padding: "14px 18px",
+            borderRadius: 14,
+            background: weather.icon === "rain" || weather.icon === "storm"
+              ? "rgba(47,79,62,.06)"
+              : "rgba(180,154,94,.08)",
+            border: `1px solid ${T.border}`,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            cursor: "pointer",
+          }}
+        >
+          <div style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: T.card,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: T.muted, flexShrink: 0,
+          }}>
+            {weather.icon === "sun" && <IcSun />}
+            {weather.icon === "cloud" && <IcCloud />}
+            {(weather.icon === "rain" || weather.icon === "storm") && <IcRain />}
+            {!["sun", "cloud", "rain", "storm"].includes(weather.icon) && <IcCloud />}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{
+              fontFamily: T.sans, fontSize: 13, color: T.text,
+              fontWeight: 400, lineHeight: 1.45,
+            }}>
+              {weather.tip}
+            </div>
+          </div>
+          <span style={{ color: T.gold, opacity: 0.6, flexShrink: 0 }}><IcArrow /></span>
+        </div>
+      )}
 
       {/* Category tiles — ordered by profile */}
       <h2 style={{

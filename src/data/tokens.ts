@@ -49,6 +49,13 @@ export type DoorStatus = "locked" | "opening" | "open" | "error";
 
 export type GuestProfile = "stel" | "gezin" | "actief" | "rust" | null;
 
+export type Weather = {
+  temp: number;
+  description: string;
+  icon: "sun" | "cloud" | "rain" | "snow" | "storm" | "mist";
+  tip: string;
+};
+
 export type CategoryItem = {
   id: string;
   naam: string;
