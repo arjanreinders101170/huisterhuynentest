@@ -12,6 +12,7 @@ import { Verblijf } from "@/components/Verblijf";
 import { Chat } from "@/components/Chat";
 import { Reserveren } from "@/components/Reserveren";
 import { Info } from "@/components/Info";
+import { Terugkomen } from "@/components/Terugkomen";
 import { DetailPage } from "@/components/DetailPage";
 import { Nav } from "@/components/Nav";
 
@@ -179,7 +180,7 @@ export default function Page() {
   };
 
   /* ═══ HELPERS ═══ */
-  const basePage = route.startsWith("detail:") ? "home" : route;
+  const basePage = route.startsWith("detail:") ? "home" : route === "terugkomen" ? "info" : route;
   const detailKey = route.startsWith("detail:") ? route.split(":")[1] : null;
   const detailData = detailKey ? DATA[detailKey] : null;
 
@@ -240,6 +241,9 @@ export default function Page() {
           )}
           {route === "info" && (
             <Info onNavigate={(r: Route) => setRoute(r)} />
+          )}
+          {route === "terugkomen" && (
+            <Terugkomen onNavigate={(r: Route) => setRoute(r)} />
           )}
         </>
       )}

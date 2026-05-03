@@ -284,6 +284,31 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
           </button>
         </div>
       )}
+
+      {/* Terugkomen CTA */}
+      <div style={{
+        marginTop: 32, padding: "24px 20px", borderRadius: 16,
+        background: `linear-gradient(135deg, ${T.green} 0%, ${T.green2} 100%)`,
+        textAlign: "center",
+        boxShadow: "0 8px 32px rgba(47,79,62,.2)",
+      }}>
+        <div style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 6 }}>
+          Kom nog eens terug
+        </div>
+        <p style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.7)", fontWeight: 300, lineHeight: 1.5, margin: "0 0 16px" }}>
+          Ontvang een persoonlijk aanbod met beste prijs garantie
+        </p>
+        <button
+          onClick={() => onNavigate("terugkomen")}
+          style={{
+            padding: "12px 28px", borderRadius: 12, border: "none",
+            background: "#fff", color: T.green,
+            fontFamily: T.sans, fontSize: 14, fontWeight: 500, cursor: "pointer",
+          }}
+        >
+          Bekijk beschikbaarheid
+        </button>
+      </div>
     </div>
   );
 }

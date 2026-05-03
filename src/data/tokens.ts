@@ -38,6 +38,7 @@ export type Route =
   | "chat"
   | "reserveren"
   | "info"
+  | "terugkomen"
   | `detail:${string}`;
 
 export type ChatMsg = {
