@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 /*
  * In-memory review store — works for demo/testing.
  * For production: replace with Vercel KV, Supabase, or any database.

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 /* ═══ CACHE — avoid hammering the API ═══ */
 let cache: { data: unknown; timestamp: number } | null = null;
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes

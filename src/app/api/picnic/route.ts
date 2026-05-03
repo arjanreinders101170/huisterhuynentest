@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 /*
  * Picnic Integration for Huis ter Huynen
  * 

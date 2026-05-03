@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 /*
  * Booking API — handles upsell orders and sends email notification
  * 

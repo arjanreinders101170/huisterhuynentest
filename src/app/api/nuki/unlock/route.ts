@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 export async function POST() {
   const apiKey = process.env.NUKI_API_KEY;
   const smartlockId = process.env.NUKI_SMARTLOCK_ID;

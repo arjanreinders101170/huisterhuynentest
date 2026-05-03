@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
 
 function buildEmailHtml(from: string, to: string, email: string, name: string, persons: number, message: string): string {

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 /*
  * Mollie Checkout — uses REST API directly (no SDK)
  * This avoids serverless function size limits on Vercel.
