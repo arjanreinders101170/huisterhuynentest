@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default function WelkomPage() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynentest.vercel.app";
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(appUrl)}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`;
-  const mapsUrl = "https://www.google.com/maps/dir/?api=1&destination=53.1052,6.5058&travelmode=driving";
+  const mapsUrl = "https://www.google.com/maps/dir/?api=1&destination=53.1047,6.5070&travelmode=driving";
 
   return (
     <div style={{
@@ -113,7 +113,7 @@ export default function WelkomPage() {
               Zeijen, Drenthe
             </p>
             <p style={{ fontSize: 13, color: "#8A7D6A", fontWeight: 300, lineHeight: 1.6, margin: "0 0 14px" }}>
-              Rustig gelegen in het groen. Navigeer naar de lodge en parkeer gratis op eigen terrein.
+              Zuiderstraat 6 in Zeijen. Navigeer naar de lodge en parkeer gratis op eigen terrein.
             </p>
             <a
               href={mapsUrl}
@@ -251,7 +251,7 @@ export default function WelkomPage() {
         }}>
           <div style={{ width: 40, height: 1, background: "#B49A5E", opacity: 0.4, margin: "0 auto 16px" }} />
           <p style={{ fontSize: 11, color: "#8A7D6A", fontWeight: 300 }}>
-            Huis ter Huynen · Boutique Lodge · Zeijen, Drenthe
+            Huis ter Huynen · Zuiderstraat 6 · Zeijen
           </p>
         </div>
       </div>

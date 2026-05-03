@@ -23,7 +23,7 @@ export const PROFILES: Record<Exclude<GuestProfile, null>, ProfileConfig> = {
       sub: "Fine dining · eigen moestuin · Gault&Millau",
       category: "eten",
     },
-    upsellOrder: ["wellness", "massage", "latecheck", "ontbijt", "picknick", "fiets"],
+    upsellOrder: ["welkomst", "latecheck", "fiets", "boodschappen"],
     chatContext: "Dit is een stel dat romantiek en quality time zoekt. Adviseer restaurants, wellness en rustige wandelingen.",
   },
   gezin: {
@@ -37,7 +37,7 @@ export const PROFILES: Record<Exclude<GuestProfile, null>, ProfileConfig> = {
       sub: "Dagvullend uitje · avontuur · tot 10 jaar",
       category: "kinderen",
     },
-    upsellOrder: ["fiets", "picknick", "ontbijt", "latecheck", "wellness", "massage"],
+    upsellOrder: ["fiets", "boodschappen", "welkomst", "latecheck"],
     chatContext: "Dit is een gezin met kinderen. Adviseer kindvriendelijke uitjes, speeltuinen en restaurants met kindermenu.",
   },
   actief: {
@@ -51,7 +51,7 @@ export const PROFILES: Record<Exclude<GuestProfile, null>, ProfileConfig> = {
       sub: "2-3 uur · door natuurgebieden · uniek",
       category: "actief",
     },
-    upsellOrder: ["fiets", "picknick", "ontbijt", "latecheck", "wellness", "massage"],
+    upsellOrder: ["fiets", "boodschappen", "welkomst", "latecheck"],
     chatContext: "Dit is een sportieve gast die van buitenactiviteiten houdt. Adviseer fietsroutes, wandelingen en wateractiviteiten.",
   },
   rust: {
@@ -65,7 +65,7 @@ export const PROFILES: Record<Exclude<GuestProfile, null>, ProfileConfig> = {
       sub: "Kleinschalige sauna · sneeuwdouche · Assen",
       category: "ontspanning",
     },
-    upsellOrder: ["massage", "wellness", "latecheck", "ontbijt", "picknick", "fiets"],
+    upsellOrder: ["welkomst", "latecheck", "boodschappen", "fiets"],
     chatContext: "Dit is een gast die rust en ontspanning zoekt. Adviseer wellness, rustige wandelingen en fine dining.",
   },
 };
