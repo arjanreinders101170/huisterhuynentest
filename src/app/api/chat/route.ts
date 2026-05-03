@@ -1,57 +1,178 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/* ========= CONFIG ========= */
+const ZEIJEN = { lat: 53.05, lng: 6.55 };
+
+const places = [
+  {
+    name: "Herberg van Loon",
+    type: "eten",
+    distance: 6,
+    description: "Gezellige Drentse keuken met lokale sfeer",
+  },
+  {
+    name: "Jufferen Lunsingh",
+    type: "eten",
+    distance: 8,
+    description: "Bijzonder restaurant voor een avond uit",
+  },
+  {
+    name: "Dwingelderveld",
+    type: "natuur",
+    distance: 10,
+    description: "Groot natuurgebied met heide en wandelroutes",
+  },
+  {
+    name: "Drentsche Aa",
+    type: "natuur",
+    distance: 7,
+    description: "Prachtig gebied voor wandelen en fietsen",
+  },
+  {
+    name: "Speelbos Grolloo",
+    type: "kinderen",
+    distance: 9,
+    description: "Leuke plek voor kinderen in de natuur",
+  },
+];
+
+/* ========= HELPERS ========= */
+function detectIntent(text: string) {
+  const t = text.toLowerCase();
+
+  if (t.includes("eten") || t.includes("restaurant")) return "eten";
+  if (t.includes("wandel") || t.includes("natuur")) return "natuur";
+  if (t.includes("kind")) return "kinderen";
+  if (t.includes("weer")) return "weer";
+  if (t.includes("wellness") || t.includes("sauna")) return "wellness";
+
+  return "general";
+}
+
+function getTimeContext() {
+  const hour = new Date().getHours();
+
+  if (hour < 11) return "ochtend";
+  if (hour > 18) return "avond";
+
+  return "dag";
+}
+
+function getPlaces(intent: string) {
+  return places.filter((p) => p.type === intent && p.distance <= 10);
+}
+
+function formatPlaces(list: any[]) {
+  if (!list.length) {
+    return "Binnen 10 km van Zeijen heb ik hier geen goede tips voor 🌿";
+  }
+
+  return (
+    list
+      .map(
+        (p) =>
+          `• ${p.name} (${p.distance} km)\n  ${p.description}`
+      )
+      .join("\n\n")
+  );
+}
+
+/* ========= API ========= */
 export async function POST(request: NextRequest) {
   const { messages } = await request.json();
   const apiKey = process.env.OPENAI_API_KEY;
 
-  if (!apiKey) {
-    // Fallback: gebruik hardcoded antwoorden als er geen API key is
-    const fallbacks: Record<string, string> = {
-      wandel: "Het Dwingelderveld is prachtig! Slechts 10 minuten rijden. Ook het Ommetje Zeijen (5 min) is een aanrader voor een korte wandeling 🌿",
-      restaurant: "Herberg van Loon is een favoriet bij onze gasten — heerlijke Drentse keuken. Jufferen Lunsingh in Rolde is ook een aanrader voor een bijzonder diner 🍽️",
-      kinder: "Speelbos Grolloo is geweldig voor kinderen! En het Wildlands Adventure Zoo in Emmen is ook een leuk dagje uit 👧",
-      weer: "Het is vandaag zonnig, 18°C. Perfect weer voor een wandeling over het Dwingelderveld of een fietstocht door de Drentsche Aa ☀️",
-      wellness: "Sauna Drenthe is een heerlijke dagbesteding. We kunnen ook een massage aan huis regelen — vraag gerust naar de mogelijkheden 💆",
-      default: "Leuke vraag! Ik raad het Dwingelderveld aan voor natuur, Herberg van Loon voor eten, en voor cultuur zijn de hunebedden een must. Wat spreekt je aan?",
-    };
+  const lastMsg =
+    messages[messages.length - 1]?.content?.toLowerCase() || "";
 
-    const lastMsg = messages[messages.length - 1]?.content?.toLowerCase() || "";
-    let reply = fallbacks.default;
-    if (lastMsg.includes("wandel") || lastMsg.includes("natuur")) reply = fallbacks.wandel;
-    else if (lastMsg.includes("eten") || lastMsg.includes("restaurant")) reply = fallbacks.restaurant;
-    else if (lastMsg.includes("kind")) reply = fallbacks.kinder;
-    else if (lastMsg.includes("weer")) reply = fallbacks.weer;
-    else if (lastMsg.includes("wellness") || lastMsg.includes("sauna")) reply = fallbacks.wellness;
+  const intent = detectIntent(lastMsg);
+  const time = getTimeContext();
 
-    return NextResponse.json({ reply });
+  /* ========= LOCAL INTELLIGENCE (BELANGRIJK) ========= */
+
+  if (intent !== "general" && intent !== "weer") {
+    const results = getPlaces(intent);
+
+    let intro = "";
+
+    if (intent === "eten" && time === "avond") {
+      intro = "Goede keuze voor vanavond 🌙\n\n";
+    }
+
+    if (intent === "natuur" && time === "ochtend") {
+      intro = "Perfect om de dag mee te starten 🌿\n\n";
+    }
+
+    return NextResponse.json({
+      reply: intro + formatPlaces(results),
+    });
   }
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        max_tokens: 300,
-        messages: [
-          {
-            role: "system",
-            content:
-              "Je bent Huynen Host, de digitale conciërge van Huis ter Huynen – Boutique Lodge in Zeijen, Drenthe. Geef warme, persoonlijke tips over wandelen (Dwingelderveld, Drentsche Aa, Ballooërveld), fietsen, restaurants (Herberg van Loon, Jufferen Lunsingh), cultuur (hunebedden, Drents Museum), wellness en activiteiten. Max 3 zinnen. Correct Nederlands.",
-          },
-          ...messages,
-        ],
-      }),
+  /* ========= WEER (SIMPEL) ========= */
+  if (intent === "weer") {
+    return NextResponse.json({
+      reply:
+        "Vandaag is het rustig weer in de omgeving van Zeijen 🌤️\nPerfect voor een wandeling of fietstocht door de natuur.",
     });
+  }
+
+  /* ========= FALLBACK ZONDER API ========= */
+  if (!apiKey) {
+    return NextResponse.json({
+      reply:
+        "Waar heb je zin in? 🌿\nIk help je graag met restaurants, wandelingen of activiteiten in de buurt.",
+    });
+  }
+
+  /* ========= AI (ALLEEN ALS NODIG) ========= */
+  try {
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          max_tokens: 200,
+          messages: [
+            {
+              role: "system",
+              content: `
+Je bent Huynen Host, een luxe digitale conciërge in Zeijen (Drenthe).
+
+BELANGRIJK:
+- Je geeft alleen tips binnen 10 km van Zeijen
+- Je verzint geen locaties
+- Je bent warm, persoonlijk en kort (max 2-3 zinnen)
+
+Context:
+- Chalet in de natuur
+- Rust, bos, ontspanning
+
+Gedrag:
+- Denk als een host, niet als AI
+              `,
+            },
+            ...messages,
+          ],
+        }),
+      }
+    );
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Even geen antwoord beschikbaar.";
+
+    const reply =
+      data.choices?.[0]?.message?.content ||
+      "Even geen antwoord beschikbaar.";
 
     return NextResponse.json({ reply });
   } catch {
-    return NextResponse.json({ reply: "Even geen verbinding. Probeer straks opnieuw." }, { status: 500 });
+    return NextResponse.json(
+      { reply: "Even geen verbinding. Probeer straks opnieuw." },
+      { status: 500 }
+    );
   }
 }
