@@ -45,18 +45,32 @@ export async function POST(request: NextRequest) {
       kinder: "Speelpark Sprookjeshof is geweldig voor kinderen! En WILDLANDS Adventure Zoo in Emmen is ook een leuk dagje uit 👧",
       weer: "Gebruik de weertips bovenaan de homepage voor actueel weer en passende suggesties ☀️",
       wellness: "LOFF Boutique Wellness in Assen is echt een aanrader. Kleinschalig, Finse sauna, sneeuwdouche 💆",
-      fiets: "Drenthe is dé fietsprovincie! Huur een e-bike via 'Extra boeken' en ontdek het knooppuntennetwerk 🚴",
+      fiets: "Drenthe is dé fietsprovincie! Huur een e-bike via 'Extra's' en ontdek het knooppuntennetwerk 🚴",
+      regen: "Bij regen: Ballorig indoor speeltuin, Drents Museum, of lekker een filmje in de lodge met warme chocolademelk 🌧️",
+      romantisch: "De Jufferen Lunsingh is perfect voor een romantisch diner — reserveer bij het haardvuur. Of boek een wellness arrangement via 'Extra's' 💕",
+      wijn: "Café Hingstman aan de brink heeft een mooie wijnkaart. The Black Tie in Assen is top voor cocktails en borrel 🍷",
+      uitje: "Kano op de Hunze is een unieke ervaring (2-3 uur). Museumdorp Orvelte is ook een leuk dagje — autovrij en vol ambachten 🛶",
+      stil: "De Zeijerstrubben is het stilste bosgebied — 3 minuten rijden. Of loop de Veentjesroute vroeg in de ochtend, dan heb je het pad voor jezelf 🤫",
+      kano: "Kano Zwerftocht Hunze is een aanrader — 2-3 uur varen door prachtige natuur. Start bij Breeland, 20 min rijden 🛶",
+      mtb: "Drenthe Fietsverhuur heeft MTB's en organiseert clinics. Er zijn routes door het Drentsche Aa-gebied en bij Gieten 🚵",
       default: "Leuke vraag! Ik raad het Dwingelderveld aan voor natuur, Herberg van Loon voor eten, en de hunebedden voor cultuur. Wat spreekt je aan?",
     };
 
     const lastMsg = messages[messages.length - 1]?.content?.toLowerCase() || "";
     let reply = fallbacks.default;
-    if (lastMsg.includes("wandel") || lastMsg.includes("natuur") || lastMsg.includes("bos")) reply = fallbacks.wandel;
-    else if (lastMsg.includes("eten") || lastMsg.includes("restaurant") || lastMsg.includes("diner")) reply = fallbacks.restaurant;
+    if (lastMsg.includes("wandel") || lastMsg.includes("natuur") || lastMsg.includes("bos") || lastMsg.includes("rustig")) reply = fallbacks.wandel;
+    else if (lastMsg.includes("eten") || lastMsg.includes("restaurant") || lastMsg.includes("diner") || lastMsg.includes("dineren")) reply = fallbacks.restaurant;
     else if (lastMsg.includes("kind") || lastMsg.includes("gezin") || lastMsg.includes("speel")) reply = fallbacks.kinder;
-    else if (lastMsg.includes("weer") || lastMsg.includes("regen") || lastMsg.includes("zon")) reply = fallbacks.weer;
-    else if (lastMsg.includes("wellness") || lastMsg.includes("sauna") || lastMsg.includes("massage")) reply = fallbacks.wellness;
-    else if (lastMsg.includes("fiets") || lastMsg.includes("fietsen") || lastMsg.includes("mtb")) reply = fallbacks.fiets;
+    else if (lastMsg.includes("weer") || lastMsg.includes("zon") || lastMsg.includes("temperatuur")) reply = fallbacks.weer;
+    else if (lastMsg.includes("wellness") || lastMsg.includes("sauna") || lastMsg.includes("massage") || lastMsg.includes("ontspan")) reply = fallbacks.wellness;
+    else if (lastMsg.includes("fiets") || lastMsg.includes("fietsen") || lastMsg.includes("e-bike") || lastMsg.includes("sportief")) reply = fallbacks.fiets;
+    else if (lastMsg.includes("regen") || lastMsg.includes("binnen") || lastMsg.includes("slecht weer")) reply = fallbacks.regen;
+    else if (lastMsg.includes("romantis") || lastMsg.includes("stel") || lastMsg.includes("samen")) reply = fallbacks.romantisch;
+    else if (lastMsg.includes("wijn") || lastMsg.includes("borrel") || lastMsg.includes("cocktail") || lastMsg.includes("drinken")) reply = fallbacks.wijn;
+    else if (lastMsg.includes("uitje") || lastMsg.includes("dagje") || lastMsg.includes("leuk") || lastMsg.includes("niets")) reply = fallbacks.uitje;
+    else if (lastMsg.includes("stil") || lastMsg.includes("rust") || lastMsg.includes("boek") || lastMsg.includes("koffie")) reply = fallbacks.stil;
+    else if (lastMsg.includes("kano") || lastMsg.includes("varen") || lastMsg.includes("water")) reply = fallbacks.kano;
+    else if (lastMsg.includes("mtb") || lastMsg.includes("mountain") || lastMsg.includes("trail")) reply = fallbacks.mtb;
 
     return NextResponse.json({ reply });
   }

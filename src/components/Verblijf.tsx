@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { T, cardStyle, iconBox, type Route, type DoorStatus } from "@/data/tokens";
-import { IcLock, IcUnlock, IcKey, IcCopy, IcCheck, IcCar, IcInfo, IcClock, IcHeart, IcSquare, IcCheckSquare } from "./icons";
+import { IcLock, IcUnlock, IcKey, IcCopy, IcCheck, IcCar, IcInfo, IcClock, IcHeart, IcSquare, IcCheckSquare, IcWifi } from "./icons";
 
 type Props = {
   door: DoorStatus;
@@ -24,6 +24,7 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
   const [showCheckout, setShowCheckout] = useState(false);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [countdown, setCountdown] = useState("");
+  const [showWifiQR, setShowWifiQR] = useState(false);
 
   /* ═══ COUNTDOWN to 11:00 ═══ */
   useEffect(() => {
@@ -114,13 +115,70 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
           <div style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.text }}>HuynenGast</div>
           <div style={{ fontFamily: T.sans, fontSize: 13, color: T.muted, fontWeight: 300, marginTop: 2 }}>HuynenGast2024</div>
         </div>
-        <button onClick={onCopyWifi} style={{
-          padding: "10px 16px", borderRadius: 10, border: `1px solid ${T.border}`, background: T.card,
-          fontFamily: T.sans, fontSize: 12, color: T.text, cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
-        }}>
-          {wifiCopied ? <><IcCheck /> Gekopieerd</> : <><IcCopy /> Kopieer</>}
-        </button>
+        <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+          <button onClick={() => setShowWifiQR(true)} style={{
+            padding: "10px 14px", borderRadius: 10, border: "none", background: T.green,
+            fontFamily: T.sans, fontSize: 12, color: "#fff", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 5, fontWeight: 500,
+          }}>
+            <IcWifi /> QR
+          </button>
+          <button onClick={onCopyWifi} style={{
+            padding: "10px 14px", borderRadius: 10, border: `1px solid ${T.border}`, background: T.card,
+            fontFamily: T.sans, fontSize: 12, color: T.text, cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
+          }}>
+            {wifiCopied ? <><IcCheck /> Gekopieerd</> : <><IcCopy /> Kopieer</>}
+          </button>
+        </div>
       </div>
+
+      {/* Wifi QR Modal */}
+      {showWifiQR && (
+        <div onClick={() => setShowWifiQR(false)} style={{
+          position: "fixed", inset: 0, zIndex: 100,
+          background: "rgba(42,36,24,.6)",
+          display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: T.card, borderRadius: 20,
+            padding: "32px 28px", maxWidth: 320, width: "100%",
+            textAlign: "center", boxShadow: "0 20px 60px rgba(47,79,62,.2)",
+            animation: "fadeUp .3s ease",
+          }}>
+            <div style={{ color: T.green, marginBottom: 16 }}><IcWifi /></div>
+            <div style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 600, color: T.text, marginBottom: 6 }}>
+              Wifi verbinden
+            </div>
+            <p style={{ fontFamily: T.sans, fontSize: 13, color: T.muted, fontWeight: 300, marginBottom: 24, lineHeight: 1.5 }}>
+              Scan de QR-code met je camera om automatisch te verbinden
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent("WIFI:T:WPA;S:HuynenGast;P:HuynenGast2024;;")}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`}
+              alt="Wifi QR code"
+              width={180} height={180}
+              style={{ borderRadius: 14, border: `1px solid ${T.border}`, margin: "0 auto 20px", display: "block" }}
+            />
+            <div style={{ background: "rgba(47,79,62,.04)", borderRadius: 12, padding: "14px 16px", textAlign: "left" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>Netwerk</span>
+                <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>HuynenGast</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>Wachtwoord</span>
+                <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>HuynenGast2024</span>
+              </div>
+            </div>
+            <button onClick={() => { navigator.clipboard?.writeText("HuynenGast2024"); setShowWifiQR(false); }} style={{
+              marginTop: 16, width: "100%", padding: 14, borderRadius: 14,
+              border: "none", background: T.green, color: "#fff",
+              fontFamily: T.sans, fontSize: 15, fontWeight: 500, cursor: "pointer",
+            }}>
+              Kopieer wachtwoord
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Practical */}
       <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Praktisch</h2>

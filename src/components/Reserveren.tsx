@@ -199,13 +199,12 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
               ...cardStyle, padding: 0, overflow: "hidden",
               border: isExp ? `1px solid ${T.gold}` : `1px solid ${T.border}`,
             }}>
-              {/* ═══ CARD HEADER — responsive two-row layout ═══ */}
+              {/* ═══ CARD HEADER — title full width, price on row 2 ═══ */}
               <div
                 onClick={() => isExpandable ? setExpanded(isExp ? null : u.id) : undefined}
                 style={{ padding: "16px", cursor: isExpandable ? "pointer" : "default" }}
               >
-                {/* Row 1: Icon + Title + Price */}
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
                   <div style={{
                     width: 42, height: 42, borderRadius: 12,
                     background: isExp ? "rgba(180,154,94,.12)" : "rgba(47,79,62,.06)",
@@ -214,36 +213,34 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                   }}>
                     {icons[u.id] || <IcClock />}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: T.serif, fontSize: 15, fontWeight: 600, color: T.text }}>{u.title}</div>
-                  </div>
-                  <div style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 600, color: T.green, flexShrink: 0, whiteSpace: "nowrap" }}>
-                    {isFi ? "v.a. € 8,50" : u.price}
-                  </div>
+                  <div style={{ fontFamily: T.serif, fontSize: 16, fontWeight: 600, color: T.text }}>{u.title}</div>
                 </div>
-
-                {/* Row 2: Subtitle + Action */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6, paddingLeft: 54 }}>
-                  <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 300 }}>{u.sub}</div>
-                  {isExpandable && (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.gold} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-                      style={{ flexShrink: 0, marginLeft: 8, transition: "transform .2s", transform: isExp ? "rotate(90deg)" : "rotate(0deg)" }}>
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  )}
-                  {!isExpandable && !done && (
-                    <button onClick={() => setShowForm(u.title)} style={{
-                      padding: "6px 16px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
-                      cursor: "pointer", fontWeight: 500, marginLeft: 8,
-                      background: "transparent", color: T.green, border: `1px solid ${T.green}`,
-                    }}>Boek</button>
-                  )}
-                  {!isExpandable && done && (
-                    <span style={{
-                      padding: "6px 12px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
-                      fontWeight: 500, background: T.green, color: "#fff", marginLeft: 8,
-                    }}>✓ Geboekt</span>
-                  )}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 54 }}>
+                  <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 300, flex: 1, minWidth: 0 }}>{u.sub}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, marginLeft: 8 }}>
+                    <span style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 600, color: T.green, whiteSpace: "nowrap" }}>
+                      {isFi ? "v.a. € 8,50" : u.price}
+                    </span>
+                    {isExpandable && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.gold} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+                        style={{ transition: "transform .2s", transform: isExp ? "rotate(90deg)" : "rotate(0deg)" }}>
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    )}
+                    {!isExpandable && !done && (
+                      <button onClick={() => setShowForm(u.title)} style={{
+                        padding: "6px 16px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
+                        cursor: "pointer", fontWeight: 500,
+                        background: "transparent", color: T.green, border: `1px solid ${T.green}`,
+                      }}>Boek</button>
+                    )}
+                    {!isExpandable && done && (
+                      <span style={{
+                        padding: "6px 12px", borderRadius: 10, fontFamily: T.sans, fontSize: 12,
+                        fontWeight: 500, background: T.green, color: "#fff",
+                      }}>✓</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
