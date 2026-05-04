@@ -47,43 +47,48 @@ export function InstallBanner() {
   return (
     <div style={{
       position: "fixed",
-      bottom: 80, left: "50%", transform: "translateX(-50%)",
-      width: "calc(100% - 40px)", maxWidth: 390,
+      bottom: 72,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "100%",
+      maxWidth: 430,
       zIndex: 90,
+      padding: "0 12px",
+      boxSizing: "border-box",
       animation: "fadeUp .4s ease both",
     }}>
       <div style={{
         background: T.card,
-        borderRadius: 16,
+        borderRadius: 14,
         border: `1px solid ${T.border}`,
-        boxShadow: "0 8px 32px rgba(42,36,24,.15)",
-        padding: "18px 20px",
+        boxShadow: "0 -2px 20px rgba(42,36,24,.1)",
+        padding: "14px 16px",
       }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {/* Icon */}
           <div style={{
-            width: 44, height: 44, borderRadius: 12,
+            width: 38, height: 38, borderRadius: 10,
             background: `linear-gradient(135deg, ${T.green}, ${T.green2})`,
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
           }}>
-            <span style={{ fontSize: 20 }}>🐑</span>
+            <span style={{ fontSize: 17 }}>🐑</span>
           </div>
 
           {/* Text */}
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
-              fontFamily: T.serif, fontSize: 15, fontWeight: 600,
-              color: T.text, marginBottom: 3,
+              fontFamily: T.serif, fontSize: 14, fontWeight: 600,
+              color: T.text,
             }}>
               Zet op je beginscherm
             </div>
             <div style={{
-              fontFamily: T.sans, fontSize: 12, color: T.muted,
-              fontWeight: 300, lineHeight: 1.5,
+              fontFamily: T.sans, fontSize: 11, color: T.muted,
+              fontWeight: 300, lineHeight: 1.4,
             }}>
               {isIOS
-                ? <>Tik op <span style={{ fontWeight: 500 }}>delen</span> (▢↑) en dan <span style={{ fontWeight: 500 }}>&quot;Zet op beginscherm&quot;</span></>
+                ? <>Tik <span style={{ fontWeight: 500 }}>delen</span> (▢↑) → <span style={{ fontWeight: 500 }}>Zet op beginscherm</span></>
                 : "Open als app voor de beste ervaring"
               }
             </div>
