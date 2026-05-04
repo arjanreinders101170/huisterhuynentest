@@ -15,6 +15,7 @@ import { Info } from "@/components/Info";
 import { Terugkomen } from "@/components/Terugkomen";
 import { DetailPage } from "@/components/DetailPage";
 import { Nav } from "@/components/Nav";
+import { InstallBanner } from "@/components/InstallBanner";
 
 export default function Page() {
   /* ═══ ROUTE ═══ */
@@ -248,6 +249,8 @@ export default function Page() {
           )}
         </>
       )}
+
+      <InstallBanner />
 
       <Nav
         currentPage={basePage}
