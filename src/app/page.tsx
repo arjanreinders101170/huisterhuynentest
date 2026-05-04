@@ -15,6 +15,7 @@ import { Info } from "@/components/Info";
 import { Terugkomen } from "@/components/Terugkomen";
 import { DetailPage } from "@/components/DetailPage";
 import { Nav } from "@/components/Nav";
+import { LodgeControl } from "@/components/LodgeControl";
 
 export default function Page() {
   /* ═══ ROUTE ═══ */
@@ -61,6 +62,7 @@ export default function Page() {
   const [wifiCopied, setWifiCopied] = useState(false);
   const [booked, setBooked] = useState<string | null>(null);
   const [weather, setWeather] = useState<Weather | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toLocaleDateString("nl-NL", {
@@ -195,7 +197,8 @@ export default function Page() {
     <>
       {showOnboarding && <Onboarding onSelect={selectProfile} />}
 
-      <Header today={today} weather={weather} />
+      <Header today={today} weather={weather} onMenuOpen={() => setDrawerOpen(true)} />
+      <LodgeControl open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       {detailData ? (
         <DetailPage

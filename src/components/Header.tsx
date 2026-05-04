@@ -11,9 +11,10 @@ const WEATHER_ICONS: Record<string, () => React.ReactNode> = {
 type Props = {
   today: string;
   weather: Weather | null;
+  onMenuOpen: () => void;
 };
 
-export function Header({ today, weather }: Props) {
+export function Header({ today, weather, onMenuOpen }: Props) {
   const WeatherIcon = weather ? WEATHER_ICONS[weather.icon] || IcCloud : IcCloud;
   const temp = weather ? `${weather.temp}°C` : "…";
   const desc = weather?.description || "";
@@ -21,7 +22,7 @@ export function Header({ today, weather }: Props) {
   return (
     <header style={{ background: T.bg, position: "sticky", top: 0, zIndex: 50, padding: "14px 20px 0" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <button style={{ background: "none", border: "none", color: T.text, cursor: "pointer" }}>
+        <button onClick={onMenuOpen} style={{ background: "none", border: "none", color: T.text, cursor: "pointer", padding: 4, WebkitTapHighlightColor: "transparent" }}>
           <IcMenu />
         </button>
         <div style={{ textAlign: "center" }}>

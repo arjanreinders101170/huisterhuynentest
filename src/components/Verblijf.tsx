@@ -69,6 +69,18 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
         <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300, margin: 0 }}>Boutique Lodge · Zeijen, Drenthe</p>
       </div>
 
+      {/* Lodge control hint */}
+      <div style={{
+        marginTop: 16, padding: "12px 16px", borderRadius: 12,
+        background: "rgba(180,154,94,.08)", border: `1px solid rgba(180,154,94,.15)`,
+        display: "flex", alignItems: "center", gap: 10,
+      }}>
+        <span style={{ fontSize: 15 }}>☰</span>
+        <span style={{ fontFamily: T.sans, fontSize: 12, color: T.gold, fontWeight: 400, lineHeight: 1.4 }}>
+          Verwarming, verlichting en laadpaal regel je via het menu linksboven
+        </span>
+      </div>
+
       {/* Door */}
       <div style={{ ...cardStyle, padding: "24px 20px", marginTop: 24, textAlign: "center" }}>
         <div style={{
