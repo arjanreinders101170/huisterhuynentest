@@ -101,19 +101,25 @@ function offerteEmailHtml(gastNaam: string, van: string, tot: string, personen: 
     ` : ""}
 
     <!-- Trust badges -->
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-      <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Beste prijs garantie &mdash; altijd scherper dan boekingssites</td></tr>
-      <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Persoonlijk afgestemd op jouw verblijf</td></tr>
-      <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Geen verplichting &mdash; neem rustig de tijd</td></tr>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Beste prijs garantie &mdash; altijd scherper dan boekingssites</td></tr>
+      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Persoonlijk afgestemd op jouw verblijf</td></tr>
+      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Geen verplichting &mdash; neem rustig de tijd</td></tr>
     </table>
 
-    <!-- CTA -->
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+    <!-- CTA — bulletproof button -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
       <tr><td align="center">
-        <a href="${appUrl}/bevestig?id=${aanvraagId}"
-          style="display:inline-block;padding:16px 40px;background-color:#2F4F3E;color:#ffffff;text-decoration:none;border-radius:8px;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:bold;">
-          Bevestig reservering
-        </a>
+        <table role="presentation" cellpadding="0" cellspacing="0">
+          <tr>
+            <td align="center" style="background-color:#2F4F3E;border-radius:10px;">
+              <a href="${appUrl}/bevestig?id=${aanvraagId}"
+                style="display:block;padding:18px 48px;color:#ffffff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;border-radius:10px;">
+                Bevestig reservering &#8594;
+              </a>
+            </td>
+          </tr>
+        </table>
       </td></tr>
     </table>
 
