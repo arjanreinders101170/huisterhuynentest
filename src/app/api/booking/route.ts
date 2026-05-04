@@ -182,7 +182,7 @@ function guestEmailHtml(product: string, prijs: string, gastNaam: string): strin
       <tr><td style="padding:16px 0 0;">
         <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;line-height:1.5;">
           Vragen? Bel of WhatsApp ons gerust op
-          <a href="tel:+31612345678" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">+31 6 12 34 56 78</a>
+          <a href="tel:+31642568603" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">+31 6 42568603</a>
         </p>
       </td></tr>
     </table>

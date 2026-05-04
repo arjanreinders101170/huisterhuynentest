@@ -181,11 +181,11 @@ export default function WelkomPage() {
             <p style={{ fontSize: 13, color: "#8A7D6A", fontWeight: 300, lineHeight: 1.6, margin: "0 0 4px" }}>
               Bel of WhatsApp ons gerust:
             </p>
-            <a href="tel:+31612345678" style={{
+            <a href="tel:+31642568603" style={{
               fontSize: 18, fontWeight: 500, color: "#2F4F3E", textDecoration: "none",
               fontFamily: "'Playfair Display', Georgia, serif",
             }}>
-              +31 6 12 34 56 78
+              +31 6 42568603
             </a>
           </div>
         </div>

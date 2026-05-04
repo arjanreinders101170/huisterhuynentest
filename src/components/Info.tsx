@@ -79,7 +79,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
       <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Contact</h2>
       {[
         { l: "Adres", v: "Zuiderstraat 6, Zeijen" },
-        { l: "Telefoon", v: "+31 6 12 34 56 78" },
+        { l: "Telefoon", v: "+31 6 42568603" },
         { l: "E-mail", v: "info@huisterhuynen.nl" },
       ].map((x, i) => (
         <div key={i} style={{ padding: "12px 0", borderBottom: `1px solid ${T.border}` }}>

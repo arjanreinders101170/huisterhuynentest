@@ -35,30 +35,48 @@ function emailWrap(content: string): string {
 // GET — load aanvraag data for confirmation page
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "Geen ID" }, { status: 400 });
+  if (!id) return NextResponse.json({ error: "Geen aanvraag gevonden" }, { status: 400 });
 
   try {
-    const { data, error } = await getSupabase()
+    // First get the aanvraag
+    const { data: aanvraag, error } = await getSupabase()
       .from("terugkeer_aanvragen")
-      .select("*, guests(naam, email)")
+      .select("*")
       .eq("id", id)
       .single();
 
-    if (error || !data) {
+    if (error || !aanvraag) {
+      console.error("Bevestig GET error:", error);
       return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
     }
 
+    // Then get guest info if available
+    let gastNaam = "";
+    let gastEmail = "";
+    if (aanvraag.guest_id) {
+      const { data: guest } = await getSupabase()
+        .from("guests")
+        .select("naam, email")
+        .eq("id", aanvraag.guest_id)
+        .single();
+      if (guest) {
+        gastNaam = guest.naam || "";
+        gastEmail = guest.email || "";
+      }
+    }
+
     return NextResponse.json({
-      id: data.id,
-      van: data.van,
-      tot: data.tot,
-      personen: data.personen,
-      status: data.status,
-      offerte_bedrag: data.offerte_bedrag,
-      gastNaam: data.guests?.naam || "",
-      gastEmail: data.guests?.email || "",
+      id: aanvraag.id,
+      van: aanvraag.van,
+      tot: aanvraag.tot,
+      personen: aanvraag.personen,
+      status: aanvraag.status,
+      offerte_bedrag: aanvraag.offerte_bedrag,
+      gastNaam,
+      gastEmail,
     });
-  } catch {
+  } catch (err) {
+    console.error("Bevestig GET catch:", err);
     return NextResponse.json({ error: "Kon aanvraag niet laden" }, { status: 500 });
   }
 }
@@ -72,7 +90,7 @@ export async function POST(request: NextRequest) {
     // Load aanvraag
     const { data, error } = await getSupabase()
       .from("terugkeer_aanvragen")
-      .select("*, guests(naam, email)")
+      .select("*")
       .eq("id", id)
       .single();
 
@@ -90,8 +108,20 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     }).eq("id", id);
 
-    const gastNaam = data.guests?.naam || "Gast";
-    const gastEmail = data.guests?.email || "";
+    // Get guest info separately
+    let gastNaam = "Gast";
+    let gastEmail = "";
+    if (data.guest_id) {
+      const { data: guest } = await getSupabase()
+        .from("guests")
+        .select("naam, email")
+        .eq("id", data.guest_id)
+        .single();
+      if (guest) {
+        gastNaam = guest.naam || "Gast";
+        gastEmail = guest.email || "";
+      }
+    }
 
     // Send confirmation emails
     const resendKey = process.env.RESEND_API_KEY;
@@ -156,7 +186,7 @@ export async function POST(request: NextRequest) {
             <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Vragen? We staan voor je klaar</td></tr>
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-            <tr><td style="padding:16px 0 0;"><p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">Bel of WhatsApp: <a href="tel:+31612345678" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">+31 6 12 34 56 78</a></p></td></tr>
+            <tr><td style="padding:16px 0 0;"><p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">Bel of WhatsApp: <a href="tel:+31642568603" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">+31 6 42568603</a></p></td></tr>
           </table>
         `),
       });
