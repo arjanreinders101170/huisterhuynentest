@@ -47,7 +47,7 @@ function emailWrap(content: string): string {
 }
 
 /* ═══ OWNER EMAIL ═══ */
-function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string): string {
+function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string): string {
   return emailWrap(`
     <h1 style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;">
       Terugkeer aanvraag
@@ -98,7 +98,7 @@ function ownerEmailHtml(van: string, tot: string, email: string, naam: string, p
     <!-- CTA -->
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
       <tr><td align="center">
-        <a href="mailto:${email}?subject=Persoonlijk%20aanbod%20${encodeURIComponent(LODGE_NAME)}&body=Hoi${naam ? "%20" + encodeURIComponent(naam) : ""}%2C%0A%0ALeuk%20dat%20je%20terug%20wilt%20komen!%0A%0AVoor%20de%20periode%20${encodeURIComponent(van)}%20t%2Fm%20${encodeURIComponent(tot)}%20bieden%20wij%20je%3A%0A%0A..."
+        <a href="${appUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(naam)}&van=${encodeURIComponent(van)}&tot=${encodeURIComponent(tot)}&personen=${personen}"
           style="display:inline-block;padding:14px 32px;background-color:#2F4F3E;color:#ffffff;text-decoration:none;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
           Stuur aanbod &rarr;
         </a>
@@ -175,12 +175,16 @@ export async function POST(request: NextRequest) {
       guestId = data;
     } catch (e) { console.error("Guest upsert failed:", e); }
 
+    let aanvraagId = "";
     try {
-      await getSupabase().from("terugkeer_aanvragen").insert({
+      const { data } = await getSupabase().from("terugkeer_aanvragen").insert({
         guest_id: guestId, van: from, tot: to,
         personen: persons || 2, bericht: message || null, status: "nieuw",
-      });
+      }).select("id").single();
+      aanvraagId = data?.id || "";
     } catch (e) { console.error("Terugkeer insert failed:", e); }
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynentest.vercel.app";
 
     const resendKey = process.env.RESEND_API_KEY;
     if (resendKey) {
@@ -192,7 +196,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
           subject: `Terugkeer aanvraag — ${name || email} · ${from} t/m ${to}`,
-          html: ownerEmailHtml(from, to, email, name || "", persons || 2, message || ""),
+          html: ownerEmailHtml(from, to, email, name || "", persons || 2, message || "", aanvraagId, appUrl),
           replyTo: email,
         });
 
