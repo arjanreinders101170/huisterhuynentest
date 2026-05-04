@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
         // Email to owner
         await resend.emails.send({
-          from: `${LODGE_NAME} <onboarding@resend.dev>`,
+          from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
           subject: `Nieuwe boeking: ${product} — ${gastNaam}`,
           html: ownerEmailHtml(product, bookingPrijs, gastNaam, gastEmail, bookingDate),
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
 
         // Confirmation email to guest
         await resend.emails.send({
-          from: `${LODGE_NAME} <onboarding@resend.dev>`,
+          from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [gastEmail],
           subject: `Bedankt voor je aanvraag — ${LODGE_NAME}`,
           html: guestEmailHtml(product, bookingPrijs, gastNaam),
