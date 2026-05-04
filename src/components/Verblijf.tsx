@@ -66,7 +66,7 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
     <div style={{ padding: "0 20px 110px" }}>
       <div style={{ paddingTop: 28 }}>
         <h1 style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 6px" }}>Mijn verblijf</h1>
-        <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300, margin: 0 }}>Boomhut Lodge · Zeijen</p>
+        <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300, margin: 0 }}>Boutique Lodge · Zeijen, Drenthe</p>
       </div>
 
       {/* Door */}
