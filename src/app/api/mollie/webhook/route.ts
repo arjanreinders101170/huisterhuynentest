@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
 <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
 <tr><td style="height:4px;background:#2E7D32;border-radius:12px 12px 0 0;">&nbsp;</td></tr>
 <tr><td style="padding:28px;text-align:center;">
-<p style="font-size:40px;margin:0 0 16px;">&#127807;</p>
+<p style="font-size:22px;color:#B49A5E;letter-spacing:8px;margin:0 0 16px;">◆</p>
 <h1 style="margin:0 0 8px;font-size:26px;color:#2A2418;">Betaling ontvangen</h1>
 <p style="margin:0 0 24px;font-size:15px;color:#8A7D6A;line-height:1.6;">Bedankt, ${naam}! Je betaling is succesvol verwerkt.</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:8px;margin-bottom:24px;">

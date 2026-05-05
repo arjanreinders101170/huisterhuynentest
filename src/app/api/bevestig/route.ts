@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
         to: [OWNER_EMAIL],
         subject: `Reservering bevestigd! — ${esc(gastNaam)} · ${esc(data.van)} t/m ${esc(data.tot)}`,
         html: emailWrap(`
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:40px;">&#127881;</span></td></tr></table>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#2E7D32;letter-spacing:8px;">◆</span></td></tr></table>
           <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;text-align:center;">Reservering bevestigd!</h1>
           <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;">${esc(gastNaam)} heeft het aanbod geaccepteerd.</p>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:20px;">
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
         to: [gastEmail],
         subject: `Reservering bevestigd — ${LODGE_NAME}`,
         html: emailWrap(`
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:40px;">&#127807;</span></td></tr></table>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">◆</span></td></tr></table>
           <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;text-align:center;">Je reservering is bevestigd!</h1>
           <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;line-height:1.6;">
             Wat fijn${gastNaam !== "Gast" ? `, ${esc(gastNaam)}` : ""}! We verheugen ons op jullie komst.

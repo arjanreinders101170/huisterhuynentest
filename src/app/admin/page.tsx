@@ -54,6 +54,8 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [guestMap, setGuestMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [followUpSending, setFollowUpSending] = useState(false);
+  const [followUpResult, setFollowUpResult] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -89,6 +91,17 @@ export default function AdminDashboard() {
       body: JSON.stringify({ action: "toggle_review", id, visible }),
     });
     setReviews(prev => prev.map(r => r.id === id ? { ...r, zichtbaar: visible } : r));
+  };
+
+  const sendFollowUps = async () => {
+    setFollowUpSending(true);
+    setFollowUpResult("");
+    try {
+      const r = await fetch("/api/followup", { method: "POST" });
+      const d = await r.json();
+      setFollowUpResult(d.message || `${d.sent || 0} email(s) verstuurd`);
+    } catch { setFollowUpResult("Kon follow-ups niet versturen"); }
+    setFollowUpSending(false);
   };
 
   const logout = () => {
@@ -161,7 +174,17 @@ export default function AdminDashboard() {
                     <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Dashboard</div>
                     <div style={{ fontSize: 13, color: C.light, marginTop: 2 }}>Overzicht van je lodges</div>
                   </div>
+                  <button onClick={sendFollowUps} disabled={followUpSending} style={{
+                    padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+                    background: C.card, fontSize: 12, color: C.muted, cursor: followUpSending ? "not-allowed" : "pointer",
+                  }}>{followUpSending ? "Bezig..." : "Follow-up emails versturen"}</button>
                 </div>
+
+                {followUpResult && (
+                  <div style={{ padding: "10px 16px", borderRadius: 8, background: "#E8F5E9", fontSize: 13, color: "#2E7D32", marginBottom: 16 }}>
+                    {followUpResult}
+                  </div>
+                )}
 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 28 }}>
                   {[

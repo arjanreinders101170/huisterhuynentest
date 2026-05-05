@@ -45,7 +45,7 @@ function emailWrap(content: string): string {
 function offerteEmailHtml(gastNaam: string, van: string, tot: string, personen: number, prijsVerblijf: string, toeristenbelasting: string, schoonmaak: string, totaal: string, bericht: string, aanvraagId: string, appUrl: string): string {
   return emailWrap(`
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      <tr><td align="center" style="padding:0 0 20px;"><span style="font-size:40px;">&#127807;</span></td></tr>
+      <tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">◆</span></td></tr>
     </table>
 
     <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;text-align:center;">
