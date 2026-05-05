@@ -1,3 +1,4 @@
+import { esc } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 
@@ -47,7 +48,7 @@ function emailWrap(content: string): string {
 }
 
 /* ═══ OWNER EMAIL ═══ */
-function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string): string {
+function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string, adminSecret: string): string {
   return emailWrap(`
     <h1 style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;">
       Terugkeer aanvraag
@@ -98,7 +99,7 @@ function ownerEmailHtml(van: string, tot: string, email: string, naam: string, p
     <!-- CTA -->
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
       <tr><td align="center">
-        <a href="${appUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(naam)}&van=${encodeURIComponent(van)}&tot=${encodeURIComponent(tot)}&personen=${personen}"
+        <a href="${appUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(naam)}&van=${encodeURIComponent(van)}&tot=${encodeURIComponent(tot)}&personen=${personen}&s=${adminSecret}"
           style="display:inline-block;padding:14px 32px;background-color:#2F4F3E;color:#ffffff;text-decoration:none;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
           Stuur aanbod &rarr;
         </a>
@@ -186,6 +187,8 @@ export async function POST(request: NextRequest) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynentest.vercel.app";
 
+    const adminSecret = process.env.ADMIN_SECRET || "";
+
     const resendKey = process.env.RESEND_API_KEY;
     if (resendKey) {
       try {
@@ -196,7 +199,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
           subject: `Terugkeer aanvraag — ${name || email} · ${from} t/m ${to}`,
-          html: ownerEmailHtml(from, to, email, name || "", persons || 2, message || "", aanvraagId, appUrl),
+          html: ownerEmailHtml(esc(from), esc(to), esc(email), esc(name || ""), persons || 2, esc(message || ""), aanvraagId, appUrl, adminSecret),
           replyTo: email,
         });
 
@@ -204,7 +207,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [email],
           subject: `Je aanvraag is ontvangen — ${LODGE_NAME}`,
-          html: guestEmailHtml(name || "", from, to),
+          html: guestEmailHtml(esc(name || ""), esc(from), esc(to)),
         });
       } catch (e) { console.error("Email failed:", e); }
     }

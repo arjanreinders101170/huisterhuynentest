@@ -1,3 +1,4 @@
+import { esc } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 
@@ -133,19 +134,19 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
         to: [OWNER_EMAIL],
-        subject: `Reservering bevestigd! — ${gastNaam} · ${data.van} t/m ${data.tot}`,
+        subject: `Reservering bevestigd! — ${esc(gastNaam)} · ${esc(data.van)} t/m ${esc(data.tot)}`,
         html: emailWrap(`
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:40px;">&#127881;</span></td></tr></table>
           <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;text-align:center;">Reservering bevestigd!</h1>
-          <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;">${gastNaam} heeft het aanbod geaccepteerd.</p>
+          <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;">${esc(gastNaam)} heeft het aanbod geaccepteerd.</p>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:20px;">
             <tr><td style="padding:18px 20px;" align="center">
-              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${data.van} t/m ${data.tot}</p>
+              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(data.van)} t/m ${esc(data.tot)}</p>
               <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${data.personen} personen &middot; &euro; ${data.offerte_bedrag || "—"}</p>
             </td></tr>
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">
-            <tr><td style="padding:10px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;width:80px;">E-mail</td><td style="padding:10px 0;border-bottom:1px solid #E0D8C8;"><a href="mailto:${gastEmail}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${gastEmail}</a></td></tr>
+            <tr><td style="padding:10px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;width:80px;">E-mail</td><td style="padding:10px 0;border-bottom:1px solid #E0D8C8;"><a href="mailto:${esc(gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(gastEmail)}</a></td></tr>
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;">
             <tr><td style="padding:16px 18px;background-color:#F9F4E8;border-left:3px solid #2F4F3E;border-radius:0 8px 8px 0;">
@@ -165,12 +166,12 @@ export async function POST(request: NextRequest) {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:40px;">&#127807;</span></td></tr></table>
           <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;text-align:center;">Je reservering is bevestigd!</h1>
           <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;line-height:1.6;">
-            Wat fijn${gastNaam !== "Gast" ? `, ${gastNaam}` : ""}! We verheugen ons op jullie komst.
+            Wat fijn${gastNaam !== "Gast" ? `, ${esc(gastNaam)}` : ""}! We verheugen ons op jullie komst.
           </p>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:24px;">
             <tr><td style="padding:18px 20px;" align="center">
               <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Je verblijf</p>
-              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${data.van} t/m ${data.tot}</p>
+              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(data.van)} t/m ${esc(data.tot)}</p>
               <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${data.personen} personen</p>
             </td></tr>
           </table>

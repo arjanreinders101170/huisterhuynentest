@@ -1,3 +1,4 @@
+import { esc } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 
@@ -141,6 +142,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
+    // Admin auth check
+    const adminSecret = process.env.ADMIN_SECRET;
+    if (adminSecret && body.adminSecret !== adminSecret) {
+      return NextResponse.json({ error: "Geen toegang" }, { status: 403 });
+    }
+
     const { aanvraagId, gastEmail, gastNaam, van, tot, personen, prijsVerblijf, toeristenbelasting, schoonmaak, bericht } = body;
 
     if (!gastEmail || !prijsVerblijf) {
@@ -179,10 +186,10 @@ export async function POST(request: NextRequest) {
       to: [gastEmail],
       subject: `Persoonlijk aanbod — ${LODGE_NAME}`,
       html: offerteEmailHtml(
-        gastNaam || "", van || "", tot || "",
+        esc(gastNaam || ""), esc(van || ""), esc(tot || ""),
         personen || 2,
         verblijf.toFixed(2), belasting.toFixed(2), cleaning.toFixed(2), totaal,
-        bericht || "", aanvraagId || "", appUrl,
+        esc(bericht || ""), aanvraagId || "", appUrl,
       ),
       replyTo: "lodge@huisterhuynen.nl",
     });

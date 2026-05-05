@@ -1,3 +1,4 @@
+import { esc } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 
@@ -239,7 +240,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
           subject: `Nieuwe boeking: ${product} — ${gastNaam}`,
-          html: ownerEmailHtml(product, bookingPrijs, gastNaam, gastEmail, bookingDate),
+          html: ownerEmailHtml(esc(product), esc(bookingPrijs), esc(gastNaam), esc(gastEmail), esc(bookingDate)),
           replyTo: gastEmail,
         });
 
@@ -247,7 +248,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [gastEmail],
           subject: `Bedankt voor je aanvraag — ${LODGE_NAME}`,
-          html: guestEmailHtml(product, bookingPrijs, gastNaam),
+          html: guestEmailHtml(esc(product), esc(bookingPrijs), esc(gastNaam)),
         });
 
         return NextResponse.json({ success: true, emailSent: true });
