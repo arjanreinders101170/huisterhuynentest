@@ -107,7 +107,8 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", fontFamily: font }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", minHeight: "100vh", fontFamily: font }}>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
       {/* Sidebar */}
       <div style={{ width: 220, background: C.card, borderRight: `1px solid ${C.border}`, padding: "20px 0", flexShrink: 0, display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "0 20px 24px" }}>
