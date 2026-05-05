@@ -28,14 +28,14 @@ export async function POST(request: NextRequest) {
       if (!fietsen || !dagen) {
         return NextResponse.json({ error: "Fietskeuze en dagen zijn verplicht" }, { status: 400 });
       }
-      amount = calcFietsTotal(fietsen, dagen);
+      amount = await calcFietsTotal(fietsen, dagen);
       productName = "Fietsverhuur";
       if (amount <= 0) {
         return NextResponse.json({ error: "Selecteer minimaal één fiets" }, { status: 400 });
       }
     } else {
       // Fixed-price product
-      const product = getProduct(productId);
+      const product = await getProduct(productId);
       if (!product) {
         return NextResponse.json({ error: "Onbekend product" }, { status: 400 });
       }

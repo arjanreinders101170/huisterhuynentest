@@ -1,45 +1,65 @@
-/**
- * Product catalog — single source of truth for pricing.
- * The server uses this to validate amounts. Client cannot override.
- */
+import { getSupabase } from "@/lib/supabase";
 
 export type Product = {
   id: string;
   naam: string;
-  prijs: number; // in EUR
+  omschrijving: string | null;
+  prijs: number;
+  categorie: string;
+  actief: boolean;
+  volgorde: number;
 };
 
-export const PRODUCTS: Record<string, Product> = {
-  welkomst: { id: "welkomst", naam: "Welkomstpakket Drenthe", prijs: 27.50 },
-  boodschappen: { id: "boodschappen", naam: "Boodschappenpakket", prijs: 19.50 },
-  latecheck: { id: "latecheck", naam: "Late check-out", prijs: 25.00 },
-};
+// Cache for 5 minutes to avoid DB calls on every request
+let cache: { products: Product[]; timestamp: number } | null = null;
+const CACHE_TTL = 5 * 60 * 1000;
 
-// Fietsverhuur has dynamic pricing — validated server-side
-export const FIETS_PRIJZEN: Record<string, { dag: number; week: number }> = {
-  fiets: { dag: 8.50, week: 42.50 },
-  kinderfiets: { dag: 6.50, week: 32.50 },
-  ebike: { dag: 25.00, week: 125.00 },
-  atb: { dag: 22.50, week: 112.50 },
-  zitje: { dag: 2.50, week: 12.50 },
-};
-
-export function getProduct(id: string): Product | null {
-  return PRODUCTS[id] || null;
+export async function getProducts(): Promise<Product[]> {
+  if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
+    return cache.products;
+  }
+  try {
+    const { data } = await getSupabase()
+      .from("products")
+      .select("*")
+      .eq("actief", true)
+      .order("volgorde");
+    const products = (data || []) as Product[];
+    cache = { products, timestamp: Date.now() };
+    return products;
+  } catch {
+    return cache?.products || [];
+  }
 }
 
-export function calcFietsTotal(fietsen: Record<string, number>, dagen: number): number {
+export async function getProduct(id: string): Promise<Product | null> {
+  const products = await getProducts();
+  return products.find(p => p.id === id) || null;
+}
+
+export async function calcFietsTotal(fietsen: Record<string, number>, dagen: number): Promise<number> {
+  const products = await getProducts();
+  const fietsPrices = Object.fromEntries(
+    products.filter(p => p.categorie === "fiets").map(p => [p.id, p.prijs])
+  );
+
   let total = 0;
   const isWeek = dagen >= 7;
   for (const [id, qty] of Object.entries(fietsen)) {
     if (qty <= 0) continue;
-    const p = FIETS_PRIJZEN[id];
-    if (!p) continue;
+    const dagPrijs = fietsPrices[id];
+    if (!dagPrijs) continue;
+    const weekPrijs = dagPrijs * 5; // week = 5x dag
     if (isWeek) {
-      total += (p.week * Math.floor(dagen / 7) + p.dag * (dagen % 7)) * qty;
+      total += (weekPrijs * Math.floor(dagen / 7) + dagPrijs * (dagen % 7)) * qty;
     } else {
-      total += p.dag * dagen * qty;
+      total += dagPrijs * dagen * qty;
     }
   }
   return total;
+}
+
+// Clear cache (after admin edits)
+export function clearProductCache() {
+  cache = null;
 }
