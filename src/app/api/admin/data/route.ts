@@ -57,6 +57,14 @@ export async function GET(request: NextRequest) {
           .order("volgorde", { ascending: true });
         return NextResponse.json({ data: data || [] });
       }
+      case "stays": {
+        const { data } = await getSupabase()
+          .from("stays")
+          .select("*, guests(naam, email)")
+          .order("check_in", { ascending: false })
+          .limit(50);
+        return NextResponse.json({ data: data || [] });
+      }
       default:
         return NextResponse.json({ error: "Onbekende tabel" }, { status: 400 });
     }
@@ -126,6 +134,159 @@ export async function POST(request: NextRequest) {
           .from("products")
           .delete()
           .eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "create_stay": {
+        const { naam, email, lodge, check_in, check_out } = body;
+        if (!naam || !email || !lodge || !check_in || !check_out) {
+          return NextResponse.json({ error: "Alle velden zijn verplicht" }, { status: 400 });
+        }
+
+        // Upsert guest
+        let guestId = null;
+        try {
+          const { data } = await getSupabase().rpc("upsert_guest", { p_naam: naam, p_email: email });
+          guestId = data;
+        } catch {
+          // Fallback: insert guest directly
+          const { data } = await getSupabase().from("guests").insert({ naam, email }).select("id").single();
+          guestId = data?.id;
+        }
+
+        if (!guestId) {
+          return NextResponse.json({ error: "Kon gast niet aanmaken" }, { status: 500 });
+        }
+
+        // Generate codes
+        const { randomBytes, randomInt } = await import("crypto");
+        const token = randomBytes(24).toString("hex");
+        const door_code = String(randomInt(1000, 9999));
+        const wifi_code = "Huynen" + randomInt(1000, 9999);
+
+        const { error } = await getSupabase().from("stays").insert({
+          guest_id: guestId,
+          lodge,
+          check_in,
+          check_out,
+          token,
+          door_code,
+          wifi_code,
+          status: "gepland",
+          welcome_sent: false,
+        });
+
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({ success: true });
+      }
+      case "send_welcome": {
+        const stayId = body.id;
+        if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
+
+        const { data: stay } = await getSupabase()
+          .from("stays")
+          .select("*, guests(naam, email)")
+          .eq("id", stayId)
+          .single();
+
+        if (!stay || !stay.guests) {
+          return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
+        }
+
+        const guest = stay.guests as { naam: string; email: string };
+        const resendKey = process.env.RESEND_API_KEY;
+        if (!resendKey) {
+          return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
+        }
+
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.huisterhuynen.nl";
+        const lodgeNaam = stay.lodge === "lodge_1" ? "Boomhut Lodge" : "Schaapskooi Lodge";
+        const checkInDate = new Date(stay.check_in).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
+
+        const { Resend } = await import("resend");
+        const resend = new Resend(resendKey);
+
+        const esc = (s: string) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
+
+        await resend.emails.send({
+          from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+          to: [guest.email],
+          subject: `Welkom bij Huis ter Huynen — ${checkInDate}`,
+          html: `<!DOCTYPE html><html><head><meta charset="utf-8"/></head>
+<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+<tr><td align="center" style="padding:0 0 24px;">
+  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+    <td style="font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
+  </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+    <td style="width:28px;height:1px;background:#B49A5E;"></td>
+    <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
+    <td style="width:28px;height:1px;background:#B49A5E;"></td>
+  </tr></table></td></tr></table>
+</td></tr>
+<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
+<tr><td style="height:4px;background:#B49A5E;border-radius:12px 12px 0 0;">&nbsp;</td></tr>
+<tr><td style="padding:28px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+    <tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">&#9830;</span></td></tr>
+  </table>
+  <h1 style="margin:0 0 8px;font-size:26px;color:#2A2418;text-align:center;">Welkom, ${esc(guest.naam)}!</h1>
+  <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
+    Over een paar uur mag je genieten van rust en natuur in Drenthe. Hier is alles wat je nodig hebt.
+  </p>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:8px;margin-bottom:16px;">
+    <tr><td style="padding:18px 20px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">
+        <tr><td style="padding:6px 0;color:#8A7D6A;">Lodge</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;">${esc(lodgeNaam)}</td></tr>
+        <tr><td style="padding:6px 0;color:#8A7D6A;">Aankomst</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkInDate}</td></tr>
+        <tr><td style="padding:6px 0;color:#8A7D6A;">Deurcode</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2F4F3E;font-size:18px;letter-spacing:2px;">${stay.door_code}</td></tr>
+        <tr><td style="padding:6px 0;color:#8A7D6A;">Wi-Fi</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2F4F3E;">${stay.wifi_code}</td></tr>
+      </table>
+    </td></tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Laadpaal beschikbaar op locatie</td></tr>
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Inchecken vanaf 15:00</td></tr>
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Zuiderstraat 6, Zeijen</td></tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+    <tr><td align="center" style="padding:10px 0;">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+        <td align="center" style="background:#2F4F3E;border-radius:10px;">
+          <a href="${appUrl}/?s=${stay.token}" style="display:block;padding:16px 40px;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;border-radius:10px;">
+            Open de gast-app &#8594;
+          </a>
+        </td>
+      </tr></table>
+    </td></tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
+    <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;text-align:center;">
+      <strong style="color:#2A2418;">Route:</strong> A28 → afslag Zeijen → Zuiderstraat 6<br/>
+      Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>
+    </td></tr>
+  </table>
+</td></tr></table></td></tr>
+<tr><td align="center" style="padding:24px 0 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
+  <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">Huis ter Huynen &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
+</td></tr>
+</table></td></tr></table></body></html>`,
+        });
+
+        // Mark as sent
+        await getSupabase().from("stays").update({
+          welcome_sent: true,
+          welcome_sent_at: new Date().toISOString(),
+        }).eq("id", stayId);
+
         return NextResponse.json({ success: true });
       }
       default:

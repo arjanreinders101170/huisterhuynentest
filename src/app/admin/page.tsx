@@ -6,6 +6,7 @@ type Guest = { id: string; naam: string; email: string; profiel: string; laatste
 type Review = { id: string; naam: string; sterren: number; tekst: string; zichtbaar: boolean; created_at: string };
 type Aanvraag = { id: string; van: string; tot: string; personen: number; status: string; offerte_bedrag: number | null; created_at: string; guest_id: string };
 type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number };
+type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 
 const C = {
   bg: "#F5F3EE", card: "#fff", border: "#E8E4DC",
@@ -43,7 +44,7 @@ function timeAgo(dateStr: string): string {
   return `${days} dag${days > 1 ? "en" : ""}`;
 }
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "lodge_1" | "lodge_2";
+type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "lodge_1" | "lodge_2";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -52,6 +53,7 @@ export default function AdminDashboard() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [aanvragen, setAanvragen] = useState<Aanvraag[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [stays, setStays] = useState<Stay[]>([]);
   const [guestMap, setGuestMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [followUpSending, setFollowUpSending] = useState(false);
@@ -60,19 +62,21 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function load() {
       try {
-        const [bRes, gRes, rRes, aRes, pRes] = await Promise.all([
+        const [bRes, gRes, rRes, aRes, pRes, sRes] = await Promise.all([
           fetch("/api/admin/data?table=bookings"),
           fetch("/api/admin/data?table=guests"),
           fetch("/api/admin/data?table=reviews"),
           fetch("/api/admin/data?table=aanvragen"),
           fetch("/api/admin/data?table=products"),
+          fetch("/api/admin/data?table=stays"),
         ]);
-        const [bData, gData, rData, aData, pData] = await Promise.all([bRes.json(), gRes.json(), rRes.json(), aRes.json(), pRes.json()]);
+        const [bData, gData, rData, aData, pData, sData] = await Promise.all([bRes.json(), gRes.json(), rRes.json(), aRes.json(), pRes.json(), sRes.json()]);
         setBookings(bData.data || []);
         setGuests(gData.data || []);
         setReviews(rData.data || []);
         setAanvragen(aData.data || []);
         setProducts(pData.data || []);
+        setStays(sData.data || []);
 
         // Build guest name map
         const map: Record<string, string> = {};
@@ -117,6 +121,7 @@ export default function AdminDashboard() {
 
   const navItems: { id: Tab; label: string }[] = [
     { id: "dashboard", label: "Dashboard" },
+    { id: "verblijven", label: "Verblijven" },
     { id: "boekingen", label: "Boekingen" },
     { id: "gasten", label: "Gasten" },
     { id: "reviews", label: "Reviews" },
@@ -327,6 +332,10 @@ export default function AdminDashboard() {
             )}
 
             {/* PRODUCTEN */}
+            {tab === "verblijven" && (
+              <VerblijvenTab stays={stays} setStays={setStays} />
+            )}
+
             {tab === "producten" && (
               <ProductenTab products={products} setProducts={setProducts} />
             )}
@@ -673,6 +682,166 @@ function LodgeView({ lodgeId }: { lodgeId: string }) {
       <div style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(180,154,94,.06)", border: "1px solid rgba(180,154,94,.15)", fontSize: 13, color: C.gold, textAlign: "center" }}>
         Demo modus — wordt gekoppeld aan Home Assistant zodra de NUC is geïnstalleerd
       </div>
+    </>
+  );
+}
+
+/* ═══ VERBLIJVEN TAB ═══ */
+function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[]) => void }) {
+  const [creating, setCreating] = useState(false);
+  const [form, setForm] = useState({ naam: "", email: "", lodge: "lodge_1", check_in: "", check_out: "" });
+  const [saving, setSaving] = useState(false);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "10px 14px", borderRadius: 8,
+    border: `1px solid ${C.border}`, background: C.card,
+    fontSize: 14, color: C.text, outline: "none", boxSizing: "border-box",
+  };
+
+  const createStay = async () => {
+    if (!form.naam || !form.email || !form.check_in || !form.check_out) return;
+    setSaving(true);
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "create_stay", ...form }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        const res = await fetch("/api/admin/data?table=stays");
+        const data = await res.json();
+        setStays(data.data || []);
+        setCreating(false);
+        setForm({ naam: "", email: "", lodge: "lodge_1", check_in: "", check_out: "" });
+      }
+    } catch {}
+    setSaving(false);
+  };
+
+  const sendWelcome = async (stayId: string) => {
+    setSendingId(stayId);
+    try {
+      await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_welcome", id: stayId }),
+      });
+      const res = await fetch("/api/admin/data?table=stays");
+      const data = await res.json();
+      setStays(data.data || []);
+    } catch {}
+    setSendingId(null);
+  };
+
+  const statusColor = (s: string) => {
+    if (s === "actief") return { bg: "#E8F5E9", text: "#2E7D32" };
+    if (s === "gepland") return { bg: "#E3F2FD", text: "#1565C0" };
+    return { bg: "#F5F5F5", text: "#9E9E9E" };
+  };
+
+  return (
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Verblijven</div>
+          <div style={{ fontSize: 13, color: C.light, marginTop: 2 }}>Beheer gasttoegang en verstuur welkomstmails</div>
+        </div>
+        <button onClick={() => setCreating(!creating)} style={{
+          padding: "8px 16px", borderRadius: 8, border: "none",
+          background: C.green, color: "#fff", fontSize: 13, fontWeight: 500, cursor: "pointer",
+        }}>+ Nieuw verblijf</button>
+      </div>
+
+      {creating && (
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 24px", marginBottom: 20 }}>
+          <div style={{ fontSize: 15, fontWeight: 500, color: C.text, marginBottom: 16 }}>Nieuw verblijf aanmaken</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Gastnaam</label>
+              <input value={form.naam} onChange={e => setForm({ ...form, naam: e.target.value })} placeholder="Jan de Vries" style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>E-mail</label>
+              <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="jan@voorbeeld.nl" type="email" style={inputStyle} />
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Lodge</label>
+              <select value={form.lodge} onChange={e => setForm({ ...form, lodge: e.target.value })} style={inputStyle}>
+                <option value="lodge_1">Lodge 1 — Boomhut</option>
+                <option value="lodge_2">Lodge 2 — Schaapskooi</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Check-in</label>
+              <input value={form.check_in} onChange={e => setForm({ ...form, check_in: e.target.value })} type="date" style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Check-out</label>
+              <input value={form.check_out} onChange={e => setForm({ ...form, check_out: e.target.value })} type="date" style={inputStyle} />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={createStay} disabled={saving || !form.naam || !form.email || !form.check_in || !form.check_out} style={{
+              padding: "10px 20px", borderRadius: 8, border: "none",
+              background: form.naam && form.email && form.check_in && form.check_out && !saving ? C.green : "#D4D0C8",
+              color: "#fff", fontSize: 13, fontWeight: 500, cursor: form.naam && form.email ? "pointer" : "not-allowed",
+            }}>{saving ? "Bezig..." : "Verblijf aanmaken"}</button>
+            <button onClick={() => setCreating(false)} style={{
+              padding: "10px 20px", borderRadius: 8, border: `1px solid ${C.border}`,
+              background: C.card, color: C.muted, fontSize: 13, cursor: "pointer",
+            }}>Annuleren</button>
+          </div>
+        </div>
+      )}
+
+      {stays.length === 0 ? (
+        <div style={{ fontSize: 13, color: C.light, padding: 20, textAlign: "center" }}>Nog geen verblijven aangemaakt</div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {stays.map(s => {
+            const guest = s.guests;
+            const sc = statusColor(s.status);
+            const lodge = s.lodge === "lodge_1" ? "Boomhut" : "Schaapskooi";
+            const cin = new Date(s.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
+            const cout = new Date(s.check_out).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
+
+            return (
+              <div key={s.id} style={{
+                background: C.card, border: `1px solid ${C.border}`, borderRadius: 12,
+                padding: "18px 24px", display: "flex", justifyContent: "space-between", alignItems: "center",
+              }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                    <span style={{ fontWeight: 500, fontSize: 14, color: C.text }}>{guest?.naam || "Gast"}</span>
+                    <span style={{ background: sc.bg, color: sc.text, fontSize: 11, padding: "2px 8px", borderRadius: 6, fontWeight: 500 }}>{s.status}</span>
+                    <span style={{ fontSize: 12, color: C.light }}>{lodge}</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: C.muted }}>
+                    {cin} – {cout} · Deurcode: <strong>{s.door_code}</strong> · Wi-Fi: <strong>{s.wifi_code}</strong>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  {s.welcome_sent ? (
+                    <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ Mail verstuurd</span>
+                  ) : (
+                    <button onClick={() => sendWelcome(s.id)} disabled={sendingId === s.id} style={{
+                      padding: "6px 14px", borderRadius: 6, border: "none",
+                      background: C.green, color: "#fff", fontSize: 12, fontWeight: 500,
+                      cursor: sendingId === s.id ? "not-allowed" : "pointer",
+                    }}>{sendingId === s.id ? "Versturen..." : "Welkomstmail"}</button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }
