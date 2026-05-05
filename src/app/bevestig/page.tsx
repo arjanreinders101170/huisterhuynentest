@@ -22,6 +22,7 @@ type Aanvraag = {
 function BevestigContent() {
   const params = useSearchParams();
   const id = params.get("id") || "";
+  const token = params.get("t") || "";
 
   const [data, setData] = useState<Aanvraag | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ function BevestigContent() {
 
   useEffect(() => {
     if (!id) { setError("Geen aanvraag gevonden"); setLoading(false); return; }
-    fetch(`/api/bevestig?id=${id}`)
+    fetch(`/api/bevestig?id=${id}&t=${token}`)
       .then(r => r.json())
       .then(d => {
         if (d.error) { setError(d.error); }
@@ -40,7 +41,7 @@ function BevestigContent() {
         setLoading(false);
       })
       .catch(() => { setError("Kon aanvraag niet laden"); setLoading(false); });
-  }, [id]);
+  }, [id, token]);
 
   const confirm = async () => {
     if (confirming) return;
@@ -49,7 +50,7 @@ function BevestigContent() {
       const r = await fetch("/api/bevestig", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, token }),
       });
       const d = await r.json();
       if (d.success) setConfirmed(true);

@@ -36,10 +36,10 @@ function emailWrap(content: string): string {
 // GET — load aanvraag data for confirmation page
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id");
+  const token = request.nextUrl.searchParams.get("t");
   if (!id) return NextResponse.json({ error: "Geen aanvraag gevonden" }, { status: 400 });
 
   try {
-    // First get the aanvraag
     const { data: aanvraag, error } = await getSupabase()
       .from("terugkeer_aanvragen")
       .select("*")
@@ -47,8 +47,12 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (error || !aanvraag) {
-      console.error("Bevestig GET error:", error);
       return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+    }
+
+    // Verify confirm token (if set)
+    if (aanvraag.confirm_token && aanvraag.confirm_token !== token) {
+      return NextResponse.json({ error: "Ongeldige link" }, { status: 403 });
     }
 
     // Then get guest info if available
@@ -85,10 +89,9 @@ export async function GET(request: NextRequest) {
 // POST — confirm the booking
 export async function POST(request: NextRequest) {
   try {
-    const { id } = await request.json();
+    const { id, token } = await request.json();
     if (!id) return NextResponse.json({ error: "Geen ID" }, { status: 400 });
 
-    // Load aanvraag
     const { data, error } = await getSupabase()
       .from("terugkeer_aanvragen")
       .select("*")
@@ -97,6 +100,11 @@ export async function POST(request: NextRequest) {
 
     if (error || !data) {
       return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+    }
+
+    // Verify confirm token
+    if (data.confirm_token && data.confirm_token !== token) {
+      return NextResponse.json({ error: "Ongeldige link" }, { status: 403 });
     }
 
     if (data.status === "geboekt") {

@@ -42,7 +42,7 @@ function emailWrap(content: string): string {
 </body></html>`;
 }
 
-function offerteEmailHtml(gastNaam: string, van: string, tot: string, personen: number, prijsVerblijf: string, toeristenbelasting: string, schoonmaak: string, totaal: string, bericht: string, aanvraagId: string, appUrl: string): string {
+function offerteEmailHtml(gastNaam: string, van: string, tot: string, personen: number, prijsVerblijf: string, toeristenbelasting: string, schoonmaak: string, totaal: string, bericht: string, aanvraagId: string, appUrl: string, confirmToken: string): string {
   return emailWrap(`
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       <tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">◆</span></td></tr>
@@ -114,7 +114,7 @@ function offerteEmailHtml(gastNaam: string, van: string, tot: string, personen: 
         <table role="presentation" cellpadding="0" cellspacing="0">
           <tr>
             <td align="center" style="background-color:#2F4F3E;border-radius:10px;">
-              <a href="${appUrl}/bevestig?id=${aanvraagId}"
+              <a href="${appUrl}/bevestig?id=${aanvraagId}&t=${confirmToken}"
                 style="display:block;padding:18px 48px;color:#ffffff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;border-radius:10px;">
                 Bevestig reservering &#8594;
               </a>
@@ -159,12 +159,17 @@ export async function POST(request: NextRequest) {
     const cleaning = parseFloat(schoonmaak) || 0;
     const totaal = (verblijf + belasting + cleaning).toFixed(2);
 
+    // Generate confirm token for secure bevestig link
+    const { randomBytes } = await import("crypto");
+    const confirmToken = randomBytes(32).toString("hex");
+
     // Update aanvraag status in database
     if (aanvraagId) {
       try {
         await getSupabase().from("terugkeer_aanvragen").update({
           status: "offerte_verstuurd",
           offerte_bedrag: parseFloat(totaal),
+          confirm_token: confirmToken,
           updated_at: new Date().toISOString(),
         }).eq("id", aanvraagId);
       } catch (e) { console.error("Update failed:", e); }
@@ -189,7 +194,7 @@ export async function POST(request: NextRequest) {
         esc(gastNaam || ""), esc(van || ""), esc(tot || ""),
         personen || 2,
         verblijf.toFixed(2), belasting.toFixed(2), cleaning.toFixed(2), totaal,
-        esc(bericht || ""), aanvraagId || "", appUrl,
+        esc(bericht || ""), aanvraagId || "", appUrl, confirmToken,
       ),
       replyTo: "lodge@huisterhuynen.nl",
     });
