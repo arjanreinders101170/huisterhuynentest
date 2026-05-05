@@ -74,7 +74,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
   const minDate = tomorrow.toISOString().split("T")[0];
 
   /* ═══ PAYMENT ═══ */
-  const startPayment = async (product: string, amount: number, meta?: Record<string, unknown>) => {
+  const startPayment = async (productId: string, displayPrice: number, meta?: Record<string, unknown>) => {
     if (!gastNaam.trim() || !gastEmail.includes("@") || sending) return;
     setSending(true);
     try {
@@ -82,16 +82,16 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          product, amount: amount.toFixed(2),
-          description: `Huis ter Huynen — ${product}`,
-          gastNaam: gastNaam.trim(), gastEmail: gastEmail.trim(),
+          productId,
+          gastNaam: gastNaam.trim(),
+          gastEmail: gastEmail.trim(),
           metadata: { ...meta, datum: gastDatum || undefined },
         }),
       });
       const d = await r.json();
       if (d.checkoutUrl) { window.location.href = d.checkoutUrl; return; }
-      if (d.fallback || d.success) { onBook(product); setConfirmed(product); setShowForm(null); setExpanded(null); }
-    } catch { onBook(product); setConfirmed(product); }
+      if (d.fallback || d.success) { onBook(productId); setConfirmed(productId); setShowForm(null); setExpanded(null); }
+    } catch { onBook(productId); setConfirmed(productId); }
     setSending(false);
   };
 
@@ -169,7 +169,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                   <input value={gastEmail} onChange={e => setGastEmail(e.target.value)} placeholder="E-mailadres" type="email" style={{ ...inputStyle, marginBottom: 14 }} />
                   <div style={{ display: "flex", gap: 8 }}>
                     <button onClick={() => setShowForm(null)} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>Annuleren</button>
-                    <button onClick={() => startPayment(u.title, priceNum)} disabled={!gastNaam.trim() || !gastEmail.includes("@") || sending} style={{
+                    <button onClick={() => startPayment(u.id, priceNum)} disabled={!gastNaam.trim() || !gastEmail.includes("@") || sending} style={{
                       flex: 2, padding: 12, borderRadius: 12, border: "none",
                       background: gastNaam.trim() && gastEmail.includes("@") && !sending ? T.green : T.border,
                       fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "#fff",
@@ -210,7 +210,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                       <input value={gastEmail} onChange={e => setGastEmail(e.target.value)} placeholder="E-mailadres" type="email" style={{ ...inputStyle, marginBottom: 14 }} />
                       <div style={{ display: "flex", gap: 8 }}>
                         <button onClick={() => setShowForm(null)} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>Annuleren</button>
-                        <button onClick={() => startPayment(u.title, priceNum)} disabled={!gastNaam.trim() || !gastEmail.includes("@") || sending} style={{
+                        <button onClick={() => startPayment(u.id, priceNum)} disabled={!gastNaam.trim() || !gastEmail.includes("@") || sending} style={{
                           flex: 2, padding: 12, borderRadius: 12, border: "none",
                           background: gastNaam.trim() && gastEmail.includes("@") && !sending ? T.green : T.border,
                           fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "#fff",
@@ -321,7 +321,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
                       <div style={{ display: "flex", gap: 8 }}>
                         <button onClick={() => setShowForm(null)} style={{ flex: 1, padding: 12, borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>Annuleren</button>
                         <button
-                          onClick={() => startPayment("Fietsverhuur", fietsTotal, { fietsen: fietsSummary, dagen: fietsDagen, datum: gastDatum })}
+                          onClick={() => startPayment("fiets", fietsTotal, { fietsen: fietsSelection, dagen: fietsDagen, datum: gastDatum })}
                           disabled={!gastNaam.trim() || !gastEmail.includes("@") || !gastDatum || sending}
                           style={{
                             flex: 2, padding: 12, borderRadius: 12, border: "none",
