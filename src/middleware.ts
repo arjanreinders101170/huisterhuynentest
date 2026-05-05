@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const hostname = request.headers.get("host") || "";
+
+  // Redirect admin subdomain root to /admin
+  if (hostname.startsWith("admin.") && pathname === "/") {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
 
   // Only protect /admin routes (except login page and login API)
   if (!pathname.startsWith("/admin")) return NextResponse.next();
@@ -19,5 +25,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/", "/admin/:path*"],
 };
