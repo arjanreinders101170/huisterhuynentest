@@ -358,14 +358,12 @@ export async function POST(request: NextRequest) {
     </tr></table></td></tr></table>
   </td></tr>
 
-  <!-- Hero image -->
-  <tr><td style="padding:0 0 0;">
-    <img src="https://www.huisterhuynen.nl/heide3.jpg" alt="Drentse heide" width="520" style="display:block;width:100%;height:auto;border-radius:12px 12px 0 0;border:1px solid #E0D8C8;border-bottom:none;" />
-  </td></tr>
-
-  <!-- Content card -->
+  <!-- Hero image + Content card in single container -->
   <tr><td>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FDFBF6;border:1px solid #E0D8C8;border-top:none;border-radius:0 0 12px 12px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
+    <tr><td style="padding:0;font-size:0;line-height:0;">
+      <img src="https://www.huisterhuynen.nl/heide3.jpg" alt="Drentse heide" width="520" style="display:block;width:100%;height:auto;" />
+    </td></tr>
     <tr><td style="padding:32px 32px 28px;">
 
       <h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;line-height:1.3;">
