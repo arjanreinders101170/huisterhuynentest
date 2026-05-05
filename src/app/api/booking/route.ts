@@ -1,6 +1,7 @@
-import { esc } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { esc } from "@/lib/email";
+import { bookingSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
@@ -197,11 +198,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const { product, prijs, gastNaam, gastEmail, datum, metadata } = body;
-
-    if (!product || !gastNaam || !gastEmail) {
-      return NextResponse.json({ error: "Product, naam en e-mail zijn verplicht" }, { status: 400 });
+    const parsed = bookingSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Ongeldige invoer", details: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
+
+    const { product, prijs, gastNaam, gastEmail, datum, metadata } = parsed.data;
 
     const bookingDate = datum || new Date().toLocaleDateString("nl-NL", {
       weekday: "long", day: "numeric", month: "long", year: "numeric",

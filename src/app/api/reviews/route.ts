@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, getPublicSupabase } from "@/lib/supabase";
+import { reviewSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
 // GET — last 5 visible reviews
 export async function GET() {
   try {
-    const { data, error } = await getSupabase()
+    const { data, error } = await getPublicSupabase()
       .from("reviews")
       .select("id, naam, sterren, tekst, created_at")
       .eq("zichtbaar", true)
@@ -35,15 +36,13 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { naam, sterren, tekst, email } = body;
 
-    if (!naam || !sterren || !tekst) {
-      return NextResponse.json({ error: "Naam, sterren en tekst zijn verplicht" }, { status: 400 });
+    const parsed = reviewSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
 
-    if (sterren < 1 || sterren > 5) {
-      return NextResponse.json({ error: "Sterren moet tussen 1 en 5 zijn" }, { status: 400 });
-    }
+    const { naam, sterren, tekst, email } = parsed.data;
 
     // Link to guest if email provided
     let guestId = null;

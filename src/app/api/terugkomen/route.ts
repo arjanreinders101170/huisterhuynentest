@@ -1,4 +1,5 @@
 import { esc } from "@/lib/email";
+import { terugkomenSchema } from "@/lib/schemas";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 
@@ -166,8 +167,10 @@ export async function POST(request: NextRequest) {
     }
 
     const { from, to, email, name, persons, message } = body;
-    if (!from || !to || !email) {
-      return NextResponse.json({ error: "Periode en e-mail zijn verplicht" }, { status: 400 });
+
+    const parsed = terugkomenSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
 
     let guestId = null;

@@ -1,13 +1,26 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-let client: SupabaseClient | null = null;
+let serviceClient: SupabaseClient | null = null;
+let anonClient: SupabaseClient | null = null;
 
+/** Service-role client — bypasses RLS. Use only in authenticated/server routes. */
 export function getSupabase() {
-  if (!client) {
+  if (!serviceClient) {
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key) throw new Error("Supabase not configured");
-    client = createClient(url, key);
+    serviceClient = createClient(url, key);
   }
-  return client;
+  return serviceClient;
+}
+
+/** Anon client — respects RLS policies. Use for public-facing reads. */
+export function getPublicSupabase() {
+  if (!anonClient) {
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) throw new Error("Supabase not configured");
+    anonClient = createClient(url, key);
+  }
+  return anonClient;
 }

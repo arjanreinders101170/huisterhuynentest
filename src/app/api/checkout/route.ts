@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { getProduct, calcFietsTotal } from "@/lib/products";
+import { checkoutSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
@@ -11,11 +12,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const { productId, gastNaam, gastEmail, metadata } = body;
-
-    if (!productId || !gastEmail || !gastNaam) {
-      return NextResponse.json({ error: "Product, naam en e-mail zijn verplicht" }, { status: 400 });
+    const parsed = checkoutSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
+
+    const { productId, gastNaam, gastEmail, metadata } = parsed.data;
 
     // Server-side price determination — client cannot set amount
     let amount: number;
