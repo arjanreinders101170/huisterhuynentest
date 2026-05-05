@@ -591,6 +591,7 @@ function LodgeView({ lodgeId }: { lodgeId: string }) {
     { name: "Hue verlichting", status: "online", value: scene },
     { name: "Laadpaal", status: "online", value: "Standby" },
     { name: "Energiemeter", status: "online", value: "4.2 kW" },
+    { name: "Nuki deurslot", status: "online", value: "Op slot" },
   ];
 
   const scenes = ["Warm", "Helder", "Dim", "Uit"];
@@ -737,6 +738,21 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
     setSendingId(null);
   };
 
+  const sendThankyou = async (stayId: string) => {
+    setSendingId(stayId);
+    try {
+      await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_thankyou", id: stayId }),
+      });
+      const res = await fetch("/api/admin/data?table=stays");
+      const data = await res.json();
+      setStays(data.data || []);
+    } catch {}
+    setSendingId(null);
+  };
+
   const statusColor = (s: string) => {
     if (s === "actief") return { bg: "#E8F5E9", text: "#2E7D32" };
     if (s === "gepland") return { bg: "#E3F2FD", text: "#1565C0" };
@@ -827,14 +843,23 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  {s.welcome_sent ? (
-                    <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ Mail verstuurd</span>
-                  ) : (
+                  {!s.welcome_sent ? (
                     <button onClick={() => sendWelcome(s.id)} disabled={sendingId === s.id} style={{
                       padding: "6px 14px", borderRadius: 6, border: "none",
                       background: C.green, color: "#fff", fontSize: 12, fontWeight: 500,
                       cursor: sendingId === s.id ? "not-allowed" : "pointer",
                     }}>{sendingId === s.id ? "Versturen..." : "Welkomstmail"}</button>
+                  ) : s.status === "vertrokken" ? (
+                    <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ Afgerond</span>
+                  ) : (
+                    <>
+                      <span style={{ fontSize: 11, color: "#2E7D32" }}>✓ Welkom</span>
+                      <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
+                        padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
+                        background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
+                        cursor: sendingId === s.id ? "not-allowed" : "pointer",
+                      }}>{sendingId === s.id ? "Versturen..." : "Bedankt-mail"}</button>
+                    </>
                   )}
                 </div>
               </div>

@@ -58,12 +58,23 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ data: data || [] });
       }
       case "stays": {
-        const { data } = await getSupabase()
+        const { data: staysRaw } = await getSupabase()
           .from("stays")
-          .select("*, guests(naam, email)")
+          .select("*")
           .order("check_in", { ascending: false })
           .limit(50);
-        return NextResponse.json({ data: data || [] });
+        // Enrich with guest names
+        const staysList = staysRaw || [];
+        const guestIds = [...new Set(staysList.map((s: { guest_id: string }) => s.guest_id).filter(Boolean))];
+        let guestLookup: Record<string, { naam: string; email: string }> = {};
+        if (guestIds.length > 0) {
+          const { data: guestsData } = await getSupabase().from("guests").select("id, naam, email").in("id", guestIds);
+          if (guestsData) {
+            guestLookup = Object.fromEntries(guestsData.map((g: { id: string; naam: string; email: string }) => [g.id, { naam: g.naam, email: g.email }]));
+          }
+        }
+        const enriched = staysList.map((s: { guest_id: string }) => ({ ...s, guests: guestLookup[s.guest_id] || null }));
+        return NextResponse.json({ data: enriched });
       }
       default:
         return NextResponse.json({ error: "Onbekende tabel" }, { status: 400 });
@@ -148,9 +159,14 @@ export async function POST(request: NextRequest) {
           const { data } = await getSupabase().rpc("upsert_guest", { p_naam: naam, p_email: email });
           guestId = data;
         } catch {
-          // Fallback: insert guest directly
-          const { data } = await getSupabase().from("guests").insert({ naam, email }).select("id").single();
-          guestId = data?.id;
+          // Fallback: check if guest exists, then insert or use existing
+          const { data: existing } = await getSupabase().from("guests").select("id").eq("email", email).single();
+          if (existing) {
+            guestId = existing.id;
+          } else {
+            const { data: created } = await getSupabase().from("guests").insert({ naam, email, profiel: "gast" }).select("id").single();
+            guestId = created?.id;
+          }
         }
 
         if (!guestId) {
@@ -184,17 +200,28 @@ export async function POST(request: NextRequest) {
         const stayId = body.id;
         if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
 
-        const { data: stay } = await getSupabase()
+        // Fetch stay
+        const { data: stay, error: stayErr } = await getSupabase()
           .from("stays")
-          .select("*, guests(naam, email)")
+          .select("*")
           .eq("id", stayId)
           .single();
 
-        if (!stay || !stay.guests) {
+        if (stayErr || !stay) {
+          console.error("Stay fetch error:", stayErr);
           return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
         }
 
-        const guest = stay.guests as { naam: string; email: string };
+        // Fetch guest separately (avoids join issues)
+        const { data: guest } = await getSupabase()
+          .from("guests")
+          .select("naam, email")
+          .eq("id", stay.guest_id)
+          .single();
+
+        if (!guest || !guest.email) {
+          return NextResponse.json({ error: "Gast niet gevonden of geen emailadres" }, { status: 404 });
+        }
         const resendKey = process.env.RESEND_API_KEY;
         if (!resendKey) {
           return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
@@ -286,6 +313,61 @@ export async function POST(request: NextRequest) {
           welcome_sent: true,
           welcome_sent_at: new Date().toISOString(),
         }).eq("id", stayId);
+
+        return NextResponse.json({ success: true });
+      }
+      case "send_thankyou": {
+        const stayId = body.id;
+        if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
+
+        const { data: stay } = await getSupabase().from("stays").select("*").eq("id", stayId).single();
+        if (!stay) return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
+
+        const { data: guest } = await getSupabase().from("guests").select("naam, email").eq("id", stay.guest_id).single();
+        if (!guest?.email) return NextResponse.json({ error: "Geen emailadres" }, { status: 404 });
+
+        const resendKey = process.env.RESEND_API_KEY;
+        if (!resendKey) return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
+
+        const esc = (s: string) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
+        const naam = esc(guest.naam || "");
+
+        const { Resend } = await import("resend");
+        const resend = new Resend(resendKey);
+
+        await resend.emails.send({
+          from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+          to: [guest.email],
+          subject: "Bedankt voor je bezoek — Huis ter Huynen",
+          html: `<!DOCTYPE html><html><head><meta charset="utf-8"/></head>
+<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+<tr><td align="center" style="padding:0 0 24px;font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td></tr>
+<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
+<tr><td style="height:4px;background:#B49A5E;border-radius:12px 12px 0 0;">&nbsp;</td></tr>
+<tr><td style="padding:28px;text-align:center;">
+  <p style="font-size:22px;color:#B49A5E;letter-spacing:8px;margin:0 0 20px;">&#9830;</p>
+  <h1 style="margin:0 0 12px;font-size:26px;color:#2A2418;">Bedankt, ${naam}</h1>
+  <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;">
+    We hopen dat je genoten hebt van de rust en de natuur in Drenthe.
+  </p>
+  <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;">
+    Mocht je nog iets kwijt willen — we horen het graag.
+  </p>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
+    <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">
+      WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>
+    </td></tr>
+  </table>
+</td></tr></table></td></tr>
+<tr><td align="center" style="padding:24px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">Huis ter Huynen &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</td></tr>
+</table></td></tr></table></body></html>`,
+        });
+
+        // Update stay status
+        await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stayId);
 
         return NextResponse.json({ success: true });
       }
