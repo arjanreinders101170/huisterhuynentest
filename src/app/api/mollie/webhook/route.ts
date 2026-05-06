@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
 import { generateInvoicePdf } from "@/lib/invoice";
+import { findOrCreateRelation, pushInvoice } from "@/lib/eboekhouden";
 
 export const runtime = "nodejs";
 
@@ -68,13 +69,34 @@ export async function POST(request: NextRequest) {
 
     // Send confirmation emails only when paid
     if (bookingStatus === "betaald" && meta.gastEmail) {
+      // Shared invoice variables
+      const amountValue = parseFloat(payment.amount?.value || "0");
+      const productId = meta.productId || "";
+      const factuurnummer = `HTH-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
+      const factuurdatum = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+      const product = payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling";
+
+      // Look up BTW rate from products table
+      let btwPct = 21;
+      try {
+        const { data: productData } = await getSupabase()
+          .from("products")
+          .select("btw_percentage")
+          .eq("id", productId)
+          .single();
+        if (productData?.btw_percentage !== undefined) {
+          btwPct = productData.btw_percentage;
+        }
+      } catch {}
+
+      const prijsExcl = amountValue / (1 + btwPct / 100);
+
       const resendKey = process.env.RESEND_API_KEY;
       if (resendKey) {
         try {
           const { Resend } = await import("resend");
           const resend = new Resend(resendKey);
 
-          const product = esc(payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling");
           const prijs = `€ ${payment.amount?.value || "0.00"}`;
           const naam = esc(meta.gastNaam || "Gast");
 
@@ -110,26 +132,6 @@ export async function POST(request: NextRequest) {
           });
 
           // Generate invoice PDF
-          const amountValue = parseFloat(payment.amount?.value || "0");
-          const productId = meta.productId || "";
-          const factuurnummer = `HTH-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
-          const factuurdatum = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
-
-          // Look up BTW rate from products table
-          let btwPct = 21;
-          try {
-            const { data: productData } = await getSupabase()
-              .from("products")
-              .select("btw_percentage")
-              .eq("id", productId)
-              .single();
-            if (productData?.btw_percentage !== undefined) {
-              btwPct = productData.btw_percentage;
-            }
-          } catch {}
-
-          const prijsExcl = amountValue / (1 + btwPct / 100);
-
           let invoicePdf: Buffer | null = null;
           try {
             invoicePdf = await generateInvoicePdf({
@@ -188,6 +190,67 @@ export async function POST(request: NextRequest) {
         } catch (e) {
           console.error("Webhook email failed:", e);
         }
+      }
+
+      // ═══ SAVE INVOICE TO DB + PUSH TO E-BOEKHOUDEN ═══
+      try {
+        const amountExcl = Math.round(prijsExcl * 100) / 100;
+        const vatAmount = Math.round((amountValue - prijsExcl) * 100) / 100;
+
+        // Save invoice record
+        await getSupabase().from("invoices").insert({
+          booking_id: bookingId,
+          invoice_number: factuurnummer,
+          amount_excl: amountExcl,
+          vat_amount: vatAmount,
+          amount_total: amountValue,
+          status: "created",
+          pushed_to_accounting: false,
+        });
+
+        // Push to e-Boekhouden if configured
+        if (process.env.EBOEKHOUDEN_API_TOKEN && meta.gastEmail) {
+          // Get product grootboek code
+          let grootboekCode = "8020"; // Default: Omzet Huis ter Huynen
+          try {
+            const { data: prod } = await getSupabase()
+              .from("products")
+              .select("grootboek_code")
+              .eq("id", productId)
+              .single();
+            if (prod?.grootboek_code) grootboekCode = prod.grootboek_code;
+          } catch {}
+
+          // Find or create debiteur
+          const relationId = await findOrCreateRelation(
+            meta.gastNaam || "Gast",
+            meta.gastEmail,
+          );
+
+          if (relationId) {
+            const accountingRef = await pushInvoice({
+              invoiceNumber: factuurnummer,
+              relationId,
+              description: `Huis ter Huynen — ${product}`,
+              lines: [{
+                description: product,
+                amountExcl: amountExcl,
+                btwPercentage: btwPct,
+                grootboekCode,
+              }],
+            });
+
+            if (accountingRef) {
+              await getSupabase().from("invoices").update({
+                pushed_to_accounting: true,
+                accounting_reference: accountingRef,
+                status: "synced",
+              }).eq("invoice_number", factuurnummer);
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Invoice/accounting sync failed:", e);
       }
     }
 

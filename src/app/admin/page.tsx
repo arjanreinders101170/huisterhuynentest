@@ -5,7 +5,7 @@ type Booking = { id: string; product: string; prijs: number; status: string; cre
 type Guest = { id: string; naam: string; email: string; profiel: string; laatste_bezoek: string };
 type Review = { id: string; naam: string; sterren: number; tekst: string; zichtbaar: boolean; created_at: string };
 type Aanvraag = { id: string; van: string; tot: string; personen: number; status: string; offerte_bedrag: number | null; created_at: string; guest_id: string };
-type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number };
+type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number; grootboek_code: string };
 type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 
 const C = {
@@ -354,7 +354,7 @@ export default function AdminDashboard() {
 function ProductenTab({ products, setProducts }: { products: Product[]; setProducts: (p: Product[]) => void }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
-  const [form, setForm] = useState({ id: "", naam: "", omschrijving: "", prijs: "", categorie: "upsell", volgorde: "0", btw: "21" });
+  const [form, setForm] = useState({ id: "", naam: "", omschrijving: "", prijs: "", categorie: "upsell", volgorde: "0", btw: "21", grootboek: "8020" });
   const [saving, setSaving] = useState(false);
 
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
@@ -368,13 +368,13 @@ function ProductenTab({ products, setProducts }: { products: Product[]; setProdu
   const startEdit = (p: Product) => {
     setEditing(p.id);
     setCreating(false);
-    setForm({ id: p.id, naam: p.naam, omschrijving: p.omschrijving || "", prijs: String(p.prijs), categorie: p.categorie, volgorde: String(p.volgorde), btw: String(p.btw_percentage ?? 21) });
+    setForm({ id: p.id, naam: p.naam, omschrijving: p.omschrijving || "", prijs: String(p.prijs), categorie: p.categorie, volgorde: String(p.volgorde), btw: String(p.btw_percentage ?? 21), grootboek: p.grootboek_code || "8020" });
   };
 
   const startCreate = () => {
     setCreating(true);
     setEditing(null);
-    setForm({ id: "", naam: "", omschrijving: "", prijs: "", categorie: "upsell", volgorde: "0", btw: "21" });
+    setForm({ id: "", naam: "", omschrijving: "", prijs: "", categorie: "upsell", volgorde: "0", btw: "21", grootboek: "8020" });
   };
 
   const save = async () => {
@@ -385,7 +385,7 @@ function ProductenTab({ products, setProducts }: { products: Product[]; setProdu
       const r = await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, ...form, prijs: parseFloat(form.prijs), btw_percentage: parseInt(form.btw) }),
+        body: JSON.stringify({ action, ...form, prijs: parseFloat(form.prijs), btw_percentage: parseInt(form.btw), grootboek_code: form.grootboek }),
       });
       const d = await r.json();
       if (d.success) {
@@ -451,7 +451,7 @@ function ProductenTab({ products, setProducts }: { products: Product[]; setProdu
               <input value={form.naam} onChange={e => setForm({ ...form, naam: e.target.value })} placeholder="Ontbijt op bed" style={inputStyle} />
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
             <div>
               <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Prijs (€)</label>
               <input value={form.prijs} onChange={e => setForm({ ...form, prijs: e.target.value })} placeholder="19.50" type="number" step="0.01" style={inputStyle} />
@@ -470,6 +470,15 @@ function ProductenTab({ products, setProducts }: { products: Product[]; setProdu
                 <option value="21">21%</option>
                 <option value="9">9% (voedsel)</option>
                 <option value="0">0%</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Grootboek</label>
+              <select value={form.grootboek} onChange={e => setForm({ ...form, grootboek: e.target.value })} style={inputStyle}>
+                <option value="8020">8020 - Omzet HTH</option>
+                <option value="8010">8010 - Omzet algemeen</option>
+                <option value="8030">8030 - Schoonmaak</option>
+                <option value="8040">8040 - Toeristenbelasting</option>
               </select>
             </div>
             <div>

@@ -57,6 +57,14 @@ export async function GET(request: NextRequest) {
           .order("volgorde", { ascending: true });
         return NextResponse.json({ data: data || [] });
       }
+      case "invoices": {
+        const { data } = await getSupabase()
+          .from("invoices")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(50);
+        return NextResponse.json({ data: data || [] });
+      }
       case "stays": {
         const { data: staysRaw } = await getSupabase()
           .from("stays")
@@ -104,7 +112,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true });
       }
       case "create_product": {
-        const { id, naam, omschrijving, prijs, categorie, volgorde, btw_percentage } = body;
+        const { id, naam, omschrijving, prijs, categorie, volgorde, btw_percentage, grootboek_code } = body;
         if (!id || !naam || prijs === undefined) {
           return NextResponse.json({ error: "ID, naam en prijs zijn verplicht" }, { status: 400 });
         }
@@ -114,6 +122,7 @@ export async function POST(request: NextRequest) {
           categorie: categorie || "upsell",
           volgorde: volgorde || 0,
           btw_percentage: btw_percentage ?? 21,
+          grootboek_code: grootboek_code || "8020",
           actief: true,
         });
         if (error) {
@@ -123,7 +132,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true });
       }
       case "update_product": {
-        const { id, naam, omschrijving, prijs, categorie, volgorde, btw_percentage } = body;
+        const { id, naam, omschrijving, prijs, categorie, volgorde, btw_percentage, grootboek_code } = body;
         if (!id) return NextResponse.json({ error: "Product ID is verplicht" }, { status: 400 });
         const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
         if (naam !== undefined) updates.naam = naam;
@@ -132,6 +141,7 @@ export async function POST(request: NextRequest) {
         if (categorie !== undefined) updates.categorie = categorie;
         if (volgorde !== undefined) updates.volgorde = volgorde;
         if (btw_percentage !== undefined) updates.btw_percentage = btw_percentage;
+        if (grootboek_code !== undefined) updates.grootboek_code = grootboek_code;
         await getSupabase().from("products").update(updates).eq("id", id);
         return NextResponse.json({ success: true });
       }
