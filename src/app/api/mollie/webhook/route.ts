@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
+import { generateInvoicePdf } from "@/lib/invoice";
 
 export const runtime = "nodejs";
 
@@ -108,11 +109,52 @@ export async function POST(request: NextRequest) {
             replyTo: meta.gastEmail,
           });
 
-          // Confirmation to guest
+          // Generate invoice PDF
+          const amountValue = parseFloat(payment.amount?.value || "0");
+          const productId = meta.productId || "";
+          const factuurnummer = `HTH-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
+          const factuurdatum = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+
+          // Look up BTW rate from products table
+          let btwPct = 21;
+          try {
+            const { data: productData } = await getSupabase()
+              .from("products")
+              .select("btw_percentage")
+              .eq("id", productId)
+              .single();
+            if (productData?.btw_percentage !== undefined) {
+              btwPct = productData.btw_percentage;
+            }
+          } catch {}
+
+          const prijsExcl = amountValue / (1 + btwPct / 100);
+
+          let invoicePdf: Buffer | null = null;
+          try {
+            invoicePdf = await generateInvoicePdf({
+              factuurnummer,
+              factuurdatum,
+              gastNaam: meta.gastNaam || "Gast",
+              gastEmail: meta.gastEmail || "",
+              betaalmethode: "iDEAL",
+              items: [{
+                omschrijving: payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling",
+                aantal: 1,
+                prijsExcl: Math.round(prijsExcl * 100) / 100,
+                btwPercentage: btwPct,
+              }],
+            });
+          } catch (e) {
+            console.error("Invoice generation failed:", e);
+          }
+
+          // Confirmation to guest (with invoice attachment)
           await resend.emails.send({
             from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
             to: [meta.gastEmail],
             subject: `Betaling bevestigd — ${LODGE_NAME}`,
+            ...(invoicePdf ? { attachments: [{ filename: `factuur-${factuurnummer}.pdf`, content: invoicePdf }] } : {}),
             html: `<!DOCTYPE html><html><head><meta charset="utf-8"/></head>
 <body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
