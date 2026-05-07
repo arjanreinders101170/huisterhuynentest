@@ -11,6 +11,14 @@ function BetaaldContent() {
   const params = useSearchParams();
   const product = params.get("product") || "je bestelling";
 
+  // Product-specific hero image
+  const heroImage = (() => {
+    const p = product.toLowerCase();
+    if (p.includes("fiets") || p.includes("bike") || p.includes("ebike") || p.includes("atb")) return "/rent_a_bike.jpg";
+    if (p.includes("late") || p.includes("check-out") || p.includes("checkout")) return "/late_check_out.jpg";
+    return "/borrel1.jpg";
+  })();
+
   return (
     <div style={{
       background: T.bg, minHeight: "100vh",
@@ -37,8 +45,8 @@ function BetaaldContent() {
         }}>
           {/* Hero image */}
           <img
-            src="/borrel1.jpg"
-            alt="Welkomstpakket Drenthe"
+            src={heroImage}
+            alt={product}
             style={{ display: "block", width: "100%", height: 180, objectFit: "cover" }}
           />
 
