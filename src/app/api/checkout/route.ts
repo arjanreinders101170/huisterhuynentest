@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { getProduct, calcFietsTotal } from "@/lib/products";
 import { checkoutSchema } from "@/lib/schemas";
+import { getLodgeFromStayToken, LodgeSchema, type Lodge } from "@/lib/lodge";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,25 @@ export async function POST(request: NextRequest) {
     }
 
     const { productId, gastNaam, gastEmail, metadata } = parsed.data;
+
+    // ── Lodge resolution ──────────────────────────────────────────
+    // Priority: explicit body field > metadata.stayToken lookup > null (legacy).
+    let lodge: Lodge | null = parsed.data.lodge ?? null;
+    if (!lodge && metadata) {
+      const stayToken = typeof metadata.stayToken === "string" ? metadata.stayToken : null;
+      if (stayToken) {
+        try {
+          lodge = await getLodgeFromStayToken(stayToken);
+        } catch (e) {
+          console.error("Lodge resolution from stay token failed:", e);
+        }
+      }
+      // Also accept lodge nested in metadata for forward compat.
+      if (!lodge && typeof metadata.lodge === "string") {
+        const m = LodgeSchema.safeParse(metadata.lodge);
+        if (m.success) lodge = m.data;
+      }
+    }
 
     // Server-side price determination — client cannot set amount
     let amount: number;
@@ -58,7 +78,7 @@ export async function POST(request: NextRequest) {
       guestId = data;
     } catch (e) { console.error("Guest upsert:", e); }
 
-    // Create booking with status "pending"
+    // Create booking with status "nieuw"
     let bookingId = null;
     try {
       const { data } = await getSupabase().from("bookings").insert({
@@ -67,6 +87,7 @@ export async function POST(request: NextRequest) {
         prijs: amount,
         status: "nieuw",
         metadata: metadata || {},
+        lodge,
       }).select("id").single();
       bookingId = data?.id;
     } catch (e) { console.error("Booking insert:", e); }
@@ -82,6 +103,7 @@ export async function POST(request: NextRequest) {
             prijs: `€ ${amount.toFixed(2)}`,
             gastNaam,
             gastEmail,
+            lodge,
           }),
         });
       } catch {}
@@ -112,6 +134,7 @@ export async function POST(request: NextRequest) {
           productId,
           gastNaam,
           gastEmail,
+          lodge: lodge || "",
         },
       }),
     });
@@ -129,6 +152,7 @@ export async function POST(request: NextRequest) {
             prijs: `€ ${amount.toFixed(2)}`,
             gastNaam,
             gastEmail,
+            lodge,
           }),
         });
       } catch {}
