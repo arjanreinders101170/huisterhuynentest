@@ -30,9 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </head>
       <body style={{ background: "#EAE3D2", margin: 0, fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-        <div style={{ maxWidth: 430, margin: "0 auto", minHeight: "100vh", position: "relative" }}>
-          {children}
-        </div>
+        {children}
       </body>
     </html>
   );

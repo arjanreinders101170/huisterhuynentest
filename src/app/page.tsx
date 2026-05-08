@@ -194,7 +194,7 @@ export default function Page() {
 
   /* ═══ RENDER ═══ */
   return (
-    <>
+    <div style={{ maxWidth: 430, margin: "0 auto", minHeight: "100vh", position: "relative" }}>
       {showOnboarding && <Onboarding onSelect={selectProfile} />}
 
       <Header today={today} weather={weather} onMenuOpen={() => setDrawerOpen(true)} />
@@ -256,6 +256,6 @@ export default function Page() {
         currentPage={basePage}
         onNavigate={(r: Route) => setRoute(r)}
       />
-    </>
+    </div>
   );
 }
