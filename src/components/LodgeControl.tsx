@@ -204,15 +204,6 @@ export function LodgeControl({ open, onClose }: Props) {
             </>
           )}
 
-          {/* Demo notice */}
-          <div style={{
-            marginTop: 24, padding: "12px 16px", borderRadius: 10,
-            background: "rgba(180,154,94,.08)",
-            fontFamily: T.sans, fontSize: 11, color: T.gold, textAlign: "center",
-          }}>
-            Demo modus — wordt gekoppeld aan Home Assistant
-          </div>
-
         </div>
       </div>
     </>
