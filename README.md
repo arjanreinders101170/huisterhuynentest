@@ -133,3 +133,30 @@ public/
 1. Ga naar [mollie.com](https://mollie.com)
 2. Dashboard → Developers → API Keys
 3. Gebruik de **test** key (`test_...`) voor testen
+
+---
+
+## Productie-deploy-checklist
+
+Voor go-live met echte gasten op Lodge 1 (Boomhut) en Lodge 2 (Schaapskooi).
+Loop deze lijst af; doorloop niet zonder elke stap af te vinken.
+
+- [ ] Migratie SQL toegepast op productie Supabase
+      (`migrations/2026_05_08_productiehardening.sql`, handmatig via SQL editor of CLI)
+- [ ] Vercel KV-instance gekoppeld; `KV_REST_API_URL` en `KV_REST_API_TOKEN`
+      gezet in Vercel project env-vars
+- [ ] `NUKI_SMARTLOCK_ID_LODGE_1` en `NUKI_SMARTLOCK_ID_LODGE_2` env-vars gezet
+      (legacy `NUKI_SMARTLOCK_ID` mag dan weg — alleen fallback voor migratie)
+- [ ] `MOLLIE_WEBHOOK_SECRET` gezet (na configuratie in Mollie dashboard).
+      Optioneel; zonder secret blijft de webhook fallback op verify-by-API.
+- [ ] `ADMIN_SECRET` geroteerd (oude waarde is historisch via cookie gelekt
+      en moet daarom als gecompromitteerd worden behandeld)
+- [ ] `RESEND_API_KEY`, `OPENAI_API_KEY`, `MOLLIE_API_KEY` aanwezig in productie
+- [ ] Eerste login → controleer dat er een rij in `audit_log` ontstaat
+- [ ] Test-betaling van EUR 0,01 → webhook fires → invoice ontstaat →
+      e-Boekhouden-sync werkt
+- [ ] CSP report-only headers monitoren in browser console gedurende week 1;
+      pas daarna eventueel naar enforcing CSP
+- [ ] Smoke-scripts groen op staging:
+      `npx tsx scripts/verify-sessions.ts`,
+      `npx tsx scripts/verify-ratelimit.ts`

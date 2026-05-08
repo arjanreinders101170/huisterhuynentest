@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
 import { bookingSchema } from "@/lib/schemas";
+import { LodgeSchema } from "@/lib/lodge";
+import { z } from "zod";
 
 export const runtime = "nodejs";
+
+// Local strict variant: lodge is required for new bookings (foundation schema
+// keeps lodge optional for legacy compatibility).
+const strictBookingSchema = bookingSchema.extend({
+  lodge: LodgeSchema,
+});
+type StrictBooking = z.infer<typeof strictBookingSchema>;
 
 const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
@@ -198,12 +207,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const parsed = bookingSchema.safeParse(body);
+    const parsed = strictBookingSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: "Ongeldige invoer", details: parsed.error.flatten().fieldErrors }, { status: 400 });
     }
 
-    const { product, prijs, gastNaam, gastEmail, datum, metadata } = parsed.data;
+    const { product, prijs, gastNaam, gastEmail, datum, metadata, lodge }: StrictBooking = parsed.data;
 
     const bookingDate = datum || new Date().toLocaleDateString("nl-NL", {
       weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -221,14 +230,17 @@ export async function POST(request: NextRequest) {
     } catch (e) { console.error("Guest upsert failed:", e); }
 
     // 2. Insert booking
+    let bookingId: string | null = null;
     try {
-      await getSupabase().from("bookings").insert({
+      const { data } = await getSupabase().from("bookings").insert({
         guest_id: guestId,
         product,
         prijs: parseFloat(String(bookingPrijs).replace(/[^0-9.,]/g, "").replace(",", ".")) || null,
         status: "nieuw",
         metadata: metadata || {},
-      });
+        lodge,
+      }).select("id").single();
+      bookingId = data?.id ?? null;
     } catch (e) { console.error("Booking insert failed:", e); }
 
     // 3. Send emails
@@ -260,7 +272,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(`[BOOKING] ${product} | ${gastNaam} | ${gastEmail} | ${bookingPrijs}`);
+    console.log(JSON.stringify({ event: "booking_created", bookingId, lodge }));
     return NextResponse.json({ success: true, emailSent: false });
   } catch {
     return NextResponse.json({ error: "Kon boeking niet verwerken" }, { status: 500 });

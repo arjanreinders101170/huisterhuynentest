@@ -63,6 +63,8 @@ export default function Page() {
   const [booked, setBooked] = useState<string | null>(null);
   const [weather, setWeather] = useState<Weather | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [stayToken, setStayToken] = useState<string | null>(null);
+  const [stayExpired, setStayExpired] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const today = new Date().toLocaleDateString("nl-NL", {
@@ -75,6 +77,27 @@ export default function Page() {
       .then(r => r.json())
       .then(d => setWeather(d))
       .catch(() => {/* silent — header shows fallback */});
+  }, []);
+
+  /* ═══ STAY TOKEN — read from ?token=… URL param ═══
+     Token is a credential and lives in component state only —
+     never localStorage. We re-validate it via /api/stay so the
+     server can detect expiry. */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("token");
+    if (!t) return;
+    setStayToken(t);
+    fetch(`/api/stay?token=${encodeURIComponent(t)}`)
+      .then(async r => {
+        if (r.status === 410) {
+          setStayExpired(true);
+          setStayToken(null);
+        }
+        // ignore other non-OK statuses — token may simply be unknown
+      })
+      .catch(() => {/* silent */});
   }, []);
 
   useEffect(() => {
@@ -138,9 +161,17 @@ export default function Page() {
     try {
       const r = await fetch("/api/nuki/unlock", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: stayToken ?? "" }),
         signal: controller.signal,
       });
       clearTimeout(timeout);
+      if (r.status === 401) {
+        setStayExpired(true);
+        setDoor("error");
+        setTimeout(() => setDoor("locked"), 5000);
+        return;
+      }
       const d = await r.json();
       if (d.success) {
         setDoor("open");
@@ -223,6 +254,7 @@ export default function Page() {
               wifiCopied={wifiCopied}
               onCopyWifi={copyWifi}
               onNavigate={(r: Route) => setRoute(r)}
+              stayExpired={stayExpired}
             />
           )}
           {route === "chat" && (

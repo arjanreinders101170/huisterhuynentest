@@ -7,6 +7,7 @@ type Review = { id: string; naam: string; sterren: number; tekst: string; zichtb
 type Aanvraag = { id: string; van: string; tot: string; personen: number; status: string; offerte_bedrag: number | null; created_at: string; guest_id: string };
 type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number; grootboek_code: string };
 type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
+type AuditEntry = { id: string; actor_session_id: string | null; action: string; resource_type: string; resource_id: string | null; ip: string | null; created_at: string };
 
 const C = {
   bg: "#F5F3EE", card: "#fff", border: "#E8E4DC",
@@ -44,7 +45,7 @@ function timeAgo(dateStr: string): string {
   return `${days} dag${days > 1 ? "en" : ""}`;
 }
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "lodge_1" | "lodge_2";
+type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "audit" | "lodge_1" | "lodge_2";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -54,21 +55,28 @@ export default function AdminDashboard() {
   const [aanvragen, setAanvragen] = useState<Aanvraag[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [stays, setStays] = useState<Stay[]>([]);
+  const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
   const [guestMap, setGuestMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [followUpSending, setFollowUpSending] = useState(false);
   const [followUpResult, setFollowUpResult] = useState("");
 
+  // Lodge tab → server-side filter; "alle" = no param
+  const lodgeFilter: "lodge_1" | "lodge_2" | null =
+    tab === "lodge_1" || tab === "lodge_2" ? tab : null;
+
   useEffect(() => {
     async function load() {
       try {
+        const qs = lodgeFilter ? `&lodge=${lodgeFilter}` : "";
         const [bRes, gRes, rRes, aRes, pRes, sRes] = await Promise.all([
-          fetch("/api/admin/data?table=bookings"),
-          fetch("/api/admin/data?table=guests"),
-          fetch("/api/admin/data?table=reviews"),
-          fetch("/api/admin/data?table=aanvragen"),
-          fetch("/api/admin/data?table=products"),
-          fetch("/api/admin/data?table=stays"),
+          fetch(`/api/admin/data?table=bookings${qs}`),
+          fetch(`/api/admin/data?table=guests`),
+          fetch(`/api/admin/data?table=reviews${qs}`),
+          fetch(`/api/admin/data?table=aanvragen${qs}`),
+          fetch(`/api/admin/data?table=products`),
+          fetch(`/api/admin/data?table=stays${qs}`),
         ]);
         const [bData, gData, rData, aData, pData, sData] = await Promise.all([bRes.json(), gRes.json(), rRes.json(), aRes.json(), pRes.json(), sRes.json()]);
         setBookings(bData.data || []);
@@ -86,7 +94,19 @@ export default function AdminDashboard() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [lodgeFilter]);
+
+  useEffect(() => {
+    if (tab !== "audit") return;
+    let cancelled = false;
+    setAuditLoading(true);
+    fetch("/api/admin/data?action=audit_log")
+      .then(r => r.json())
+      .then(d => { if (!cancelled) setAuditEntries(d.data || []); })
+      .catch(() => { if (!cancelled) setAuditEntries([]); })
+      .finally(() => { if (!cancelled) setAuditLoading(false); });
+    return () => { cancelled = true; };
+  }, [tab]);
 
   const toggleReview = async (id: string, visible: boolean) => {
     await fetch("/api/admin/data", {
@@ -108,8 +128,12 @@ export default function AdminDashboard() {
     setFollowUpSending(false);
   };
 
-  const logout = () => {
-    document.cookie = "hth-admin-session=; path=/; max-age=0";
+  const logout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch {
+      // ignore — we redirect regardless so the user is out client-side
+    }
     window.location.href = "/admin/login";
   };
 
@@ -127,6 +151,7 @@ export default function AdminDashboard() {
     { id: "reviews", label: "Reviews" },
     { id: "aanvragen", label: "Aanvragen" },
     { id: "producten", label: "Producten" },
+    { id: "audit", label: "Audit" },
   ];
 
   return (
@@ -338,6 +363,28 @@ export default function AdminDashboard() {
 
             {tab === "producten" && (
               <ProductenTab products={products} setProducts={setProducts} />
+            )}
+
+            {tab === "audit" && (
+              <>
+                <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Audit log</div>
+                <div style={{ fontSize: 13, color: C.light, marginBottom: 24 }}>Laatste 100 admin-acties (read-only)</div>
+                {auditLoading ? (
+                  <div style={{ fontSize: 13, color: C.muted, padding: 20, textAlign: "center" }}>Laden...</div>
+                ) : (
+                  <Table
+                    cols={["Tijdstip", "Actie", "Type", "Resource ID", "IP"]}
+                    widths={["1.4fr", "1.5fr", "1fr", "1.5fr", "1fr"]}
+                    rows={auditEntries.map(a => [
+                      new Date(a.created_at).toLocaleString("nl-NL", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }),
+                      a.action,
+                      a.resource_type,
+                      a.resource_id || "—",
+                      a.ip || "—",
+                    ])}
+                  />
+                )}
+              </>
             )}
 
             {(tab === "lodge_1" || tab === "lodge_2") && (

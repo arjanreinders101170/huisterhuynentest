@@ -1,8 +1,23 @@
 import { esc } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { z } from "zod";
 
 export const runtime = "nodejs";
+
+// Strict POST schema — the existing client sends `{ id, token }` rather than
+// the foundation `{ token, akkoord }` shape. Validate exactly what the page
+// sends today; future tightening can move to the foundation `bevestigSchema`.
+const bevestigPostSchema = z.object({
+  id: z.string().min(1).max(64),
+  token: z.string().min(1).max(128).optional(),
+});
+
+function isExpired(expiresAtIso: string | null | undefined): boolean {
+  if (!expiresAtIso) return false; // legacy rows without expiry remain valid
+  const t = new Date(expiresAtIso).getTime();
+  return Number.isFinite(t) && t <= Date.now();
+}
 
 const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
@@ -55,6 +70,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige link" }, { status: 403 });
     }
 
+    // Token expiry check
+    if (isExpired(aanvraag.confirm_token_expires_at as string | null)) {
+      return NextResponse.json({ error: "Deze link is verlopen" }, { status: 410 });
+    }
+
     // Then get guest info if available
     let gastNaam = "";
     let gastEmail = "";
@@ -89,8 +109,16 @@ export async function GET(request: NextRequest) {
 // POST — confirm the booking
 export async function POST(request: NextRequest) {
   try {
-    const { id, token } = await request.json();
-    if (!id) return NextResponse.json({ error: "Geen ID" }, { status: 400 });
+    let raw: unknown;
+    try { raw = await request.json(); } catch {
+      return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
+    }
+
+    const parsed = bevestigPostSchema.safeParse(raw);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
+    }
+    const { id, token } = parsed.data;
 
     const { data, error } = await getSupabase()
       .from("terugkeer_aanvragen")
@@ -107,15 +135,46 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige link" }, { status: 403 });
     }
 
+    // Token expiry check
+    if (isExpired(data.confirm_token_expires_at as string | null)) {
+      return NextResponse.json({ error: "Deze link is verlopen" }, { status: 410 });
+    }
+
     if (data.status === "geboekt") {
       return NextResponse.json({ error: "Deze reservering is al bevestigd" }, { status: 400 });
     }
 
-    // Update status
-    await getSupabase().from("terugkeer_aanvragen").update({
-      status: "geboekt",
-      updated_at: new Date().toISOString(),
-    }).eq("id", id);
+    // Atomic status transition: only flip when still in 'offerte_verstuurd'.
+    // If no row matched, another request already confirmed → 409.
+    const { data: updated, error: updErr } = await getSupabase()
+      .from("terugkeer_aanvragen")
+      .update({ status: "geboekt", updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .eq("status", "offerte_verstuurd")
+      .select()
+      .single();
+
+    if (updErr || !updated) {
+      return NextResponse.json({ error: "Reservering is al bevestigd" }, { status: 409 });
+    }
+
+    // Create a corresponding bookings row carrying the lodge through the funnel
+    try {
+      await getSupabase().from("bookings").insert({
+        guest_id: data.guest_id,
+        product: "Verblijf",
+        prijs: data.offerte_bedrag ?? null,
+        status: "nieuw",
+        metadata: {
+          source: "terugkeer",
+          aanvraagId: data.id,
+          van: data.van,
+          tot: data.tot,
+          personen: data.personen,
+        },
+        lodge: data.lodge,
+      });
+    } catch (e) { console.error("Booking insert from bevestig failed:", e); }
 
     // Get guest info separately
     let gastNaam = "Gast";
