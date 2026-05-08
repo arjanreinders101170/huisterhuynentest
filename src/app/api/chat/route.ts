@@ -1,35 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
+import { chatSchema } from "@/lib/schemas";
+import { z } from "zod";
 
 // Force Node.js runtime (not Edge) — avoids Vercel edge issues
 export const runtime = "nodejs";
 
-// Handle OPTIONS preflight
+// Handle OPTIONS preflight (tight CORS — no wildcard origin)
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": "https://www.huisterhuynen.nl",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });
 }
 
-export async function POST(request: NextRequest) {
-  // Safe JSON parsing — prevents crash on empty/malformed body
-  let messages: Array<{ role: string; content: string }> = [];
-  let context: string | null = null;
+const chatRequestSchema = chatSchema.extend({
+  context: z.string().max(2000).nullish(),
+});
 
+export async function POST(request: NextRequest) {
+  // Safe JSON parsing + zod validation — prevents crash and validates shape
+  let body: unknown;
   try {
-    const body = await request.json();
-    messages = body.messages || [];
-    context = body.context || null;
+    body = await request.json();
   } catch {
     return NextResponse.json(
       { reply: "Kon je bericht niet lezen. Probeer opnieuw." },
       { status: 400 }
     );
   }
+
+  const parsed = chatRequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { reply: "Ongeldige invoer." },
+      { status: 400 }
+    );
+  }
+
+  const messages: Array<{ role: string; content: string }> = parsed.data.messages;
+  const context: string | null = parsed.data.context ?? null;
 
   if (!messages.length) {
     return NextResponse.json({ reply: "Stel gerust een vraag!" });

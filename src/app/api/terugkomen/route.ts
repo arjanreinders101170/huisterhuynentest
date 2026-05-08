@@ -49,7 +49,7 @@ function emailWrap(content: string): string {
 }
 
 /* ═══ OWNER EMAIL ═══ */
-function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string, adminSecret: string): string {
+function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string, adminSecret: string, lodgeHint: string): string {
   return emailWrap(`
     <h1 style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;">
       Terugkeer aanvraag
@@ -100,7 +100,7 @@ function ownerEmailHtml(van: string, tot: string, email: string, naam: string, p
     <!-- CTA -->
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
       <tr><td align="center">
-        <a href="${appUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(naam)}&van=${encodeURIComponent(van)}&tot=${encodeURIComponent(tot)}&personen=${personen}&s=${adminSecret}"
+        <a href="${appUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(naam)}&van=${encodeURIComponent(van)}&tot=${encodeURIComponent(tot)}&personen=${personen}&s=${adminSecret}${lodgeHint ? `&lodgeHint=${encodeURIComponent(lodgeHint)}` : ""}"
           style="display:inline-block;padding:14px 32px;background-color:#2F4F3E;color:#ffffff;text-decoration:none;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
           Stuur aanbod &rarr;
         </a>
@@ -166,12 +166,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const { from, to, email, name, persons, message } = body;
-
     const parsed = terugkomenSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
+
+    const { from, to, email, name, persons, message, lodge } = parsed.data;
 
     let guestId = null;
     try {
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
           subject: `Terugkeer aanvraag — ${name || email} · ${from} t/m ${to}`,
-          html: ownerEmailHtml(esc(from), esc(to), esc(email), esc(name || ""), persons || 2, esc(message || ""), aanvraagId, appUrl, adminSecret),
+          html: ownerEmailHtml(esc(from), esc(to), esc(email), esc(name || ""), persons || 2, esc(message || ""), aanvraagId, appUrl, adminSecret, lodge || ""),
           replyTo: email,
         });
 
