@@ -534,7 +534,7 @@ export default function LandingPage() {
                 icon: "🌿",
                 hoogtepunt: "Veentjesroute Zeijen",
                 items: ["Direct vanuit de lodge", "13+ routes in de omgeving", "Nationaal Park op 15 min"],
-                img: "/heide1.jpg",
+                img: "/wandel_drenthe.jpg",
                 accent: T.green,
               },
               {
@@ -550,7 +550,7 @@ export default function LandingPage() {
                 icon: "🗿",
                 hoogtepunt: "52 hunebedden · Drents Museum",
                 items: ["Hunebed Highway (N34)", "Kamp Westerbork", "Museumdorp Orvelte"],
-                img: "/heide2.jpg",
+                img: "/museum_drenthe.jpg",
                 accent: T.green,
               },
               {
@@ -558,7 +558,7 @@ export default function LandingPage() {
                 icon: "♨",
                 hoogtepunt: "Sauna's binnen 20 min",
                 items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Massage aan huis mogelijk"],
-                img: "/borrel1.jpg",
+                img: "/welness_drenthe.jpg",
                 accent: "#7B6B3A",
               },
             ].map((c, i) => (
