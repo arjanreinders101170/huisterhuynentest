@@ -9,6 +9,7 @@ type Props = {
   wifiCopied: boolean;
   onCopyWifi: () => void;
   onNavigate: (r: Route) => void;
+  stayExpired?: boolean;
 };
 
 /* ═══ CHECKOUT CHECKLIST ═══ */
@@ -20,7 +21,7 @@ const CHECKLIST = [
   { id: "spullen", label: "Persoonlijke spullen ingepakt" },
 ];
 
-export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }: Props) {
+export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate, stayExpired = false }: Props) {
   const [showCheckout, setShowCheckout] = useState(false);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [countdown, setCountdown] = useState("");
@@ -80,6 +81,17 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
           Verwarming, verlichting en laadpaal regel je via het menu linksboven
         </span>
       </div>
+
+      {/* Stay-token expired notice */}
+      {stayExpired && (
+        <div style={{
+          marginTop: 12, padding: "12px 16px", borderRadius: 12,
+          background: "rgba(180,90,60,.08)", border: "1px solid rgba(180,90,60,.2)",
+          fontFamily: T.sans, fontSize: 12, color: "#8B4A2A", lineHeight: 1.45,
+        }}>
+          Sessie verlopen, laad de pagina opnieuw.
+        </div>
+      )}
 
       {/* Door */}
       <div style={{ ...cardStyle, padding: "24px 20px", marginTop: 24, textAlign: "center" }}>
