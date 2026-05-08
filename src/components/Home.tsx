@@ -1,17 +1,18 @@
 "use client";
 import { T, cardStyle, iconBox, type Route, type GuestProfile, type Weather } from "@/data/tokens";
 import { PROFILES } from "@/data/profiles";
+import { PROFILES_DE } from "@/i18n/profiles-de";
+import { useLanguage } from "@/i18n";
 import { SheepSvg, IcTrees, IcFork, IcBike, IcFamily, IcTemple, IcLotus, IcChat, IcArrow, IcLeaf, IcPin, IcSun, IcCloud, IcRain, IcGift } from "./icons";
 import type { ReactNode } from "react";
 
-/* ═══ CATEGORY VISUAL MAP ═══ */
-const CAT_MAP: Record<string, { icon: ReactNode; t: string; s: string }> = {
-  natuur:      { icon: <IcTrees />,  t: "Natuur & Wandelen",   s: "Ontdek de mooiste plekken" },
-  eten:        { icon: <IcFork />,   t: "Eten & Drinken",      s: "Lekker eten in de omgeving" },
-  actief:      { icon: <IcBike />,   t: "Actief & Avontuur",   s: "Fietsen, MTB, varen en meer" },
-  kinderen:    { icon: <IcFamily />, t: "Met Kinderen",        s: "Leuke uitjes voor jong & oud" },
-  cultuur:     { icon: <IcTemple />, t: "Cultuur & Ontdekken", s: "Musea, dorpen en verhalen" },
-  ontspanning: { icon: <IcLotus />,  t: "Ontspanning & Luxe",  s: "Wellness, sauna's en extra's" },
+const CAT_ICONS: Record<string, ReactNode> = {
+  natuur:      <IcTrees />,
+  eten:        <IcFork />,
+  actief:      <IcBike />,
+  kinderen:    <IcFamily />,
+  cultuur:     <IcTemple />,
+  ontspanning: <IcLotus />,
 };
 
 const DEFAULT_ORDER = ["natuur", "eten", "actief", "kinderen", "cultuur", "ontspanning"];
@@ -24,20 +25,22 @@ type Props = {
 };
 
 export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
+  const { t, lang } = useLanguage();
+  const catMap = t.home.catMap;
+
   /* ═══ PERSONALIZATION ═══ */
-  const cfg = profile && profile in PROFILES
-    ? PROFILES[profile as Exclude<GuestProfile, null>]
+  const activeProfiles = lang === "de" ? PROFILES_DE : PROFILES;
+  const cfg = profile && profile in activeProfiles
+    ? activeProfiles[profile as Exclude<GuestProfile, null>]
     : null;
 
   const tileOrder = cfg ? cfg.tileOrder : DEFAULT_ORDER;
 
-  const welkom = cfg
-    ? cfg.welkom
-    : "Waar mogen we je vandaag mee inspireren?";
+  const welkom = cfg ? cfg.welkom : t.home.defaultWelkom;
 
   const popular = cfg
     ? cfg.popularItem
-    : { naam: "Wandeling Dwingelderveld", sub: "10 min rijden · Heide in bloei", category: "natuur" };
+    : { naam: t.home.defaultPopularNaam, sub: t.home.defaultPopularSub, category: "natuur" };
 
   return (
     <div style={{ padding: "0 20px 110px" }}>
@@ -48,7 +51,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
           fontFamily: T.serif, fontSize: 36, fontWeight: 700,
           color: T.text, lineHeight: 1.1, margin: "0 0 10px",
         }}>
-          Welkom
+          {t.home.title}
         </h1>
         <p style={{
           fontFamily: T.sans, fontSize: 15, color: T.muted,
@@ -74,7 +77,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
             fontFamily: T.serif, fontSize: 17, fontWeight: 600,
             color: "#fff", marginBottom: 4,
           }}>
-            Vraag het aan Huynen Host
+            {t.home.chatCta}
           </div>
         </div>
         <div style={{
@@ -137,12 +140,13 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
         fontFamily: T.serif, fontSize: 18, fontWeight: 600,
         color: T.text, margin: "28px 0 14px",
       }}>
-        {cfg ? "Aangeraden voor jullie" : "Ontdek"}
+        {cfg ? t.home.recommended : t.home.discover}
       </h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         {tileOrder.map(key => {
-          const c = CAT_MAP[key];
-          if (!c) return null;
+          const c = catMap[key as keyof typeof catMap];
+          const icon = CAT_ICONS[key];
+          if (!c || !icon) return null;
           return (
             <div
               key={key}
@@ -154,7 +158,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
                 display: "flex", justifyContent: "space-between",
                 alignItems: "flex-start", marginBottom: 12,
               }}>
-                <div style={iconBox}>{c.icon}</div>
+                <div style={iconBox}>{icon}</div>
                 <span className="tile-arrow" style={{
                   color: T.gold, opacity: 0.7, transition: "all .15s",
                 }}>
@@ -183,7 +187,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
         fontFamily: T.serif, fontSize: 18, fontWeight: 600,
         color: T.text, margin: "28px 0 14px",
       }}>
-        {cfg ? "Tip voor jullie" : "Populair vandaag"}
+        {cfg ? t.home.tipForYou : t.home.popularToday}
       </h2>
       <div
         className="tile-tap"
@@ -237,10 +241,10 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontFamily: T.serif, fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 2 }}>
-            Welkomstpakket Drenthe
+            {t.home.upsellTitle}
           </div>
           <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300 }}>
-            Lokaal bier, kaas & worst · € 27,50
+            {t.home.upsellSub}
           </div>
         </div>
         <span style={{ color: T.gold, opacity: 0.6, flexShrink: 0 }}><IcArrow /></span>

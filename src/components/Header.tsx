@@ -2,6 +2,7 @@
 import type React from "react";
 import { T, type Weather } from "@/data/tokens";
 import { IcMenu, IcCloud, IcCal, IcSun, IcRain, IcSnow, IcStorm, IcMist } from "./icons";
+import { useLanguage } from "@/i18n";
 
 const WEATHER_ICONS: Record<string, () => React.ReactNode> = {
   sun: IcSun, cloud: IcCloud, rain: IcRain,
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function Header({ today, weather, onMenuOpen }: Props) {
+  const { lang, setLang } = useLanguage();
   const WeatherIcon = weather ? WEATHER_ICONS[weather.icon] || IcCloud : IcCloud;
   const temp = weather ? `${weather.temp}°C` : "…";
   const desc = weather?.description || "";
@@ -48,7 +50,19 @@ export function Header({ today, weather, onMenuOpen }: Props) {
             <div style={{ width: 24, height: 1, background: T.gold }} />
           </div>
         </div>
-        <div style={{ width: 22 }} />
+        {/* Language switcher */}
+        <button
+          onClick={() => setLang(lang === "nl" ? "de" : "nl")}
+          style={{
+            background: "none", border: `1px solid ${T.border}`,
+            borderRadius: 8, cursor: "pointer",
+            fontFamily: T.sans, fontSize: 11, fontWeight: 500,
+            color: T.muted, padding: "4px 8px",
+            letterSpacing: ".04em", lineHeight: 1,
+          }}
+        >
+          {lang === "nl" ? "DE" : "NL"}
+        </button>
       </div>
       <div style={{
         display: "flex", justifyContent: "space-between",

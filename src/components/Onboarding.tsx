@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { T, type GuestProfile } from "@/data/tokens";
 import { PROFILES } from "@/data/profiles";
+import { useLanguage } from "@/i18n";
 import { SheepSvg } from "./icons";
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export function Onboarding({ onSelect }: Props) {
+  const { t } = useLanguage();
   const [picked, setPicked] = useState<string | null>(null);
 
   const handlePick = (key: string) => {
@@ -83,14 +85,14 @@ export function Onboarding({ onSelect }: Props) {
           color: T.text, textAlign: "center", lineHeight: 1.2,
           margin: "0 0 8px",
         }}>
-          Welkom
+          {t.onboarding.title}
         </h1>
         <p style={{
           fontFamily: T.sans, fontSize: 15, color: T.muted,
           fontWeight: 300, textAlign: "center", lineHeight: 1.55,
           margin: "0 0 32px", maxWidth: 280,
         }}>
-          Vertel ons iets over je verblijf, dan stemmen we alles op jullie af.
+          {t.onboarding.subtitle}
         </p>
 
         {/* Profile cards */}
@@ -147,13 +149,13 @@ export function Onboarding({ onSelect }: Props) {
                     fontFamily: T.serif, fontSize: 17, fontWeight: 600,
                     color: T.text, marginBottom: 3,
                   }}>
-                    {p.label}
+                    {t.onboarding.profiles[p.key as keyof typeof t.onboarding.profiles]?.label ?? p.label}
                   </div>
                   <div style={{
                     fontFamily: T.sans, fontSize: 12, color: T.muted,
                     fontWeight: 300, lineHeight: 1.4,
                   }}>
-                    {p.sub}
+                    {t.onboarding.profiles[p.key as keyof typeof t.onboarding.profiles]?.sub ?? p.sub}
                   </div>
                 </div>
 
@@ -183,7 +185,7 @@ export function Onboarding({ onSelect }: Props) {
           onMouseEnter={(e) => (e.currentTarget.style.color = T.text)}
           onMouseLeave={(e) => (e.currentTarget.style.color = T.muted)}
         >
-          Overslaan — ik kijk liever zelf rond
+          {t.onboarding.skip}
         </button>
 
         {/* Bottom decorative line */}
