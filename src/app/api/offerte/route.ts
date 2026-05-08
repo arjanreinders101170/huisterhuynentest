@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
     const { Resend } = await import("resend");
     const resend = new Resend(resendKey);
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynentest.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl";
 
     await resend.emails.send({
       from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,

@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const mollieKey = process.env.MOLLIE_API_KEY;
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynentest.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl";
 
     // Upsert guest
     let guestId = null;

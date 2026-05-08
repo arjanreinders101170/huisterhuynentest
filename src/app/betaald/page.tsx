@@ -78,7 +78,7 @@ function BetaaldContent() {
               </div>
             </div>
 
-            <a href="/" style={{
+            <a href="/app" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               padding: "16px 40px", borderRadius: 12,
               background: T.green, color: "#fff",

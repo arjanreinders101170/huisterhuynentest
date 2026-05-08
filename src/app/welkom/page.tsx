@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 export default function WelkomPage() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynentest.vercel.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl/app";
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(appUrl)}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`;
   const mapsUrl = "https://www.google.com/maps/dir/?api=1&destination=53.1047,6.5070&travelmode=driving";
 
