@@ -1,29 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { adminActionSchema } from "@/lib/schemas";
+import { auditLog, type AuditResourceType } from "@/lib/audit";
+import { LODGES, type Lodge } from "@/lib/lodge";
 
 export const runtime = "nodejs";
 
-function isAuthed(request: NextRequest): boolean {
-  const session = request.cookies.get("hth-admin-session");
-  return session?.value === process.env.ADMIN_SECRET;
+const SESSION_COOKIE = "hth-admin-session-v2";
+
+function getSessionId(request: NextRequest): string | null {
+  return request.cookies.get(SESSION_COOKIE)?.value ?? null;
 }
 
-// GET — fetch table data
+/**
+ * Resolve `?lodge=` query-param.
+ * Returns one of LODGES, or `null` for "all" (no filter).
+ */
+function getLodgeFilter(request: NextRequest): Lodge | null {
+  const raw = request.nextUrl.searchParams.get("lodge");
+  if (!raw || raw === "all") return null;
+  if ((LODGES as readonly string[]).includes(raw)) return raw as Lodge;
+  return null;
+}
+
+// ── GET — fetch table data ────────────────────────────────────────
 export async function GET(request: NextRequest) {
-  if (!isAuthed(request)) {
+  // Auth: middleware already enforced session, but we double-check.
+  const sessionId = getSessionId(request);
+  if (!sessionId) {
     return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
   }
 
+  const action = request.nextUrl.searchParams.get("action");
   const table = request.nextUrl.searchParams.get("table");
+  const lodge = getLodgeFilter(request);
 
   try {
+    // ── Audit log read ────────────────────────────────────────────
+    if (action === "audit_log") {
+      const { data } = await getSupabase()
+        .from("audit_log")
+        .select("id, actor_session_id, action, resource_type, resource_id, payload, ip, user_agent, created_at")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      return NextResponse.json({ data: data || [] });
+    }
+
     switch (table) {
       case "bookings": {
-        const { data } = await getSupabase()
+        let q = getSupabase()
           .from("bookings")
           .select("*")
           .order("created_at", { ascending: false })
           .limit(50);
+        if (lodge) q = q.eq("lodge", lodge);
+        const { data } = await q;
         return NextResponse.json({ data: data || [] });
       }
       case "guests": {
@@ -35,19 +66,23 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ data: data || [] });
       }
       case "reviews": {
-        const { data } = await getSupabase()
+        let q = getSupabase()
           .from("reviews")
           .select("*")
           .order("created_at", { ascending: false })
           .limit(50);
+        if (lodge) q = q.eq("lodge", lodge);
+        const { data } = await q;
         return NextResponse.json({ data: data || [] });
       }
       case "aanvragen": {
-        const { data } = await getSupabase()
+        let q = getSupabase()
           .from("terugkeer_aanvragen")
           .select("*")
           .order("created_at", { ascending: false })
           .limit(50);
+        if (lodge) q = q.eq("lodge", lodge);
+        const { data } = await q;
         return NextResponse.json({ data: data || [] });
       }
       case "products": {
@@ -58,19 +93,23 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ data: data || [] });
       }
       case "invoices": {
-        const { data } = await getSupabase()
+        let q = getSupabase()
           .from("invoices")
           .select("*")
           .order("created_at", { ascending: false })
           .limit(50);
+        if (lodge) q = q.eq("lodge", lodge);
+        const { data } = await q;
         return NextResponse.json({ data: data || [] });
       }
       case "stays": {
-        const { data: staysRaw } = await getSupabase()
+        let q = getSupabase()
           .from("stays")
           .select("*")
           .order("check_in", { ascending: false })
           .limit(50);
+        if (lodge) q = q.eq("lodge", lodge);
+        const { data: staysRaw } = await q;
         // Enrich with guest names
         const staysList = staysRaw || [];
         const guestIds = [...new Set(staysList.map((s: { guest_id: string }) => s.guest_id).filter(Boolean))];
@@ -93,91 +132,157 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST — admin actions
+// ── POST — admin actions ──────────────────────────────────────────
 export async function POST(request: NextRequest) {
-  if (!isAuthed(request)) {
+  const sessionId = getSessionId(request);
+  if (!sessionId) {
     return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
   }
 
+  let raw: unknown;
   try {
-    const body = await request.json();
-    const { action } = body;
+    raw = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Ongeldige JSON" }, { status: 400 });
+  }
 
-    switch (action) {
+  const parsed = adminActionSchema.safeParse(raw);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Ongeldige actie of velden", issues: parsed.error.issues },
+      { status: 400 },
+    );
+  }
+  const body = parsed.data;
+
+  // Helper to fire-and-forget audit row.
+  const audit = async (
+    action: string,
+    resourceType: AuditResourceType,
+    resourceId: string | null,
+    payload: Record<string, unknown> | null,
+  ) => {
+    await auditLog({
+      sessionId,
+      action,
+      resourceType,
+      resourceId,
+      payload,
+      req: request,
+    });
+  };
+
+  try {
+    switch (body.action) {
       case "toggle_review": {
-        await getSupabase()
+        // Atomic: only flip if current value is the inverse of `visible`.
+        const expectedCurrent = !body.visible;
+        const { data, error } = await getSupabase()
           .from("reviews")
           .update({ zichtbaar: body.visible })
-          .eq("id", body.id);
+          .eq("id", body.id)
+          .eq("zichtbaar", expectedCurrent)
+          .select()
+          .maybeSingle();
+
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+        if (!data) {
+          return NextResponse.json(
+            { error: "Review is al in deze status (concurrent update)" },
+            { status: 409 },
+          );
+        }
+
+        await audit("toggle_review", "review", body.id, { visible: body.visible });
         return NextResponse.json({ success: true });
       }
+
       case "create_product": {
         const { id, naam, omschrijving, prijs, categorie, volgorde, btw_percentage, grootboek_code } = body;
-        if (!id || !naam || prijs === undefined) {
-          return NextResponse.json({ error: "ID, naam en prijs zijn verplicht" }, { status: 400 });
-        }
         const { error } = await getSupabase().from("products").insert({
-          id, naam, omschrijving: omschrijving || null,
-          prijs: parseFloat(prijs),
+          id,
+          naam,
+          omschrijving: omschrijving || null,
+          prijs: typeof prijs === "string" ? parseFloat(prijs) : prijs,
           categorie: categorie || "upsell",
-          volgorde: volgorde || 0,
+          volgorde: volgorde ?? 0,
           btw_percentage: btw_percentage ?? 21,
           grootboek_code: grootboek_code || "8020",
           actief: true,
         });
         if (error) {
-          if (error.code === "23505") return NextResponse.json({ error: "Product ID bestaat al" }, { status: 400 });
+          if (error.code === "23505") {
+            return NextResponse.json({ error: "Product ID bestaat al" }, { status: 400 });
+          }
           return NextResponse.json({ error: error.message }, { status: 500 });
         }
+
+        await audit("create_product", "product", id, { naam, prijs, categorie });
         return NextResponse.json({ success: true });
       }
+
       case "update_product": {
         const { id, naam, omschrijving, prijs, categorie, volgorde, btw_percentage, grootboek_code } = body;
-        if (!id) return NextResponse.json({ error: "Product ID is verplicht" }, { status: 400 });
         const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
         if (naam !== undefined) updates.naam = naam;
         if (omschrijving !== undefined) updates.omschrijving = omschrijving;
-        if (prijs !== undefined) updates.prijs = parseFloat(prijs);
+        if (prijs !== undefined) updates.prijs = typeof prijs === "string" ? parseFloat(prijs) : prijs;
         if (categorie !== undefined) updates.categorie = categorie;
         if (volgorde !== undefined) updates.volgorde = volgorde;
         if (btw_percentage !== undefined) updates.btw_percentage = btw_percentage;
         if (grootboek_code !== undefined) updates.grootboek_code = grootboek_code;
-        await getSupabase().from("products").update(updates).eq("id", id);
+        const { error } = await getSupabase().from("products").update(updates).eq("id", id);
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        await audit("update_product", "product", id, updates);
         return NextResponse.json({ success: true });
       }
+
       case "toggle_product": {
-        await getSupabase()
+        const { error } = await getSupabase()
           .from("products")
           .update({ actief: body.actief, updated_at: new Date().toISOString() })
           .eq("id", body.id);
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        await audit("toggle_product", "product", body.id, { actief: body.actief });
         return NextResponse.json({ success: true });
       }
+
       case "delete_product": {
-        await getSupabase()
+        const { error } = await getSupabase()
           .from("products")
           .delete()
           .eq("id", body.id);
-        return NextResponse.json({ success: true });
-      }
-      case "create_stay": {
-        const { naam, email, lodge, check_in, check_out } = body;
-        if (!naam || !email || !lodge || !check_in || !check_out) {
-          return NextResponse.json({ error: "Alle velden zijn verplicht" }, { status: 400 });
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
+        await audit("delete_product", "product", body.id, null);
+        return NextResponse.json({ success: true });
+      }
+
+      case "create_stay": {
+        const { naam, email, lodge, check_in, check_out } = body;
+
         // Upsert guest
-        let guestId = null;
+        let guestId: string | null = null;
         try {
           const { data } = await getSupabase().rpc("upsert_guest", { p_naam: naam, p_email: email });
           guestId = data;
         } catch {
-          // Fallback: check if guest exists, then insert or use existing
           const { data: existing } = await getSupabase().from("guests").select("id").eq("email", email).single();
           if (existing) {
             guestId = existing.id;
           } else {
             const { data: created } = await getSupabase().from("guests").insert({ naam, email, profiel: "gast" }).select("id").single();
-            guestId = created?.id;
+            guestId = created?.id ?? null;
           }
         }
 
@@ -191,26 +296,32 @@ export async function POST(request: NextRequest) {
         const door_code = String(randomInt(1000, 9999));
         const wifi_code = "Huynen" + randomInt(1000, 9999);
 
-        const { error } = await getSupabase().from("stays").insert({
-          guest_id: guestId,
-          lodge,
-          check_in,
-          check_out,
-          token,
-          door_code,
-          wifi_code,
-          status: "gepland",
-          welcome_sent: false,
-        });
+        const { data: created, error } = await getSupabase()
+          .from("stays")
+          .insert({
+            guest_id: guestId,
+            lodge,
+            check_in,
+            check_out,
+            token,
+            door_code,
+            wifi_code,
+            status: "gepland",
+            welcome_sent: false,
+          })
+          .select("id")
+          .single();
 
         if (error) {
           return NextResponse.json({ error: error.message }, { status: 500 });
         }
+
+        await audit("create_stay", "stay", created?.id ?? null, { lodge, check_in, check_out });
         return NextResponse.json({ success: true });
       }
+
       case "send_welcome": {
         const stayId = body.id;
-        if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
 
         // Fetch stay
         const { data: stay, error: stayErr } = await getSupabase()
@@ -326,11 +437,12 @@ export async function POST(request: NextRequest) {
           welcome_sent_at: new Date().toISOString(),
         }).eq("id", stayId);
 
+        await audit("send_welcome", "stay", stayId, { lodge: stay.lodge });
         return NextResponse.json({ success: true });
       }
+
       case "send_thankyou": {
         const stayId = body.id;
-        if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
 
         const { data: stay } = await getSupabase().from("stays").select("*").eq("id", stayId).single();
         if (!stay) return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
@@ -419,12 +531,12 @@ export async function POST(request: NextRequest) {
         // Update stay status
         await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stayId);
 
+        await audit("send_thankyou", "stay", stayId, { lodge: stay.lodge });
         return NextResponse.json({ success: true });
       }
-      default:
-        return NextResponse.json({ error: "Onbekende actie" }, { status: 400 });
     }
-  } catch {
+  } catch (err) {
+    console.error("[admin/data] action failed:", err);
     return NextResponse.json({ error: "Actie mislukt" }, { status: 500 });
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSession } from "@/lib/sessions";
 
 /* ═══ RATE LIMITER (in-memory, per serverless instance) ═══ */
 const hits = new Map<string, { count: number; reset: number }>();
@@ -33,7 +34,7 @@ function checkRateLimit(ip: string, path: string): boolean {
   return true;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hostname = request.headers.get("host") || "";
 
@@ -53,15 +54,20 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Protect /admin routes (except login)
+  // Protect /admin routes (except login + logout)
   if (!pathname.startsWith("/admin")) return NextResponse.next();
   if (pathname === "/admin/login") return NextResponse.next();
   if (pathname.startsWith("/api/admin/login")) return NextResponse.next();
+  if (pathname.startsWith("/api/admin/logout")) return NextResponse.next();
 
-  const session = request.cookies.get("hth-admin-session");
-  if (!session || session.value !== process.env.ADMIN_SECRET) {
-    const loginUrl = new URL("/admin/login", request.url);
-    return NextResponse.redirect(loginUrl);
+  const sessionId = request.cookies.get("hth-admin-session-v2")?.value;
+  if (!sessionId) {
+    return NextResponse.redirect(new URL("/admin/login", request.url));
+  }
+
+  const session = await getSession(sessionId);
+  if (!session || session.revokedAt || session.expiresAt.getTime() <= Date.now()) {
+    return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
   return NextResponse.next();
