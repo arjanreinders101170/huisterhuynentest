@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { T, cardStyle, type Route } from "@/data/tokens";
 import { IcHeart, IcCheck } from "./icons";
+import type { Lodge } from "@/lib/lodge";
 
 type Review = {
   id: string;
@@ -9,6 +10,16 @@ type Review = {
   sterren: number;
   tekst: string;
   datum: string;
+};
+
+type InfoProps = {
+  onNavigate: (r: Route) => void;
+  /** Active lodge for the current stay context. When set, reviews are
+   *  filtered to that lodge and POSTed reviews are tied to it. */
+  lodge?: Lodge;
+  /** Stay-token from the current verblijf URL — if present, the server
+   *  derives the lodge from the token (preferred over `lodge`). */
+  stayToken?: string;
 };
 
 function StarRow({ count, onSelect }: { count: number; onSelect?: (n: number) => void }) {
@@ -31,7 +42,7 @@ function StarRow({ count, onSelect }: { count: number; onSelect?: (n: number) =>
   );
 }
 
-export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
+export function Info({ onNavigate, lodge, stayToken }: InfoProps) {
   /* ═══ REVIEWS STATE ═══ */
   const [reviews, setReviews] = useState<Review[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -41,13 +52,17 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
 
-  // Fetch reviews on mount
+  // Build the reviews fetch URL once — if we know the lodge, scope to it,
+  // otherwise default to the global feed (homepage shows both lodges).
+  const reviewsUrl = lodge ? `/api/reviews?lodge=${lodge}` : "/api/reviews";
+
+  // Fetch reviews on mount (and whenever the lodge context changes)
   useEffect(() => {
-    fetch("/api/reviews")
+    fetch(reviewsUrl)
       .then(r => r.json())
       .then(d => setReviews(d.reviews || []))
       .catch(() => {});
-  }, []);
+  }, [reviewsUrl]);
 
   const submitReview = async () => {
     if (!naam.trim() || !tekst.trim() || sterren === 0 || sending) return;
@@ -56,12 +71,17 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
       const r = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ naam: naam.trim(), sterren, tekst: tekst.trim() }),
+        body: JSON.stringify({
+          naam: naam.trim(),
+          sterren,
+          tekst: tekst.trim(),
+          ...(stayToken ? { stayToken } : lodge ? { lodge } : {}),
+        }),
       });
       if (r.ok) {
         setSubmitted(true);
         // Refresh reviews
-        const d = await fetch("/api/reviews").then(r => r.json());
+        const d = await fetch(reviewsUrl).then(r => r.json());
         setReviews(d.reviews || []);
       }
     } catch {}

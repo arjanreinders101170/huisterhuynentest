@@ -2,9 +2,17 @@
 import { useState } from "react";
 import { T, cardStyle } from "@/data/tokens";
 import { IcBike, IcClock, IcCheck, IcGift, IcBasket } from "./icons";
+import type { Lodge } from "@/lib/lodge";
 
 type Upsell = { id: string; title: string; sub: string; price: string };
-type Props = { booked: string | null; onBook: (p: string) => void; upsells: Upsell[] };
+type Props = {
+  booked: string | null;
+  onBook: (p: string) => void;
+  upsells: Upsell[];
+  /** Active lodge for the current stay context. Forwarded to /api/checkout so
+   *  payments and bookings remain lodge-scoped. */
+  lodge?: Lodge;
+};
 
 const icons: Record<string, React.ReactNode> = {
   welkomst: <IcGift />, boodschappen: <IcBasket />,
@@ -30,7 +38,7 @@ const FIETSEN: FietsType[] = [
   { id: "zitje", naam: "Zitje voor/achter*", dag: 2.50, week: 12.50, needsBike: true },
 ];
 
-export function Reserveren({ booked, onBook, upsells }: Props) {
+export function Reserveren({ booked, onBook, upsells, lodge }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [gastNaam, setGastNaam] = useState("");
   const [gastEmail, setGastEmail] = useState("");
@@ -86,6 +94,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
           gastNaam: gastNaam.trim(),
           gastEmail: gastEmail.trim(),
           metadata: { ...meta, datum: gastDatum || undefined },
+          ...(lodge ? { lodge } : {}),
         }),
       });
       const d = await r.json();

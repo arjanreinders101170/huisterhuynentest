@@ -17,11 +17,15 @@ function OfferteForm() {
   const tot = params.get("tot") || "";
   const personen = params.get("personen") || "2";
   const secret = params.get("s") || "";
+  const lodgeHint = params.get("lodgeHint") || "";
 
   const [prijsVerblijf, setPrijsVerblijf] = useState("");
   const [toeristenbelasting, setToeristenbelasting] = useState("");
   const [schoonmaak, setSchoonmaak] = useState("75");
   const [bericht, setBericht] = useState("");
+  const [lodge, setLodge] = useState<"lodge_1" | "lodge_2">(
+    lodgeHint === "lodge_2" ? "lodge_2" : "lodge_1",
+  );
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -44,7 +48,11 @@ function OfferteForm() {
           adminSecret: secret,
           aanvraagId, gastEmail, gastNaam, van, tot,
           personen: parseInt(personen),
-          prijsVerblijf, toeristenbelasting, schoonmaak, bericht,
+          prijsVerblijf: parseFloat(prijsVerblijf) || 0,
+          toeristenbelasting: parseFloat(toeristenbelasting) || 0,
+          schoonmaak: parseFloat(schoonmaak) || 0,
+          bericht,
+          lodge,
         }),
       });
       if (r.ok) setSent(true);
@@ -110,6 +118,34 @@ function OfferteForm() {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      {/* Lodge selector */}
+      <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: "1px", marginBottom: 12, fontWeight: "bold" }}>
+        Lodge
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 24 }}>
+        {[
+          { id: "lodge_1" as const, label: "Lodge 1 — Boomhut" },
+          { id: "lodge_2" as const, label: "Lodge 2 — Schaapskooi" },
+        ].map(opt => (
+          <button
+            key={opt.id}
+            type="button"
+            onClick={() => setLodge(opt.id)}
+            style={{
+              padding: "12px 10px", borderRadius: 10,
+              border: lodge === opt.id ? "none" : `1px solid ${T.border}`,
+              background: lodge === opt.id ? T.green : T.card,
+              color: lodge === opt.id ? "#fff" : T.text,
+              fontFamily: "Arial, sans-serif", fontSize: 13,
+              fontWeight: lodge === opt.id ? 600 : 400,
+              cursor: "pointer",
+            }}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
       {/* Price fields */}

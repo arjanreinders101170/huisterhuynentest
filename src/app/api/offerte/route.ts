@@ -1,8 +1,29 @@
 import { esc } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { LodgeSchema } from "@/lib/lodge";
+import { z } from "zod";
 
 export const runtime = "nodejs";
+
+// Strict schema for the host-facing offerte request. Mirrors foundation
+// `offerteSchema` but also accepts the display fields the form sends, and
+// uses `aanvraagId` (the form's existing field name) instead of the foundation
+// `id` alias.
+const offerteRequestSchema = z.object({
+  aanvraagId: z.string().min(1).max(64),
+  prijsVerblijf: z.union([z.string(), z.number()]),
+  toeristenbelasting: z.union([z.string(), z.number()]).optional(),
+  schoonmaak: z.union([z.string(), z.number()]).optional(),
+  bericht: z.string().max(2000).optional().default(""),
+  lodge: LodgeSchema,
+  adminSecret: z.string().min(1).max(256),
+  gastEmail: z.string().email(),
+  gastNaam: z.string().max(100).optional().default(""),
+  van: z.string().max(40).optional().default(""),
+  tot: z.string().max(40).optional().default(""),
+  personen: z.number().int().min(1).max(20).optional().default(2),
+});
 
 const LODGE_NAME = "Huis ter Huynen";
 
@@ -142,38 +163,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    // Admin auth check
+    const parsed = offerteRequestSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Ongeldige invoer", details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      );
+    }
+
+    const { aanvraagId, gastEmail, gastNaam, van, tot, personen, prijsVerblijf, toeristenbelasting, schoonmaak, bericht, lodge, adminSecret: bodySecret } = parsed.data;
+
+    // Admin auth check (post-validation, before any DB work)
     const adminSecret = process.env.ADMIN_SECRET;
-    if (adminSecret && body.adminSecret !== adminSecret) {
+    if (adminSecret && bodySecret !== adminSecret) {
       return NextResponse.json({ error: "Geen toegang" }, { status: 403 });
     }
 
-    const { aanvraagId, gastEmail, gastNaam, van, tot, personen, prijsVerblijf, toeristenbelasting, schoonmaak, bericht } = body;
-
-    if (!gastEmail || !prijsVerblijf) {
-      return NextResponse.json({ error: "E-mail en prijs zijn verplicht" }, { status: 400 });
-    }
-
-    const verblijf = parseFloat(prijsVerblijf) || 0;
-    const belasting = parseFloat(toeristenbelasting) || 0;
-    const cleaning = parseFloat(schoonmaak) || 0;
+    const verblijf = parseFloat(String(prijsVerblijf)) || 0;
+    const belasting = parseFloat(String(toeristenbelasting ?? "0")) || 0;
+    const cleaning = parseFloat(String(schoonmaak ?? "0")) || 0;
     const totaal = (verblijf + belasting + cleaning).toFixed(2);
 
     // Generate confirm token for secure bevestig link
     const { randomBytes } = await import("crypto");
     const confirmToken = randomBytes(32).toString("hex");
+    const confirmTokenExpiresAt = new Date(Date.now() + 14 * 24 * 3600 * 1000);
 
-    // Update aanvraag status in database
-    if (aanvraagId) {
-      try {
-        await getSupabase().from("terugkeer_aanvragen").update({
-          status: "offerte_verstuurd",
-          offerte_bedrag: parseFloat(totaal),
-          confirm_token: confirmToken,
-          updated_at: new Date().toISOString(),
-        }).eq("id", aanvraagId);
-      } catch (e) { console.error("Update failed:", e); }
-    }
+    // Update aanvraag status in database (write lodge + token-expiry)
+    try {
+      await getSupabase().from("terugkeer_aanvragen").update({
+        status: "offerte_verstuurd",
+        offerte_bedrag: parseFloat(totaal),
+        confirm_token: confirmToken,
+        confirm_token_expires_at: confirmTokenExpiresAt.toISOString(),
+        lodge,
+        updated_at: new Date().toISOString(),
+      }).eq("id", aanvraagId);
+    } catch (e) { console.error("Update failed:", e); }
 
     // Send offerte email to guest
     const resendKey = process.env.RESEND_API_KEY;
