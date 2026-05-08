@@ -1,4 +1,5 @@
 # Huis ter Huynen – Boutique Lodge App
+<!-- Last updated: 2026-05-08 -->
 
 Premium digitale guest experience PWA voor Huis ter Huynen in Zeijen, Drenthe.
 
