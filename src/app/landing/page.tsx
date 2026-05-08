@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import AvailabilityCalendar from "@/components/AvailabilityCalendar";
-
 const T = {
   bg: "#EAE3D2",
   card: "#FDFBF6",
@@ -63,8 +60,6 @@ function SectionHeader({ eyebrow, title, sub }: { eyebrow: string; title: string
 }
 
 export default function LandingPage() {
-  const [selectedLodge, setSelectedLodge] = useState<"lodge_1" | "lodge_2">("lodge_1");
-
   return (
     <div style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
 
@@ -121,14 +116,6 @@ export default function LandingPage() {
           </p>
 
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="#beschikbaarheid" style={{
-              padding: "15px 44px", background: T.gold, color: T.green,
-              border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700,
-              cursor: "pointer", textDecoration: "none", display: "inline-block",
-              letterSpacing: "0.3px",
-            }}>
-              Bekijk beschikbaarheid
-            </a>
             <a href="#omgeving" style={{
               padding: "15px 44px", background: "transparent", color: "white",
               border: "2px solid rgba(255,255,255,.55)", borderRadius: 12,
@@ -686,58 +673,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          BESCHIKBAARHEIDSKALENDER
-      ══════════════════════════════════════════ */}
-      <section id="beschikbaarheid" style={{ background: "white", padding: "80px 40px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <SectionHeader
-            eyebrow="Reserveren"
-            title="Beschikbaarheid"
-            sub="Kies een lodge en bekijk welke datums nog vrij zijn."
-          />
-
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", marginBottom: 36 }}>
-            {[
-              { id: "lodge_1" as const, name: "De Boomhut" },
-              { id: "lodge_2" as const, name: "De Schaapskooi" },
-            ].map((lodge) => (
-              <button
-                key={lodge.id}
-                onClick={() => setSelectedLodge(lodge.id)}
-                style={{
-                  padding: "12px 28px",
-                  background: selectedLodge === lodge.id ? T.green : "transparent",
-                  color: selectedLodge === lodge.id ? "white" : T.muted,
-                  border: `2px solid ${selectedLodge === lodge.id ? T.green : T.border}`,
-                  borderRadius: 10, fontSize: 14, fontWeight: 600,
-                  cursor: "pointer", transition: "all .2s ease",
-                }}
-              >
-                {lodge.name}
-              </button>
-            ))}
-          </div>
-
-          <AvailabilityCalendar lodgeId={selectedLodge} />
-
-          <div style={{
-            display: "flex", gap: 20, justifyContent: "center",
-            marginTop: 28, fontSize: 13, flexWrap: "wrap", color: T.muted,
-          }}>
-            {[
-              { kleur: "#90EE90", label: "Beschikbaar" },
-              { kleur: "#D3D3D3", label: "Geboekt" },
-              { kleur: "#FFA500", label: "Geblokkeerd" },
-            ].map((l, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 14, height: 14, background: l.kleur, borderRadius: 3 }} />
-                <span style={{ fontFamily: T.sans, fontWeight: 300 }}>{l.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════════
           CTA
@@ -774,14 +709,6 @@ export default function LandingPage() {
             Stuur uw voorkeursdatums — wij reageren binnen 24 uur met een persoonlijk voorstel.
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="#beschikbaarheid" style={{
-              padding: "15px 44px", background: T.gold, color: T.green,
-              border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700,
-              cursor: "pointer", textDecoration: "none", display: "inline-block",
-              letterSpacing: "0.3px",
-            }}>
-              Bekijk beschikbaarheid
-            </a>
             <a href="mailto:lodge@huisterhuynen.nl" style={{
               padding: "15px 44px", background: "transparent", color: "white",
               border: "2px solid rgba(255,255,255,.4)", borderRadius: 12,
