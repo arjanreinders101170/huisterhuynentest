@@ -2,14 +2,7 @@
 import type { RefObject } from "react";
 import { T, type ChatMsg, type GuestProfile } from "@/data/tokens";
 import { SheepSvg, IcSend } from "./icons";
-
-const CHIPS: Record<string, string[]> = {
-  stel: ["Romantisch dineren", "Rustige wandeling", "Wellness vandaag", "Wijn & borrel"],
-  gezin: ["Wat bij regen?", "Kindvriendelijk eten", "Speeltuin dichtbij", "Dagje uit"],
-  actief: ["Fietsroute vandaag", "Waar kan ik kanoën?", "MTB-trails", "Sportief eten"],
-  rust: ["Stilste wandeling", "Sauna in de buurt", "Boek & koffie plek", "Niets-doen tips"],
-  default: ["Wandeltips", "Restaurants", "Leuk uitje", "Dit weer"],
-};
+import { useLanguage } from "@/i18n";
 
 type Props = {
   msgs: ChatMsg[];
@@ -22,7 +15,9 @@ type Props = {
 };
 
 export function Chat({ msgs, input, onInputChange, onSend, busy, endRef, profile }: Props) {
-  const chips = (profile && CHIPS[profile]) ? CHIPS[profile] : CHIPS.default;
+  const { t } = useLanguage();
+  const chipMap = t.chat.chips;
+  const chips = (profile && chipMap[profile as keyof typeof chipMap]) ? chipMap[profile as keyof typeof chipMap] : chipMap.default;
   /* Height: viewport minus header (68px) minus nav bar (72px) */
   return (
     <div style={{
@@ -44,7 +39,7 @@ export function Chat({ msgs, input, onInputChange, onSend, busy, endRef, profile
               Huynen Host
             </div>
             <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300 }}>
-              Digitale conciërge · Online
+              {t.chat.subtitle}
             </div>
           </div>
         </div>
@@ -155,7 +150,7 @@ export function Chat({ msgs, input, onInputChange, onSend, busy, endRef, profile
               onSend();
             }
           }}
-          placeholder="Stel je vraag..."
+          placeholder={t.chat.placeholder}
           autoComplete="off"
           enterKeyHint="send"
           style={{

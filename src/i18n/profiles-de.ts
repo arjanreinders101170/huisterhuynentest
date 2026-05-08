@@ -1,0 +1,58 @@
+export const PROFILES_DE = {
+  stel: {
+    label: "Als Paar",
+    emoji: "👫",
+    sub: "Romantik, leckeres Essen & Quality Time",
+    welkom: "Genießen Sie Ihre Zeit zusammen",
+    tileOrder: ["eten", "ontspanning", "natuur", "cultuur", "actief", "kinderen"],
+    popularItem: {
+      naam: "De Jufferen Lunsingh",
+      sub: "Fine Dining · eigener Gemüsegarten · Gault&Millau",
+      category: "eten",
+    },
+    upsellOrder: ["welkomst", "latecheck", "fiets", "boodschappen"],
+    chatContext: "Dies ist ein Paar, das Romantik und Quality Time sucht. Empfehlen Sie Restaurants, Wellness und ruhige Wanderungen.",
+  },
+  gezin: {
+    label: "Mit Kindern",
+    emoji: "👨‍👩‍👧‍👦",
+    sub: "Abenteuer, Spielspaß & gemeinsam genießen",
+    welkom: "Willkommen mit der ganzen Familie!",
+    tileOrder: ["kinderen", "actief", "natuur", "eten", "cultuur", "ontspanning"],
+    popularItem: {
+      naam: "Freizeitpark Sprookjeshof",
+      sub: "Ganztägiger Ausflug · Abenteuer · bis 10 Jahre",
+      category: "kinderen",
+    },
+    upsellOrder: ["fiets", "boodschappen", "welkomst", "latecheck"],
+    chatContext: "Dies ist eine Familie mit Kindern. Empfehlen Sie kinderfreundliche Ausflüge, Spielplätze und Restaurants mit Kinderkarte.",
+  },
+  actief: {
+    label: "Aktiv & sportlich",
+    emoji: "🚴",
+    sub: "Radfahren, Wandern & Natur erleben",
+    welkom: "Bereit für das Abenteuer?",
+    tileOrder: ["actief", "natuur", "eten", "cultuur", "ontspanning", "kinderen"],
+    popularItem: {
+      naam: "Kanu-Abenteuer Hunze",
+      sub: "2-3 Std. · durch Naturgebiete · einzigartig",
+      category: "actief",
+    },
+    upsellOrder: ["fiets", "boodschappen", "welkomst", "latecheck"],
+    chatContext: "Dies ist ein sportlicher Gast, der Outdoor-Aktivitäten liebt. Empfehlen Sie Fahrradrouten, Wanderungen und Wasseraktivitäten.",
+  },
+  rust: {
+    label: "Ruhe & Entspannung",
+    emoji: "💆",
+    sub: "Wellness, Stille & zur Ruhe kommen",
+    welkom: "Zeit, vollständig zur Ruhe zu kommen",
+    tileOrder: ["ontspanning", "eten", "natuur", "cultuur", "actief", "kinderen"],
+    popularItem: {
+      naam: "LOFF Boutique Wellness",
+      sub: "Kleine Sauna · Schneedusche · Assen",
+      category: "ontspanning",
+    },
+    upsellOrder: ["welkomst", "latecheck", "boodschappen", "fiets"],
+    chatContext: "Dies ist ein Gast, der Ruhe und Entspannung sucht. Empfehlen Sie Wellness, ruhige Wanderungen und Fine Dining.",
+  },
+};

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { T, cardStyle, type Route } from "@/data/tokens";
 import { IcHeart, IcCheck } from "./icons";
+import { useLanguage } from "@/i18n";
 
 type Review = {
   id: string;
@@ -32,6 +33,7 @@ function StarRow({ count, onSelect }: { count: number; onSelect?: (n: number) =>
 }
 
 export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
+  const { t } = useLanguage();
   /* ═══ REVIEWS STATE ═══ */
   const [reviews, setReviews] = useState<Review[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -71,16 +73,16 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
   return (
     <div style={{ padding: "0 20px 110px" }}>
       <div style={{ paddingTop: 28 }}>
-        <h1 style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 6px" }}>Huis ter Huynen</h1>
-        <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300, margin: 0 }}>Boutique Lodge · Zeijen, Drenthe</p>
+        <h1 style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 6px" }}>{t.info.title}</h1>
+        <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300, margin: 0 }}>{t.info.subtitle}</p>
       </div>
 
       {/* Contact */}
-      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Contact</h2>
+      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>{t.info.contact}</h2>
       {[
-        { l: "Adres", v: "Zuiderstraat 6, Zeijen" },
-        { l: "Telefoon", v: "+31 6 42568603" },
-        { l: "E-mail", v: "info@huisterhuynen.nl" },
+        { l: t.info.address, v: "Zuiderstraat 6, Zeijen" },
+        { l: t.info.phone,   v: "+31 6 42568603" },
+        { l: t.info.email,   v: "info@huisterhuynen.nl" },
       ].map((x, i) => (
         <div key={i} style={{ padding: "12px 0", borderBottom: `1px solid ${T.border}` }}>
           <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 2 }}>{x.l}</div>
@@ -89,24 +91,24 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
       ))}
 
       {/* Tijden */}
-      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Tijden</h2>
+      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>{t.info.times}</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        {[{ l: "Check-in", t: "15:00" }, { l: "Check-out", t: "11:00" }].map((x, i) => (
+        {[{ l: t.info.checkIn, v: "15:00" }, { l: t.info.checkOut, v: "11:00" }].map((x, i) => (
           <div key={i} style={{ ...cardStyle, padding: "14px 16px", textAlign: "center" }}>
             <div style={{ fontFamily: T.sans, fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: ".06em" }}>{x.l}</div>
-            <div style={{ fontFamily: T.serif, fontSize: 22, fontWeight: 600, color: T.green, marginTop: 4 }}>{x.t}</div>
+            <div style={{ fontFamily: T.serif, fontSize: 22, fontWeight: 600, color: T.green, marginTop: 4 }}>{x.v}</div>
           </div>
         ))}
       </div>
 
       {/* Huisregels */}
-      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>Huisregels</h2>
+      <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>{t.info.houseRules}</h2>
       <div style={{ ...cardStyle, padding: "16px 18px" }}>
-        {["Niet roken in de lodge", "Huisdieren welkom (overleg vooraf)", "Rust na 22:00", "Afval gescheiden"].map((r, i) => (
+        {t.info.houseRulesList.map((r, i) => (
           <div key={i} style={{
             fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 300,
             padding: "8px 0", display: "flex", alignItems: "center", gap: 8,
-            borderBottom: i < 3 ? `1px solid ${T.border}` : "none",
+            borderBottom: i < t.info.houseRulesList.length - 1 ? `1px solid ${T.border}` : "none",
           }}>
             <span style={{ color: T.green, fontSize: 10 }}>●</span> {r}
           </div>
@@ -117,7 +119,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
           REVIEWS
           ═══════════════════════════════════ */}
       <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>
-        Wat gasten zeggen
+        {t.info.guestsSay}
       </h2>
 
       {/* Existing reviews — last 5 */}
@@ -158,19 +160,19 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
         }}>
           <div style={{ color: T.green, marginBottom: 12 }}><IcCheck /></div>
           <div style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, marginBottom: 6 }}>
-            Bedankt voor je review!
+            {t.info.thankYou}
           </div>
           <p style={{ fontFamily: T.sans, fontSize: 13, color: T.muted, fontWeight: 300, margin: 0 }}>
-            Je review is geplaatst. We waarderen het enorm.
+            {t.info.thankYouSub}
           </p>
         </div>
       ) : !showForm ? (
         <div style={{ textAlign: "center" }}>
           <div style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 600, color: T.text, marginBottom: 4 }}>
-            Hoe was je verblijf?
+            {t.info.howWasYourStay}
           </div>
           <div style={{ fontFamily: T.sans, fontSize: 13, color: T.muted, fontWeight: 300, marginBottom: 14 }}>
-            We horen het graag
+            {t.info.weWantToHear}
           </div>
           <button
             onClick={() => setShowForm(true)}
@@ -181,19 +183,19 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
               display: "inline-flex", alignItems: "center", gap: 6,
             }}
           >
-            <IcHeart /> Review achterlaten
+            <IcHeart /> {t.info.leaveReview}
           </button>
         </div>
       ) : (
         <div style={{ ...cardStyle, padding: "22px 20px", animation: "fadeUp .3s ease both" }}>
           <div style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 600, color: T.text, marginBottom: 16 }}>
-            Deel je ervaring
+            {t.info.shareExperience}
           </div>
 
           {/* Stars */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>
-              Beoordeling
+              {t.info.rating}
             </div>
             <div style={{ display: "flex", gap: 6 }}>
               {[1, 2, 3, 4, 5].map(n => (
@@ -219,12 +221,12 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
           {/* Name */}
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>
-              Naam
+              {t.info.name}
             </div>
             <input
               value={naam}
               onChange={e => setNaam(e.target.value)}
-              placeholder="Bijv. Martijn & Lisa"
+              placeholder={t.info.namePlaceholder}
               maxLength={50}
               style={{
                 width: "100%", padding: "11px 14px", borderRadius: 12,
@@ -238,12 +240,12 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
           {/* Text */}
           <div style={{ marginBottom: 18 }}>
             <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>
-              Je ervaring
+              {t.info.experience}
             </div>
             <textarea
               value={tekst}
               onChange={e => setTekst(e.target.value)}
-              placeholder="Wat vond je het leukst?"
+              placeholder={t.info.experiencePlaceholder}
               maxLength={500}
               rows={3}
               style={{
@@ -269,7 +271,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
               transition: "background .15s ease",
             }}
           >
-            {sending ? "Versturen..." : "Plaats review"}
+            {sending ? t.info.submitting : t.info.submit}
           </button>
 
           <button
@@ -280,7 +282,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
               fontWeight: 300, cursor: "pointer", padding: 8,
             }}
           >
-            Annuleren
+            {t.info.cancel}
           </button>
         </div>
       )}
@@ -293,10 +295,10 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
         boxShadow: "0 8px 32px rgba(47,79,62,.2)",
       }}>
         <div style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 600, color: "#fff", marginBottom: 6 }}>
-          Kom nog eens terug
+          {t.info.comeBack}
         </div>
         <p style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.7)", fontWeight: 300, lineHeight: 1.5, margin: "0 0 16px" }}>
-          Ontvang een persoonlijk aanbod met beste prijs garantie
+          {t.info.comeBackSub}
         </p>
         <button
           onClick={() => onNavigate("terugkomen")}
@@ -306,7 +308,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
             fontFamily: T.sans, fontSize: 14, fontWeight: 500, cursor: "pointer",
           }}
         >
-          Bekijk beschikbaarheid
+          {t.info.checkAvailability}
         </button>
       </div>
     </div>

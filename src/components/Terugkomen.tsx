@@ -2,16 +2,22 @@
 import { useState, useMemo } from "react";
 import { T, cardStyle, type Route } from "@/data/tokens";
 import { IcCheck, IcArrow } from "./icons";
+import { useLanguage } from "@/i18n";
 
 type Props = { onNavigate: (r: Route) => void };
 
-const MONTHS = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
-const DAYS = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
+const MONTHS_NL = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+const MONTHS_DE = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+const DAYS_NL = ["Ma","Di","Wo","Do","Vr","Za","Zo"];
+const DAYS_DE = ["Mo","Di","Mi","Do","Fr","Sa","So"];
 
 function toKey(d: Date) { return d.toISOString().split("T")[0]; }
 function fromKey(s: string) { return new Date(s + "T12:00:00"); }
 
 export function Terugkomen({ onNavigate }: Props) {
+  const { t, lang } = useLanguage();
+  const MONTHS = lang === "de" ? MONTHS_DE : MONTHS_NL;
+  const DAYS = lang === "de" ? DAYS_DE : DAYS_NL;
   const [step, setStep] = useState(1);
   const [fromDate, setFromDate] = useState<string | null>(null);
   const [toDate, setToDate] = useState<string | null>(null);
@@ -72,7 +78,7 @@ export function Terugkomen({ onNavigate }: Props) {
 
   const formatDate = (key: string) => {
     const d = fromKey(key);
-    return d.toLocaleDateString("nl-NL", { day: "numeric", month: "long" });
+    return d.toLocaleDateString(lang === "de" ? "de-DE" : "nl-NL", { day: "numeric", month: "long" });
   };
 
   const prevMonth = () => setCalMonth(p => p.month === 0 ? { year: p.year - 1, month: 11 } : { year: p.year, month: p.month - 1 });
@@ -106,20 +112,23 @@ export function Terugkomen({ onNavigate }: Props) {
         <div style={{ paddingTop: 60, textAlign: "center", animation: "fadeUp .5s ease both" }}>
           <div style={{ fontSize: 48, marginBottom: 20 }}>🌿</div>
           <h1 style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 10px" }}>
-            Dank je wel
+            {t.terugkomen.thankYou}
           </h1>
           <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.6, margin: "0 0 28px", maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}>
-            We gaan een mooi voorstel voor je samenstellen. Je ontvangt binnen 24 uur een persoonlijk aanbod.
+            {t.terugkomen.thankYouSub}
           </p>
 
           <div style={{ ...cardStyle, padding: "18px 20px", textAlign: "left", marginBottom: 24 }}>
-            {["Beste prijs garantie", "Speciaal voor terugkerende gasten", "Geen verplichting"].map((t, i) => (
+            {(lang === "de"
+              ? ["Bestpreisgarantie", "Speziell für Stammgäste", "Keine Verpflichtung"]
+              : ["Beste prijs garantie", "Speciaal voor terugkerende gasten", "Geen verplichting"]
+            ).map((item, i) => (
               <div key={i} style={{
                 display: "flex", alignItems: "center", gap: 10, padding: "8px 0",
                 borderBottom: i < 2 ? `1px solid ${T.border}` : "none",
               }}>
                 <span style={{ color: T.green }}><IcCheck /></span>
-                <span style={{ fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 300 }}>{t}</span>
+                <span style={{ fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 300 }}>{item}</span>
               </div>
             ))}
           </div>
@@ -129,7 +138,7 @@ export function Terugkomen({ onNavigate }: Props) {
             background: T.green, color: "#fff",
             fontFamily: T.sans, fontSize: 15, fontWeight: 500, cursor: "pointer",
           }}>
-            Terug naar overzicht
+            {lang === "de" ? "Zurück zur Übersicht" : "Terug naar overzicht"}
           </button>
         </div>
       </div>
@@ -147,24 +156,27 @@ export function Terugkomen({ onNavigate }: Props) {
           display: "flex", alignItems: "center", gap: 4,
         }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
-          Terug
+          {lang === "de" ? "Zurück" : "Terug"}
         </button>
         <h1 style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 6px" }}>
-          Kom nog eens terug
+          {t.terugkomen.title}
         </h1>
         <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300, margin: "0 0 20px", lineHeight: 1.5 }}>
-          Kies je gewenste periode en ontvang een persoonlijk aanbod met beste prijs garantie
+          {t.terugkomen.subtitle}
         </p>
       </div>
 
       {/* Trust badges */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
-        {["Altijd scherper dan booking sites", "Persoonlijk afgestemd", "Geen verplichting"].map((t, i) => (
+        {(lang === "de"
+          ? ["Immer günstiger als Buchungsportale", "Persönlich abgestimmt", "Keine Verpflichtung"]
+          : ["Altijd scherper dan booking sites", "Persoonlijk afgestemd", "Geen verplichting"]
+        ).map((badge, i) => (
           <div key={i} style={{
             display: "flex", alignItems: "center", gap: 5,
             fontFamily: T.sans, fontSize: 11, color: T.green, fontWeight: 400,
           }}>
-            <span style={{ color: T.green, fontSize: 12 }}>✓</span> {t}
+            <span style={{ color: T.green, fontSize: 12 }}>✓</span> {badge}
           </div>
         ))}
       </div>
@@ -180,7 +192,9 @@ export function Terugkomen({ onNavigate }: Props) {
         ))}
       </div>
       <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300, marginBottom: 16 }}>
-        Stap {step} van 2 — {step === 1 ? "Kies je periode" : "Je gegevens"}
+        {lang === "de"
+          ? `Schritt ${step} von 2 — ${step === 1 ? "Zeitraum wählen" : "Ihre Angaben"}`
+          : `Stap ${step} van 2 — ${step === 1 ? "Kies je periode" : "Je gegevens"}`}
       </div>
 
       {/* STEP 1: Calendar */}
@@ -245,7 +259,9 @@ export function Terugkomen({ onNavigate }: Props) {
 
             {/* Min nights notice */}
             <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300, marginTop: 12, textAlign: "center" }}>
-              {fromDate && !toDate ? "Selecteer een einddatum (min. 2 nachten)" : "Minimaal 2 nachten"}
+              {lang === "de"
+                ? (fromDate && !toDate ? "Enddatum wählen (mind. 2 Nächte)" : "Mindestens 2 Nächte")
+                : (fromDate && !toDate ? "Selecteer een einddatum (min. 2 nachten)" : "Minimaal 2 nachten")}
             </div>
           </div>
 
@@ -262,7 +278,7 @@ export function Terugkomen({ onNavigate }: Props) {
                   {formatDate(fromDate)} — {formatDate(toDate)}
                 </div>
                 <div style={{ fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500 }}>
-                  {nights} nachten
+                  {nights} {lang === "de" ? "Nächte" : "nachten"}
                 </div>
               </div>
             </div>
@@ -281,7 +297,7 @@ export function Terugkomen({ onNavigate }: Props) {
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             }}
           >
-            Volgende stap <IcArrow />
+            {lang === "de" ? "Nächster Schritt" : "Volgende stap"} <IcArrow />
           </button>
         </div>
       )}
@@ -298,35 +314,35 @@ export function Terugkomen({ onNavigate }: Props) {
               <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text }}>
                 {formatDate(fromDate!)} — {formatDate(toDate!)}
               </div>
-              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500 }}>{nights} nachten</div>
+              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500 }}>{nights} {lang === "de" ? "Nächte" : "nachten"}</div>
             </div>
             <button onClick={() => setStep(1)} style={{
               background: "none", border: "none", cursor: "pointer",
               fontFamily: T.sans, fontSize: 12, color: T.gold, fontWeight: 400,
-            }}>Wijzig</button>
+            }}>{lang === "de" ? "Ändern" : "Wijzig"}</button>
           </div>
 
           {/* Form */}
           <div style={{ ...cardStyle, padding: "22px 20px" }}>
             {/* Email */}
             <div style={{ marginBottom: 14 }}>
-              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>E-mailadres *</div>
-              <input value={email} onChange={e => setEmail(e.target.value)} placeholder="jouw@email.nl" type="email"
+              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>{t.terugkomen.email} *</div>
+              <input value={email} onChange={e => setEmail(e.target.value)} placeholder={t.terugkomen.emailPlaceholder} type="email"
                 style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 16, color: T.text, fontWeight: 300, outline: "none" }} />
             </div>
 
             {/* Name */}
             <div style={{ marginBottom: 14 }}>
               <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>
-                Naam <span style={{ opacity: 0.5 }}>(optioneel)</span>
+                {t.terugkomen.name} <span style={{ opacity: 0.5 }}>({lang === "de" ? "optional" : "optioneel"})</span>
               </div>
-              <input value={name} onChange={e => setName(e.target.value)} placeholder="Hoe mogen we je noemen?"
+              <input value={name} onChange={e => setName(e.target.value)} placeholder={t.terugkomen.namePlaceholder}
                 style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 16, color: T.text, fontWeight: 300, outline: "none" }} />
             </div>
 
             {/* Persons */}
             <div style={{ marginBottom: 14 }}>
-              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>Aantal personen</div>
+              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>{lang === "de" ? "Anzahl Personen" : "Aantal personen"}</div>
               <div style={{ display: "flex", gap: 8 }}>
                 {[1, 2, 3, 4, 5, 6].map(n => (
                   <button key={n} onClick={() => setPersons(n)} style={{
@@ -344,9 +360,9 @@ export function Terugkomen({ onNavigate }: Props) {
             {/* Message */}
             <div style={{ marginBottom: 4 }}>
               <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>
-                Opmerking <span style={{ opacity: 0.5 }}>(optioneel)</span>
+                {t.terugkomen.notes} <span style={{ opacity: 0.5 }}>({lang === "de" ? "optional" : "optioneel"})</span>
               </div>
-              <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Bijv. verjaardagsweekend, met hond, etc."
+              <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder={t.terugkomen.notesPlaceholder}
                 rows={2} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 300, outline: "none", resize: "none", lineHeight: 1.5 }} />
             </div>
           </div>
@@ -360,16 +376,16 @@ export function Terugkomen({ onNavigate }: Props) {
             marginTop: 20,
             boxShadow: canSubmit ? "0 8px 32px rgba(47,79,62,.25)" : "none",
           }}>
-            {loading ? "Even geduld..." : "Ontvang mijn persoonlijke aanbod"}
+            {loading ? t.terugkomen.requesting : t.terugkomen.request}
           </button>
 
           {/* Trust */}
           <div style={{ textAlign: "center", marginTop: 12 }}>
             <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300 }}>
-              Wij reageren meestal binnen enkele uren
+              {lang === "de" ? "Wir antworten meist innerhalb weniger Stunden" : "Wij reageren meestal binnen enkele uren"}
             </div>
             <div style={{ fontFamily: T.sans, fontSize: 10, color: T.border, fontWeight: 300, marginTop: 4 }}>
-              Geen spam. Alleen een persoonlijk aanbod.
+              {lang === "de" ? "Kein Spam. Nur ein persönliches Angebot." : "Geen spam. Alleen een persoonlijk aanbod."}
             </div>
           </div>
 

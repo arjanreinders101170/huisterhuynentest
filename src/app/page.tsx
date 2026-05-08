@@ -4,7 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import type { Route, ChatMsg, DoorStatus, GuestProfile, Weather } from "@/data/tokens";
 import { T } from "@/data/tokens";
 import { DATA, CATEGORY_KEYS, UPSELLS } from "@/data/categories";
+import { DATA_DE, UPSELLS_DE } from "@/i18n/categories-de";
 import { PROFILES } from "@/data/profiles";
+import { PROFILES_DE } from "@/i18n/profiles-de";
+import { LanguageProvider, useLanguage } from "@/i18n";
 import { Header } from "@/components/Header";
 import { Onboarding } from "@/components/Onboarding";
 import { Home } from "@/components/Home";
@@ -18,6 +21,15 @@ import { Nav } from "@/components/Nav";
 import { LodgeControl } from "@/components/LodgeControl";
 
 export default function Page() {
+  return (
+    <LanguageProvider>
+      <AppInner />
+    </LanguageProvider>
+  );
+}
+
+function AppInner() {
+  const { lang, t } = useLanguage();
   /* ═══ ROUTE ═══ */
   const [route, setRoute] = useState<Route>("home");
 
@@ -54,7 +66,7 @@ export default function Page() {
 
   /* ═══ FEATURE STATE ═══ */
   const [msgs, setMsgs] = useState<ChatMsg[]>([
-    { role: "assistant", text: "Welkom! Ik ben de Huynen Host 🌿 Wat kan ik voor je doen?" },
+    { role: "assistant", text: t.chat.welcome },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatBusy, setChatBusy] = useState(false);
@@ -65,7 +77,7 @@ export default function Page() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const today = new Date().toLocaleDateString("nl-NL", {
+  const today = new Date().toLocaleDateString(lang === "de" ? "de-DE" : "nl-NL", {
     weekday: "long", day: "numeric", month: "long",
   });
 
@@ -97,11 +109,14 @@ export default function Page() {
     const timeout = setTimeout(() => controller.abort(), 10000);
 
     // Build context for the AI
-    const profileContext = profile && profile in PROFILES
-      ? PROFILES[profile as Exclude<GuestProfile, null>].chatContext
+    const activeProfiles = lang === "de" ? PROFILES_DE : PROFILES;
+    const profileContext = profile && profile in activeProfiles
+      ? activeProfiles[profile as Exclude<GuestProfile, null>].chatContext
       : null;
     const weatherContext = weather
-      ? `Het is nu ${weather.temp}°C en ${weather.description} in Zeijen.`
+      ? (lang === "de"
+          ? `Es ist jetzt ${weather.temp}°C und ${weather.description} in Zeijen.`
+          : `Het is nu ${weather.temp}°C en ${weather.description} in Zeijen.`)
       : null;
     const fullContext = [profileContext, weatherContext].filter(Boolean).join(" ") || null;
 
@@ -118,12 +133,14 @@ export default function Page() {
       });
       clearTimeout(timeout);
       const d = await r.json();
-      setMsgs(p => [...p, { role: "assistant", text: d.reply || "Even geen antwoord." }]);
+      setMsgs(p => [...p, { role: "assistant", text: d.reply || (lang === "de" ? "Kein Antwoord." : "Even geen antwoord.") }]);
     } catch {
       clearTimeout(timeout);
       setMsgs(p => [...p, {
         role: "assistant",
-        text: "Even geen verbinding. Probeer het straks opnieuw, of bekijk de tips op de homepage.",
+        text: lang === "de"
+          ? "Kurz keine Verbindung. Versuchen Sie es später, oder schauen Sie sich die Tipps auf der Startseite an."
+          : "Even geen verbinding. Probeer het straks opnieuw, of bekijk de tips op de homepage.",
       }]);
     }
     setChatBusy(false);
@@ -182,9 +199,13 @@ export default function Page() {
   };
 
   /* ═══ HELPERS ═══ */
+  const activeData = lang === "de" ? DATA_DE : DATA;
+  const activeUpsells = lang === "de" ? UPSELLS_DE : UPSELLS;
+  const activeProfiles2 = lang === "de" ? PROFILES_DE : PROFILES;
+
   const basePage = route.startsWith("detail:") ? "home" : route === "terugkomen" ? "info" : route;
   const detailKey = route.startsWith("detail:") ? route.split(":")[1] : null;
-  const detailData = detailKey ? DATA[detailKey] : null;
+  const detailData = detailKey ? activeData[detailKey] : null;
 
   // Don't render until we've checked localStorage (prevents flash)
   if (!ready) return null;
@@ -240,7 +261,7 @@ export default function Page() {
             <Reserveren
               booked={booked}
               onBook={handleBook}
-              upsells={UPSELLS}
+              upsells={activeUpsells}
             />
           )}
           {route === "info" && (

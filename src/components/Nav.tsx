@@ -1,14 +1,7 @@
 "use client";
 import { T, type Route } from "@/data/tokens";
 import { IcHome, IcKey, IcChat, IcCart, IcInfo } from "./icons";
-
-const items = [
-  { icon: <IcHome />, label: "Home", page: "home" as Route },
-  { icon: <IcKey />, label: "Verblijf", page: "verblijf" as Route },
-  { icon: <IcChat />, label: "", page: "chat" as Route },
-  { icon: <IcCart />, label: "Extra's", page: "reserveren" as Route },
-  { icon: <IcInfo />, label: "Info", page: "info" as Route },
-];
+import { useLanguage } from "@/i18n";
 
 type Props = {
   currentPage: string;
@@ -16,6 +9,14 @@ type Props = {
 };
 
 export function Nav({ currentPage, onNavigate }: Props) {
+  const { t } = useLanguage();
+  const items = [
+    { icon: <IcHome />, label: t.nav.home,    page: "home" as Route },
+    { icon: <IcKey />,  label: t.nav.verblijf, page: "verblijf" as Route },
+    { icon: <IcChat />, label: "",             page: "chat" as Route },
+    { icon: <IcCart />, label: t.nav.extras,  page: "reserveren" as Route },
+    { icon: <IcInfo />, label: t.nav.info,    page: "info" as Route },
+  ];
   return (
     <nav style={{
       position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
