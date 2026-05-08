@@ -525,7 +525,7 @@ export default function LandingPage() {
           />
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gridTemplateColumns: "repeat(4, 1fr)",
             gap: 24,
           }}>
             {[
@@ -534,7 +534,7 @@ export default function LandingPage() {
                 icon: "🌿",
                 hoogtepunt: "Veentjesroute Zeijen",
                 items: ["Direct vanuit de lodge", "13+ routes in de omgeving", "Nationaal Park op 15 min"],
-                bg: "rgba(47,79,62,.05)",
+                img: "/wandel_drenthe.jpg",
                 accent: T.green,
               },
               {
@@ -542,7 +542,7 @@ export default function LandingPage() {
                 icon: "🚴",
                 hoogtepunt: "1.000+ km knooppuntennet",
                 items: ["E-bikes te huur in Assen", "Levering op locatie mogelijk", "MTB-routes beschikbaar"],
-                bg: "rgba(180,154,94,.07)",
+                img: "/rent_a_bike.jpg",
                 accent: "#7B6B3A",
               },
               {
@@ -550,7 +550,7 @@ export default function LandingPage() {
                 icon: "🗿",
                 hoogtepunt: "52 hunebedden · Drents Museum",
                 items: ["Hunebed Highway (N34)", "Kamp Westerbork", "Museumdorp Orvelte"],
-                bg: "rgba(47,79,62,.04)",
+                img: "/museum_drenthe.jpg",
                 accent: T.green,
               },
               {
@@ -558,39 +558,54 @@ export default function LandingPage() {
                 icon: "♨",
                 hoogtepunt: "Sauna's binnen 20 min",
                 items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Massage aan huis mogelijk"],
-                bg: "rgba(180,154,94,.07)",
+                img: "/welness_drenthe.jpg",
                 accent: "#7B6B3A",
               },
             ].map((c, i) => (
               <div key={i} style={{
-                background: c.bg, borderRadius: 14,
-                border: `1px solid ${T.border}`, padding: "28px 24px",
+                background: "white", borderRadius: 14,
+                border: `1px solid ${T.border}`,
+                overflow: "hidden",
+                boxShadow: "0 2px 12px rgba(0,0,0,.06)",
               }}>
-                <div style={{ fontSize: 28, marginBottom: 14, lineHeight: 1 }}>{c.icon}</div>
-                <h4 style={{
-                  fontFamily: T.serif, fontSize: 17, fontWeight: 700,
-                  color: T.text, margin: "0 0 4px",
-                }}>
-                  {c.cat}
-                </h4>
-                <div style={{
-                  fontFamily: T.sans, fontSize: 12, color: c.accent,
-                  fontWeight: 600, marginBottom: 14,
-                }}>
-                  {c.hoogtepunt}
+                <div style={{ position: "relative", height: 180 }}>
+                  <img
+                    src={c.img}
+                    alt={c.cat}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  />
+                  <span style={{
+                    position: "absolute", top: 10, right: 10,
+                    background: "rgba(255,255,255,.85)", borderRadius: 8,
+                    padding: "4px 8px", fontSize: 18, lineHeight: 1,
+                  }}>{c.icon}</span>
                 </div>
-                <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-                  {c.items.map((item, j) => (
-                    <li key={j} style={{
-                      fontFamily: T.sans, fontSize: 13, color: T.muted,
-                      fontWeight: 300, paddingBottom: 6, lineHeight: 1.5,
-                      borderBottom: j < c.items.length - 1 ? `1px solid ${T.border}` : "none",
-                      marginBottom: j < c.items.length - 1 ? 6 : 0,
-                    }}>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                <div style={{ padding: "20px 20px 22px" }}>
+                  <h4 style={{
+                    fontFamily: T.serif, fontSize: 16, fontWeight: 700,
+                    color: T.text, margin: "0 0 4px",
+                  }}>
+                    {c.cat}
+                  </h4>
+                  <div style={{
+                    fontFamily: T.sans, fontSize: 11, color: c.accent,
+                    fontWeight: 600, marginBottom: 14, textTransform: "uppercase", letterSpacing: ".04em",
+                  }}>
+                    {c.hoogtepunt}
+                  </div>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                    {c.items.map((item, j) => (
+                      <li key={j} style={{
+                        fontFamily: T.sans, fontSize: 13, color: T.muted,
+                        fontWeight: 300, paddingBottom: 6, lineHeight: 1.5,
+                        borderBottom: j < c.items.length - 1 ? `1px solid ${T.border}` : "none",
+                        marginBottom: j < c.items.length - 1 ? 6 : 0,
+                      }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ))}
           </div>
