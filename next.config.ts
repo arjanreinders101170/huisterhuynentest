@@ -11,6 +11,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/app",
+        destination: "/concierge",
+      },
+      {
+        source: "/app/:path*",
+        destination: "/concierge/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
