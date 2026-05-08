@@ -21,7 +21,7 @@ export default function TermsPage() {
           <p>Huis ter Huynen · Zuiderstraat 6 · 9491 EC Zeijen · <a href="mailto:lodge@huisterhuynen.nl" style={{ color: C.gold }}>lodge@huisterhuynen.nl</a></p>
         </div>
         <div style={{ marginTop: 60, textAlign: "center", fontSize: 13 }}>
-          <a href="/landing" style={{ color: C.gold, textDecoration: "none" }}>← Terug naar home</a>
+          <a href="/" style={{ color: C.gold, textDecoration: "none" }}>← Terug naar home</a>
         </div>
       </div>
     </div>

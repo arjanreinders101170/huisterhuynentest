@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
       aanvraagId = data?.id || "";
     } catch (e) { console.error("Terugkeer insert failed:", e); }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynentest.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl";
 
     const adminSecret = process.env.ADMIN_SECRET || "";
 

@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.huisterhuynen.nl";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl/app";
     const resendKey = process.env.RESEND_API_KEY;
     if (!resendKey) {
       return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });

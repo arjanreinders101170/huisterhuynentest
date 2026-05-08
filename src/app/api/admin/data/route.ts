@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
         }
 
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.huisterhuynen.nl";
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl/app";
         const lodgeNaam = stay.lodge === "lodge_1" ? "Boomhut Lodge" : "Schaapskooi Lodge";
         const checkInDate = new Date(stay.check_in).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
 
