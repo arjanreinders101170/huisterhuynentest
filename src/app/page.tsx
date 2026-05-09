@@ -267,7 +267,7 @@ export default function LandingPage() {
             gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
             gap: 32,
           }}>
-            [
+            {[
               {
                 id: "lodge_1",
                 name: "De Heide",
