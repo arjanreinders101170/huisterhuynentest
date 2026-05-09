@@ -10,12 +10,12 @@ interface GoogleReview {
 
 const FALLBACK_REVIEWS = [
   {
-    text: "Een onvergetelijk weekend in de Boomhut. De hottub onder de sterren, het geluid van de vogels — pure magie.",
+    text: "Een onvergetelijk weekend in De Heide. De hottub onder de sterren, het geluid van de vogels — pure magie.",
     author: "Sarah & Mark",
     rating: 5,
   },
   {
-    text: "De Schaapskooi is het mooiste wat ik het afgelopen jaar heb gezien. Warm, authentiek, en hartelijk ontvangen.",
+    text: "De Eik is het mooiste wat ik het afgelopen jaar heb gezien. Warm, authentiek, en hartelijk ontvangen.",
     author: "Petra",
     rating: 5,
   },
@@ -230,7 +230,7 @@ export default function LandingPage() {
               { icon: "◈", label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen — direct om de hoek." },
               { icon: "◈", label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein." },
               { icon: "◈", label: "Volledige privacy", desc: "Alleen ú en uw gezelschap — geen omringende buren." },
-              { icon: "◈", label: "Uniek design", desc: "Een boomhut én een schaapskooi — elk met eigen karakter." },
+              { icon: "◈", label: "Uniek design", desc: "De Heide én De Eik — elk met eigen karakter en sfeer." },
               { icon: "◈", label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf." },
             ].map((usp, i) => (
               <div key={i} style={{ borderTop: `2px solid ${T.gold}`, paddingTop: 20 }}>
@@ -270,17 +270,19 @@ export default function LandingPage() {
             {[
               {
                 id: "lodge_1",
-                name: "De Boomhut",
+                name: "De Heide",
                 tag: "Voor twee",
-                desc: "Een luxe boomhut op hoogte, ingericht voor twee. Panoramisch uitzicht over het Drentse bos, eigen sauna en privé-hottub op het terras.",
-                features: ["2 personen", "Privé-hottub", "Sauna", "Bos uitzicht"],
+                desc: "Een luxe lodge op de Drentse heide, ingericht voor twee. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
+                features: ["2 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
+                img: "/lodge-heide.jpg",
               },
               {
                 id: "lodge_2",
-                name: "De Schaapskooi",
+                name: "De Eik",
                 tag: "Voor vier",
-                desc: "Een voormalige schapenschuur omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke balken en een volledige keuken.",
-                features: ["4 personen", "Privé-hottub", "Volledige keuken", "Authentiek interieur"],
+                desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
+                features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
+                img: "/lodge-eik.jpg",
               },
             ].map((lodge) => (
               <div key={lodge.id} style={{
@@ -289,9 +291,9 @@ export default function LandingPage() {
                 boxShadow: "0 4px 24px rgba(47,79,62,.07)",
               }}>
                 <div style={{
-                  height: 240,
-                  backgroundImage: lodge.id === "lodge_1" ? "url('/heide2.jpg')" : "url('/heide3.jpg')",
-                  backgroundSize: "cover", backgroundPosition: "center",
+                  height: 270,
+                  backgroundImage: `url('${lodge.img}')`,
+                  backgroundSize: "cover", backgroundPosition: "center 40%",
                   position: "relative",
                 }}>
                   <div style={{
