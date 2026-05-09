@@ -10,12 +10,12 @@ interface GoogleReview {
 
 const FALLBACK_REVIEWS = [
   {
-    text: "Een onvergetelijk weekend in de Boomhut. De hottub onder de sterren, het geluid van de vogels — pure magie.",
+    text: "Een onvergetelijk weekend in De Eik. De hottub onder de sterren, het geluid van de vogels — pure magie.",
     author: "Sarah & Mark",
     rating: 5,
   },
   {
-    text: "De Schaapskooi is het mooiste wat ik het afgelopen jaar heb gezien. Warm, authentiek, en hartelijk ontvangen.",
+    text: "De Heide is het mooiste wat ik het afgelopen jaar heb gezien. Warm, authentiek, en hartelijk ontvangen.",
     author: "Petra",
     rating: 5,
   },
@@ -270,17 +270,17 @@ export default function LandingPage() {
             {[
               {
                 id: "lodge_1",
-                name: "De Boomhut",
-                tag: "Voor twee",
-                desc: "Een luxe boomhut op hoogte, ingericht voor twee. Panoramisch uitzicht over het Drentse bos, eigen sauna en privé-hottub op het terras.",
-                features: ["2 personen", "Privé-hottub", "Sauna", "Bos uitzicht"],
+                name: "De Eik",
+                tag: "Voor vier",
+                desc: "Een sfeervolle lodge voor vier personen, omgeven door eeuwenoude eiken. Geniet van het Drentse bos vanuit uw privé-hottub op het terras.",
+                features: ["4 personen", "Privé-hottub", "Bos uitzicht", "Volledig privé"],
               },
               {
                 id: "lodge_2",
-                name: "De Schaapskooi",
+                name: "De Heide",
                 tag: "Voor vier",
-                desc: "Een voormalige schapenschuur omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke balken en een volledige keuken.",
-                features: ["4 personen", "Privé-hottub", "Volledige keuken", "Authentiek interieur"],
+                desc: "Een ruime lodge voor vier, gelegen aan de rand van de Drentse heide. Hoge plafonds, warme sfeer en een privé-hottub met uitzicht over het landschap.",
+                features: ["4 personen", "Privé-hottub", "Heide uitzicht", "Volledig privé"],
               },
             ].map((lodge) => (
               <div key={lodge.id} style={{

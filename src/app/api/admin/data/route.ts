@@ -240,7 +240,7 @@ export async function POST(request: NextRequest) {
         }
 
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl/app";
-        const lodgeNaam = stay.lodge === "lodge_1" ? "Boomhut Lodge" : "Schaapskooi Lodge";
+        const lodgeNaam = stay.lodge === "lodge_1" ? "Lodge De Eik" : "Lodge De Heide";
         const checkInDate = new Date(stay.check_in).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
 
         const { Resend } = await import("resend");
