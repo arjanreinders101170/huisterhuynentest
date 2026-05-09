@@ -267,22 +267,22 @@ export default function LandingPage() {
             gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
             gap: 32,
           }}>
-            {[
+            [
               {
                 id: "lodge_1",
                 name: "De Heide",
-                tag: "Voor twee",
+                tag: "2 personen",
                 desc: "Een luxe lodge op de Drentse heide, ingericht voor twee. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
                 features: ["2 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
-                img: "/lodge-heide.jpg",
+                img: "/heide1.jpg",
               },
               {
                 id: "lodge_2",
                 name: "De Eik",
-                tag: "Voor vier",
+                tag: "4 personen",
                 desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
                 features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
-                img: "/lodge-eik.jpg",
+                img: "/borrel1.jpg",
               },
             ].map((lodge) => (
               <div key={lodge.id} style={{
@@ -621,6 +621,8 @@ export default function LandingPage() {
                   <img
                     src={c.img}
                     alt={c.cat}
+                    loading="lazy"
+                    decoding="async"
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   />
                   <span style={{
@@ -811,27 +813,124 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════ */}
-      <footer style={{ background: "#1A1A1A", color: T.muted, padding: "48px 40px", textAlign: "center" }}>
-        <div style={{
-          fontFamily: T.serif, fontSize: 14, color: "rgba(255,255,255,.4)",
-          letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20,
-        }}>
-          Huis ter Huynen
+      <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.55)", padding: "60px 40px 36px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {/* Top grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "40px 48px",
+            paddingBottom: 48,
+            borderBottom: "1px solid rgba(255,255,255,.08)",
+          }}>
+            {/* Brand */}
+            <div>
+              <div style={{
+                fontFamily: T.serif, fontSize: 18, fontWeight: 700,
+                color: "white", letterSpacing: "0.5px", marginBottom: 12,
+              }}>
+                Huis ter Huynen
+              </div>
+              <p style={{
+                fontFamily: T.sans, fontSize: 13, fontWeight: 300,
+                lineHeight: 1.7, margin: "0 0 16px", color: "rgba(255,255,255,.5)",
+              }}>
+                Twee boutique lodges midden in het hart van Drenthe. Natuur, privacy en luxe — op loopafstand van de heide.
+              </p>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {["De Heide · 2 pers.", "De Eik · 4 pers."].map((l, i) => (
+                  <span key={i} style={{
+                    fontFamily: T.sans, fontSize: 11, color: T.gold,
+                    border: "1px solid rgba(180,154,94,.3)", padding: "3px 10px", borderRadius: 6,
+                  }}>{l}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <div style={{
+                fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+                color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
+              }}>
+                Contact
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 300, lineHeight: 1.6 }}>
+                  Zuiderstraat 6<br />9491 EC Zeijen, Drenthe
+                </div>
+                <a href="tel:+31642568603" style={{
+                  fontFamily: T.sans, fontSize: 13, fontWeight: 400,
+                  color: "rgba(255,255,255,.7)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
+                }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54a16 16 0 0 0 6 6l.91-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                  +31 6 42568603
+                </a>
+                <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{
+                  fontFamily: T.sans, fontSize: 13, fontWeight: 400,
+                  color: "#25D366", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
+                }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                  WhatsApp
+                </a>
+                <a href="mailto:lodge@huisterhuynen.nl" style={{
+                  fontFamily: T.sans, fontSize: 13, fontWeight: 400,
+                  color: "rgba(255,255,255,.7)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
+                }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
+                  lodge@huisterhuynen.nl
+                </a>
+              </div>
+            </div>
+
+            {/* Links */}
+            <div>
+              <div style={{
+                fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+                color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
+              }}>
+                Snel naar
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  { label: "Onze lodges", href: "#" },
+                  { label: "De omgeving", href: "#omgeving" },
+                  { label: "Reserveren", href: "https://wa.me/31642568603" },
+                  { label: "Privacybeleid", href: "/privacy" },
+                  { label: "Algemene voorwaarden", href: "/terms" },
+                ].map((link, i) => (
+                  <a key={i} href={link.href} style={{
+                    fontFamily: T.sans, fontSize: 13, fontWeight: 300,
+                    color: "rgba(255,255,255,.6)", textDecoration: "none",
+                    transition: "color .15s",
+                  }}>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            flexWrap: "wrap", gap: 12, paddingTop: 28,
+            fontFamily: T.sans, fontSize: 12, fontWeight: 300,
+            color: "rgba(255,255,255,.3)",
+          }}>
+            <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
+            <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.2)" }}>
+              Boutique Lodge · KVK: in aanvraag
+            </span>
+          </div>
         </div>
-        <p style={{ fontFamily: T.sans, fontSize: 13, margin: "0 0 8px", fontWeight: 300 }}>
-          Zuiderstraat 6 · 9491 EC Zeijen, Drenthe
-          {" · "}
-          <a href="tel:+31642568603" style={{ color: T.gold, textDecoration: "none" }}>+31 6 42568603</a>
-        </p>
-        <p style={{ fontFamily: T.sans, fontSize: 12, margin: "16px 0 0", fontWeight: 300 }}>
-          © 2026 Huis ter Huynen
-          {" · "}
-          <a href="/privacy" style={{ color: T.gold, textDecoration: "none" }}>Privacy</a>
-          {" · "}
-          <a href="/terms" style={{ color: T.gold, textDecoration: "none" }}>Voorwaarden</a>
-          {" · "}
-          <a href="mailto:lodge@huisterhuynen.nl" style={{ color: T.gold, textDecoration: "none" }}>Contact</a>
-        </p>
       </footer>
     </div>
   );
