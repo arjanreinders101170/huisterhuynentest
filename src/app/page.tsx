@@ -230,7 +230,7 @@ export default function LandingPage() {
               { icon: "◈", label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen — direct om de hoek." },
               { icon: "◈", label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein." },
               { icon: "◈", label: "Volledige privacy", desc: "Alleen ú en uw gezelschap — geen omringende buren." },
-              { icon: "◈", label: "Uniek design", desc: "Een boomhut én een schaapskooi — elk met eigen karakter." },
+              { icon: "◈", label: "Uniek design", desc: "Lodge De Eik én Lodge De Heide — elk met eigen karakter en sfeer." },
               { icon: "◈", label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf." },
             ].map((usp, i) => (
               <div key={i} style={{ borderTop: `2px solid ${T.gold}`, paddingTop: 20 }}>
