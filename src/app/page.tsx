@@ -107,16 +107,16 @@ const faqItems = [
     a: "Ja, op het terrein staat een laadpaal voor elektrische voertuigen. Gebruik hiervan is gratis voor gasten.",
   },
   {
-    v: "Kan ik de lodge ook boeken voor een zakelijke bijeenkomst of bijzondere gelegenheid?",
-    a: "Absoluut. De lodge leent zich uitstekend voor een intiem zakelijk overleg of een bijzondere gelegenheid. Neem contact met ons op voor de mogelijkheden.",
-  },
-  {
     v: "Wat zijn de annuleringsvoorwaarden?",
     a: "Annulering tot 14 dagen voor aankomst is kosteloos. Bij annulering binnen 14 dagen rekenen wij 50% van het totaalbedrag. Bij annulering binnen 48 uur of no-show is het volledige bedrag verschuldigd.",
   },
   {
     v: "Is er WiFi beschikbaar?",
     a: "Ja, er is gratis snel WiFi beschikbaar in de gehele lodge.",
+  },
+  {
+    v: "Is de lodge het hele jaar open?",
+    a: "Ja, Huis ter Huynen is het hele jaar door te boeken. Elk seizoen heeft zijn eigen charme — van bloeiende heidevelden in de zomer tot stille besneeuwde bossen in de winter.",
   },
 ];
 
