@@ -1,4 +1,30 @@
 "use client";
+import { useState, useEffect } from "react";
+
+interface GoogleReview {
+  author: string;
+  rating: number;
+  text: string;
+  time: number;
+}
+
+const FALLBACK_REVIEWS = [
+  {
+    text: "Een onvergetelijk weekend in de Boomhut. De hottub onder de sterren, het geluid van de vogels — pure magie.",
+    author: "Sarah & Mark",
+    rating: 5,
+  },
+  {
+    text: "De Schaapskooi is het mooiste wat ik het afgelopen jaar heb gezien. Warm, authentiek, en hartelijk ontvangen.",
+    author: "Petra",
+    rating: 5,
+  },
+  {
+    text: "Perfect voor een EV-roadtrip. Laadpaal ter plekke en het uitzicht over de heide is fenomenaal.",
+    author: "Jan",
+    rating: 5,
+  },
+];
 
 const T = {
   bg: "#EAE3D2",
@@ -60,6 +86,27 @@ function SectionHeader({ eyebrow, title, sub }: { eyebrow: string; title: string
 }
 
 export default function LandingPage() {
+  const [googleReviews, setGoogleReviews] = useState<GoogleReview[]>([]);
+  const [googleRating, setGoogleRating] = useState<number | null>(null);
+  const [googleCount, setGoogleCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/google-reviews")
+      .then(r => r.json())
+      .then(data => {
+        if (data.reviews?.length) {
+          setGoogleReviews(data.reviews);
+          setGoogleRating(data.totalRating ?? null);
+          setGoogleCount(data.totalCount ?? null);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const displayReviews = googleReviews.length > 0
+    ? googleReviews.map(r => ({ text: r.text, author: r.author, rating: r.rating }))
+    : FALLBACK_REVIEWS;
+
   return (
     <div style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
 
@@ -621,34 +668,33 @@ export default function LandingPage() {
             eyebrow="Ervaringen van gasten"
             title="Wat anderen zeggen"
           />
+          {googleRating && googleCount && (
+            <div style={{
+              display: "flex", alignItems: "center", gap: 10,
+              justifyContent: "center", marginBottom: 36,
+            }}>
+              <span style={{ fontFamily: T.sans, fontSize: 13, color: T.gold, letterSpacing: "1px" }}>
+                {"★".repeat(Math.round(googleRating))}
+              </span>
+              <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 600 }}>
+                {googleRating.toFixed(1)}
+              </span>
+              <span style={{ fontFamily: T.sans, fontSize: 12, color: T.muted }}>
+                op basis van {googleCount} Google reviews
+              </span>
+            </div>
+          )}
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: 24,
           }}>
-            {[
-              {
-                text: "Een onvergetelijk weekend in de Boomhut. De hottub onder de sterren, het geluid van de vogels — pure magie.",
-                author: "Sarah & Mark",
-                herkomst: "Amsterdam",
-              },
-              {
-                text: "De Schaapskooi is het mooiste wat ik het afgelopen jaar heb gezien. Warm, authentiek, en hartelijk ontvangen.",
-                author: "Petra",
-                herkomst: "Groningen",
-              },
-              {
-                text: "Perfect voor een EV-roadtrip. Laadpaal ter plekke en het uitzicht over de heide is fenomenaal.",
-                author: "Jan",
-                herkomst: "Duitsland",
-              },
-            ].map((review, i) => (
+            {displayReviews.map((review, i) => (
               <div key={i} style={{
                 background: "white", padding: "32px 28px",
                 borderRadius: 14, position: "relative", overflow: "hidden",
                 boxShadow: "0 2px 16px rgba(47,79,62,.06)",
               }}>
-                {/* decoratief aanhalingsteken */}
                 <div style={{
                   position: "absolute", top: 16, right: 20,
                   fontFamily: T.serif, fontSize: 72, color: T.gold,
@@ -661,14 +707,14 @@ export default function LandingPage() {
                   fontFamily: T.sans, fontSize: 13, color: T.gold,
                   marginBottom: 14, letterSpacing: "1px",
                 }}>
-                  ★★★★★
+                  {"★".repeat(review.rating)}
                 </div>
                 <p style={{
                   fontFamily: T.serif, fontSize: 15, color: T.text,
                   fontStyle: "italic", margin: "0 0 20px", lineHeight: 1.75,
                   fontWeight: 400,
                 }}>
-                  "{review.text}"
+                  &ldquo;{review.text}&rdquo;
                 </p>
                 <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 14 }}>
                   <div style={{
@@ -676,11 +722,20 @@ export default function LandingPage() {
                   }}>
                     {review.author}
                   </div>
-                  <div style={{
-                    fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 300,
-                  }}>
-                    {review.herkomst}
-                  </div>
+                  {googleReviews.length > 0 && (
+                    <div style={{
+                      fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300,
+                      display: "flex", alignItems: "center", gap: 4, marginTop: 2,
+                    }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                      </svg>
+                      Google review
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
