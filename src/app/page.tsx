@@ -1,12 +1,4 @@
-"use client";
-import { useState, useEffect } from "react";
-
-interface GoogleReview {
-  author: string;
-  rating: number;
-  text: string;
-  time: number;
-}
+import { fetchGoogleReviews } from "@/lib/google-reviews";
 
 const FALLBACK_REVIEWS = [
   {
@@ -85,23 +77,9 @@ function SectionHeader({ eyebrow, title, sub }: { eyebrow: string; title: string
   );
 }
 
-export default function LandingPage() {
-  const [googleReviews, setGoogleReviews] = useState<GoogleReview[]>([]);
-  const [googleRating, setGoogleRating] = useState<number | null>(null);
-  const [googleCount, setGoogleCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetch("/api/google-reviews")
-      .then(r => r.json())
-      .then(data => {
-        if (data.reviews?.length) {
-          setGoogleReviews(data.reviews);
-          setGoogleRating(data.totalRating ?? null);
-          setGoogleCount(data.totalCount ?? null);
-        }
-      })
-      .catch(() => {});
-  }, []);
+export default async function LandingPage() {
+  const { reviews: googleReviews, totalRating: googleRating, totalCount: googleCount } =
+    await fetchGoogleReviews();
 
   const displayReviews = googleReviews.length > 0
     ? googleReviews.map(r => ({ text: r.text, author: r.author, rating: r.rating }))
