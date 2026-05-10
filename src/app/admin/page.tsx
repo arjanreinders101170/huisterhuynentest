@@ -44,7 +44,7 @@ function timeAgo(dateStr: string): string {
   return `${days} dag${days > 1 ? "en" : ""}`;
 }
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "lodge_1" | "lodge_2";
+type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "lodge_1" | "lodge_2";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -127,6 +127,7 @@ export default function AdminDashboard() {
     { id: "reviews", label: "Reviews" },
     { id: "aanvragen", label: "Aanvragen" },
     { id: "producten", label: "Producten" },
+    { id: "tarieven", label: "Tarieven" },
   ];
 
   return (
@@ -339,6 +340,8 @@ export default function AdminDashboard() {
             {tab === "producten" && (
               <ProductenTab products={products} setProducts={setProducts} />
             )}
+
+            {tab === "tarieven" && <TarievenTab />}
 
             {(tab === "lodge_1" || tab === "lodge_2") && (
               <LodgeView lodgeId={tab} />
@@ -702,6 +705,157 @@ function LodgeView({ lodgeId }: { lodgeId: string }) {
       <div style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(180,154,94,.06)", border: "1px solid rgba(180,154,94,.15)", fontSize: 13, color: C.gold, textAlign: "center" }}>
         Demo modus — wordt gekoppeld aan Home Assistant zodra de NUC is geïnstalleerd
       </div>
+    </>
+  );
+}
+
+/* ═══ TARIEVEN TAB ═══ */
+type PricingPeriod = { id: string; lodge_id: string; label: string; start_date: string; end_date: string; price_per_night: number };
+
+function TarievenTab() {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "10px 14px", borderRadius: 8,
+    border: `1px solid ${C.border}`, background: C.card,
+    fontSize: 14, color: C.text, outline: "none", boxSizing: "border-box",
+  };
+
+  const [periods, setPeriods] = useState<PricingPeriod[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const emptyForm = { lodge_id: "lodge_1", label: "", start_date: "", end_date: "", price_per_night: "" };
+  const [form, setForm] = useState(emptyForm);
+
+  const load = async () => {
+    setLoading(true);
+    const res = await fetch("/api/admin/data?table=pricing_periods");
+    const d = await res.json();
+    setPeriods(d.data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const startCreate = () => { setCreating(true); setEditing(null); setForm(emptyForm); };
+  const startEdit = (p: PricingPeriod) => {
+    setEditing(p.id); setCreating(false);
+    setForm({ lodge_id: p.lodge_id, label: p.label, start_date: p.start_date, end_date: p.end_date, price_per_night: String(p.price_per_night) });
+  };
+  const cancel = () => { setCreating(false); setEditing(null); };
+
+  const save = async () => {
+    if (!form.label || !form.start_date || !form.end_date || !form.price_per_night) return;
+    setSaving(true);
+    const action = creating ? "create_pricing_period" : "update_pricing_period";
+    const body: Record<string, unknown> = { action, ...form, price_per_night: parseFloat(form.price_per_night) };
+    if (editing) body.id = editing;
+    await fetch("/api/admin/data", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    await load();
+    setCreating(false); setEditing(null);
+    setSaving(false);
+  };
+
+  const deletePeriod = async (id: string) => {
+    if (!confirm("Tariefperiode verwijderen?")) return;
+    await fetch("/api/admin/data", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "delete_pricing_period", id }) });
+    setPeriods(prev => prev.filter(p => p.id !== id));
+  };
+
+  const lodgeLabel = (id: string) => id === "lodge_1" ? "De Heide" : "De Eik";
+  const byLodge = (id: string) => periods.filter(p => p.lodge_id === id);
+
+  return (
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Tarieven</div>
+          <div style={{ fontSize: 13, color: C.light, marginTop: 2 }}>Stel prijzen per periode en lodge in</div>
+        </div>
+        <button onClick={startCreate} style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: C.green, color: "#fff", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+          + Nieuwe periode
+        </button>
+      </div>
+
+      <div style={{ fontSize: 13, color: C.muted, background: "rgba(180,154,94,.08)", border: "1px solid rgba(180,154,94,.2)", borderRadius: 8, padding: "10px 14px", marginBottom: 20 }}>
+        ℹ️ Zorg dat de <strong>pricing_periods</strong> tabel bestaat in Supabase. SQL:{" "}
+        <code style={{ fontSize: 11, background: "rgba(0,0,0,.05)", padding: "1px 4px", borderRadius: 3 }}>
+          CREATE TABLE pricing_periods (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, lodge_id text NOT NULL, label text NOT NULL, start_date date NOT NULL, end_date date NOT NULL, price_per_night numeric(10,2) NOT NULL, created_at timestamptz DEFAULT now());
+        </code>
+      </div>
+
+      {(creating || editing) && (
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 24px", marginBottom: 20 }}>
+          <div style={{ fontSize: 15, fontWeight: 500, color: C.text, marginBottom: 16 }}>{creating ? "Nieuwe tariefperiode" : "Bewerk periode"}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Lodge</label>
+              <select value={form.lodge_id} onChange={e => setForm({ ...form, lodge_id: e.target.value })} style={inputStyle}>
+                <option value="lodge_1">Lodge De Heide</option>
+                <option value="lodge_2">Lodge De Eik</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Naam / label</label>
+              <input value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} placeholder="bijv. Zomervakantie NL" style={inputStyle} />
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Startdatum</label>
+              <input value={form.start_date} onChange={e => setForm({ ...form, start_date: e.target.value })} type="date" style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Einddatum</label>
+              <input value={form.end_date} onChange={e => setForm({ ...form, end_date: e.target.value })} type="date" style={inputStyle} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Prijs per nacht (€)</label>
+              <input value={form.price_per_night} onChange={e => setForm({ ...form, price_per_night: e.target.value })} type="number" step="0.01" placeholder="195.00" style={inputStyle} />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={cancel} style={{ padding: "10px 20px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, fontSize: 13, color: C.muted, cursor: "pointer" }}>Annuleren</button>
+            <button onClick={save} disabled={!form.label || !form.start_date || !form.end_date || !form.price_per_night || saving} style={{
+              padding: "10px 24px", borderRadius: 8, border: "none",
+              background: form.label && form.start_date && form.end_date && form.price_per_night && !saving ? C.green : C.border,
+              fontSize: 13, fontWeight: 500, color: "#fff",
+              cursor: form.label && form.start_date && form.end_date && form.price_per_night ? "pointer" : "not-allowed",
+            }}>{saving ? "Opslaan..." : "Opslaan"}</button>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div style={{ fontSize: 13, color: C.light, padding: 20, textAlign: "center" }}>Laden...</div>
+      ) : (
+        ["lodge_1", "lodge_2"].map(lodgeId => (
+          <div key={lodgeId} style={{ marginBottom: 32 }}>
+            <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 10 }}>Lodge {lodgeLabel(lodgeId)}</div>
+            <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 100px 120px", padding: "10px 18px", background: C.bg, fontSize: 12, color: C.light, borderBottom: `1px solid ${C.border}` }}>
+                <div>Naam</div><div>Van</div><div>Tot</div><div>Per nacht</div><div></div>
+              </div>
+              {byLodge(lodgeId).length === 0 && (
+                <div style={{ padding: 20, fontSize: 13, color: C.light, textAlign: "center" }}>Nog geen tarieven ingesteld</div>
+              )}
+              {byLodge(lodgeId).map(p => (
+                <div key={p.id} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 100px 120px", padding: "12px 18px", fontSize: 13, borderBottom: `1px solid ${C.border}`, alignItems: "center" }}>
+                  <div style={{ color: C.text, fontWeight: 500 }}>{p.label}</div>
+                  <div style={{ color: C.muted }}>{p.start_date}</div>
+                  <div style={{ color: C.muted }}>{p.end_date}</div>
+                  <div style={{ color: C.text, fontWeight: 500 }}>€ {Number(p.price_per_night).toFixed(2)}</div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={() => startEdit(p)} style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: C.card, fontSize: 11, color: C.muted, cursor: "pointer" }}>Bewerk</button>
+                    <button onClick={() => deletePeriod(p.id)} style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`, background: C.card, fontSize: 11, color: "#E24B4A", cursor: "pointer" }}>×</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      )}
     </>
   );
 }

@@ -65,6 +65,13 @@ export async function GET(request: NextRequest) {
           .limit(50);
         return NextResponse.json({ data: data || [] });
       }
+      case "pricing_periods": {
+        const { data } = await getSupabase()
+          .from("pricing_periods")
+          .select("*")
+          .order("start_date", { ascending: true });
+        return NextResponse.json({ data: data || [] });
+      }
       case "stays": {
         const { data: staysRaw } = await getSupabase()
           .from("stays")
@@ -419,6 +426,35 @@ export async function POST(request: NextRequest) {
         // Update stay status
         await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stayId);
 
+        return NextResponse.json({ success: true });
+      }
+      case "create_pricing_period": {
+        const { lodge_id, label, start_date, end_date, price_per_night } = body;
+        if (!lodge_id || !label || !start_date || !end_date || price_per_night === undefined) {
+          return NextResponse.json({ error: "Alle velden zijn verplicht" }, { status: 400 });
+        }
+        const { error } = await getSupabase().from("pricing_periods").insert({
+          lodge_id, label, start_date, end_date,
+          price_per_night: parseFloat(price_per_night),
+        });
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ success: true });
+      }
+      case "update_pricing_period": {
+        const { id, lodge_id, label, start_date, end_date, price_per_night } = body;
+        if (!id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const updates: Record<string, unknown> = {};
+        if (lodge_id !== undefined) updates.lodge_id = lodge_id;
+        if (label !== undefined) updates.label = label;
+        if (start_date !== undefined) updates.start_date = start_date;
+        if (end_date !== undefined) updates.end_date = end_date;
+        if (price_per_night !== undefined) updates.price_per_night = parseFloat(price_per_night);
+        await getSupabase().from("pricing_periods").update(updates).eq("id", id);
+        return NextResponse.json({ success: true });
+      }
+      case "delete_pricing_period": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("pricing_periods").delete().eq("id", body.id);
         return NextResponse.json({ success: true });
       }
       default:
