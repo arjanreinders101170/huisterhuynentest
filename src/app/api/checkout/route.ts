@@ -2,6 +2,36 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { getProduct, calcFietsTotal } from "@/lib/products";
 import { checkoutSchema } from "@/lib/schemas";
+import { esc } from "@/lib/email";
+
+const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
+const LODGE_NAME = "Huis ter Huynen";
+
+async function sendFallbackNotification(productName: string, amount: number, gastNaam: string, gastEmail: string) {
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) return;
+  try {
+    const { Resend } = await import("resend");
+    const resend = new Resend(resendKey);
+    const prijs = `€ ${amount.toFixed(2)}`;
+    const datum = new Date().toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    await Promise.all([
+      resend.emails.send({
+        from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
+        to: [OWNER_EMAIL],
+        subject: `Nieuwe boeking: ${productName} — ${esc(gastNaam)}`,
+        html: `<p>Nieuwe boeking ontvangen op ${datum}.</p><p><strong>Product:</strong> ${esc(productName)}</p><p><strong>Prijs:</strong> ${prijs}</p><p><strong>Gast:</strong> ${esc(gastNaam)} &lt;<a href="mailto:${esc(gastEmail)}">${esc(gastEmail)}</a>&gt;</p>`,
+        replyTo: gastEmail,
+      }),
+      resend.emails.send({
+        from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
+        to: [gastEmail],
+        subject: `Bedankt voor je aanvraag — ${LODGE_NAME}`,
+        html: `<p>Hallo ${esc(gastNaam)},</p><p>Bedankt voor je aanvraag voor <strong>${esc(productName)}</strong> (${prijs}). We nemen binnenkort contact met je op.</p><p>Met vriendelijke groet,<br/>${LODGE_NAME}</p>`,
+      }),
+    ]);
+  } catch (e) { console.error("Fallback notification email failed:", e); }
+}
 
 export const runtime = "nodejs";
 
@@ -73,18 +103,7 @@ export async function POST(request: NextRequest) {
 
     if (!mollieKey) {
       // No Mollie key — fallback to email-only booking
-      try {
-        await fetch(`${appUrl}/api/booking`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            product: productName,
-            prijs: `€ ${amount.toFixed(2)}`,
-            gastNaam,
-            gastEmail,
-          }),
-        });
-      } catch {}
+      await sendFallbackNotification(productName, amount, gastNaam, gastEmail);
       return NextResponse.json({
         success: true,
         fallback: true,
@@ -117,21 +136,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!mollieResponse.ok) {
-      const err = await mollieResponse.json();
+      const err = await mollieResponse.json().catch(() => ({}));
       console.error("Mollie error:", err);
       // Fallback to email
-      try {
-        await fetch(`${appUrl}/api/booking`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            product: productName,
-            prijs: `€ ${amount.toFixed(2)}`,
-            gastNaam,
-            gastEmail,
-          }),
-        });
-      } catch {}
+      await sendFallbackNotification(productName, amount, gastNaam, gastEmail);
       return NextResponse.json({
         success: true,
         fallback: true,
