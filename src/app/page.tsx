@@ -927,7 +927,7 @@ export default function LandingPage() {
           }}>
             <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
             <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.2)" }}>
-              Boutique Lodge · KVK: in aanvraag
+              Boutique Lodge · KVK: 96382600
             </span>
           </div>
         </div>
