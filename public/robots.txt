@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /betaald
+Disallow: /bevestig
+Disallow: /offerte
+Disallow: /concierge
+
+Sitemap: https://huisterhuynen.nl/sitemap.xml
