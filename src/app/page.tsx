@@ -271,10 +271,10 @@ export default function LandingPage() {
               {
                 id: "lodge_1",
                 name: "De Heide",
-                tag: "2 personen",
-                desc: "Een luxe lodge op de Drentse heide, ingericht voor twee. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
-                features: ["2 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
-                img: "/heide1.jpg",
+                tag: "4 personen",
+                desc: "Een luxe lodge op de Drentse heide, ingericht voor vier. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
+                features: ["4 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
+                img: "/lodge-heide.jpg.png",
               },
               {
                 id: "lodge_2",
@@ -282,7 +282,7 @@ export default function LandingPage() {
                 tag: "4 personen",
                 desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
                 features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
-                img: "/borrel1.jpg",
+                img: "/lodge-eik.jpg.png",
               },
             ].map((lodge) => (
               <div key={lodge.id} style={{
@@ -838,7 +838,7 @@ export default function LandingPage() {
                 Twee boutique lodges midden in het hart van Drenthe. Natuur, privacy en luxe — op loopafstand van de heide.
               </p>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {["De Heide · 2 pers.", "De Eik · 4 pers."].map((l, i) => (
+                {["De Heide · 4 pers.", "De Eik · 4 pers."].map((l, i) => (
                   <span key={i} style={{
                     fontFamily: T.sans, fontSize: 11, color: T.gold,
                     border: "1px solid rgba(180,154,94,.3)", padding: "3px 10px", borderRadius: 6,
