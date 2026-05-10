@@ -172,6 +172,12 @@ export default function LandingPage() {
               De omgeving
             </a>
           </div>
+          <p style={{
+            fontFamily: T.sans, fontSize: 12, fontWeight: 300,
+            color: "rgba(255,255,255,.5)", marginTop: 20, letterSpacing: "0.3px",
+          }}>
+            De lodges openen op 1 januari 2027 — vanaf nu te boeken
+          </p>
         </div>
       </section>
 
