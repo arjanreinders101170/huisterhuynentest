@@ -274,7 +274,7 @@ export default function LandingPage() {
                 tag: "4 personen",
                 desc: "Een luxe lodge op de Drentse heide, ingericht voor vier. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
                 features: ["4 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
-                img: "/lodge-heide.jpg.png",
+                img: "/lodge-heide.jpg",
               },
               {
                 id: "lodge_2",
@@ -282,7 +282,7 @@ export default function LandingPage() {
                 tag: "4 personen",
                 desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
                 features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
-                img: "/lodge-eik.jpg.png",
+                img: "/lodge-eik.jpg",
               },
             ].map((lodge) => (
               <div key={lodge.id} style={{
@@ -927,7 +927,7 @@ export default function LandingPage() {
           }}>
             <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
             <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.2)" }}>
-              Boutique Lodge · KVK: 96382600
+              Boutique Lodge · KVK: in aanvraag
             </span>
           </div>
         </div>
