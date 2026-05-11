@@ -192,9 +192,9 @@ export default function TermsPage() {
             </tbody>
           </table>
           <h3 style={S.h3}>6.1 Late check-in</h3>
-          <p style={S.p}>Een check-in na 21:00 uur dient minimaal 48 uur van tevoren te worden aangevraagd en is uitsluitend mogelijk na uitdrukkelijke bevestiging door Huis ter Huynen. Hier kunnen extra kosten aan verbonden zijn.</p>
+          <p style={S.p}>Late check-in is mogelijk zonder extra kosten. De accommodatie is voorzien van digitale sloten die toegankelijk zijn tot middernacht (00:00 uur).</p>
           <h3 style={S.h3}>6.2 Late check-out</h3>
-          <p style={S.p}>Een late check-out (na 11:00 uur) is uitsluitend mogelijk op aanvraag en afhankelijk van beschikbaarheid. Kosten: €25 per uur, met een maximum tot 14:00 uur.</p>
+          <p style={S.p}>Een late check-out (na 11:00 uur) is uitsluitend mogelijk op aanvraag en afhankelijk van beschikbaarheid. Kosten: €25, met een maximum tot 13:00 uur.</p>
           <h3 style={S.h3}>6.3 Identificatie</h3>
           <p style={S.p}>Bij aankomst kan worden gevraagd naar een geldig legitimatiebewijs (paspoort, rijbewijs of ID-kaart) van de hoofdboeker en meerderjarige medeverblijvers. Dit is mede vereist in het kader van de gemeentelijke toeristenbelasting.</p>
 
@@ -204,7 +204,7 @@ export default function TermsPage() {
           <h3 style={S.h3}>7.1 Roken</h3>
           <p style={S.p}>Roken is niet toegestaan binnen de accommodatie. Buiten mag worden gerookt op de daartoe bestemde plek. Bij overtreding wordt een reinigingsvergoeding van minimaal €150 in rekening gebracht.</p>
           <h3 style={S.h3}>7.2 Huisdieren</h3>
-          <p style={S.p}>Huisdieren zijn uitsluitend toegestaan na voorafgaande schriftelijke toestemming van Huis ter Huynen en tegen een toeslag van €15 per nacht per huisdier. De gast is aansprakelijk voor eventuele schade of extra reinigingskosten veroorzaakt door huisdieren.</p>
+          <p style={S.p}>Huisdieren zijn toegestaan. Er worden vaste extra schoonmaakkosten van €25 in rekening gebracht. De gast is aansprakelijk voor eventuele schade veroorzaakt door huisdieren.</p>
           <h3 style={S.h3}>7.3 Feesten en evenementen</h3>
           <p style={S.p}>Het is niet toegestaan feesten, evenementen of bijeenkomsten te organiseren waarbij meer bezoekers aanwezig zijn dan het maximale aantal gasten zoals bepaald bij de boeking, tenzij schriftelijk anders overeengekomen.</p>
           <h3 style={S.h3}>7.4 Geluidsoverlast</h3>
@@ -224,7 +224,7 @@ export default function TermsPage() {
           {/* ARTIKEL 8 */}
           <h2 id="artikel-8" style={S.h2}>8. Borgsom en schade</h2>
           <h3 style={S.h3}>8.1 Borgsom</h3>
-          <p style={S.p}>Huis ter Huynen hanteert een borgsom van <strong>€250</strong>. De borgsom dient uiterlijk 7 dagen vóór aankomst te worden voldaan en wordt in beginsel binnen 7 werkdagen na vertrek gerestitueerd, verminderd met eventuele schade- of schoonmaakkosten.</p>
+          <p style={S.p}>Huis ter Huynen hanteert geen borgsom.</p>
           <h3 style={S.h3}>8.2 Schade</h3>
           <p style={S.p}>Schade aan de accommodatie, inventaris of eigendommen van Huis ter Huynen dient direct te worden gemeld. De gast is aansprakelijk voor alle schade die tijdens het verblijf is ontstaan, ongeacht of deze door de gast of door meegebrachte bezoekers of huisdieren is veroorzaakt.</p>
           <h3 style={S.h3}>8.3 Inventarisatie</h3>
