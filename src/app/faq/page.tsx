@@ -5,7 +5,7 @@ const C = {
   bg: "#EAE3D2", card: "#FDFBF6", text: "#2A2418", muted: "#8A7D6A",
   gold: "#B49A5E", green: "#2F4F3E", border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
-  sans: "'DM Sans', system-ui, sans-serif",
+  sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
 const faqItems = [

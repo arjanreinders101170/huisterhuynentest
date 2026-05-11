@@ -2,7 +2,7 @@
 const C = { bg: "#EAE3D2", text: "#2A2418", muted: "#8A7D6A", gold: "#B49A5E" };
 export default function PrivacyPage() {
   return (
-    <div style={{ background: C.bg, fontFamily: "'DM Sans',system-ui,sans-serif", color: C.text, minHeight: "100vh" }}>
+    <div style={{ background: C.bg, fontFamily: "var(--font-dm-sans), system-ui, sans-serif", color: C.text, minHeight: "100vh" }}>
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 20px" }}>
         <h1 style={{ fontFamily: "Georgia,serif", fontSize: 36, marginBottom: 12 }}>Privacybeleid</h1>
         <p style={{ fontSize: 13, color: C.muted, marginBottom: 40 }}>Laatst bijgewerkt: Mei 2026</p>

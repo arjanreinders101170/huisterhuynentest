@@ -14,7 +14,7 @@ export default function WelkomPage() {
     <div style={{
       background: "#EAE3D2",
       minHeight: "100vh",
-      fontFamily: "'DM Sans', system-ui, sans-serif",
+      fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
     }}>
       <div style={{ maxWidth: 430, margin: "0 auto", padding: "0 24px 60px" }}>
 
@@ -27,7 +27,7 @@ export default function WelkomPage() {
         {/* Logo */}
         <div style={{ textAlign: "center", paddingTop: 48, marginBottom: 8 }}>
           <div style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "var(--font-playfair), Georgia, serif",
             fontSize: 22, fontWeight: 600, color: "#52502E", letterSpacing: ".03em",
           }}>
             <span style={{ fontSize: 25 }}>H</span>UIS
@@ -52,7 +52,7 @@ export default function WelkomPage() {
         {/* Welcome */}
         <div style={{ textAlign: "center", margin: "32px 0 36px" }}>
           <h1 style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
+            fontFamily: "var(--font-playfair), Georgia, serif",
             fontSize: 32, fontWeight: 700, color: "#2A2418",
             lineHeight: 1.15, margin: "0 0 12px",
           }}>
@@ -82,7 +82,7 @@ export default function WelkomPage() {
               Check-in
             </div>
             <div style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
               fontSize: 28, fontWeight: 600, color: "#2F4F3E", marginBottom: 6,
             }}>
               15:00
@@ -106,7 +106,7 @@ export default function WelkomPage() {
               Adres & route
             </div>
             <p style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
               fontSize: 18, fontWeight: 600, color: "#2A2418",
               margin: "0 0 6px",
             }}>
@@ -183,7 +183,7 @@ export default function WelkomPage() {
             </p>
             <a href="tel:+31642568603" style={{
               fontSize: 18, fontWeight: 500, color: "#2F4F3E", textDecoration: "none",
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
             }}>
               +31 6 42568603
             </a>
@@ -200,7 +200,7 @@ export default function WelkomPage() {
               background: "linear-gradient(135deg, #2F4F3E 0%, #3A6350 100%)",
               color: "#fff", textDecoration: "none", fontSize: 16, fontWeight: 500,
               boxShadow: "0 8px 32px rgba(47,79,62,.25)",
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">

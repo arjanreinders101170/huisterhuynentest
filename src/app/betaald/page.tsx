@@ -22,7 +22,7 @@ function BetaaldContent() {
   return (
     <div style={{
       background: T.bg, minHeight: "100vh",
-      fontFamily: "'DM Sans', system-ui, sans-serif",
+      fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
       display: "flex", alignItems: "center", justifyContent: "center",
       padding: 16,
     }}>
@@ -30,7 +30,7 @@ function BetaaldContent() {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 20 }}>
-          <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, fontWeight: 700, color: "#52502E", letterSpacing: 2 }}>HUIS TER HUYNEN</div>
+          <div style={{ fontFamily: "var(--font-playfair), Georgia, serif", fontSize: 18, fontWeight: 700, color: "#52502E", letterSpacing: 2 }}>HUIS TER HUYNEN</div>
           <div style={{ marginTop: 6 }}>
             <span style={{ display: "inline-block", width: 20, height: 1, background: T.gold, verticalAlign: "middle" }}></span>
             <span style={{ fontSize: 8, color: T.gold, letterSpacing: 2.5, textTransform: "uppercase" as const, padding: "0 8px", verticalAlign: "middle" }}>Boutique Lodge</span>
@@ -53,7 +53,7 @@ function BetaaldContent() {
           {/* Content */}
           <div style={{ padding: "28px 24px", textAlign: "center" }}>
             <div style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-playfair), Georgia, serif",
               fontSize: 26, fontWeight: 700, color: T.text,
               marginBottom: 10,
             }}>
