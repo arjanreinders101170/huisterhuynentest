@@ -911,7 +911,7 @@ export default function LandingPage() {
           Zuiderstraat 6 · 9491 EC Zeijen, Drenthe
         </p>
         <p style={{ fontFamily: T.sans, fontSize: 12, margin: "16px 0 0", fontWeight: 300 }}>
-          © 2026 Huis ter Huynen
+          © 2026 Huis ter Huynen · KvK 96382600
           {" · "}
           <a href="/privacy" style={{ color: T.gold, textDecoration: "none" }}>Privacy</a>
           {" · "}
