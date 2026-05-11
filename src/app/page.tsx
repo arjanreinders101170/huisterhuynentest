@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "'DM Sans',system-ui,sans-serif", fontSize: 14 }}>Agenda laden...</div> });
 
 interface GoogleReview {
   author: string;
@@ -82,6 +84,28 @@ function SectionHeader({ eyebrow, title, sub }: { eyebrow: string; title: string
         </p>
       )}
     </div>
+  );
+}
+
+function BookingSection() {
+  return (
+    <section style={{ background: T.bg, padding: "80px 40px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>
+            Beschikbaarheid
+          </div>
+          <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 4vw, 40px)", color: T.text, margin: "0 0 6px", fontWeight: 700, lineHeight: 1.15 }}>
+            Kies uw data
+          </h2>
+          <div style={{ height: 2, width: 48, background: T.gold, margin: "14px auto 0" }} />
+          <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
+            Bekijk de beschikbaarheid en stuur een aanvraag. Wij bevestigen binnen 24 uur persoonlijk.
+          </p>
+        </div>
+        <BookingCalendar />
+      </div>
+    </section>
   );
 }
 
@@ -753,6 +777,11 @@ export default function LandingPage() {
         </div>
       </section>
 
+
+      {/* ══════════════════════════════════════════
+          BESCHIKBAARHEID & RESERVEREN
+      ══════════════════════════════════════════ */}
+      <BookingSection />
 
       {/* ══════════════════════════════════════════
           CTA
