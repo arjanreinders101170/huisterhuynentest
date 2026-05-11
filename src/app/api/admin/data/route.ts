@@ -66,10 +66,11 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ data: data || [] });
       }
       case "pricing_periods": {
-        const { data } = await getSupabase()
+        const { data, error } = await getSupabase()
           .from("pricing_periods")
           .select("*")
           .order("start_date", { ascending: true });
+        if (error) return NextResponse.json({ data: [], error: error.message });
         return NextResponse.json({ data: data || [] });
       }
       case "stays": {
