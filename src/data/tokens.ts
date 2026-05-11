@@ -8,8 +8,8 @@ export const T = {
   text: "#2A2418",
   muted: "#8A7D6A",
   border: "#E0D8C8",
-  serif: "'Playfair Display', Georgia, serif",
-  sans: "'DM Sans', system-ui, sans-serif",
+  serif: "var(--font-playfair), Georgia, serif",
+  sans: "var(--font-dm-sans), system-ui, sans-serif",
 } as const;
 
 /* ═══ SHARED STYLES ═══ */

@@ -1,5 +1,5 @@
 # Blog & Content Strategie — Huis ter Huynen
-**Versie: mei 2026 | Opening: december 2026**
+**Versie: mei 2026 | Opening: 1 januari 2027**
 
 ---
 
@@ -78,7 +78,7 @@ H2: Waar overnachten in Drenthe? (soft sell)
 H2: Praktisch: beste periode, wat meenemen, tips voor de rit
   [FAQ-blok: 3 vragen + antwoorden → schema markup]
 
-[CTA]: "Huis ter Huynen opent eind 2026. Meld je aan en ontvang als eerste de openingsaanbieding."
+[CTA]: "Huis ter Huynen opent 1 januari 2027. Meld je aan en ontvang als eerste de openingsaanbieding."
 ```
 
 **Lengte:** 1.200–1.500 woorden
@@ -129,7 +129,7 @@ H2: Fietsen vanuit Huis ter Huynen — wat je moet weten
 H2: Praktische tips
   [FAQ: e-bike beschikbaar? / wat als het regent? / fiets meenemen?]
 
-[CTA]: "Bij Huis ter Huynen kun je fietsen huren en direct de natuur in. Opening december 2026."
+[CTA]: "Bij Huis ter Huynen kun je fietsen huren en direct de natuur in. Opening 1 januari 2027."
 ```
 
 **Lengte:** 1.800–2.200 woorden
@@ -187,7 +187,7 @@ H2: Huis ter Huynen — een lodge die anders is
   - Locatie Zeijen, Drenthe
   - Wachtrij / nieuwsbrief
 
-[CTA]: "Inschrijven voor vroegboekvoordeel. Opening Q4 2026."
+[CTA]: "Inschrijven voor vroegboekvoordeel. Opening 1 januari 2027."
 ```
 
 **Lengte:** 1.400–1.700 woorden
@@ -293,7 +293,7 @@ H2: Praktisch tijdens heidesesizoen
 H2: Overnachten naast de heide — Huis ter Huynen
   - Ligging direct bij Zeijense heide
   - heide1.jpg / heide2.jpg / heide3.jpg sfeerbeelden
-  - Opening december 2026 — schrijf je in
+  - Opening 1 januari 2027 — schrijf je in
 
 [CTA]: "Reserveer alvast je heidesesizoen 2027. Inschrijven = prioriteit."
 [FAQ-blok schema markup: 4 vragen over bloeitijd, locaties, toegankelijkheid]
@@ -343,7 +343,7 @@ H2: Jouw uitvalsbasis: comfort én rust in één
   - Late checkout mogelijkheid (upsell hint)
   - borrel1.jpg sfeerbeelden
 
-[CTA]: "Opening december 2026. Meld je aan voor early access."
+[CTA]: "Opening 1 januari 2027. Meld je aan voor early access."
 ```
 
 **Lengte:** 1.300–1.600 woorden
@@ -392,10 +392,10 @@ H2: Gezelligheid als het kouder wordt
   - borrel1.jpg: sfeer van een borrel na een wandeldag
 
 H2: Overnachten tijdens de herfst: hoe meer rust, hoe beter
-  - Huis ter Huynen opening dec 2026
+  - Huis ter Huynen opening 1 jan 2027
   - Lodge-sfeer in herfst (late_check_out.jpg hint)
 
-[CTA]: "Boek je herfst 2027. Wij openen december 2026."
+[CTA]: "Boek je herfst 2027. Wij openen 1 januari 2027."
 [FAQ schema: 3 vragen over herfstvakantie Drenthe]
 ```
 
@@ -448,7 +448,7 @@ H2: Vertrekpunt: Huis ter Huynen in Zeijen
   - Directe toegang tot het Aa-landschap
   - Lodge beschrijving
 
-[CTA]: "Opening december 2026. Early access via nieuwsbrief."
+[CTA]: "Opening 1 januari 2027. Early access via nieuwsbrief."
 ```
 
 **Lengte:** 1.500–1.900 woorden
@@ -499,7 +499,7 @@ H2: Vergelijkingstabel
 H2: Onze aanbeveling
   Eerlijk advies op basis van type reiziger
 
-[CTA]: "Huis ter Huynen opent december 2026. Schrijf je in."
+[CTA]: "Huis ter Huynen opent 1 januari 2027. Schrijf je in."
 ```
 
 **Lengte:** 1.600–2.000 woorden
@@ -549,7 +549,7 @@ H2: Een plek die helpt: Huis ter Huynen
   - Geen TV op kamer (bewuste keuze)
   - Natuur direct buiten de deur
 
-[CTA]: "Opening december 2026. Meld je aan voor de early bird."
+[CTA]: "Opening 1 januari 2027. Meld je aan voor de early bird."
 ```
 
 **Lengte:** 1.300–1.600 woorden
@@ -611,7 +611,7 @@ H2: Huis ter Huynen opent deze december
 
 #### Artikel 12 — Week 3 november
 
-**Titel:** "Huis ter Huynen — dit is wat je te wachten staat (opening december 2026)"
+**Titel:** "Huis ter Huynen — dit is wat je te wachten staat (opening 1 januari 2027)"
 
 **Hoofdkeyword:** `boutique lodge Drenthe`
 **LSI-termen:** luxe lodge Drenthe, privé lodge Zeijen, Huis ter Huynen Drenthe
@@ -620,7 +620,7 @@ H2: Huis ter Huynen opent deze december
 **Exact artikel-structuur:**
 
 ```
-H1: Huis ter Huynen — dit is wat je te wachten staat (opening december 2026)
+H1: Huis ter Huynen — dit is wat je te wachten staat (opening 1 januari 2027)
 
 [Intro — 150 woorden]
 Persoonlijk bericht van de eigenaar (Arjan). Waarom dit project,
@@ -681,7 +681,7 @@ H2: Wat gasten kunnen verwachten in de app
 
 ---
 
-## 4. Actieplan Tijdlijn — Na Opening (december 2026)
+## 4. Actieplan Tijdlijn — Na Opening (1 januari 2027)
 
 ### Maand 1 — December 2026: Opening & Eerste Gasten
 
@@ -781,4 +781,4 @@ H2: Wat gasten kunnen verwachten in de app
 
 ---
 
-*Strategie opgesteld op basis van de Huis ter Huynen project-context, seizoenskalender Drenthe, en openingsdatum december 2026.*
+*Strategie opgesteld op basis van de Huis ter Huynen project-context, seizoenskalender Drenthe, en openingsdatum 1 januari 2027.*

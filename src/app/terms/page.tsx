@@ -16,7 +16,7 @@ const S = {
 
 export default function TermsPage() {
   return (
-    <div style={{ background: C.bg, fontFamily: "'DM Sans',system-ui,sans-serif", color: C.text, minHeight: "100vh" }}>
+    <div style={{ background: C.bg, fontFamily: "var(--font-dm-sans), system-ui, sans-serif", color: C.text, minHeight: "100vh" }}>
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "40px 20px" }}>
 
         <h1 style={S.h1}>Algemene Voorwaarden</h1>

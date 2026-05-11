@@ -4,7 +4,7 @@ import { useState } from "react";
 const T = {
   gold: "#B49A5E",
   green: "#2F4F3E",
-  sans: "'DM Sans', system-ui, sans-serif",
+  sans: "var(--font-dm-sans), system-ui, sans-serif",
   serif: "Georgia, 'Times New Roman', serif",
 };
 
