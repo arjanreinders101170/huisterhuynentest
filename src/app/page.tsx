@@ -106,6 +106,19 @@ function BookingSection() {
           <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
             Kies uw reisdata en stuur een aanvraag. Wij bevestigen binnen 24 uur persoonlijk.
           </p>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            fontFamily: T.sans, fontSize: 12, fontWeight: 500,
+            color: T.green, letterSpacing: "0.4px",
+            background: "rgba(47,79,62,.07)", padding: "6px 14px",
+            borderRadius: 999, marginTop: 16,
+          }}>
+            <span style={{
+              display: "inline-block", width: 6, height: 6, borderRadius: "50%",
+              background: T.gold,
+            }} />
+            Vroege boekers krijgen voorrang op de zomerweekenden 2027
+          </div>
         </div>
         <BookingCalendar />
       </div>
@@ -190,34 +203,51 @@ export default function LandingPage() {
             geniet van de heide en keer terug naar uw privé-hottub.
           </p>
 
-          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
             <a href="#reserveren" style={{
-              padding: "15px 44px",
+              padding: "17px 52px",
               background: T.gold,
               color: T.green,
               border: "none",
               borderRadius: 12,
-              fontSize: 15, fontWeight: 700, cursor: "pointer",
-              textDecoration: "none", display: "inline-block",
+              fontSize: 16, fontWeight: 700, cursor: "pointer",
+              textDecoration: "none", display: "inline-flex",
+              alignItems: "center", gap: 10,
               letterSpacing: "0.3px",
-              boxShadow: "0 4px 20px rgba(180,154,94,.45)",
+              boxShadow: "0 6px 28px rgba(180,154,94,.55)",
             }}>
-              Controleer beschikbaarheid
+              Bekijk beschikbare data
+              <span aria-hidden style={{ fontSize: 18, lineHeight: 1 }}>→</span>
             </a>
-            <a href="#omgeving" style={{
-              padding: "15px 32px", background: "transparent", color: "white",
-              border: "2px solid rgba(255,255,255,.45)", borderRadius: 12,
-              fontSize: 15, fontWeight: 500, cursor: "pointer",
-              textDecoration: "none", display: "inline-block",
+
+            {/* Scarcity badge */}
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontFamily: T.sans, fontSize: 12, fontWeight: 500,
+              color: T.gold, letterSpacing: "0.4px",
             }}>
-              De omgeving
+              <span style={{
+                display: "inline-block", width: 6, height: 6, borderRadius: "50%",
+                background: T.gold, boxShadow: `0 0 0 4px rgba(180,154,94,.18)`,
+              }} />
+              Slechts 2 lodges · vroege boekers krijgen voorrang op favoriete data
+            </div>
+
+            {/* Secondary text link */}
+            <a href="#omgeving" style={{
+              fontFamily: T.sans, fontSize: 13, fontWeight: 400,
+              color: "rgba(255,255,255,.7)",
+              textDecoration: "underline", textUnderlineOffset: 4,
+              textDecorationColor: "rgba(255,255,255,.35)",
+            }}>
+              of ontdek eerst de omgeving
             </a>
           </div>
           <p style={{
-            fontFamily: T.sans, fontSize: 12, fontWeight: 300,
-            color: "rgba(255,255,255,.5)", marginTop: 20, letterSpacing: "0.3px",
+            fontFamily: T.sans, fontSize: 11, fontWeight: 300,
+            color: "rgba(255,255,255,.42)", marginTop: 24, letterSpacing: "0.3px",
           }}>
-            De lodges openen op 1 januari 2027 — vanaf nu te boeken
+            Opening 1 januari 2027 · al boekbaar
           </p>
         </div>
       </section>
@@ -391,6 +421,50 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          STER CITAAT — direct na lodges
+      ══════════════════════════════════════════ */}
+      <section style={{
+        background: `linear-gradient(180deg, ${T.green} 0%, ${T.green2} 100%)`,
+        padding: "72px 40px",
+        position: "relative", overflow: "hidden",
+      }}>
+        <div style={{
+          maxWidth: 820, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 2,
+        }}>
+          <div style={{
+            fontFamily: T.sans, fontSize: 14, color: T.gold,
+            letterSpacing: "3px", marginBottom: 18,
+          }}>
+            ★ ★ ★ ★ ★
+          </div>
+          <p style={{
+            fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 30px)",
+            color: "white", lineHeight: 1.45, fontWeight: 400,
+            fontStyle: "italic", margin: "0 0 22px",
+          }}>
+            &ldquo;De hottub onder de sterren, het geluid van de vogels in de strubben — dit is geen weekendje weg, dit is een reset.&rdquo;
+          </p>
+          <div style={{ height: 1, width: 40, background: T.gold, margin: "0 auto 18px", opacity: 0.7 }} />
+          <div style={{
+            fontFamily: T.sans, fontSize: 13, fontWeight: 600,
+            color: T.gold, letterSpacing: "1.5px", textTransform: "uppercase",
+          }}>
+            Sarah &amp; Mark · gasten van De Heide
+          </div>
+          <div style={{ marginTop: 28 }}>
+            <a href="#reserveren" style={{
+              fontFamily: T.sans, fontSize: 13, fontWeight: 600,
+              color: "white", textDecoration: "underline", textUnderlineOffset: 5,
+              textDecorationColor: "rgba(180,154,94,.7)",
+              letterSpacing: "0.3px",
+            }}>
+              Reserveer uw eigen weekend →
+            </a>
           </div>
         </div>
       </section>
