@@ -113,49 +113,6 @@ function BookingSection() {
   );
 }
 
-const faqItems = [
-  { v: "Mag ik een hond meenemen?", a: "Ja, honden zijn van harte welkom! Vermeld dit wel bij uw reservering, zodat wij hier rekening mee kunnen houden." },
-  { v: "Hoe laat kan ik inchecken en uitchecken?", a: "Inchecken kan vanaf 15:00 uur. Uitchecken is uiterlijk om 11:00 uur. In overleg kan hiervan worden afgeweken." },
-  { v: "Is de hottub altijd beschikbaar?", a: "Ja, de privé hottub is 24/7 beschikbaar voor de gasten van de lodge. De temperatuur staat standaard ingesteld op 38°C." },
-  { v: "Is er parkeerplaats bij de lodge?", a: "Ja, er is gratis parkeergelegenheid op eigen terrein direct naast de lodge." },
-  { v: "Is er een EV-laadpaal aanwezig?", a: "Ja, op het terrein staat een laadpaal voor elektrische voertuigen. Gebruik hiervan is gratis voor gasten." },
-  { v: "Wat zijn de annuleringsvoorwaarden?", a: "Annulering tot 14 dagen voor aankomst is kosteloos. Bij annulering binnen 14 dagen rekenen wij 50% van het totaalbedrag. Bij annulering binnen 48 uur of no-show is het volledige bedrag verschuldigd." },
-  { v: "Is er WiFi beschikbaar?", a: "Ja, er is gratis snel WiFi beschikbaar in de gehele lodge." },
-  { v: "Is de lodge het hele jaar open?", a: "Ja, Huis ter Huynen is het hele jaar door te boeken. Elk seizoen heeft zijn eigen charme — van bloeiende heidevelden in de zomer tot stille besneeuwde bossen in de winter." },
-];
-
-function FAQSection() {
-  const [open, setOpen] = useState<number | null>(null);
-  return (
-    <section style={{ background: "#F7F4EF", padding: "80px 40px" }}>
-      <div style={{ maxWidth: 780, margin: "0 auto" }}>
-        <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase" as const, textAlign: "center" as const, marginBottom: 12 }}>
-          Veelgestelde vragen
-        </div>
-        <h2 style={{ fontFamily: T.serif, fontSize: "clamp(26px, 4vw, 38px)", margin: "0 0 48px", lineHeight: 1.15, fontWeight: 700, textAlign: "center" as const, color: T.text }}>
-          FAQ
-        </h2>
-        <div style={{ display: "flex", flexDirection: "column" as const, gap: 0 }}>
-          {faqItems.map((item, i) => (
-            <div key={i} style={{ borderTop: i === 0 ? `1px solid ${T.border}` : "none", borderBottom: `1px solid ${T.border}` }}>
-              <button
-                onClick={() => setOpen(open === i ? null : i)}
-                style={{ width: "100%", textAlign: "left" as const, background: "none", border: "none", cursor: "pointer", padding: "22px 0", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}
-              >
-                <span style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 700, color: T.text, lineHeight: 1.3 }}>{item.v}</span>
-                <span style={{ fontSize: 22, color: T.gold, flexShrink: 0, transform: open === i ? "rotate(45deg)" : "none", transition: "transform 0.2s" }}>+</span>
-              </button>
-              {open === i && (
-                <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, margin: "0 0 22px", lineHeight: 1.7 }}>{item.a}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function LandingPage() {
   const [googleReviews, setGoogleReviews] = useState<GoogleReview[]>([]);
   const [googleRating, setGoogleRating] = useState<number | null>(null);
@@ -844,11 +801,6 @@ export default function LandingPage() {
       <BookingSection />
 
       {/* ══════════════════════════════════════════
-          FAQ
-      ══════════════════════════════════════════ */}
-      <FAQSection />
-
-      {/* ══════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════ */}
       <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.55)", padding: "60px 40px 36px" }}>
@@ -932,6 +884,7 @@ export default function LandingPage() {
                   { label: "Onze lodges", href: "#" },
                   { label: "De omgeving", href: "#omgeving" },
                   { label: "Reserveren", href: "https://wa.me/31642568603" },
+                  { label: "FAQ", href: "/faq" },
                   { label: "Privacybeleid", href: "/privacy" },
                   { label: "Algemene voorwaarden", href: "/terms" },
                 ].map((link, i) => (
