@@ -1,4 +1,5 @@
 import { fetchGoogleReviews, GOOGLE_REVIEW_URL, type GoogleReview } from "@/lib/google-reviews";
+import { NewsletterForm } from "@/components/NewsletterForm";
 
 const T = {
   bg: "#EAE3D2",
@@ -890,6 +891,39 @@ export default async function LandingPage() {
               Stuur een bericht
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
+          NIEUWSBRIEF
+      ══════════════════════════════════════════ */}
+      <section style={{
+        background: T.green,
+        padding: "72px 40px",
+        textAlign: "center",
+      }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div style={{
+            fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+            color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase",
+            marginBottom: 14,
+          }}>
+            Opening december 2026
+          </div>
+          <h2 style={{
+            fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)",
+            color: "white", margin: "0 0 12px", fontWeight: 700, lineHeight: 1.2,
+          }}>
+            Wees er als eerste bij
+          </h2>
+          <p style={{
+            fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.65)",
+            fontWeight: 300, margin: "0 0 32px", lineHeight: 1.7,
+          }}>
+            Schrijf je in voor de nieuwsbrief en ontvang vroegboekvoordeel,
+            seizoenstips en het eerste bericht zodra de lodges opengaan.
+          </p>
+          <NewsletterForm />
         </div>
       </section>
 
