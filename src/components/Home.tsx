@@ -17,30 +17,41 @@ const CAT_ICONS: Record<string, ReactNode> = {
 
 const DEFAULT_ORDER = ["natuur", "eten", "actief", "kinderen", "cultuur", "ontspanning"];
 
+const sectionHeading: React.CSSProperties = {
+  fontFamily: T.serif, fontSize: 18, fontWeight: 600,
+  color: T.text, margin: "28px 0 14px",
+};
+
+function WeatherIcon({ icon }: { icon: Weather["icon"] }) {
+  if (icon === "sun")  return <IcSun />;
+  if (icon === "rain" || icon === "storm") return <IcRain />;
+  return <IcCloud />;
+}
+
 type Props = {
   onNavigate: (r: Route) => void;
-  categoryKeys: readonly string[];
   profile: GuestProfile;
   weather: Weather | null;
 };
 
-export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
+export function Home({ onNavigate, profile, weather }: Props) {
   const { t, lang } = useLanguage();
   const catMap = t.home.catMap;
 
-  /* ═══ PERSONALIZATION ═══ */
   const activeProfiles = lang === "de" ? PROFILES_DE : PROFILES;
   const cfg = profile && profile in activeProfiles
     ? activeProfiles[profile as Exclude<GuestProfile, null>]
     : null;
 
-  const tileOrder = cfg ? cfg.tileOrder : DEFAULT_ORDER;
+  const tileOrder = cfg?.tileOrder ?? DEFAULT_ORDER;
+  const welkom    = cfg?.welkom    ?? t.home.defaultWelkom;
+  const popular   = cfg?.popularItem ?? {
+    naam: t.home.defaultPopularNaam,
+    sub:  t.home.defaultPopularSub,
+    category: "natuur",
+  };
 
-  const welkom = cfg ? cfg.welkom : t.home.defaultWelkom;
-
-  const popular = cfg
-    ? cfg.popularItem
-    : { naam: t.home.defaultPopularNaam, sub: t.home.defaultPopularSub, category: "natuur" };
+  const isIndoor = weather?.icon === "rain" || weather?.icon === "storm" || weather?.icon === "snow";
 
   return (
     <div style={{ padding: "0 20px 110px" }}>
@@ -93,18 +104,13 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
       {/* Weather tip — contextual suggestion */}
       {weather?.tip && (
         <div
-          onClick={() => {
-            const isIndoor = weather.icon === "rain" || weather.icon === "storm" || weather.icon === "snow";
-            onNavigate(isIndoor ? "detail:kinderen" : "detail:natuur");
-          }}
+          onClick={() => onNavigate(isIndoor ? "detail:kinderen" : "detail:natuur")}
           className="tile-tap"
           style={{
             marginTop: 16,
             padding: "14px 18px",
             borderRadius: 14,
-            background: weather.icon === "rain" || weather.icon === "storm"
-              ? "rgba(47,79,62,.06)"
-              : "rgba(180,154,94,.08)",
+            background: isIndoor ? "rgba(47,79,62,.06)" : "rgba(180,154,94,.08)",
             border: `1px solid ${T.border}`,
             display: "flex",
             alignItems: "center",
@@ -118,10 +124,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
             display: "flex", alignItems: "center", justifyContent: "center",
             color: T.muted, flexShrink: 0,
           }}>
-            {weather.icon === "sun" && <IcSun />}
-            {weather.icon === "cloud" && <IcCloud />}
-            {(weather.icon === "rain" || weather.icon === "storm") && <IcRain />}
-            {!["sun", "cloud", "rain", "storm"].includes(weather.icon) && <IcCloud />}
+            <WeatherIcon icon={weather.icon} />
           </div>
           <div style={{ flex: 1 }}>
             <div style={{
@@ -136,10 +139,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
       )}
 
       {/* Category tiles — ordered by profile */}
-      <h2 style={{
-        fontFamily: T.serif, fontSize: 18, fontWeight: 600,
-        color: T.text, margin: "28px 0 14px",
-      }}>
+      <h2 style={sectionHeading}>
         {cfg ? t.home.recommended : t.home.discover}
       </h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -183,10 +183,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
       </div>
 
       {/* Popular today — personalized */}
-      <h2 style={{
-        fontFamily: T.serif, fontSize: 18, fontWeight: 600,
-        color: T.text, margin: "28px 0 14px",
-      }}>
+      <h2 style={sectionHeading}>
         {cfg ? t.home.tipForYou : t.home.popularToday}
       </h2>
       <div
@@ -198,7 +195,7 @@ export function Home({ onNavigate, categoryKeys, profile, weather }: Props) {
         onClick={() => onNavigate(`detail:${popular.category}`)}
       >
         <div style={{ ...iconBox, background: "rgba(180,154,94,.15)" }}>
-          <IcLeaf />
+          {CAT_ICONS[popular.category] ?? <IcLeaf />}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{
