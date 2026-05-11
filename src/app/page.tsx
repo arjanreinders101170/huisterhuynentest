@@ -89,7 +89,7 @@ function SectionHeader({ eyebrow, title, sub }: { eyebrow: string; title: string
 
 function BookingSection() {
   return (
-    <section style={{
+    <section id="reserveren" style={{
       background: "white",
       padding: "80px 40px",
       borderTop: `3px solid ${T.gold}`,
@@ -147,17 +147,17 @@ export default function LandingPage() {
         display: "flex", alignItems: "center", justifyContent: "center",
         textAlign: "center", color: "white", position: "relative", overflow: "hidden",
       }}>
-        {/* texture overlay */}
+        {/* lodge photo */}
         <div style={{
           position: "absolute", inset: 0,
-          backgroundImage: "url('/heide1.jpg')",
-          backgroundSize: "cover", backgroundPosition: "center",
-          opacity: 0.28,
+          backgroundImage: "url('/lodge-heide.jpg')",
+          backgroundSize: "cover", backgroundPosition: "center 40%",
+          opacity: 0.52,
         }} />
         {/* gradient scrim */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to bottom, rgba(47,79,62,.55) 0%, rgba(47,79,62,.75) 100%)",
+          background: "linear-gradient(to bottom, rgba(47,79,62,.30) 0%, rgba(47,79,62,.52) 100%)",
         }} />
 
         <div style={{ position: "relative", zIndex: 2, maxWidth: 640, padding: "60px 32px" }}>
@@ -191,10 +191,23 @@ export default function LandingPage() {
           </p>
 
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="#reserveren" style={{
+              padding: "15px 44px",
+              background: T.gold,
+              color: T.green,
+              border: "none",
+              borderRadius: 12,
+              fontSize: 15, fontWeight: 700, cursor: "pointer",
+              textDecoration: "none", display: "inline-block",
+              letterSpacing: "0.3px",
+              boxShadow: "0 4px 20px rgba(180,154,94,.45)",
+            }}>
+              Controleer beschikbaarheid
+            </a>
             <a href="#omgeving" style={{
-              padding: "15px 44px", background: "transparent", color: "white",
-              border: "2px solid rgba(255,255,255,.55)", borderRadius: 12,
-              fontSize: 15, fontWeight: 600, cursor: "pointer",
+              padding: "15px 32px", background: "transparent", color: "white",
+              border: "2px solid rgba(255,255,255,.45)", borderRadius: 12,
+              fontSize: 15, fontWeight: 500, cursor: "pointer",
               textDecoration: "none", display: "inline-block",
             }}>
               De omgeving
