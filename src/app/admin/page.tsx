@@ -722,6 +722,7 @@ function TarievenTab() {
 
   const [periods, setPeriods] = useState<PricingPeriod[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -730,8 +731,10 @@ function TarievenTab() {
 
   const load = async () => {
     setLoading(true);
+    setFetchError(null);
     const res = await fetch("/api/admin/data?table=pricing_periods");
     const d = await res.json();
+    if (d.error) setFetchError(d.error);
     setPeriods(d.data || []);
     setLoading(false);
   };
@@ -778,12 +781,19 @@ function TarievenTab() {
         </button>
       </div>
 
-      <div style={{ fontSize: 13, color: C.muted, background: "rgba(180,154,94,.08)", border: "1px solid rgba(180,154,94,.2)", borderRadius: 8, padding: "10px 14px", marginBottom: 20 }}>
-        ℹ️ Zorg dat de <strong>pricing_periods</strong> tabel bestaat in Supabase. SQL:{" "}
-        <code style={{ fontSize: 11, background: "rgba(0,0,0,.05)", padding: "1px 4px", borderRadius: 3 }}>
-          CREATE TABLE pricing_periods (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, lodge_id text NOT NULL, label text NOT NULL, start_date date NOT NULL, end_date date NOT NULL, price_per_night numeric(10,2) NOT NULL, created_at timestamptz DEFAULT now());
-        </code>
-      </div>
+      {fetchError && (
+        <div style={{ fontSize: 13, color: "#b91c1c", background: "rgba(185,28,28,.06)", border: "1px solid rgba(185,28,28,.25)", borderRadius: 8, padding: "10px 14px", marginBottom: 20 }}>
+          <strong>Fout bij laden tarieven:</strong> {fetchError}
+          {fetchError.toLowerCase().includes("exist") || fetchError.toLowerCase().includes("relation") ? (
+            <div style={{ marginTop: 6, color: C.muted }}>
+              Zorg dat de <strong>pricing_periods</strong> tabel bestaat in Supabase:{" "}
+              <code style={{ fontSize: 11, background: "rgba(0,0,0,.05)", padding: "1px 4px", borderRadius: 3 }}>
+                CREATE TABLE pricing_periods (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, lodge_id text NOT NULL, label text NOT NULL, start_date date NOT NULL, end_date date NOT NULL, price_per_night numeric(10,2) NOT NULL, created_at timestamptz DEFAULT now());
+              </code>
+            </div>
+          ) : null}
+        </div>
+      )}
 
       {(creating || editing) && (
         <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 24px", marginBottom: 20 }}>
