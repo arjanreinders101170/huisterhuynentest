@@ -1,7 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "'DM Sans',system-ui,sans-serif", fontSize: 14 }}>Agenda laden...</div> });
+import Image from "next/image";
+import { NewsletterForm } from "@/components/NewsletterForm";
+const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Agenda laden...</div> });
 
 interface GoogleReview {
   author: string;
@@ -38,7 +40,7 @@ const T = {
   gold: "#B49A5E",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
-  sans: "'DM Sans', system-ui, sans-serif",
+  sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
 /* ─── micro helpers ─── */
@@ -161,12 +163,14 @@ export default function LandingPage() {
         textAlign: "center", color: "white", position: "relative", overflow: "hidden",
       }}>
         {/* lodge photo */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: "url('/lodge-heide.jpg')",
-          backgroundSize: "cover", backgroundPosition: "center 40%",
-          opacity: 0.52,
-        }} />
+        <Image
+          src="/lodge-heide.jpg"
+          alt="Boutique Lodge De Heide van Huis ter Huynen, omgeven door Drentse heide en bos in Zeijen"
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: "cover", objectPosition: "center 40%", opacity: 0.52 }}
+        />
         {/* gradient scrim */}
         <div style={{
           position: "absolute", inset: 0,
@@ -352,6 +356,7 @@ export default function LandingPage() {
                 desc: "Een luxe lodge op de Drentse heide, ingericht voor vier. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
                 features: ["4 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
                 img: "/lodge-heide.jpg",
+                alt: "Buitenaanzicht van Lodge De Heide met privé-hottub op het terras en uitzicht over de Drentse heide",
               },
               {
                 id: "lodge_2",
@@ -360,6 +365,7 @@ export default function LandingPage() {
                 desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
                 features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
                 img: "/lodge-eik.jpg",
+                alt: "Buitenaanzicht van Lodge De Eik onder eikenbomen met buitenkeuken en BBQ",
               },
             ].map((lodge) => (
               <div key={lodge.id} style={{
@@ -367,18 +373,21 @@ export default function LandingPage() {
                 background: T.card, border: `1px solid ${T.border}`,
                 boxShadow: "0 4px 24px rgba(47,79,62,.07)",
               }}>
-                <div style={{
-                  height: 270,
-                  backgroundImage: `url('${lodge.img}')`,
-                  backgroundSize: "cover", backgroundPosition: "center 40%",
-                  position: "relative",
-                }}>
+                <div style={{ height: 270, position: "relative" }}>
+                  <Image
+                    src={lodge.img}
+                    alt={lodge.alt}
+                    fill
+                    sizes="(max-width: 800px) 100vw, 50vw"
+                    style={{ objectFit: "cover", objectPosition: "center 40%" }}
+                  />
                   <div style={{
                     position: "absolute", top: 16, left: 16,
                     background: T.gold, color: T.green,
                     fontFamily: T.sans, fontSize: 11, fontWeight: 700,
                     letterSpacing: "1.5px", textTransform: "uppercase",
                     padding: "5px 12px", borderRadius: 6,
+                    zIndex: 1,
                   }}>
                     {lodge.tag}
                   </div>
@@ -705,6 +714,7 @@ export default function LandingPage() {
                 hoogtepunt: "Veentjesroute Zeijen",
                 items: ["Direct vanuit de lodge", "13+ routes in de omgeving", "Nationaal Park op 15 min"],
                 img: "/wandel_drenthe.jpg",
+                alt: "Wandelpad door het Drentse heidelandschap met paarse heide in bloei",
                 accent: T.green,
               },
               {
@@ -713,6 +723,7 @@ export default function LandingPage() {
                 hoogtepunt: "1.000+ km knooppuntennet",
                 items: ["E-bikes te huur in Assen", "Levering op locatie mogelijk", "MTB-routes beschikbaar"],
                 img: "/rent_a_bike.jpg",
+                alt: "Fietsen klaar voor verhuur langs een Drents fietspad in het bos",
                 accent: "#7B6B3A",
               },
               {
@@ -721,6 +732,7 @@ export default function LandingPage() {
                 hoogtepunt: "52 hunebedden · Drents Museum",
                 items: ["Hunebed Highway (N34)", "Kamp Westerbork", "Museumdorp Orvelte"],
                 img: "/museum_drenthe.jpg",
+                alt: "Hunebed in Drenthe, prehistorisch grafmonument in een groen landschap",
                 accent: T.green,
               },
               {
@@ -729,6 +741,7 @@ export default function LandingPage() {
                 hoogtepunt: "Sauna's binnen 20 min",
                 items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Massage aan huis mogelijk"],
                 img: "/welness_drenthe.jpg",
+                alt: "Buitensauna en wellness in een bosrijke omgeving in Drenthe",
                 accent: "#7B6B3A",
               },
             ].map((c, i) => (
@@ -739,12 +752,12 @@ export default function LandingPage() {
                 boxShadow: "0 2px 12px rgba(0,0,0,.06)",
               }}>
                 <div style={{ position: "relative", height: 180 }}>
-                  <img
+                  <Image
                     src={c.img}
-                    alt={c.cat}
-                    loading="lazy"
-                    decoding="async"
-                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    alt={c.alt}
+                    fill
+                    sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 25vw"
+                    style={{ objectFit: "cover" }}
                   />
                   <span style={{
                     position: "absolute", top: 10, right: 10,
@@ -873,6 +886,39 @@ export default function LandingPage() {
           BESCHIKBAARHEID & RESERVEREN
       ══════════════════════════════════════════ */}
       <BookingSection />
+
+      {/* ══════════════════════════════════════════
+          NIEUWSBRIEF
+      ══════════════════════════════════════════ */}
+      <section style={{
+        background: T.green,
+        padding: "72px 40px",
+        textAlign: "center",
+      }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div style={{
+            fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+            color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase",
+            marginBottom: 14,
+          }}>
+            Opening 1 januari 2027
+          </div>
+          <h2 style={{
+            fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)",
+            color: "white", margin: "0 0 12px", fontWeight: 700, lineHeight: 1.2,
+          }}>
+            Wees er als eerste bij
+          </h2>
+          <p style={{
+            fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.65)",
+            fontWeight: 300, margin: "0 0 32px", lineHeight: 1.7,
+          }}>
+            Schrijf je in voor de nieuwsbrief en ontvang vroegboekvoordeel,
+            seizoenstips en het eerste bericht zodra de lodges opengaan.
+          </p>
+          <NewsletterForm />
+        </div>
+      </section>
 
       {/* ══════════════════════════════════════════
           FOOTER

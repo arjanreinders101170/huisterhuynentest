@@ -1,5 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-dm-sans",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-playfair",
+});
 
 const SITE_URL = "https://huisterhuynen.nl";
 const OG_IMAGE = `${SITE_URL}/lodge-heide.jpg`;
@@ -131,7 +146,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="nl">
+    <html lang="nl" className={`${dmSans.variable} ${playfair.variable}`}>
       <head>
         {/* Structured data */}
         <script
@@ -144,13 +159,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Huynen" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
-
-        {/* Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ background: "#EAE3D2", margin: 0, fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+      <body style={{ background: "#EAE3D2", margin: 0, fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
         {children}
       </body>
     </html>

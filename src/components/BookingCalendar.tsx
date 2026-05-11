@@ -5,7 +5,7 @@ const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
   gold: "#B49A5E", text: "#2A2418", muted: "#8A7D6A",
   border: "#E0D8C8", serif: "Georgia,'Times New Roman',serif",
-  sans: "'DM Sans',system-ui,sans-serif",
+  sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
 type ICalEvent = { start: string; end: string };
