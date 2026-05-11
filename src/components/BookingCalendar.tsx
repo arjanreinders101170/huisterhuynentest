@@ -470,7 +470,7 @@ export default function BookingCalendar() {
                           <span style={{ flex: 1, textAlign: "center", fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 600 }}>{aantalPersonen}</span>
                           <button
                             type="button"
-                            onClick={() => setAantalPersonen(p => Math.min(12, p + 1))}
+                            onClick={() => setAantalPersonen(p => Math.min(4, p + 1))}
                             style={{ width: 40, height: 44, border: "none", background: "transparent", fontFamily: T.sans, fontSize: 18, color: T.text, cursor: "pointer", flexShrink: 0 }}
                           >+</button>
                         </div>
