@@ -22,7 +22,7 @@ export default function TermsPage() {
         <h1 style={S.h1}>Algemene Voorwaarden</h1>
         <p style={{ fontSize: 13, color: C.muted, marginBottom: 8 }}>Huis ter Huynen · Versie 2.0 · Laatste update: mei 2026</p>
         <p style={{ fontSize: 13, color: C.muted, marginBottom: 40 }}>
-          Van toepassing op alle directe boekingen en verblijven bij Huis ter Huynen, Zuiderstraat 6, 9491 EC Zeijen (KvK: 12345678).
+          Van toepassing op alle directe boekingen en verblijven bij Huis ter Huynen, geëxploiteerd door VVR Vastgoed BV (KvK: 96382600), Bommegearde 176, 9244 AM Beetsterzwaag.
         </p>
 
         {/* INHOUDSOPGAVE */}
@@ -57,7 +57,7 @@ export default function TermsPage() {
           <h2 id="artikel-1" style={S.h2}>1. Definities en toepasselijkheid</h2>
           <h3 style={S.h3}>1.1 Definities</h3>
           <ul style={S.ul}>
-            <li style={S.li}><strong>Huis ter Huynen</strong>: de eigenaar en verhuurder van het accommodatie-object, gevestigd aan Zuiderstraat 6, 9491 EC Zeijen.</li>
+            <li style={S.li}><strong>Huis ter Huynen</strong>: de accommodatie geëxploiteerd door VVR Vastgoed BV (KvK: 96382600), gevestigd aan Bommegearde 176, 9244 AM Beetsterzwaag.</li>
             <li style={S.li}><strong>Gast</strong>: de natuurlijke persoon of rechtspersoon die een boeking plaatst en/of gebruikmaakt van de accommodatie.</li>
             <li style={S.li}><strong>Boeking</strong>: de overeenkomst tot tijdelijk gebruik van de accommodatie voor een overeengekomen periode tegen een overeengekomen prijs.</li>
             <li style={S.li}><strong>Accommodatie</strong>: het verblijfsobject inclusief bijbehorende faciliteiten zoals tuin, berging en parkeerplaats.</li>
@@ -288,11 +288,10 @@ export default function TermsPage() {
           <h2 id="artikel-15" style={S.h2}>15. Contact</h2>
           <div style={{ background: "#fff", border: `1px solid ${C.border}`, borderRadius: 8, padding: "20px 24px" }}>
             <p style={{ margin: 0, lineHeight: 2 }}>
-              <strong>Huis ter Huynen</strong><br />
-              Zuiderstraat 6<br />
-              9491 EC Zeijen<br />
-              KvK: 12345678<br />
-              BTW: NL000000000B00<br />
+              <strong>VVR Vastgoed BV</strong><br />
+              Bommegearde 176<br />
+              9244 AM Beetsterzwaag<br />
+              KvK: 96382600<br />
               E-mail: <a href="mailto:lodge@huisterhuynen.nl" style={{ color: C.gold }}>lodge@huisterhuynen.nl</a><br />
             </p>
           </div>
