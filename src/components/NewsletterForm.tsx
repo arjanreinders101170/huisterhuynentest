@@ -11,6 +11,7 @@ const T = {
 export function NewsletterForm() {
   const [naam, setNaam] = useState("");
   const [email, setEmail] = useState("");
+  const [pot, setPot] = useState(""); // honeypot — bots vullen dit in, mensen niet
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -23,7 +24,7 @@ export function NewsletterForm() {
       const res = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ naam, email }),
+        body: JSON.stringify({ naam, email, _pot: pot }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -62,6 +63,17 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+      {/* Honeypot: verborgen voor mensen, bots vullen het automatisch in */}
+      <input
+        type="text"
+        name="website"
+        value={pot}
+        onChange={e => setPot(e.target.value)}
+        tabIndex={-1}
+        aria-hidden="true"
+        autoComplete="off"
+        style={{ position: "absolute", left: "-9999px", opacity: 0, pointerEvents: "none" }}
+      />
       <div style={{
         display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center",
       }}>

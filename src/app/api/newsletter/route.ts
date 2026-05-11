@@ -5,6 +5,7 @@ import { getSupabase } from "@/lib/supabase";
 const schema = z.object({
   naam: z.string().min(1).max(100),
   email: z.string().email(),
+  _pot: z.string().max(0).optional(), // moet leeg zijn — bots vullen dit in
 });
 
 export async function POST(req: Request) {
@@ -20,7 +21,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Vul een geldig e-mailadres in." }, { status: 400 });
   }
 
-  const { naam, email } = parsed.data;
+  const { naam, email, _pot } = parsed.data;
+
+  // Honeypot gevuld → stille weigering (bot ziet geen fout)
+  if (_pot) {
+    return NextResponse.json({ ok: true });
+  }
 
   try {
     const supabase = getSupabase();
