@@ -176,6 +176,8 @@ export default function BookingCalendar() {
   const [naam, setNaam] = useState("");
   const [email, setEmail] = useState("");
   const [bericht, setBericht] = useState("");
+  const [aantalPersonen, setAantalPersonen] = useState(2);
+  const [huisdieren, setHuisdieren] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -275,6 +277,8 @@ export default function BookingCalendar() {
           totalPrice: String(totalPrice),
           priceLabel,
           bericht: bericht.trim(),
+          aantalPersonen: String(aantalPersonen),
+          huisdieren: huisdieren ? "ja" : "nee",
         }),
       });
       setSent(true);
@@ -434,7 +438,7 @@ export default function BookingCalendar() {
                     <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, margin: 0 }}>
                       We nemen binnen 24 uur contact met je op via {email}.
                     </p>
-                    <button onClick={() => { setCheckIn(null); setCheckOut(null); setSent(false); setNaam(""); setEmail(""); setBericht(""); }}
+                    <button onClick={() => { setCheckIn(null); setCheckOut(null); setSent(false); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); }}
                       style={{ marginTop: 20, padding: "10px 24px", borderRadius: 8, border: `1px solid ${T.border}`, background: "#fff", fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>
                       Nieuwe zoekopdracht
                     </button>
@@ -454,9 +458,44 @@ export default function BookingCalendar() {
                         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="jan@voorbeeld.nl" type="email" style={inputStyle} />
                       </div>
                     </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+                      <div>
+                        <label style={{ display: "block", fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 4 }}>Aantal personen *</label>
+                        <div style={{ display: "flex", alignItems: "center", gap: 0, border: `1px solid ${T.border}`, borderRadius: 10, background: "#fff", overflow: "hidden" }}>
+                          <button
+                            type="button"
+                            onClick={() => setAantalPersonen(p => Math.max(1, p - 1))}
+                            style={{ width: 40, height: 44, border: "none", background: "transparent", fontFamily: T.sans, fontSize: 18, color: T.text, cursor: "pointer", flexShrink: 0 }}
+                          >−</button>
+                          <span style={{ flex: 1, textAlign: "center", fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 600 }}>{aantalPersonen}</span>
+                          <button
+                            type="button"
+                            onClick={() => setAantalPersonen(p => Math.min(12, p + 1))}
+                            style={{ width: 40, height: 44, border: "none", background: "transparent", fontFamily: T.sans, fontSize: 18, color: T.text, cursor: "pointer", flexShrink: 0 }}
+                          >+</button>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <label style={{ display: "block", fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 4 }}>Huisdieren</label>
+                        <label style={{
+                          display: "flex", alignItems: "center", gap: 10, cursor: "pointer",
+                          border: `1px solid ${huisdieren ? T.green : T.border}`, borderRadius: 10,
+                          padding: "11px 14px", background: huisdieren ? "rgba(47,79,62,.06)" : "#fff",
+                          transition: "border-color .15s, background .15s",
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={huisdieren}
+                            onChange={e => setHuisdieren(e.target.checked)}
+                            style={{ width: 16, height: 16, accentColor: T.green, cursor: "pointer", flexShrink: 0 }}
+                          />
+                          <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text }}>Ik neem een huisdier mee</span>
+                        </label>
+                      </div>
+                    </div>
                     <div style={{ marginBottom: 20 }}>
                       <label style={{ display: "block", fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 4 }}>Bericht (optioneel)</label>
-                      <textarea value={bericht} onChange={e => setBericht(e.target.value)} placeholder="Bijv. aantal personen, wensen, vragen..." rows={3}
+                      <textarea value={bericht} onChange={e => setBericht(e.target.value)} placeholder="Bijv. wensen, vragen..." rows={3}
                         style={{ ...inputStyle, resize: "vertical", fontFamily: T.sans }} />
                     </div>
                     <button onClick={handleSubmit} disabled={!canSubmit} style={{
