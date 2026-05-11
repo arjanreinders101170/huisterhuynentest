@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
   }
 
-  const { naam, email, lodge, checkIn, checkOut, nights, totalPrice, priceLabel, bericht } = body;
+  const { naam, email, lodge, checkIn, checkOut, nights, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren } = body;
 
   if (!naam || !email || !email.includes("@") || !lodge || !checkIn || !checkOut) {
     return NextResponse.json({ error: "Vereiste velden ontbreken" }, { status: 400 });
@@ -75,6 +75,8 @@ export async function POST(request: NextRequest) {
       <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Aankomst</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(checkInFmt)}</td></tr>
       <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Vertrek</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(checkOutFmt)}</td></tr>
       <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Nachten</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${nightsNum}</td></tr>
+      <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Aantal personen</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(aantalPersonen || "–")}</td></tr>
+      <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Huisdieren</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(huisdieren === "ja" ? "Ja 🐾" : "Nee")}</td></tr>
       <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Tarief</td><td style="padding:8px 0;text-align:right;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">${esc(priceLabel || "")}</td></tr>
       <tr><td style="padding:8px 0;color:#8A7D6A;">Geschatte prijs</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2F4F3E;font-size:18px;">€ ${totalNum.toFixed(2)}</td></tr>
     </table>
@@ -142,6 +144,8 @@ export async function POST(request: NextRequest) {
       <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Lodge</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(lodgeLabel)}</td></tr>
       <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Aankomst</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(checkInFmt)}</td></tr>
       <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Vertrek</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(checkOutFmt)}</td></tr>
+      <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Aantal personen</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(aantalPersonen || "–")}</td></tr>
+      <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Huisdieren</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(huisdieren === "ja" ? "Ja" : "Nee")}</td></tr>
       <tr><td style="padding:6px 0;color:#8A7D6A;">Geschatte prijs</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2F4F3E;font-size:16px;">€ ${totalNum.toFixed(2)}</td></tr>
     </table>
   </td></tr></table>
