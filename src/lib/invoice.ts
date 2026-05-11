@@ -46,7 +46,7 @@ const COMPANY = {
   telefoon: "+31 6 42568603",
   email: "lodge@huisterhuynen.nl",
   website: "www.huisterhuynen.nl",
-  kvk: "",    // Arjan vult aan
+  kvk: "96382600",
   btw: "",    // Arjan vult aan
   iban: "",   // Arjan vult aan
 };
