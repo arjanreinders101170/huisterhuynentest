@@ -15,6 +15,18 @@ type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
 const WEEKDAYS = ["Ma", "Di", "Wo", "Do", "Fr", "Za", "Zo"];
 
+const OPENING_DATE = "2027-01-01";
+const OPENING = new Date(2027, 0, 1);
+
+function calcInitialOffset(): number {
+  const now = new Date();
+  return Math.max(
+    0,
+    (OPENING.getFullYear() - now.getFullYear()) * 12 + (OPENING.getMonth() - now.getMonth())
+  );
+}
+const INITIAL_OFFSET = calcInitialOffset();
+
 function toISO(d: Date): string {
   return d.toISOString().split("T")[0];
 }
@@ -168,7 +180,7 @@ export default function BookingCalendar() {
   const [events, setEvents] = useState<ICalEvent[]>([]);
   const [periods, setPeriods] = useState<PricingPeriod[]>([]);
   const [loadingCal, setLoadingCal] = useState(true);
-  const [monthOffset, setMonthOffset] = useState(0);
+  const [monthOffset, setMonthOffset] = useState(INITIAL_OFFSET);
   const [checkIn, setCheckIn] = useState<string | null>(null);
   const [checkOut, setCheckOut] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -179,7 +191,9 @@ export default function BookingCalendar() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const today = toISO(new Date());
+  const now = new Date();
+  const today = toISO(now);
+  const effectiveToday = today >= OPENING_DATE ? today : OPENING_DATE;
 
   const fetchData = useCallback(async (l: Lodge) => {
     setLoadingCal(true);
@@ -229,7 +243,6 @@ export default function BookingCalendar() {
     setCheckOut(iso);
   };
 
-  const now = new Date();
   const month0 = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
   const month1 = new Date(now.getFullYear(), now.getMonth() + monthOffset + 1, 1);
 
@@ -315,22 +328,34 @@ export default function BookingCalendar() {
 
       {!loadingCal && (
         <>
+          {/* Opening notice — only shown before the opening date */}
+          {today < OPENING_DATE && (
+            <div style={{
+              textAlign: "center", marginBottom: 28, padding: "10px 16px",
+              background: "rgba(180,154,94,.08)", borderRadius: 10,
+              border: `1px solid rgba(180,154,94,.2)`,
+              fontFamily: T.sans, fontSize: 13, color: T.gold, fontWeight: 500,
+            }}>
+              De lodges openen 1 januari 2027 — vanaf nu te boeken
+            </div>
+          )}
+
           {/* Calendar grid */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 40, marginBottom: 28 }}>
             <MonthCalendar year={month0.getFullYear()} month={month0.getMonth()} events={events} periods={periods}
               checkIn={checkIn} checkOut={checkOut} hovered={hovered}
-              onDayClick={handleDayClick} onDayHover={setHovered} today={today} />
+              onDayClick={handleDayClick} onDayHover={setHovered} today={effectiveToday} />
             <MonthCalendar year={month1.getFullYear()} month={month1.getMonth()} events={events} periods={periods}
               checkIn={checkIn} checkOut={checkOut} hovered={hovered}
-              onDayClick={handleDayClick} onDayHover={setHovered} today={today} />
+              onDayClick={handleDayClick} onDayHover={setHovered} today={effectiveToday} />
           </div>
 
           {/* Navigation */}
           <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: 28 }}>
-            <button onClick={() => setMonthOffset(o => o - 1)} disabled={monthOffset <= 0} style={{
+            <button onClick={() => setMonthOffset(o => o - 1)} disabled={monthOffset <= INITIAL_OFFSET} style={{
               padding: "8px 20px", borderRadius: 8, border: `1px solid ${T.border}`,
-              background: "#fff", fontFamily: T.sans, fontSize: 13, color: monthOffset <= 0 ? T.muted : T.text,
-              cursor: monthOffset <= 0 ? "not-allowed" : "pointer",
+              background: "#fff", fontFamily: T.sans, fontSize: 13, color: monthOffset <= INITIAL_OFFSET ? T.muted : T.text,
+              cursor: monthOffset <= INITIAL_OFFSET ? "not-allowed" : "pointer",
             }}>← Vorige maanden</button>
             <button onClick={() => setMonthOffset(o => o + 1)} style={{
               padding: "8px 20px", borderRadius: 8, border: `1px solid ${T.border}`,

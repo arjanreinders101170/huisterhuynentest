@@ -13,30 +13,22 @@ function formatDate(raw: string): string {
   return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
 }
 
-// Booking.com marks unavailable periods with SUMMARY:CLOSED or similar —
-// these are not real bookings and should not block date selection.
-const BLOCKED_SUMMARIES = /^(closed|not available|unavailable|blocked|block|maintenance)/i;
-
 function parseICS(ics: string): { start: string; end: string }[] {
   const events: { start: string; end: string }[] = [];
   const lines = ics.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
   let inEvent = false;
   let start = "";
   let end = "";
-  let summary = "";
   for (const line of lines) {
-    if (line.trim() === "BEGIN:VEVENT") { inEvent = true; start = ""; end = ""; summary = ""; }
+    if (line.trim() === "BEGIN:VEVENT") { inEvent = true; start = ""; end = ""; }
     else if (line.trim() === "END:VEVENT") {
-      if (start && end && !BLOCKED_SUMMARIES.test(summary.trim())) {
-        events.push({ start: formatDate(start), end: formatDate(end) });
-      }
+      if (start && end) events.push({ start: formatDate(start), end: formatDate(end) });
       inEvent = false;
     } else if (inEvent) {
       const [key, ...rest] = line.split(":");
       const val = rest.join(":");
       if (key.startsWith("DTSTART")) start = val;
       else if (key.startsWith("DTEND")) end = val;
-      else if (key === "SUMMARY") summary = val;
     }
   }
   return events;
