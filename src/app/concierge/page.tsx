@@ -232,7 +232,6 @@ function AppInner() {
           {route === "home" && (
             <Home
               onNavigate={(r: Route) => setRoute(r)}
-              categoryKeys={CATEGORY_KEYS}
               profile={profile}
               weather={weather}
             />
