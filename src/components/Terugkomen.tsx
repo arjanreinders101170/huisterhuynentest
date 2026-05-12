@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { T, cardStyle, type Route } from "@/data/tokens";
 import { IcCheck, IcArrow } from "./icons";
 import { useLanguage } from "@/i18n";
-import { BOOKINGS_OPEN_FROM, LODGE_NAMES } from "@/data/lodge";
+import { BOOKINGS_OPEN_FROM, LODGE_NAMES, MAX_GUESTS_PER_LODGE } from "@/data/lodge";
 
 type Lodge = "lodge_1" | "lodge_2";
 type ICalEvent = { start: string; end: string };
@@ -488,7 +488,7 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
             <div style={{ marginBottom: 14 }}>
               <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>{lang === "de" ? "Anzahl Personen" : "Aantal personen"}</div>
               <div style={{ display: "flex", gap: 8 }}>
-                {[1, 2, 3, 4, 5, 6].map(n => (
+                {Array.from({ length: MAX_GUESTS_PER_LODGE }, (_, i) => i + 1).map(n => (
                   <button key={n} onClick={() => setPersons(n)} style={{
                     flex: 1, padding: "10px 0", borderRadius: 10, fontFamily: T.sans, fontSize: 14,
                     fontWeight: persons === n ? 600 : 300,
