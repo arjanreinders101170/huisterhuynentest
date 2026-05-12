@@ -221,6 +221,14 @@ export const nl = {
     requesting: "Versturen...",
     thankYou: "Aanvraag verstuurd!",
     thankYouSub: "We nemen zo snel mogelijk contact op met de beste prijs.",
+    loadingAvail: "Beschikbaarheid laden...",
+    legendPreferred: "Voorkeur vrij",
+    legendOther: "Andere lodge vrij",
+    legendBooked: "Vol",
+    matchedPreferred: "Jouw lodge is beschikbaar",
+    matchedFallback: "Voorkeur is bezet — andere lodge wel vrij",
+    matchedFlex: "Beschikbaar — we wijzen de beste lodge toe",
+    rangeUnavailable: "Deze periode is helaas helemaal vol. Kies andere datums.",
   },
 
   lodgeControl: {

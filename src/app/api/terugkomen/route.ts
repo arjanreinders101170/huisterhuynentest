@@ -49,7 +49,12 @@ function emailWrap(content: string): string {
 }
 
 /* ═══ OWNER EMAIL ═══ */
-function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string, adminSecret: string): string {
+function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string, adminSecret: string, lodgeNaam: string, wasFallback: boolean): string {
+  const lodgeLine = lodgeNaam
+    ? `<tr><td align="center" style="padding-top:8px;font-family:Arial,sans-serif;font-size:12px;color:#B49A5E;letter-spacing:1px;text-transform:uppercase;">
+        ${wasFallback ? "Alternatief: " : "Gewenst: "}${lodgeNaam}${wasFallback ? " (voorkeur was bezet)" : ""}
+      </td></tr>`
+    : "";
   return emailWrap(`
     <h1 style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;">
       Terugkeer aanvraag
@@ -68,6 +73,7 @@ function ownerEmailHtml(van: string, tot: string, email: string, naam: string, p
           <tr><td align="center" style="padding-top:6px;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">
             ${personen} ${personen === 1 ? "persoon" : "personen"}
           </td></tr>
+          ${lodgeLine}
         </table>
       </td></tr>
     </table>
@@ -166,7 +172,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const { from, to, email, name, persons, message } = body;
+    const { from, to, email, name, persons, message, voorkeursLodge, voorkeursLodgeNaam, wasFallback } = body;
 
     const parsed = terugkomenSchema.safeParse(body);
     if (!parsed.success) {
@@ -179,11 +185,16 @@ export async function POST(request: NextRequest) {
       guestId = data;
     } catch (e) { console.error("Guest upsert failed:", e); }
 
+    // Combine lodge-preference into bericht so we don't need a DB migration
+    const fullBericht = voorkeursLodge
+      ? `[Lodge: ${voorkeursLodgeNaam || voorkeursLodge}${wasFallback ? " — fallback, voorkeur was bezet" : ""}]\n${message || ""}`.trim()
+      : (message || null);
+
     let aanvraagId = "";
     try {
       const { data } = await getSupabase().from("terugkeer_aanvragen").insert({
         guest_id: guestId, van: from, tot: to,
-        personen: persons || 2, bericht: message || null, status: "nieuw",
+        personen: persons || 2, bericht: fullBericht, status: "nieuw",
       }).select("id").single();
       aanvraagId = data?.id || "";
     } catch (e) { console.error("Terugkeer insert failed:", e); }
@@ -202,7 +213,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
           subject: `Terugkeer aanvraag — ${name || email} · ${from} t/m ${to}`,
-          html: ownerEmailHtml(esc(from), esc(to), esc(email), esc(name || ""), persons || 2, esc(message || ""), aanvraagId, appUrl, adminSecret),
+          html: ownerEmailHtml(esc(from), esc(to), esc(email), esc(name || ""), persons || 2, esc(message || ""), aanvraagId, appUrl, adminSecret, esc(voorkeursLodgeNaam || ""), Boolean(wasFallback)),
           replyTo: email,
         });
 

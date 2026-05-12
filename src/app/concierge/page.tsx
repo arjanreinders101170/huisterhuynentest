@@ -25,6 +25,7 @@ import { InstallBanner } from "@/components/InstallBanner";
 
 type StaySession = {
   id: string;
+  token: string; // kept for follow-up calls (chat) after URL strip
   lodge: string;
   lodgeNaam: string;
   check_in: string;
@@ -105,6 +106,7 @@ function AppInner() {
         if (d.stay) {
           const session: StaySession = {
             id: d.stay.id,
+            token: tokenParam,
             lodge: d.stay.lodge,
             lodgeNaam: d.stay.lodgeNaam,
             check_in: d.stay.check_in,
@@ -208,7 +210,10 @@ function AppInner() {
         body: JSON.stringify({
           messages: [...msgs.map(m => ({ role: m.role, content: m.text })),
             { role: "user", content: q }],
-          context: fullContext,
+          context: weatherContext, // weather only — profile/stay travel separately
+          stayToken: stay?.token || tokenParam || undefined,
+          lang,
+          profile: profile || undefined,
         }),
         signal: controller.signal,
       });
@@ -359,7 +364,10 @@ function AppInner() {
             <Info onNavigate={(r: Route) => setRoute(r)} />
           )}
           {route === "terugkomen" && (
-            <Terugkomen onNavigate={(r: Route) => setRoute(r)} />
+            <Terugkomen
+              onNavigate={(r: Route) => setRoute(r)}
+              preferredLodge={stay?.lodge === "lodge_1" || stay?.lodge === "lodge_2" ? stay.lodge : null}
+            />
           )}
         </>
       )}

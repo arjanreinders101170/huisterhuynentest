@@ -12,3 +12,8 @@ export const PHONE_RAW = "+31642568603";
 export const PHONE_DISPLAY = "+31 6 42568603";
 
 export const APP_URL_FALLBACK = "https://huisterhuynen.nl/app";
+
+/* Earliest date guests can request via website/app booking flow.
+ * Used by both BookingCalendar (homepage) and Terugkomen (in-app) so the
+ * two stay aligned. Update here when the season opens. */
+export const BOOKINGS_OPEN_FROM = "2027-01-01";
