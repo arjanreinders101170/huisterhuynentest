@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const hits = new Map<string, { count: number; reset: number }>();
 
 const LIMITS: Record<string, { max: number; window: number }> = {
-  "/api/chat":        { max: 20, window: 60000 },    // 20/min
+  "/api/chat":        { max: 10, window: 60000 },    // 10/min — strakker voor OpenAI kosten
   "/api/booking":     { max: 5,  window: 3600000 },   // 5/hour
   "/api/terugkomen":  { max: 5,  window: 3600000 },   // 5/hour
   "/api/checkout":    { max: 10, window: 3600000 },    // 10/hour
