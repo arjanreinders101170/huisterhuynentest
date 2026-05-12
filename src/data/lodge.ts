@@ -24,6 +24,9 @@ export function lodgeName(id: string): string {
   return LODGE_NAMES[id as LodgeId] || "Lodge";
 }
 
+/* Max guests per lodge. Both lodges sleep 4. */
+export const MAX_GUESTS_PER_LODGE = 4;
+
 /* Earliest date guests can request via website/app booking flow.
  * Used by both BookingCalendar (homepage) and Terugkomen (in-app) so the
  * two stay aligned. Update here when the season opens. */
