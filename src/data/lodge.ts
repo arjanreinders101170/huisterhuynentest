@@ -13,6 +13,17 @@ export const PHONE_DISPLAY = "+31 6 42568603";
 
 export const APP_URL_FALLBACK = "https://huisterhuynen.nl/app";
 
+/* Lodge identifiers used in DB (stays.lodge column) and the canonical
+ * customer-facing names. Always import from here — never hardcode. */
+export type LodgeId = "lodge_1" | "lodge_2";
+export const LODGE_NAMES: Record<LodgeId, string> = {
+  lodge_1: "De Heide",
+  lodge_2: "De Eik",
+};
+export function lodgeName(id: string): string {
+  return LODGE_NAMES[id as LodgeId] || "Lodge";
+}
+
 /* Earliest date guests can request via website/app booking flow.
  * Used by both BookingCalendar (homepage) and Terugkomen (in-app) so the
  * two stay aligned. Update here when the season opens. */

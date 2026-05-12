@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { buildHostKnowledge, PROFILE_HINTS_NL, PROFILE_HINTS_DE } from "@/data/host-knowledge";
+import { lodgeName } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -63,7 +64,7 @@ async function lookupStay(token: string): Promise<StayInfo | null> {
     const info: StayInfo = {
       id: stay.id,
       lodge: stay.lodge,
-      lodgeNaam: stay.lodge === "lodge_1" ? "Boomhut Lodge" : "Schaapskooi Lodge",
+      lodgeNaam: lodgeName(stay.lodge),
       check_in: stay.check_in,
       check_out: stay.check_out,
       naam: guest?.naam || "",

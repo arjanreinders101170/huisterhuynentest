@@ -3,7 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { T, cardStyle, type Route } from "@/data/tokens";
 import { IcCheck, IcArrow } from "./icons";
 import { useLanguage } from "@/i18n";
-import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
+import { BOOKINGS_OPEN_FROM, LODGE_NAMES } from "@/data/lodge";
 
 type Lodge = "lodge_1" | "lodge_2";
 type ICalEvent = { start: string; end: string };
@@ -18,7 +18,7 @@ const MONTHS_NL = ["januari","februari","maart","april","mei","juni","juli","aug
 const MONTHS_DE = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 const DAYS_NL = ["Ma","Di","Wo","Do","Vr","Za","Zo"];
 const DAYS_DE = ["Mo","Di","Mi","Do","Fr","Sa","So"];
-const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "Boomhut Lodge", lodge_2: "Schaapskooi Lodge" };
+const LODGE_LABELS: Record<Lodge, string> = LODGE_NAMES;
 
 function toKey(d: Date) { return d.toISOString().split("T")[0]; }
 function fromKey(s: string) { return new Date(s + "T12:00:00"); }

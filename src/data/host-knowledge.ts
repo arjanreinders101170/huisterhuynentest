@@ -9,6 +9,7 @@
 import { DATA } from "./categories";
 import { DATA_DE } from "@/i18n/categories-de";
 import type { Category } from "./tokens";
+import { LODGE_NAMES } from "./lodge";
 
 type Lang = "nl" | "de";
 
@@ -41,7 +42,7 @@ function compactCategory(key: string, cat: Category, lang: Lang): string {
 
 const HEADER_NL = `LODGE-FEITEN:
 - Adres: Zuiderstraat 6, Zeijen (Drenthe). A28 afslag Zeijen.
-- Twee lodges: Boomhut Lodge en Schaapskooi Lodge.
+- Twee lodges: ${LODGE_NAMES.lodge_1} en ${LODGE_NAMES.lodge_2}.
 - Check-in 15:00, check-out 11:00. Late check-out tot 15:00 op aanvraag (€25).
 - Honden welkom (€25 schoonmaak). Laadpaal op terrein.
 - Wifi: HuynenGast / HuynenGast2024.
@@ -49,7 +50,7 @@ const HEADER_NL = `LODGE-FEITEN:
 
 const HEADER_DE = `LODGE-FAKTEN:
 - Adresse: Zuiderstraat 6, Zeijen (Drenthe). A28 Ausfahrt Zeijen.
-- Zwei Lodges: Boomhut Lodge und Schaapskooi Lodge.
+- Zwei Lodges: ${LODGE_NAMES.lodge_1} und ${LODGE_NAMES.lodge_2}.
 - Check-in 15:00, Check-out 11:00. Späterer Check-out bis 15:00 auf Anfrage (€25).
 - Hunde willkommen (€25 Reinigung). Ladesäule vor Ort.
 - WLAN: HuynenGast / HuynenGast2024.
