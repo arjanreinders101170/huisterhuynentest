@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { T, cardStyle, type Route } from "@/data/tokens";
 import { IcCheck, IcArrow } from "./icons";
 import { useLanguage } from "@/i18n";
+import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
 
 type Lodge = "lodge_1" | "lodge_2";
 type ICalEvent = { start: string; end: string };
@@ -38,10 +39,17 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [calMonth, setCalMonth] = useState(() => {
-    const n = new Date();
-    return { year: n.getFullYear(), month: n.getMonth() };
-  });
+  // Earliest selectable date: today or BOOKINGS_OPEN_FROM, whichever is later.
+  const minDate = useMemo(() => {
+    const opens = new Date(BOOKINGS_OPEN_FROM + "T00:00:00");
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return opens > now ? opens : now;
+  }, []);
+  const [calMonth, setCalMonth] = useState(() => ({
+    year: minDate.getFullYear(),
+    month: minDate.getMonth(),
+  }));
 
   /* ═══ AVAILABILITY ═══ */
   const [lodge1Events, setLodge1Events] = useState<ICalEvent[]>([]);
@@ -62,9 +70,6 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
     });
     return () => { cancelled = true; };
   }, []);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
   /* ═══ CALENDAR LOGIC ═══ */
   const calDays = useMemo(() => {
@@ -111,7 +116,7 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
   }
 
   const handleDateClick = (d: Date) => {
-    if (d < today) return;
+    if (d < minDate) return;
     const status = dayStatus(d);
     if (status === "booked") return;
     const key = toKey(d);
@@ -136,7 +141,7 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
 
   const isFrom = (d: Date) => fromDate === toKey(d);
   const isTo = (d: Date) => toDate === toKey(d);
-  const isPast = (d: Date) => d < today;
+  const isPast = (d: Date) => d < minDate;
 
   const nights = fromDate && toDate
     ? Math.round((fromKey(toDate).getTime() - fromKey(fromDate).getTime()) / (1000 * 60 * 60 * 24))
@@ -149,7 +154,11 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
     return d.toLocaleDateString(lang === "de" ? "de-DE" : "nl-NL", { day: "numeric", month: "long" });
   };
 
-  const prevMonth = () => setCalMonth(p => p.month === 0 ? { year: p.year - 1, month: 11 } : { year: p.year, month: p.month - 1 });
+  const canGoBack = calMonth.year > minDate.getFullYear() || (calMonth.year === minDate.getFullYear() && calMonth.month > minDate.getMonth());
+  const prevMonth = () => {
+    if (!canGoBack) return;
+    setCalMonth(p => p.month === 0 ? { year: p.year - 1, month: 11 } : { year: p.year, month: p.month - 1 });
+  };
   const nextMonth = () => setCalMonth(p => p.month === 11 ? { year: p.year + 1, month: 0 } : { year: p.year, month: p.month + 1 });
 
   /* ═══ SUBMIT ═══ */
@@ -274,7 +283,15 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
           <div style={{ ...cardStyle, padding: "20px 16px" }}>
             {/* Month nav */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <button onClick={prevMonth} style={{ background: "none", border: "none", cursor: "pointer", color: T.muted, padding: 4 }}>
+              <button
+                onClick={prevMonth}
+                disabled={!canGoBack}
+                style={{
+                  background: "none", border: "none",
+                  cursor: canGoBack ? "pointer" : "not-allowed",
+                  color: canGoBack ? T.muted : T.border, padding: 4,
+                }}
+              >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><polyline points="15 18 9 12 15 6" /></svg>
               </button>
               <div style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 600, color: T.text }}>
