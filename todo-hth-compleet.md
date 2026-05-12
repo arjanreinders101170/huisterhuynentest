@@ -109,6 +109,25 @@
 
 ---
 
+## Open — Marketing & Vindbaarheid (Pre-opening)
+
+| # | Item | Wanneer | Toelichting |
+|---|------|---------|-------------|
+| 58 | Google Business Profile aanmaken | Nu | Openingsdatum instellen, foto's uploaden — grootste impact lokale vindbaarheid |
+| 59 | VVV Drenthe aanmelden | Nu | Gratis plaatsing via `vvvdrenthe.nl/aanbieders` |
+| 60 | Visit Drenthe aanmelden | Nu | Officieel provinciaal toerisme — contact opnemen voor gratis vermelding |
+| 61 | Tripadvisor basisprofiel aanmaken | Nu | Gratis, reviews worden er al op gezocht |
+| 62 | Natuurhuisje.nl profiel aanmaken | Oktober/november 2026 | Exacte doelgroep (natuur, rust) — ±15% commissie, gratis listing |
+| 63 | Airbnb profiel aanmaken | Oktober/november 2026 | Internationaal bereik, koppels/gezinnen |
+| 64 | Persbericht opstellen + versturen | November 2026 | Naar Dagblad van het Noorden, RTV Drenthe, Asser Courant bij opening |
+| 65 | ANWB verblijfsaccommodatie aanmelden | November 2026 | Gratis vermelding via `anwb.nl/campings/inschrijven` |
+| 66 | Wandel-/fietswebsites benaderen voor vermelding | Voor opening | `wandelknooppunt.nl`, `fietsknooppunt.nl` — lodge als uitvalsbasis |
+| 67 | 1–2 reisbloggers uitnodigen (ruil: gratis nacht) | Na opening | Backlink + bereik via travel blogs — zoek op "Drenthe reisblog" |
+| 68 | Pinterest account aanmaken | Voor opening | Pinboards met Drenthe-foto's → verkeer naar blog |
+| 69 | Schema markup controleren op website | Voor opening | Article + LocalBusiness + FAQ — verhoogt klikken in Google |
+
+---
+
 ## Openstaande beslissingen (voor Arjan)
 
 | # | Vraag | Impact |
