@@ -10,9 +10,12 @@ type Props = {
   wifiCopied: boolean;
   onCopyWifi: () => void;
   onNavigate: (r: Route) => void;
+  doorCode?: string;
 };
 
-export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }: Props) {
+const FALLBACK_DOOR_CODE = "4821";
+
+export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate, doorCode }: Props) {
   const { t } = useLanguage();
   const CHECKLIST = t.verblijf.checklist;
   const [showCheckout, setShowCheckout] = useState(false);
@@ -110,7 +113,7 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate }:
         )}
       </div>
       <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textAlign: "center", marginTop: 12, fontWeight: 300 }}>
-        {t.verblijf.accessCode} <strong style={{ color: T.text }}>4821</strong>
+        {t.verblijf.accessCode} <strong style={{ color: T.text }}>{doorCode || FALLBACK_DOOR_CODE}</strong>
       </div>
 
       {/* Wifi */}

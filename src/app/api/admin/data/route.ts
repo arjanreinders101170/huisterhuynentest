@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -193,11 +194,10 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "Kon gast niet aanmaken" }, { status: 500 });
         }
 
-        // Generate codes
+        // Generate codes (wifi is static per lodge — see src/data/lodge.ts)
         const { randomBytes, randomInt } = await import("crypto");
         const token = randomBytes(24).toString("hex");
         const door_code = String(randomInt(1000, 9999));
-        const wifi_code = "Huynen" + randomInt(1000, 9999);
 
         const { error } = await getSupabase().from("stays").insert({
           guest_id: guestId,
@@ -206,7 +206,6 @@ export async function POST(request: NextRequest) {
           check_out,
           token,
           door_code,
-          wifi_code,
           status: "gepland",
           welcome_sent: false,
         });
@@ -247,19 +246,21 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
         }
 
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl/app";
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
         const lodgeNaam = stay.lodge === "lodge_1" ? "Boomhut Lodge" : "Schaapskooi Lodge";
         const checkInDate = new Date(stay.check_in).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
+        const appLink = `${appUrl}?s=${stay.token}`;
 
         const { Resend } = await import("resend");
         const resend = new Resend(resendKey);
 
         const esc = (s: string) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
+        const firstName = esc((guest.naam || "").split(" ")[0] || guest.naam || "");
 
         await resend.emails.send({
           from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
           to: [guest.email],
-          subject: `Welkom bij Huis ter Huynen — ${checkInDate}`,
+          subject: `Jouw gast-app staat klaar — ${checkInDate}`,
           html: `<!DOCTYPE html><html><head><meta charset="utf-8"/></head>
 <body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
@@ -276,42 +277,48 @@ export async function POST(request: NextRequest) {
 </td></tr>
 <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
 <tr><td style="height:4px;background:#B49A5E;border-radius:12px 12px 0 0;">&nbsp;</td></tr>
-<tr><td style="padding:28px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-    <tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">&#9830;</span></td></tr>
-  </table>
-  <h1 style="margin:0 0 8px;font-size:26px;color:#2A2418;text-align:center;">Welkom, ${esc(guest.naam)}!</h1>
-  <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
-    Over een paar uur mag je genieten van rust en natuur in Drenthe. Hier is alles wat je nodig hebt.
+<tr><td style="padding:32px 28px 28px;">
+
+  <!-- ► Personal greeting first -->
+  <h1 style="margin:0 0 14px;font-size:28px;color:#2A2418;text-align:center;font-family:Georgia,serif;line-height:1.2;">
+    Welkom${firstName ? `, ${firstName}` : ""}
+  </h1>
+  <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
+    Jullie ${esc(lodgeNaam)} staat klaar voor ${checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één tik en alles staat op zijn plek.
   </p>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:8px;margin-bottom:16px;">
-    <tr><td style="padding:18px 20px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">
-        <tr><td style="padding:6px 0;color:#8A7D6A;">Lodge</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;">${esc(lodgeNaam)}</td></tr>
-        <tr><td style="padding:6px 0;color:#8A7D6A;">Aankomst</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkInDate}</td></tr>
-        <tr><td style="padding:6px 0;color:#8A7D6A;">Deurcode</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2F4F3E;font-size:18px;letter-spacing:2px;">${stay.door_code}</td></tr>
-        <tr><td style="padding:6px 0;color:#8A7D6A;">Wi-Fi</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2F4F3E;">${stay.wifi_code}</td></tr>
+  <!-- ► Dominant CTA: open de gast-app -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+    <tr><td align="center">
+      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;"><tr>
+        <td align="center" style="background:#2F4F3E;border-radius:14px;">
+          <a href="${appLink}" style="display:block;padding:18px 24px;color:#fff;text-decoration:none;font-family:Georgia,serif;font-size:17px;font-weight:bold;border-radius:14px;">
+            Open jullie gast-app &#8594;
+          </a>
+        </td>
+      </tr></table>
+    </td></tr>
+  </table>
+  <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;text-align:center;line-height:1.5;">
+    Tip: zet 'm op je beginscherm zodat je 'm bij aankomst direct paraat hebt.
+  </p>
+
+  <!-- ► Quick logistics — smaller, secondary -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:10px;margin-bottom:20px;">
+    <tr><td style="padding:16px 20px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:13px;">
+        <tr><td style="padding:5px 0;color:#8A7D6A;">Aankomst</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkInDate} · vanaf 15:00</td></tr>
+        <tr><td style="padding:5px 0;color:#8A7D6A;">Lodge</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${esc(lodgeNaam)}</td></tr>
+        <tr><td style="padding:5px 0;color:#8A7D6A;">Deurcode</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2F4F3E;letter-spacing:1px;">${stay.door_code}</td></tr>
+        <tr><td style="padding:5px 0;color:#8A7D6A;">Wi-Fi</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2F4F3E;">${WIFI_SSID} &middot; ${WIFI_PASSWORD}</td></tr>
       </table>
     </td></tr>
   </table>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Inchecken vanaf 15:00, sleutel niet nodig</td></tr>
     <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Laadpaal beschikbaar op locatie</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Inchecken vanaf 15:00</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Zuiderstraat 6, Zeijen</td></tr>
-  </table>
-
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
-    <tr><td align="center" style="padding:10px 0;">
-      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-        <td align="center" style="background:#2F4F3E;border-radius:10px;">
-          <a href="${appUrl}/?s=${stay.token}" style="display:block;padding:16px 40px;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;border-radius:10px;">
-            Open de gast-app &#8594;
-          </a>
-        </td>
-      </tr></table>
-    </td></tr>
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Tips, route en extra's regelen via de app</td></tr>
   </table>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
@@ -333,6 +340,93 @@ export async function POST(request: NextRequest) {
           welcome_sent: true,
           welcome_sent_at: new Date().toISOString(),
         }).eq("id", stayId);
+
+        return NextResponse.json({ success: true });
+      }
+      case "send_late_checkout": {
+        // Evening-before-departure reminder with one-tap booking link
+        const stayId = body.id;
+        if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
+
+        const { data: stay } = await getSupabase().from("stays").select("*").eq("id", stayId).single();
+        if (!stay) return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
+
+        const { data: guest } = await getSupabase().from("guests").select("naam, email").eq("id", stay.guest_id).single();
+        if (!guest?.email) return NextResponse.json({ error: "Geen emailadres" }, { status: 404 });
+
+        const resendKey = process.env.RESEND_API_KEY;
+        if (!resendKey) return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
+
+        const appUrlLc = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+        const appLinkLc = `${appUrlLc}?s=${stay.token}`;
+        const esc = (s: string) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
+        const firstName = esc((guest.naam || "").split(" ")[0] || guest.naam || "");
+
+        const { Resend } = await import("resend");
+        const resend = new Resend(resendKey);
+
+        await resend.emails.send({
+          from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+          to: [guest.email],
+          subject: `Nog één nacht — tot morgen 11:00`,
+          html: `<!DOCTYPE html><html><head><meta charset="utf-8"/></head>
+<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+<tr><td align="center" style="padding:0 0 24px;">
+  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+    <td style="font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
+  </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+    <td style="width:28px;height:1px;background:#B49A5E;"></td>
+    <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
+    <td style="width:28px;height:1px;background:#B49A5E;"></td>
+  </tr></table></td></tr></table>
+</td></tr>
+<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
+<tr><td style="height:4px;background:#B49A5E;border-radius:12px 12px 0 0;">&nbsp;</td></tr>
+<tr><td style="padding:32px 28px 28px;">
+  <h1 style="margin:0 0 14px;font-size:26px;color:#2A2418;text-align:center;font-family:Georgia,serif;line-height:1.2;">
+    Nog &eacute;&eacute;n nacht${firstName ? `, ${firstName}` : ""}
+  </h1>
+  <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
+    Morgen om <strong style="color:#2A2418;">11:00</strong> verwachten we jullie sleutel-loos te zien vertrekken. Geniet vanavond nog van de stilte.
+  </p>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
+    <tr><td style="padding:18px 20px;">
+      <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2A2418;">Nog niet klaar om te gaan?</p>
+      <p style="margin:0 0 14px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
+        Boek een late check-out tot 15:00 &mdash; ideaal voor een laatste boswandeling of brunch op het terras.
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+        <td align="center" style="background:#2F4F3E;border-radius:10px;">
+          <a href="${appLinkLc}" style="display:block;padding:12px 24px;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;border-radius:10px;">
+            Vraag late check-out aan
+          </a>
+        </td>
+      </tr></table>
+    </td></tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Check-out tot 11:00 inbegrepen</td></tr>
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Sleutel mag in de lodge blijven</td></tr>
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Vergeet niet om de checklist in de app af te vinken</td></tr>
+  </table>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
+    <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;text-align:center;">
+      Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>
+    </td></tr>
+  </table>
+</td></tr></table></td></tr>
+<tr><td align="center" style="padding:24px 0 0;">
+  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
+  <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">Huis ter Huynen &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
+</td></tr>
+</table></td></tr></table></body></html>`,
+        });
 
         return NextResponse.json({ success: true });
       }

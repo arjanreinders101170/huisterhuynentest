@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
+import { APP_URL_FALLBACK, WIFI_SSID, WIFI_PASSWORD } from "@/data/lodge";
 
 export const metadata: Metadata = {
   title: "Welkom – Huis ter Huynen",
   description: "Alles wat je moet weten voor je verblijf",
 };
 
-export default function WelkomPage() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl/app";
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(appUrl)}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`;
+type Props = {
+  searchParams: Promise<{ s?: string }>;
+};
+
+export default async function WelkomPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const token = typeof params.s === "string" ? params.s : "";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+  // QR encodes the token so a guest scanning gets the personalized app
+  const appLink = token ? `${appUrl}?s=${encodeURIComponent(token)}` : appUrl;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(appLink)}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`;
   const mapsUrl = "https://www.google.com/maps/dir/?api=1&destination=53.1047,6.5070&travelmode=driving";
 
   return (
@@ -88,7 +97,7 @@ export default function WelkomPage() {
               15:00
             </div>
             <p style={{ fontSize: 13, color: "#8A7D6A", fontWeight: 300, lineHeight: 1.6, margin: 0 }}>
-              Je bent welkom vanaf 15:00. De deur open je via de app of met toegangscode 4821.
+              Je bent welkom vanaf 15:00. De deur open je via de app — je persoonlijke toegangscode staat daar klaar.
               Check-out is de volgende dag om 11:00.
             </p>
           </div>
@@ -148,7 +157,7 @@ export default function WelkomPage() {
             </div>
             {[
               { emoji: "🔑", text: "Deur open je via de app — geen sleutel nodig" },
-              { emoji: "📶", text: "Wifi: HuynenGast · wachtwoord: HuynenGast2024" },
+              { emoji: "📶", text: `Wifi: ${WIFI_SSID} · wachtwoord: ${WIFI_PASSWORD}` },
               { emoji: "🅿️", text: "Gratis parkeren op eigen terrein" },
               { emoji: "🐕", text: "Huisdieren welkom (overleg vooraf)" },
               { emoji: "🤫", text: "Rust na 22:00 — geniet van de stilte" },
@@ -193,7 +202,7 @@ export default function WelkomPage() {
         {/* CTA — open de app */}
         <div style={{ marginTop: 32, textAlign: "center" as const }}>
           <a
-            href={appUrl}
+            href={appLink}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
               width: "100%", padding: 16, borderRadius: 16,
@@ -241,7 +250,9 @@ export default function WelkomPage() {
             fontSize: 11, color: "#8A7D6A", fontWeight: 300, marginTop: 12,
             maxWidth: 220, marginLeft: "auto", marginRight: "auto",
           }}>
-            Scan met je telefoon om de digitale conciërge te openen
+            {token
+              ? "Scan met je telefoon — je verblijf staat al klaar"
+              : "Scan met je telefoon om de digitale conciërge te openen"}
           </p>
         </div>
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { WIFI_SSID, WIFI_PASSWORD } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -38,14 +39,18 @@ export async function GET(request: NextRequest) {
       .eq("id", stay.guest_id)
       .single();
 
+    const lodgeNaam = stay.lodge === "lodge_1" ? "Boomhut Lodge" : "Schaapskooi Lodge";
+
     return NextResponse.json({
       stay: {
         id: stay.id,
         lodge: stay.lodge,
+        lodgeNaam,
         check_in: stay.check_in,
         check_out: stay.check_out,
         door_code: stay.door_code,
-        wifi_code: stay.wifi_code,
+        wifi_ssid: WIFI_SSID,
+        wifi_password: WIFI_PASSWORD,
         status: stay.status,
       },
       guest: {

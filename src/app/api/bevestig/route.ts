@@ -189,6 +189,20 @@ export async function POST(request: NextRequest) {
               <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#2A2418;line-height:1.6;">We nemen binnenkort contact op met praktische informatie over je verblijf: check-in, route, en tips voor je bezoek aan Drenthe.</p>
             </td></tr>
           </table>
+
+          <!-- ► Mini-teaser for the gast-app (arrives T-3) -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr><td style="padding:14px 18px;background-color:#FDFBF6;border:1px solid #E0D8C8;border-radius:8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td style="vertical-align:middle;font-family:Arial,sans-serif;font-size:24px;width:42px;">&#127969;</td>
+                <td style="vertical-align:middle;">
+                  <p style="margin:0 0 2px;font-family:Georgia,serif;font-size:14px;font-weight:bold;color:#2A2418;">Een paar dagen voor aankomst</p>
+                  <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;line-height:1.5;">Krijg je je persoonlijke gast-app: deur, wi-fi, route en tips &mdash; alles op &eacute;&eacute;n plek.</p>
+                </td>
+              </tr></table>
+            </td></tr>
+          </table>
+
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
             <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Bevestiging ontvangen</td></tr>
             <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Praktische info volgt per e-mail</td></tr>

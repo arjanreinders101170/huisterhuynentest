@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Route, ChatMsg, DoorStatus, GuestProfile, Weather } from "@/data/tokens";
 import { T } from "@/data/tokens";
 import { DATA, CATEGORY_KEYS, UPSELLS } from "@/data/categories";
@@ -10,6 +11,7 @@ import { PROFILES_DE } from "@/i18n/profiles-de";
 import { LanguageProvider, useLanguage } from "@/i18n";
 import { Header } from "@/components/Header";
 import { Onboarding } from "@/components/Onboarding";
+import { Begroeting } from "@/components/Begroeting";
 import { Home } from "@/components/Home";
 import { Verblijf } from "@/components/Verblijf";
 import { Chat } from "@/components/Chat";
@@ -19,17 +21,36 @@ import { Terugkomen } from "@/components/Terugkomen";
 import { DetailPage } from "@/components/DetailPage";
 import { Nav } from "@/components/Nav";
 import { LodgeControl } from "@/components/LodgeControl";
+import { InstallBanner } from "@/components/InstallBanner";
+
+type StaySession = {
+  id: string;
+  lodge: string;
+  lodgeNaam: string;
+  check_in: string;
+  check_out: string;
+  door_code: string;
+  naam: string;
+  greeted: boolean; // user tapped "Ja, dat klopt"
+};
+
+const STAY_STORAGE_KEY = "hth-stay";
 
 export default function Page() {
   return (
     <LanguageProvider>
-      <AppInner />
+      <Suspense fallback={null}>
+        <AppInner />
+      </Suspense>
     </LanguageProvider>
   );
 }
 
 function AppInner() {
   const { lang, t } = useLanguage();
+  const searchParams = useSearchParams();
+  const tokenParam = searchParams.get("s");
+
   /* ═══ ROUTE ═══ */
   const [route, setRoute] = useState<Route>("home");
 
@@ -37,6 +58,10 @@ function AppInner() {
   const [profile, setProfile] = useState<GuestProfile>(null);
   const [onboarded, setOnboarded] = useState(false);
   const [ready, setReady] = useState(false);
+
+  /* ═══ STAY — magic-link session (?s=TOKEN) ═══ */
+  const [stay, setStay] = useState<StaySession | null>(null);
+  const [stayLoading, setStayLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -47,12 +72,68 @@ function AppInner() {
         setProfile(saved as GuestProfile);
         setOnboarded(true);
       }
+
+      // Restore cached stay session
+      const savedStay = localStorage.getItem(STAY_STORAGE_KEY);
+      if (savedStay) {
+        const parsed: StaySession = JSON.parse(savedStay);
+        // Expire client-side too — check_out + 1 day
+        const checkOut = new Date(parsed.check_out);
+        checkOut.setHours(23, 59, 59);
+        if (Date.now() < checkOut.getTime()) {
+          setStay(parsed);
+          if (parsed.greeted) setOnboarded(true);
+        } else {
+          localStorage.removeItem(STAY_STORAGE_KEY);
+        }
+      }
     } catch {
       // localStorage not available — skip onboarding entirely
       setOnboarded(true);
     }
     setReady(true);
   }, []);
+
+  // Fetch stay info when a fresh token arrives in URL
+  useEffect(() => {
+    if (!tokenParam || stayLoading) return;
+    if (stay && stay.id) return; // already loaded
+    setStayLoading(true);
+    fetch(`/api/stay?token=${encodeURIComponent(tokenParam)}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.stay) {
+          const session: StaySession = {
+            id: d.stay.id,
+            lodge: d.stay.lodge,
+            lodgeNaam: d.stay.lodgeNaam,
+            check_in: d.stay.check_in,
+            check_out: d.stay.check_out,
+            door_code: d.stay.door_code,
+            naam: d.guest?.naam || "",
+            greeted: false,
+          };
+          setStay(session);
+          try { localStorage.setItem(STAY_STORAGE_KEY, JSON.stringify(session)); } catch {}
+        }
+      })
+      .catch(() => {/* silent — fall through to default flow */})
+      .finally(() => setStayLoading(false));
+  }, [tokenParam, stay, stayLoading]);
+
+  const confirmGreeting = () => {
+    if (!stay) return;
+    const updated = { ...stay, greeted: true };
+    setStay(updated);
+    setOnboarded(true);
+    try {
+      localStorage.setItem(STAY_STORAGE_KEY, JSON.stringify(updated));
+      // Token-arrivals skip profile selection — they got a personal greeting instead
+      if (!localStorage.getItem("hth-profile")) {
+        localStorage.setItem("hth-profile", "skipped");
+      }
+    } catch {}
+  };
 
   const selectProfile = (p: GuestProfile) => {
     setProfile(p);
@@ -210,12 +291,22 @@ function AppInner() {
   // Don't render until we've checked localStorage (prevents flash)
   if (!ready) return null;
 
-  // Show onboarding only on first visit
-  const showOnboarding = !onboarded && route === "home" && !detailData;
+  // Greeting (option B) takes priority over onboarding for token-arrivals
+  const showBegroeting = stay !== null && !stay.greeted && route === "home" && !detailData;
+  const showOnboarding = !showBegroeting && !onboarded && route === "home" && !detailData;
+  const tokenArrival = stay !== null;
 
   /* ═══ RENDER ═══ */
   return (
     <div style={{ maxWidth: 430, margin: "0 auto", minHeight: "100vh", position: "relative" }}>
+      {showBegroeting && stay && (
+        <Begroeting
+          naam={stay.naam}
+          lodgeNaam={stay.lodgeNaam}
+          checkIn={stay.check_in}
+          onConfirm={confirmGreeting}
+        />
+      )}
       {showOnboarding && <Onboarding onSelect={selectProfile} />}
 
       <Header today={today} weather={weather} onMenuOpen={() => setDrawerOpen(true)} />
@@ -243,6 +334,7 @@ function AppInner() {
               wifiCopied={wifiCopied}
               onCopyWifi={copyWifi}
               onNavigate={(r: Route) => setRoute(r)}
+              doorCode={stay?.door_code}
             />
           )}
           {route === "chat" && (
@@ -276,6 +368,11 @@ function AppInner() {
         currentPage={basePage}
         onNavigate={(r: Route) => setRoute(r)}
       />
+
+      {/* PWA install nudge — fires faster for token-arrivals (just opened email) */}
+      {ready && !showBegroeting && (
+        <InstallBanner delayMs={tokenArrival ? 2000 : 5000} />
+      )}
     </div>
   );
 }
