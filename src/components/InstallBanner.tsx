@@ -12,7 +12,11 @@ import { T } from "@/data/tokens";
  * - Appears after 5 seconds (not on immediate load)
  */
 
-export function InstallBanner() {
+type Props = {
+  delayMs?: number;
+};
+
+export function InstallBanner({ delayMs = 5000 }: Props = {}) {
   const [show, setShow] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 
@@ -32,10 +36,9 @@ export function InstallBanner() {
     const ios = /iPhone|iPad|iPod/.test(ua) && !(window as unknown as { MSStream?: unknown }).MSStream;
     setIsIOS(ios);
 
-    // Show after 5 seconds
-    const timer = setTimeout(() => setShow(true), 5000);
+    const timer = setTimeout(() => setShow(true), delayMs);
     return () => clearTimeout(timer);
-  }, []);
+  }, [delayMs]);
 
   const dismiss = () => {
     setShow(false);

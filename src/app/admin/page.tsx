@@ -936,6 +936,18 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
     setSendingId(null);
   };
 
+  const sendLateCheckout = async (stayId: string) => {
+    setSendingId(stayId);
+    try {
+      await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_late_checkout", id: stayId }),
+      });
+    } catch {}
+    setSendingId(null);
+  };
+
   const statusColor = (s: string) => {
     if (s === "actief") return { bg: "#E8F5E9", text: "#2E7D32" };
     if (s === "gepland") return { bg: "#E3F2FD", text: "#1565C0" };
@@ -1022,7 +1034,7 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
                     <span style={{ fontSize: 12, color: C.light }}>{lodge}</span>
                   </div>
                   <div style={{ fontSize: 12, color: C.muted }}>
-                    {cin} – {cout} · Deurcode: <strong>{s.door_code}</strong> · Wi-Fi: <strong>{s.wifi_code}</strong>
+                    {cin} – {cout} · Deurcode: <strong>{s.door_code}</strong> · Wi-Fi: <strong>HuynenGast</strong> (statisch)
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -1037,6 +1049,11 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
                   ) : (
                     <>
                       <span style={{ fontSize: 11, color: "#2E7D32" }}>✓ Welkom</span>
+                      <button onClick={() => sendLateCheckout(s.id)} disabled={sendingId === s.id} style={{
+                        padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.gold}`,
+                        background: C.card, color: C.gold, fontSize: 12, fontWeight: 500,
+                        cursor: sendingId === s.id ? "not-allowed" : "pointer",
+                      }}>{sendingId === s.id ? "Versturen..." : "Late check-out"}</button>
                       <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
                         padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
                         background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
