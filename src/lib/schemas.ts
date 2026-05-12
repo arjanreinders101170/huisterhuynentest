@@ -16,6 +16,9 @@ export const terugkomenSchema = z.object({
   name: z.string().max(100).optional(),
   persons: z.number().int().min(1).max(20).optional(),
   message: z.string().max(500).optional(),
+  voorkeursLodge: z.enum(["lodge_1", "lodge_2"]).optional(),
+  voorkeursLodgeNaam: z.string().max(60).optional(),
+  wasFallback: z.boolean().optional(),
 });
 
 export const reviewSchema = z.object({

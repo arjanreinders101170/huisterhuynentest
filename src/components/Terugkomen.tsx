@@ -1,20 +1,31 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { T, cardStyle, type Route } from "@/data/tokens";
 import { IcCheck, IcArrow } from "./icons";
 import { useLanguage } from "@/i18n";
 
-type Props = { onNavigate: (r: Route) => void };
+type Lodge = "lodge_1" | "lodge_2";
+type ICalEvent = { start: string; end: string };
+type DayStatus = "preferred" | "other" | "booked";
+
+type Props = {
+  onNavigate: (r: Route) => void;
+  preferredLodge?: Lodge | null;
+};
 
 const MONTHS_NL = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
 const MONTHS_DE = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 const DAYS_NL = ["Ma","Di","Wo","Do","Vr","Za","Zo"];
 const DAYS_DE = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "Boomhut Lodge", lodge_2: "Schaapskooi Lodge" };
 
 function toKey(d: Date) { return d.toISOString().split("T")[0]; }
 function fromKey(s: string) { return new Date(s + "T12:00:00"); }
+function isDayBooked(iso: string, events: ICalEvent[]): boolean {
+  return events.some(e => iso >= e.start && iso < e.end);
+}
 
-export function Terugkomen({ onNavigate }: Props) {
+export function Terugkomen({ onNavigate, preferredLodge }: Props) {
   const { t, lang } = useLanguage();
   const MONTHS = lang === "de" ? MONTHS_DE : MONTHS_NL;
   const DAYS = lang === "de" ? DAYS_DE : DAYS_NL;
@@ -32,6 +43,26 @@ export function Terugkomen({ onNavigate }: Props) {
     return { year: n.getFullYear(), month: n.getMonth() };
   });
 
+  /* ═══ AVAILABILITY ═══ */
+  const [lodge1Events, setLodge1Events] = useState<ICalEvent[]>([]);
+  const [lodge2Events, setLodge2Events] = useState<ICalEvent[]>([]);
+  const [availLoading, setAvailLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setAvailLoading(true);
+    Promise.all([
+      fetch("/api/ical?lodge=lodge_1").then(r => r.json()).catch(() => ({ events: [] })),
+      fetch("/api/ical?lodge=lodge_2").then(r => r.json()).catch(() => ({ events: [] })),
+    ]).then(([a, b]) => {
+      if (cancelled) return;
+      setLodge1Events(a.events || []);
+      setLodge2Events(b.events || []);
+      setAvailLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -46,8 +77,43 @@ export function Terugkomen({ onNavigate }: Props) {
     return cells;
   }, [calMonth]);
 
+  /* Per-day status: preferred lodge free, only the other lodge free, or both booked.
+   * Without a preferredLodge: lodge_1 acts as "preferred" (alphabetical default). */
+  const effectivePreferred: Lodge = preferredLodge || "lodge_1";
+  const effectiveOther: Lodge = effectivePreferred === "lodge_1" ? "lodge_2" : "lodge_1";
+  const preferredEvents = effectivePreferred === "lodge_1" ? lodge1Events : lodge2Events;
+  const otherEvents = effectivePreferred === "lodge_1" ? lodge2Events : lodge1Events;
+
+  function dayStatus(d: Date): DayStatus {
+    const iso = toKey(d);
+    const prefBooked = isDayBooked(iso, preferredEvents);
+    const otherBooked = isDayBooked(iso, otherEvents);
+    if (!prefBooked) return "preferred";
+    if (!otherBooked) return "other";
+    return "booked";
+  }
+
+  /* Match a date range to a lodge.
+   * Returns the lodge that has the WHOLE range free, preferring the user's
+   * previous lodge. Null = neither lodge can host this range. */
+  function matchRange(from: string, to: string): { lodge: Lodge; fallback: boolean } | null {
+    function rangeFree(events: ICalEvent[]): boolean {
+      let d = from;
+      while (d < to) {
+        if (isDayBooked(d, events)) return false;
+        d = toKey(new Date(new Date(d).getTime() + 86400000));
+      }
+      return true;
+    }
+    if (rangeFree(preferredEvents)) return { lodge: effectivePreferred, fallback: false };
+    if (rangeFree(otherEvents)) return { lodge: effectiveOther, fallback: true };
+    return null;
+  }
+
   const handleDateClick = (d: Date) => {
     if (d < today) return;
+    const status = dayStatus(d);
+    if (status === "booked") return;
     const key = toKey(d);
     if (!fromDate || (fromDate && toDate)) {
       setFromDate(key);
@@ -76,6 +142,8 @@ export function Terugkomen({ onNavigate }: Props) {
     ? Math.round((fromKey(toDate).getTime() - fromKey(fromDate).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
 
+  const matchedLodge = fromDate && toDate ? matchRange(fromDate, toDate) : null;
+
   const formatDate = (key: string) => {
     const d = fromKey(key);
     return d.toLocaleDateString(lang === "de" ? "de-DE" : "nl-NL", { day: "numeric", month: "long" });
@@ -85,10 +153,10 @@ export function Terugkomen({ onNavigate }: Props) {
   const nextMonth = () => setCalMonth(p => p.month === 11 ? { year: p.year + 1, month: 0 } : { year: p.year, month: p.month + 1 });
 
   /* ═══ SUBMIT ═══ */
-  const canSubmit = fromDate && toDate && email.includes("@") && !loading;
+  const canSubmit = fromDate && toDate && matchedLodge && email.includes("@") && !loading;
 
   const submit = async () => {
-    if (!canSubmit) return;
+    if (!canSubmit || !matchedLodge) return;
     setLoading(true);
     try {
       await fetch("/api/terugkomen", {
@@ -98,6 +166,9 @@ export function Terugkomen({ onNavigate }: Props) {
           from: formatDate(fromDate!),
           to: formatDate(toDate!),
           email, name, persons, message,
+          voorkeursLodge: matchedLodge.lodge,
+          voorkeursLodgeNaam: LODGE_LABELS[matchedLodge.lodge],
+          wasFallback: matchedLodge.fallback,
         }),
       });
     } catch {}
@@ -226,36 +297,86 @@ export function Terugkomen({ onNavigate }: Props) {
               ))}
             </div>
 
-            {/* Days grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
-              {calDays.map((d, i) => {
-                if (!d) return <div key={i} />;
-                const past = isPast(d);
-                const from = isFrom(d);
-                const to = isTo(d);
-                const inR = isInRange(d);
-                const selected = from || to;
+            {/* Loading state */}
+            {availLoading ? (
+              <div style={{ textAlign: "center", padding: 40, color: T.muted, fontFamily: T.sans, fontSize: 13 }}>
+                {t.terugkomen.loadingAvail}
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
+                {calDays.map((d, i) => {
+                  if (!d) return <div key={i} />;
+                  const past = isPast(d);
+                  const status = past ? "booked" : dayStatus(d);
+                  const from = isFrom(d);
+                  const to = isTo(d);
+                  const inR = isInRange(d);
+                  const selected = from || to;
+                  const disabled = past || status === "booked";
 
-                return (
-                  <button
-                    key={i}
-                    onClick={() => !past && handleDateClick(d)}
-                    disabled={past}
-                    style={{
-                      width: "100%", aspectRatio: "1", borderRadius: selected ? 10 : inR ? 0 : 10,
-                      border: "none", cursor: past ? "default" : "pointer",
-                      fontFamily: T.sans, fontSize: 14, fontWeight: selected ? 600 : 300,
-                      background: selected ? T.green : inR ? "rgba(47,79,62,.08)" : "transparent",
-                      color: past ? T.border : selected ? "#fff" : T.text,
-                      transition: "all .1s ease",
-                      WebkitTapHighlightColor: "transparent",
-                    }}
-                  >
-                    {d.getDate()}
-                  </button>
-                );
-              })}
-            </div>
+                  /* Color logic per state */
+                  let bg = "transparent";
+                  let color: string = T.text;
+                  if (selected) {
+                    bg = T.green;
+                    color = "#fff";
+                  } else if (inR) {
+                    bg = "rgba(47,79,62,.08)";
+                  } else if (past) {
+                    color = T.border;
+                  } else if (status === "preferred") {
+                    bg = "transparent";
+                    color = T.text;
+                  } else if (status === "other") {
+                    // subtiele gold-tint = andere lodge wel vrij
+                    bg = "rgba(180,154,94,.12)";
+                    color = T.text;
+                  } else if (status === "booked") {
+                    // beide bezet
+                    bg = "transparent";
+                    color = T.border;
+                  }
+
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => !disabled && handleDateClick(d)}
+                      disabled={disabled}
+                      style={{
+                        width: "100%", aspectRatio: "1", borderRadius: selected ? 10 : inR ? 0 : 10,
+                        border: "none", cursor: disabled ? "default" : "pointer",
+                        fontFamily: T.sans, fontSize: 14, fontWeight: selected ? 600 : 300,
+                        background: bg, color,
+                        textDecoration: status === "booked" && !past ? "line-through" : "none",
+                        transition: "all .1s ease",
+                        WebkitTapHighlightColor: "transparent",
+                        opacity: disabled && !past ? 0.55 : 1,
+                      }}
+                    >
+                      {d.getDate()}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Legend */}
+            {!availLoading && (
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center", marginTop: 14, fontFamily: T.sans, fontSize: 10, color: T.muted, fontWeight: 300 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: 3, border: `1px solid ${T.border}` }} />
+                  {t.terugkomen.legendPreferred}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: 3, background: "rgba(180,154,94,.4)" }} />
+                  {t.terugkomen.legendOther}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: 3, background: T.border }} />
+                  {t.terugkomen.legendBooked}
+                </span>
+              </div>
+            )}
 
             {/* Min nights notice */}
             <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300, marginTop: 12, textAlign: "center" }}>
@@ -269,30 +390,34 @@ export function Terugkomen({ onNavigate }: Props) {
           {fromDate && toDate && (
             <div style={{
               marginTop: 14, padding: "14px 18px", borderRadius: 14,
-              background: "rgba(47,79,62,.06)", border: `1px solid rgba(47,79,62,.15)`,
-              display: "flex", justifyContent: "space-between", alignItems: "center",
+              background: matchedLodge ? "rgba(47,79,62,.06)" : "rgba(180,154,94,.12)",
+              border: `1px solid ${matchedLodge ? "rgba(47,79,62,.15)" : "rgba(180,154,94,.3)"}`,
               animation: "fadeUp .25s ease both",
             }}>
-              <div>
-                <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 400 }}>
-                  {formatDate(fromDate)} — {formatDate(toDate)}
-                </div>
-                <div style={{ fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500 }}>
-                  {nights} {lang === "de" ? "Nächte" : "nachten"}
-                </div>
+              <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 400 }}>
+                {formatDate(fromDate)} — {formatDate(toDate)}
+              </div>
+              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500, marginTop: 2 }}>
+                {nights} {lang === "de" ? "Nächte" : "nachten"}
+              </div>
+              <div style={{ marginTop: 8, fontFamily: T.sans, fontSize: 12, color: matchedLodge ? T.green : T.gold, fontWeight: 500, lineHeight: 1.4 }}>
+                {!matchedLodge && t.terugkomen.rangeUnavailable}
+                {matchedLodge && !preferredLodge && `✓ ${t.terugkomen.matchedFlex} (${LODGE_LABELS[matchedLodge.lodge]})`}
+                {matchedLodge && preferredLodge && !matchedLodge.fallback && `✓ ${t.terugkomen.matchedPreferred} — ${LODGE_LABELS[matchedLodge.lodge]}`}
+                {matchedLodge && preferredLodge && matchedLodge.fallback && `↪ ${t.terugkomen.matchedFallback} (${LODGE_LABELS[matchedLodge.lodge]})`}
               </div>
             </div>
           )}
 
           {/* Next button */}
           <button
-            onClick={() => fromDate && toDate && setStep(2)}
-            disabled={!fromDate || !toDate}
+            onClick={() => fromDate && toDate && matchedLodge && setStep(2)}
+            disabled={!fromDate || !toDate || !matchedLodge}
             style={{
               width: "100%", padding: 16, borderRadius: 16, border: "none",
-              background: fromDate && toDate ? T.green : T.border,
+              background: fromDate && toDate && matchedLodge ? T.green : T.border,
               color: "#fff", fontFamily: T.sans, fontSize: 16, fontWeight: 500,
-              cursor: fromDate && toDate ? "pointer" : "not-allowed",
+              cursor: fromDate && toDate && matchedLodge ? "pointer" : "not-allowed",
               marginTop: 20,
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             }}
@@ -314,7 +439,9 @@ export function Terugkomen({ onNavigate }: Props) {
               <div style={{ fontFamily: T.sans, fontSize: 13, color: T.text }}>
                 {formatDate(fromDate!)} — {formatDate(toDate!)}
               </div>
-              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500 }}>{nights} {lang === "de" ? "Nächte" : "nachten"}</div>
+              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500 }}>
+                {nights} {lang === "de" ? "Nächte" : "nachten"} {matchedLodge && `· ${LODGE_LABELS[matchedLodge.lodge]}`}
+              </div>
             </div>
             <button onClick={() => setStep(1)} style={{
               background: "none", border: "none", cursor: "pointer",

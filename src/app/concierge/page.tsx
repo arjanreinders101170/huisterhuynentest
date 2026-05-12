@@ -364,7 +364,10 @@ function AppInner() {
             <Info onNavigate={(r: Route) => setRoute(r)} />
           )}
           {route === "terugkomen" && (
-            <Terugkomen onNavigate={(r: Route) => setRoute(r)} />
+            <Terugkomen
+              onNavigate={(r: Route) => setRoute(r)}
+              preferredLodge={stay?.lodge === "lodge_1" || stay?.lodge === "lodge_2" ? stay.lodge : null}
+            />
           )}
         </>
       )}
