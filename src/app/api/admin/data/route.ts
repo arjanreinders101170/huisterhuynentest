@@ -85,6 +85,20 @@ export async function GET(request: NextRequest) {
         if (error) return NextResponse.json({ data: [], error: error.message });
         return NextResponse.json({ data: data || [] });
       }
+      case "pricing_config": {
+        const { data, error } = await getSupabase()
+          .from("pricing_config")
+          .select("*");
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        return NextResponse.json({ data: data || [] });
+      }
+      case "availability_discounts": {
+        const lodge = request.nextUrl.searchParams.get("lodge_id");
+        const query = getSupabase().from("availability_discounts").select("*").order("days_before", { ascending: true });
+        const { data, error } = lodge ? await query.eq("lodge_id", lodge) : await query;
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        return NextResponse.json({ data: data || [] });
+      }
       case "stays": {
         const { data: staysRaw } = await getSupabase()
           .from("stays")
@@ -532,6 +546,34 @@ export async function POST(request: NextRequest) {
         // Update stay status
         await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stayId);
 
+        return NextResponse.json({ success: true });
+      }
+      case "save_pricing_config": {
+        const { lodge_id, base_price, surcharge_config } = body;
+        if (!lodge_id || base_price === undefined) {
+          return NextResponse.json({ error: "lodge_id en base_price zijn verplicht" }, { status: 400 });
+        }
+        const { error } = await getSupabase().from("pricing_config").upsert({
+          lodge_id,
+          base_price: parseFloat(base_price),
+          surcharge_config: surcharge_config ?? {},
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "lodge_id" });
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ success: true });
+      }
+      case "save_availability_discounts": {
+        const { lodge_id, discounts } = body as { lodge_id: string; discounts: Array<{ days_before: number; discount_pct: number }> };
+        if (!lodge_id || !Array.isArray(discounts)) {
+          return NextResponse.json({ error: "lodge_id en discounts zijn verplicht" }, { status: 400 });
+        }
+        await getSupabase().from("availability_discounts").delete().eq("lodge_id", lodge_id);
+        if (discounts.length > 0) {
+          const { error } = await getSupabase().from("availability_discounts").insert(
+            discounts.map(d => ({ lodge_id, days_before: d.days_before, discount_pct: d.discount_pct }))
+          );
+          if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+        }
         return NextResponse.json({ success: true });
       }
       case "create_pricing_period": {
