@@ -27,6 +27,21 @@ export function Terugkomen({ onNavigate }: Props) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [returningGuest, setReturningGuest] = useState<string | null>(null);
+
+  const checkGuest = async (val: string) => {
+    if (!val.includes("@")) return;
+    try {
+      const r = await fetch(`/api/guest-check?email=${encodeURIComponent(val)}`);
+      const d = await r.json();
+      if (d.known) {
+        setReturningGuest(d.naam || "");
+        if (!name) setName(d.naam || "");
+      } else {
+        setReturningGuest(null);
+      }
+    } catch {}
+  };
   const [calMonth, setCalMonth] = useState(() => {
     const n = new Date();
     return { year: n.getFullYear(), month: n.getMonth() };
@@ -327,8 +342,21 @@ export function Terugkomen({ onNavigate }: Props) {
             {/* Email */}
             <div style={{ marginBottom: 14 }}>
               <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 6, fontWeight: 300 }}>{t.terugkomen.email} *</div>
-              <input value={email} onChange={e => setEmail(e.target.value)} placeholder={t.terugkomen.emailPlaceholder} type="email"
-                style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 16, color: T.text, fontWeight: 300, outline: "none" }} />
+              <input
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onBlur={e => checkGuest(e.target.value)}
+                placeholder={t.terugkomen.emailPlaceholder}
+                type="email"
+                style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1px solid ${returningGuest ? T.green : T.border}`, background: T.card, fontFamily: T.sans, fontSize: 16, color: T.text, fontWeight: 300, outline: "none" }}
+              />
+              {returningGuest !== null && (
+                <div style={{ marginTop: 8, padding: "8px 12px", borderRadius: 8, background: "rgba(47,79,62,.06)", border: `1px solid rgba(47,79,62,.15)`, fontFamily: T.sans, fontSize: 13, color: T.green, fontWeight: 400 }}>
+                  {lang === "de"
+                    ? `Willkommen zurück${returningGuest ? `, ${returningGuest}` : ""}! Schön, Sie wiederzusehen. 🌿`
+                    : `Welkom terug${returningGuest ? `, ${returningGuest}` : ""}! Fijn je weer te zien. 🌿`}
+                </div>
+              )}
             </div>
 
             {/* Name */}
