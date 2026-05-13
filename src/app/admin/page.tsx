@@ -48,7 +48,7 @@ type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "pro
 
 type NavItem = { id: Tab; label: string };
 type NavGroup = { groupLabel: string; sub: NavItem[] };
-type NavSection = { id: string; icon: string; label: string; direct?: Tab; items: (NavItem | NavGroup)[] };
+type NavSection = { id: string; icon: string; label: string; short: string; direct?: Tab; items: (NavItem | NavGroup)[] };
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -127,27 +127,27 @@ export default function AdminDashboard() {
   const font = "'Inter', system-ui, -apple-system, sans-serif";
 
   const navSections: NavSection[] = [
-    { id: "dashboard", icon: "⌂", label: "Dashboard", direct: "dashboard", items: [] },
-    { id: "reserveringen", icon: "📅", label: "Reserveringen", items: [
+    { id: "dashboard", icon: "⌂", label: "Dashboard", short: "Home", direct: "dashboard", items: [] },
+    { id: "reserveringen", icon: "📅", label: "Reserveringen", short: "Reserveer.", items: [
       { id: "boekingen", label: "Boekingen" },
       { id: "aanvragen", label: "Aanvragen" },
     ]},
-    { id: "checkinout", icon: "🔑", label: "Check in / uit", items: [
+    { id: "checkinout", icon: "🔑", label: "Check in / uit", short: "Check in", items: [
       { id: "verblijven", label: "Verblijven" },
       { id: "gasten", label: "Gasten" },
     ]},
-    { id: "housekeeping", icon: "🧹", label: "Housekeeping", items: [
+    { id: "housekeeping", icon: "🧹", label: "Housekeeping", short: "Housekeep.", items: [
       { id: "housekeeping", label: "Overzicht" },
     ]},
-    { id: "communicatie", icon: "💬", label: "Gastencommunicatie", items: [
+    { id: "communicatie", icon: "💬", label: "Gastencommunicatie", short: "Gasten", items: [
       { id: "reviews", label: "Reviews" },
     ]},
-    { id: "pricing", icon: "📊", label: "Dynamic Pricing", items: [
+    { id: "pricing", icon: "📊", label: "Dynamic Pricing", short: "Pricing", items: [
       { id: "tarieven", label: "Tarieven" },
       { id: "producten", label: "Producten" },
       { id: "financieel", label: "Financieel" },
     ]},
-    { id: "lodges", icon: "🏡", label: "Lodges", items: [
+    { id: "lodges", icon: "🏡", label: "Lodges", short: "Lodges", items: [
       { groupLabel: "Lodge 1 — De Heide", sub: [
         { id: "lodge_1", label: "Overzicht" },
         { id: "lodge_1_iot", label: "Bediening" },
@@ -166,44 +166,57 @@ export default function AdminDashboard() {
   )?.id;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", minHeight: "100vh", fontFamily: font }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", minHeight: "100vh", fontFamily: font, background: "#F0F1F3" }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-      {/* Icon sidebar */}
-      <div style={{ width: 64, background: C.green, display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0", flexShrink: 0, zIndex: 10 }}>
-        <div style={{ marginBottom: 20, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: 0.5, lineHeight: 1.2, textAlign: "center" }}>HTH</div>
+      {/* Sidebar */}
+      <div style={{ width: 80, background: "#F8F9FA", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0", flexShrink: 0, zIndex: 10 }}>
+        {/* Logo */}
+        <div style={{ marginBottom: 18, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: 1.5, textTransform: "uppercase" }}>HTH</div>
         </div>
-        <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.15)", marginBottom: 12 }} />
-        {navSections.map(section => {
-          const isActive = navSection === section.id || (section.direct && activeNavSectionId === section.id);
-          return (
-            <div key={section.id}
-              onClick={() => {
-                if (section.direct) {
-                  setTab(section.direct);
-                  setNavSection(null);
-                } else {
-                  setNavSection(navSection === section.id ? null : section.id);
-                }
-              }}
-              title={section.label}
-              style={{
-                width: 44, height: 44, borderRadius: 10,
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", marginBottom: 2,
-                background: isActive ? "rgba(255,255,255,0.18)" : "transparent",
-                transition: "background 0.15s",
-              }}
-            >
-              <span style={{ fontSize: 20, lineHeight: 1 }}>{section.icon}</span>
-            </div>
-          );
-        })}
+        <div style={{ width: 36, height: 1, background: "#E5E7EB", marginBottom: 10 }} />
+
+        {/* Nav items */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px" }}>
+          {navSections.map(section => {
+            const isActive = navSection === section.id || (section.direct && activeNavSectionId === section.id);
+            return (
+              <div key={section.id}
+                onClick={() => {
+                  if (section.direct) {
+                    setTab(section.direct);
+                    setNavSection(null);
+                  } else {
+                    setNavSection(navSection === section.id ? null : section.id);
+                  }
+                }}
+                title={section.label}
+                style={{
+                  width: "100%", padding: "8px 0", borderRadius: 8,
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3,
+                  cursor: "pointer",
+                  background: isActive ? "#fff" : "transparent",
+                  borderLeft: isActive ? "3px solid #4F46E5" : "3px solid transparent",
+                  transition: "all 0.12s",
+                }}
+              >
+                <span style={{ fontSize: 16, lineHeight: 1, filter: isActive ? "none" : "grayscale(0.3) opacity(0.7)" }}>{section.icon}</span>
+                <span style={{ fontSize: 9, fontWeight: isActive ? 600 : 400, color: isActive ? "#4F46E5" : "#9CA3AF", letterSpacing: 0.2, textAlign: "center", lineHeight: 1.2 }}>
+                  {section.short}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
         <div style={{ flex: 1 }} />
-        <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.15)", marginBottom: 12 }} />
-        <div onClick={logout} title="Uitloggen"
-          style={{ width: 44, height: 44, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "rgba(255,255,255,0.5)" }}
-        >↩</div>
+        <div style={{ width: 36, height: 1, background: "#E5E7EB", marginBottom: 10 }} />
+
+        {/* Uitloggen */}
+        <div onClick={logout} title="Uitloggen" style={{ width: "100%", padding: "8px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer" }}>
+          <span style={{ fontSize: 15, color: "#9CA3AF" }}>↩</span>
+          <span style={{ fontSize: 9, color: "#9CA3AF", letterSpacing: 0.2 }}>Uitloggen</span>
+        </div>
       </div>
 
       {/* Nav panel */}
@@ -223,8 +236,8 @@ export default function AdminDashboard() {
                     {item.sub.map(sub => (
                       <div key={sub.id} onClick={() => setTab(sub.id)} style={{
                         padding: "8px 20px 8px 28px", cursor: "pointer", fontSize: 13,
-                        color: tab === sub.id ? C.text : C.muted,
-                        background: tab === sub.id ? C.bg : "transparent",
+                        color: tab === sub.id ? "#4F46E5" : C.muted,
+                        background: tab === sub.id ? "#EEF2FF" : "transparent",
                         fontWeight: tab === sub.id ? 500 : 400,
                         borderRadius: "0 8px 8px 0", marginRight: 12,
                       }}>
@@ -238,8 +251,8 @@ export default function AdminDashboard() {
               return (
                 <div key={item.id} onClick={() => setTab(item.id)} style={{
                   padding: "9px 20px", cursor: "pointer", fontSize: 13,
-                  color: tab === item.id ? C.text : C.muted,
-                  background: tab === item.id ? C.bg : "transparent",
+                  color: tab === item.id ? "#4F46E5" : C.muted,
+                  background: tab === item.id ? "#EEF2FF" : "transparent",
                   fontWeight: tab === item.id ? 500 : 400,
                   borderRadius: "0 8px 8px 0", marginRight: 12, marginBottom: 2,
                 }}>
@@ -252,7 +265,7 @@ export default function AdminDashboard() {
       )}
 
       {/* Content */}
-      <div style={{ flex: 1, padding: "28px 32px", overflowY: "auto" }}>
+      <div style={{ flex: 1, padding: "28px 32px", overflowY: "auto", background: "#F0F1F3" }}>
         {loading ? (
           <div style={{ fontSize: 14, color: C.muted, padding: 40, textAlign: "center" }}>Laden...</div>
         ) : (
