@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 type Booking = { id: string; product: string; prijs: number; status: string; created_at: string; guest_id: string; metadata: Record<string, unknown> };
 type Guest = { id: string; naam: string; email: string; profiel: string; laatste_bezoek: string };
 type Review = { id: string; naam: string; sterren: number; tekst: string; zichtbaar: boolean; created_at: string };
-type Aanvraag = { id: string; van: string; tot: string; personen: number; status: string; offerte_bedrag: number | null; created_at: string; guest_id: string };
+type Aanvraag = { id: string; van: string; tot: string; personen: number; status: string; offerte_bedrag: number | null; created_at: string; guest_id: string; bericht?: string; guest?: { naam: string; email: string } | null };
 type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number; grootboek_code: string };
 type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 
@@ -44,7 +44,7 @@ function timeAgo(dateStr: string): string {
   return `${days} dag${days > 1 ? "en" : ""}`;
 }
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "lodge_1" | "lodge_2";
+type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -128,6 +128,7 @@ export default function AdminDashboard() {
     { id: "aanvragen", label: "Aanvragen" },
     { id: "producten", label: "Producten" },
     { id: "tarieven", label: "Tarieven" },
+    { id: "financieel", label: "Financieel" },
   ];
 
   return (
@@ -230,7 +231,7 @@ export default function AdminDashboard() {
                       cols={["Gast", "Periode", "Personen", "Status", "Offerte"]}
                       widths={["2fr", "2fr", "1fr", "1fr", "1fr"]}
                       rows={aanvragen.slice(0, 10).map(a => [
-                        guestMap[a.guest_id] || "Onbekend",
+                        a.guest?.naam || guestMap[a.guest_id] || "Onbekend",
                         `${a.van} – ${a.tot}`,
                         String(a.personen),
                         <Badge key={a.id} status={a.status} />,
@@ -263,20 +264,7 @@ export default function AdminDashboard() {
 
             {/* GASTEN */}
             {tab === "gasten" && (
-              <>
-                <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Gasten</div>
-                <div style={{ fontSize: 13, color: C.light, marginBottom: 24 }}>{guests.length} gasten geregistreerd</div>
-                <Table
-                  cols={["Naam", "E-mail", "Profiel", "Laatste bezoek"]}
-                  widths={["2fr", "2fr", "1fr", "1fr"]}
-                  rows={guests.map(g => [
-                    g.naam,
-                    g.email,
-                    g.profiel || "—",
-                    g.laatste_bezoek ? new Date(g.laatste_bezoek).toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" }) : "—",
-                  ])}
-                />
-              </>
+              <GastenTab guests={guests} stays={stays} bookings={bookings} aanvragen={aanvragen} />
             )}
 
             {/* REVIEWS */}
@@ -314,22 +302,7 @@ export default function AdminDashboard() {
 
             {/* AANVRAGEN */}
             {tab === "aanvragen" && (
-              <>
-                <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Terugkeer-aanvragen</div>
-                <div style={{ fontSize: 13, color: C.light, marginBottom: 24 }}>Aanvragen van gasten die terug willen komen</div>
-                <Table
-                  cols={["Gast", "Periode", "Personen", "Status", "Offerte", "Datum"]}
-                  widths={["2fr", "2fr", "80px", "1fr", "1fr", "1fr"]}
-                  rows={aanvragen.map(a => [
-                    guestMap[a.guest_id] || "Onbekend",
-                    `${a.van} – ${a.tot}`,
-                    String(a.personen),
-                    <Badge key={a.id} status={a.status} />,
-                    a.offerte_bedrag ? `€ ${a.offerte_bedrag.toFixed(2)}` : "—",
-                    new Date(a.created_at).toLocaleDateString("nl-NL", { day: "numeric", month: "short" }),
-                  ])}
-                />
-              </>
+              <AanvragenTab aanvragen={aanvragen} setAanvragen={setAanvragen} />
             )}
 
             {/* PRODUCTEN */}
@@ -342,6 +315,8 @@ export default function AdminDashboard() {
             )}
 
             {tab === "tarieven" && <TarievenTab />}
+
+            {tab === "financieel" && <FinancieelTab bookings={bookings} aanvragen={aanvragen} stays={stays} />}
 
             {(tab === "lodge_1" || tab === "lodge_2") && (
               <LodgeView lodgeId={tab} />
@@ -865,6 +840,562 @@ function TarievenTab() {
             </div>
           </div>
         ))
+      )}
+    </>
+  );
+}
+
+/* ═══ GASTEN TAB ═══ */
+function GastenTab({ guests, stays, bookings, aanvragen }: { guests: Guest[]; stays: Stay[]; bookings: Booking[]; aanvragen: Aanvraag[] }) {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+  const [selected, setSelected] = useState<Guest | null>(null);
+
+  const guestStays = (id: string) => stays.filter(s => s.guest_id === id);
+  const guestBookings = (id: string) => bookings.filter(b => b.guest_id === id && b.product !== "follow-up-email");
+  const guestAanvragen = (id: string) => aanvragen.filter(a => a.guest_id === id);
+
+  const totalSpend = (id: string) => {
+    const verblijf = guestAanvragen(id).filter(a => a.status === "geboekt").reduce((s, a) => s + (a.offerte_bedrag || 0), 0);
+    const upsell = guestBookings(id).filter(b => b.status === "betaald").reduce((s, b) => s + (b.prijs || 0), 0);
+    return verblijf + upsell;
+  };
+
+  return (
+    <div style={{ display: "flex", gap: 20, height: "100%" }}>
+      {/* List */}
+      <div style={{ flex: selected ? "0 0 340px" : "1" }}>
+        <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Gasten</div>
+        <div style={{ fontSize: 13, color: C.light, marginBottom: 16 }}>{guests.length} geregistreerd</div>
+        <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 2fr 1fr 1fr", padding: "10px 18px", background: C.bg, fontSize: 12, color: C.light, borderBottom: `1px solid ${C.border}` }}>
+            <div>Naam</div><div>E-mail</div><div>Verblijven</div><div>Besteed</div>
+          </div>
+          {guests.length === 0 && (
+            <div style={{ padding: 20, fontSize: 13, color: C.light, textAlign: "center" }}>Geen gasten</div>
+          )}
+          {guests.map(g => {
+            const spend = totalSpend(g.id);
+            const nStays = guestStays(g.id).length;
+            const isActive = selected?.id === g.id;
+            return (
+              <div key={g.id} onClick={() => setSelected(isActive ? null : g)} style={{
+                display: "grid", gridTemplateColumns: "2fr 2fr 1fr 1fr", padding: "12px 18px",
+                fontSize: 13, borderBottom: `1px solid ${C.border}`, alignItems: "center",
+                cursor: "pointer",
+                background: isActive ? "rgba(47,79,62,.04)" : "transparent",
+                borderLeft: isActive ? `3px solid ${C.green}` : "3px solid transparent",
+              }}>
+                <div style={{ color: C.text, fontWeight: 500 }}>{g.naam}</div>
+                <div style={{ color: C.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.email}</div>
+                <div style={{ color: C.muted }}>{nStays || "—"}</div>
+                <div style={{ color: spend > 0 ? C.green : C.light, fontWeight: spend > 0 ? 500 : 400 }}>
+                  {spend > 0 ? `€ ${spend.toFixed(0)}` : "—"}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Detail panel */}
+      {selected && (
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 600, color: C.text }}>{selected.naam}</div>
+                <a href={`mailto:${selected.email}`} style={{ fontSize: 13, color: C.gold, textDecoration: "none" }}>{selected.email}</a>
+              </div>
+              <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", fontSize: 18, color: C.light, cursor: "pointer", padding: 4 }}>×</button>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+              {[
+                { label: "Verblijven", value: guestStays(selected.id).length },
+                { label: "Aanvragen", value: guestAanvragen(selected.id).length },
+                { label: "Totaal besteed", value: `€ ${totalSpend(selected.id).toFixed(0)}` },
+              ].map(m => (
+                <div key={m.label} style={{ background: C.bg, borderRadius: 8, padding: "10px 14px" }}>
+                  <div style={{ fontSize: 11, color: C.light, marginBottom: 2 }}>{m.label}</div>
+                  <div style={{ fontSize: 18, fontWeight: 600, color: C.text }}>{m.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Stays */}
+          {guestStays(selected.id).length > 0 && (
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "16px 20px", marginBottom: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: C.text, marginBottom: 10 }}>Verblijven</div>
+              {guestStays(selected.id).map(s => (
+                <div key={s.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${C.bg}`, fontSize: 12 }}>
+                  <span style={{ color: C.text }}>{s.lodge === "lodge_1" ? "De Heide" : "De Eik"} · {new Date(s.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })} – {new Date(s.check_out).toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" })}</span>
+                  <span style={{ color: s.status === "actief" ? C.green : C.light }}>{s.status}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Aanvragen */}
+          {guestAanvragen(selected.id).length > 0 && (
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "16px 20px", marginBottom: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: C.text, marginBottom: 10 }}>Aanvragen</div>
+              {guestAanvragen(selected.id).map(a => (
+                <div key={a.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${C.bg}`, fontSize: 12 }}>
+                  <span style={{ color: C.text }}>{a.van} – {a.tot} · {a.personen}p</span>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    {a.offerte_bedrag && <span style={{ color: C.muted }}>€ {Number(a.offerte_bedrag).toFixed(0)}</span>}
+                    <Badge status={a.status} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Upsell bookings */}
+          {guestBookings(selected.id).length > 0 && (
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "16px 20px" }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: C.text, marginBottom: 10 }}>Bestellingen</div>
+              {guestBookings(selected.id).map(b => (
+                <div key={b.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: `1px solid ${C.bg}`, fontSize: 12 }}>
+                  <span style={{ color: C.text }}>{b.product}</span>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <span style={{ color: C.muted }}>€ {(b.prijs || 0).toFixed(2)}</span>
+                    <Badge status={b.status} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {guestStays(selected.id).length === 0 && guestAanvragen(selected.id).length === 0 && guestBookings(selected.id).length === 0 && (
+            <div style={{ fontSize: 13, color: C.light, textAlign: "center", padding: 20 }}>Nog geen activiteit gevonden</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══ AANVRAGEN TAB ═══ */
+function AanvragenTab({ aanvragen, setAanvragen }: { aanvragen: Aanvraag[]; setAanvragen: (a: Aanvraag[]) => void }) {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "9px 12px", borderRadius: 8,
+    border: `1px solid ${C.border}`, background: C.card,
+    fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box",
+  };
+
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [forms, setForms] = useState<Record<string, { verblijf: string; belasting: string; schoonmaak: string; bericht: string }>>({});
+  const [saving, setSaving] = useState<string | null>(null);
+  const [result, setResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
+
+  const getForm = (id: string, a: Aanvraag) => {
+    if (forms[id]) return forms[id];
+    const nights = a.van && a.tot ? Math.round((new Date(a.tot).getTime() - new Date(a.van).getTime()) / 86400000) : 0;
+    return { verblijf: nights > 0 ? String(nights * 195) : "", belasting: String((a.personen || 2) * nights * 2.5), schoonmaak: "75", bericht: "" };
+  };
+
+  const updateForm = (id: string, a: Aanvraag, field: string, value: string) => {
+    setForms(prev => ({ ...prev, [id]: { ...getForm(id, a), [field]: value } }));
+  };
+
+  const sendOfferte = async (a: Aanvraag) => {
+    const f = getForm(a.id, a);
+    if (!f.verblijf) return;
+    setSaving(a.id);
+    setResult(prev => ({ ...prev, [a.id]: { ok: false, msg: "" } }));
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_offerte", id: a.id, prijsVerblijf: f.verblijf, toeristenbelasting: f.belasting, schoonmaak: f.schoonmaak, bericht: f.bericht }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        setAanvragen(aanvragen.map(x => x.id === a.id ? { ...x, status: "offerte_verstuurd", offerte_bedrag: parseFloat(d.totaal) } : x));
+        setExpandedId(null);
+        setResult(prev => ({ ...prev, [a.id]: { ok: true, msg: `Offerte € ${parseFloat(d.totaal).toFixed(2)} verstuurd` } }));
+      } else {
+        setResult(prev => ({ ...prev, [a.id]: { ok: false, msg: d.error || "Kon offerte niet versturen" } }));
+      }
+    } catch {
+      setResult(prev => ({ ...prev, [a.id]: { ok: false, msg: "Verbindingsfout" } }));
+    }
+    setSaving(null);
+  };
+
+  const reject = async (id: string) => {
+    if (!confirm("Aanvraag afwijzen?")) return;
+    setSaving(id);
+    try {
+      await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reject_aanvraag", id }),
+      });
+      setAanvragen(aanvragen.map(x => x.id === id ? { ...x, status: "afgewezen" } : x));
+    } catch {}
+    setSaving(null);
+  };
+
+  const openAanvragen = aanvragen.filter(a => a.status === "nieuw" || a.status === "offerte_verstuurd");
+  const closedAanvragen = aanvragen.filter(a => a.status !== "nieuw" && a.status !== "offerte_verstuurd");
+
+  const nights = (a: Aanvraag) => {
+    if (!a.van || !a.tot) return 0;
+    return Math.round((new Date(a.tot).getTime() - new Date(a.van).getTime()) / 86400000);
+  };
+
+  const renderCard = (a: Aanvraag) => {
+    const f = getForm(a.id, a);
+    const verblijf = parseFloat(f.verblijf) || 0;
+    const belasting = parseFloat(f.belasting) || 0;
+    const schoonmaak = parseFloat(f.schoonmaak) || 0;
+    const totaal = verblijf + belasting + schoonmaak;
+    const isExpanded = expandedId === a.id;
+    const isNew = a.status === "nieuw";
+    const isOfferteSent = a.status === "offerte_verstuurd";
+    const res = result[a.id];
+    const n = nights(a);
+
+    return (
+      <div key={a.id} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
+        {/* Header row */}
+        <div style={{ padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: isNew ? "pointer" : "default" }}
+          onClick={() => isNew && setExpandedId(isExpanded ? null : a.id)}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <span style={{ fontWeight: 500, fontSize: 14, color: C.text }}>{a.guest?.naam || "Gast"}</span>
+              <Badge status={a.status} />
+              {a.guest?.email && <span style={{ fontSize: 11, color: C.light }}>{a.guest.email}</span>}
+            </div>
+            <div style={{ fontSize: 12, color: C.muted }}>
+              {a.van} – {a.tot}
+              {n > 0 && <span style={{ color: C.light }}> · {n} nacht{n !== 1 ? "en" : ""}</span>}
+              <span style={{ marginLeft: 8 }}>{a.personen} {a.personen === 1 ? "persoon" : "personen"}</span>
+              {a.bericht && <span style={{ marginLeft: 8, fontStyle: "italic" }}>&ldquo;{a.bericht.slice(0, 60)}{a.bericht.length > 60 ? "…" : ""}&rdquo;</span>}
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {isOfferteSent && a.offerte_bedrag && (
+              <span style={{ fontSize: 13, color: C.muted }}>Offerte € {Number(a.offerte_bedrag).toFixed(2)}</span>
+            )}
+            {res?.ok && <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ {res.msg}</span>}
+            {isNew && (
+              <span style={{ fontSize: 12, color: C.gold, fontWeight: 500 }}>{isExpanded ? "▲ Sluiten" : "▼ Offerte maken"}</span>
+            )}
+            {isOfferteSent && (
+              <button onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : a.id); }} style={{
+                padding: "5px 12px", borderRadius: 6, border: `1px solid ${C.border}`,
+                background: C.bg, fontSize: 11, color: C.muted, cursor: "pointer",
+              }}>Opnieuw versturen</button>
+            )}
+          </div>
+        </div>
+
+        {/* Expanded form */}
+        {isExpanded && (isNew || isOfferteSent) && (
+          <div style={{ padding: "0 20px 20px", borderTop: `1px solid ${C.bg}` }}>
+            <div style={{ paddingTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Verblijf (€)</label>
+                <input value={f.verblijf} onChange={e => updateForm(a.id, a, "verblijf", e.target.value)} type="number" step="0.01" placeholder="bijv. 390" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Toeristenbelasting (€)</label>
+                <input value={f.belasting} onChange={e => updateForm(a.id, a, "belasting", e.target.value)} type="number" step="0.01" placeholder="bijv. 10" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Eindschoonmaak (€)</label>
+                <input value={f.schoonmaak} onChange={e => updateForm(a.id, a, "schoonmaak", e.target.value)} type="number" step="0.01" placeholder="75" style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Persoonlijk bericht (optioneel)</label>
+              <input value={f.bericht} onChange={e => updateForm(a.id, a, "bericht", e.target.value)} placeholder="Welkom terug! We verheugen ons op jullie komst..." style={{ ...inputStyle }} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: C.green }}>
+                Totaal: € {totaal.toFixed(2)}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                {res && !res.ok && res.msg && (
+                  <span style={{ fontSize: 12, color: "#E24B4A", alignSelf: "center" }}>{res.msg}</span>
+                )}
+                <button onClick={() => reject(a.id)} disabled={saving === a.id} style={{
+                  padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+                  background: C.card, fontSize: 12, color: "#E24B4A", cursor: saving === a.id ? "not-allowed" : "pointer",
+                }}>Afwijzen</button>
+                <button onClick={() => sendOfferte(a)} disabled={!f.verblijf || saving === a.id} style={{
+                  padding: "8px 20px", borderRadius: 8, border: "none",
+                  background: f.verblijf && saving !== a.id ? C.green : C.border,
+                  fontSize: 12, fontWeight: 500, color: "#fff", cursor: f.verblijf && saving !== a.id ? "pointer" : "not-allowed",
+                }}>{saving === a.id ? "Versturen..." : "Offerte versturen →"}</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Terugkeer-aanvragen</div>
+      <div style={{ fontSize: 13, color: C.light, marginBottom: 24 }}>
+        {openAanvragen.length} open · {closedAanvragen.length} afgehandeld
+      </div>
+
+      {aanvragen.length === 0 && (
+        <div style={{ fontSize: 13, color: C.light, padding: 20, textAlign: "center" }}>Nog geen aanvragen ontvangen</div>
+      )}
+
+      {openAanvragen.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+          {openAanvragen.map(renderCard)}
+        </div>
+      )}
+
+      {closedAanvragen.length > 0 && (
+        <>
+          <div style={{ fontSize: 13, fontWeight: 500, color: C.light, marginBottom: 10, textTransform: "uppercase", letterSpacing: .5 }}>Afgehandeld</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {closedAanvragen.map(a => (
+              <div key={a.id} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", opacity: 0.6 }}>
+                <div>
+                  <span style={{ fontWeight: 500, fontSize: 13, color: C.text, marginRight: 10 }}>{a.guest?.naam || "Gast"}</span>
+                  <span style={{ fontSize: 12, color: C.muted }}>{a.van} – {a.tot} · {a.personen}p</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  {a.offerte_bedrag && <span style={{ fontSize: 12, color: C.muted }}>€ {Number(a.offerte_bedrag).toFixed(2)}</span>}
+                  <Badge status={a.status} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+/* ═══ FINANCIEEL TAB ═══ */
+const MAANDEN = ["Jan","Feb","Mrt","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Dec"];
+
+function FinancieelTab({ bookings, aanvragen, stays }: { bookings: Booking[]; aanvragen: Aanvraag[]; stays: Stay[] }) {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+
+  const [jaar, setJaar] = useState(new Date().getFullYear());
+
+  // Verblijfsomzet = geboekte aanvragen met offerte_bedrag
+  const verblijfsBoekingen = aanvragen.filter(a => a.status === "geboekt" && a.offerte_bedrag);
+  const totaalVerblijf = verblijfsBoekingen.reduce((s, a) => s + (a.offerte_bedrag || 0), 0);
+
+  // Upsell omzet = betaalde bookings
+  const betaaldeBookings = bookings.filter(b => b.status === "betaald" || b.status === "bevestigd");
+  const totaalUpsell = betaaldeBookings.reduce((s, b) => s + (b.prijs || 0), 0);
+
+  const totaalOmzet = totaalVerblijf + totaalUpsell;
+
+  // Geboekte nachten via stays
+  const geboekteStays = stays.filter(s => s.status !== "geannuleerd");
+  const totaalNachten = geboekteStays.reduce((s, stay) => {
+    if (!stay.check_in || !stay.check_out) return s;
+    return s + Math.max(0, Math.round((new Date(stay.check_out).getTime() - new Date(stay.check_in).getTime()) / 86400000));
+  }, 0);
+
+  // Per maand (verblijf op basis van aanvraag created_at, upsell op booking created_at)
+  type MaandData = { verblijf: number; upsell: number; boekingen: number };
+  const perMaand: MaandData[] = Array.from({ length: 12 }, () => ({ verblijf: 0, upsell: 0, boekingen: 0 }));
+
+  verblijfsBoekingen.forEach(a => {
+    const d = new Date(a.created_at);
+    if (d.getFullYear() === jaar) {
+      perMaand[d.getMonth()].verblijf += a.offerte_bedrag || 0;
+      perMaand[d.getMonth()].boekingen += 1;
+    }
+  });
+  betaaldeBookings.forEach(b => {
+    const d = new Date(b.created_at);
+    if (d.getFullYear() === jaar) {
+      perMaand[d.getMonth()].upsell += b.prijs || 0;
+    }
+  });
+
+  const maxMaand = Math.max(...perMaand.map(m => m.verblijf + m.upsell), 1);
+
+  // Per lodge (stays)
+  const lodge1Stays = geboekteStays.filter(s => s.lodge === "lodge_1");
+  const lodge2Stays = geboekteStays.filter(s => s.lodge === "lodge_2");
+  const lodgeNachten = (list: Stay[]) => list.reduce((s, st) => {
+    if (!st.check_in || !st.check_out) return s;
+    return s + Math.max(0, Math.round((new Date(st.check_out).getTime() - new Date(st.check_in).getTime()) / 86400000));
+  }, 0);
+
+  // Conversie
+  const totaalAanvragen = aanvragen.length;
+  const offertesVerstuurd = aanvragen.filter(a => a.status !== "nieuw").length;
+  const geboekt = aanvragen.filter(a => a.status === "geboekt").length;
+  const convPct = totaalAanvragen > 0 ? Math.round((geboekt / totaalAanvragen) * 100) : 0;
+
+  const cs: React.CSSProperties = { background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 24px" };
+
+  return (
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Financieel overzicht</div>
+          <div style={{ fontSize: 13, color: C.light, marginTop: 2 }}>Omzet, boekingen en conversie</div>
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <button onClick={() => setJaar(j => j - 1)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, fontSize: 14, color: C.muted, cursor: "pointer" }}>‹</button>
+          <span style={{ fontSize: 14, fontWeight: 500, color: C.text, minWidth: 44, textAlign: "center" }}>{jaar}</span>
+          <button onClick={() => setJaar(j => j + 1)} style={{ width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, fontSize: 14, color: C.muted, cursor: "pointer" }}>›</button>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 28 }}>
+        {[
+          { label: "Totale omzet", value: `€ ${totaalOmzet.toFixed(2)}`, color: C.green, sub: "verblijf + upsells" },
+          { label: "Verblijfsomzet", value: `€ ${totaalVerblijf.toFixed(2)}`, color: C.text, sub: `${verblijfsBoekingen.length} boekingen` },
+          { label: "Upsell omzet", value: `€ ${totaalUpsell.toFixed(2)}`, color: C.gold, sub: `${betaaldeBookings.length} betalingen` },
+          { label: "Geboekte nachten", value: String(totaalNachten), color: "#1565C0", sub: `${geboekteStays.length} verblijven` },
+        ].map((k, i) => (
+          <div key={i} style={{ background: C.bg, borderRadius: 10, padding: "16px 18px" }}>
+            <div style={{ fontSize: 11, color: C.light, marginBottom: 4, textTransform: "uppercase", letterSpacing: .4 }}>{k.label}</div>
+            <div style={{ fontSize: 22, fontWeight: 600, color: k.color, marginBottom: 2 }}>{k.value}</div>
+            <div style={{ fontSize: 11, color: C.light }}>{k.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Maandoverzicht */}
+      <div style={{ ...cs, marginBottom: 24 }}>
+        <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 20 }}>Omzet per maand — {jaar}</div>
+
+        {/* Bar chart */}
+        <div style={{ display: "flex", gap: 6, alignItems: "flex-end", height: 120, marginBottom: 8 }}>
+          {perMaand.map((m, i) => {
+            const totaal = m.verblijf + m.upsell;
+            const verblijfH = maxMaand > 0 ? (m.verblijf / maxMaand) * 100 : 0;
+            const upsellH = maxMaand > 0 ? (m.upsell / maxMaand) * 100 : 0;
+            return (
+              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                {totaal > 0 && (
+                  <div style={{ fontSize: 9, color: C.muted, marginBottom: 2 }}>€{Math.round(totaal)}</div>
+                )}
+                <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", height: 90, gap: 1 }}>
+                  <div style={{ width: "100%", height: `${upsellH}%`, background: C.gold, borderRadius: "3px 3px 0 0", minHeight: upsellH > 0 ? 2 : 0 }} />
+                  <div style={{ width: "100%", height: `${verblijfH}%`, background: C.green, borderRadius: upsellH > 0 ? 0 : "3px 3px 0 0", minHeight: verblijfH > 0 ? 2 : 0 }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          {MAANDEN.map((m, i) => (
+            <div key={i} style={{ flex: 1, textAlign: "center", fontSize: 10, color: C.light }}>{m}</div>
+          ))}
+        </div>
+
+        {/* Legenda */}
+        <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.muted }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: C.green }} /> Verblijf
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.muted }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: C.gold }} /> Upsells
+          </div>
+        </div>
+
+        {/* Tabel */}
+        <div style={{ marginTop: 20, border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 60px", padding: "8px 16px", background: C.bg, fontSize: 11, color: C.light, borderBottom: `1px solid ${C.border}` }}>
+            <div>Maand</div><div>Verblijf</div><div>Upsells</div><div>Totaal</div><div>Boek.</div>
+          </div>
+          {perMaand.map((m, i) => {
+            const totaal = m.verblijf + m.upsell;
+            if (totaal === 0 && m.boekingen === 0) return null;
+            return (
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 60px", padding: "10px 16px", fontSize: 12, borderBottom: `1px solid ${C.border}`, alignItems: "center" }}>
+                <div style={{ color: C.text, fontWeight: 500 }}>{MAANDEN[i]}</div>
+                <div style={{ color: C.muted }}>{m.verblijf > 0 ? `€ ${m.verblijf.toFixed(2)}` : "—"}</div>
+                <div style={{ color: C.muted }}>{m.upsell > 0 ? `€ ${m.upsell.toFixed(2)}` : "—"}</div>
+                <div style={{ color: C.text, fontWeight: 500 }}>{totaal > 0 ? `€ ${totaal.toFixed(2)}` : "—"}</div>
+                <div style={{ color: C.muted }}>{m.boekingen || "—"}</div>
+              </div>
+            );
+          })}
+          {perMaand.every(m => m.verblijf + m.upsell === 0) && (
+            <div style={{ padding: 16, fontSize: 12, color: C.light, textAlign: "center" }}>Nog geen omzet in {jaar}</div>
+          )}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+        {/* Per lodge */}
+        <div style={cs}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 16 }}>Per lodge</div>
+          {[
+            { naam: "Lodge De Heide", list: lodge1Stays },
+            { naam: "Lodge De Eik", list: lodge2Stays },
+          ].map(({ naam, list }) => {
+            const n = lodgeNachten(list);
+            const pct = totaalNachten > 0 ? (n / totaalNachten) * 100 : 0;
+            return (
+              <div key={naam} style={{ marginBottom: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: C.text, marginBottom: 6 }}>
+                  <span style={{ fontWeight: 500 }}>{naam}</span>
+                  <span style={{ color: C.muted }}>{list.length} verblijven · {n} nachten</span>
+                </div>
+                <div style={{ height: 6, background: C.bg, borderRadius: 3, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${pct}%`, background: C.green, borderRadius: 3 }} />
+                </div>
+              </div>
+            );
+          })}
+          {geboekteStays.length === 0 && <div style={{ fontSize: 12, color: C.light, textAlign: "center" }}>Nog geen verblijven</div>}
+        </div>
+
+        {/* Conversie */}
+        <div style={cs}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 16 }}>Aanvraag-conversie</div>
+          {[
+            { label: "Aanvragen ontvangen", value: totaalAanvragen, color: C.muted },
+            { label: "Offerte verstuurd", value: offertesVerstuurd, color: C.gold },
+            { label: "Geboekt", value: geboekt, color: C.green },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <span style={{ fontSize: 12, color: C.muted }}>{label}</span>
+              <span style={{ fontSize: 18, fontWeight: 600, color }}>{value}</span>
+            </div>
+          ))}
+          <div style={{ paddingTop: 12, borderTop: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 12, color: C.muted }}>Conversie (aanvraag → geboekt)</span>
+            <span style={{ fontSize: 20, fontWeight: 700, color: convPct >= 50 ? C.green : convPct >= 25 ? C.gold : "#E24B4A" }}>
+              {convPct}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Recente betalingen */}
+      {betaaldeBookings.length > 0 && (
+        <div style={cs}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 16 }}>Recente upsell-betalingen</div>
+          <Table
+            cols={["Product", "Bedrag", "Status", "Datum"]}
+            widths={["3fr", "1fr", "1fr", "1fr"]}
+            rows={betaaldeBookings.slice(0, 10).map(b => [
+              b.product,
+              `€ ${(b.prijs || 0).toFixed(2)}`,
+              <Badge key={b.id} status={b.status} />,
+              new Date(b.created_at).toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "2-digit" }),
+            ])}
+          />
+        </div>
       )}
     </>
   );

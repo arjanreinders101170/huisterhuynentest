@@ -1,37 +1,11 @@
-import { esc } from "@/lib/email";
+import { esc, emailWrap } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
-const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
-
-function emailWrap(content: string): string {
-  return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-<body style="margin:0;padding:0;background-color:#EAE3D2;font-family:Georgia,'Times New Roman',serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#EAE3D2;">
-    <tr><td align="center" style="padding:32px 16px;">
-      <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
-        <tr><td align="center" style="padding:0 0 24px;">
-          <table role="presentation" cellpadding="0" cellspacing="0">
-            <tr><td align="center" style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td></tr>
-            <tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:28px;height:1px;background-color:#B49A5E;"></td><td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td><td style="width:28px;height:1px;background-color:#B49A5E;"></td></tr></table></td></tr>
-          </table>
-        </td></tr>
-        <tr><td>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
-            <tr><td style="height:4px;background-color:#B49A5E;border-radius:12px 12px 0 0;font-size:0;line-height:0;">&nbsp;</td></tr>
-            <tr><td style="padding:28px 28px 24px;">${content}</td></tr>
-          </table>
-        </td></tr>
-        <tr><td align="center" style="padding:24px 0 0;"><p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">${LODGE_NAME} &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p></td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body></html>`;
-}
 
 // GET — load aanvraag data for confirmation page
 export async function GET(request: NextRequest) {
