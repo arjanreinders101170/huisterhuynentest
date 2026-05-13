@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 type Booking = { id: string; product: string; prijs: number; status: string; created_at: string; guest_id: string; metadata: Record<string, unknown> };
 type Guest = { id: string; naam: string; email: string; profiel: string; laatste_bezoek: string };
 type Review = { id: string; naam: string; sterren: number; tekst: string; zichtbaar: boolean; created_at: string };
-type Aanvraag = { id: string; van: string; tot: string; personen: number; status: string; offerte_bedrag: number | null; created_at: string; guest_id: string };
+type Aanvraag = { id: string; van: string; tot: string; personen: number; status: string; offerte_bedrag: number | null; created_at: string; guest_id: string; bericht?: string; guest?: { naam: string; email: string } | null };
 type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number; grootboek_code: string };
 type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 
@@ -230,7 +230,7 @@ export default function AdminDashboard() {
                       cols={["Gast", "Periode", "Personen", "Status", "Offerte"]}
                       widths={["2fr", "2fr", "1fr", "1fr", "1fr"]}
                       rows={aanvragen.slice(0, 10).map(a => [
-                        guestMap[a.guest_id] || "Onbekend",
+                        a.guest?.naam || guestMap[a.guest_id] || "Onbekend",
                         `${a.van} – ${a.tot}`,
                         String(a.personen),
                         <Badge key={a.id} status={a.status} />,
@@ -314,22 +314,7 @@ export default function AdminDashboard() {
 
             {/* AANVRAGEN */}
             {tab === "aanvragen" && (
-              <>
-                <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Terugkeer-aanvragen</div>
-                <div style={{ fontSize: 13, color: C.light, marginBottom: 24 }}>Aanvragen van gasten die terug willen komen</div>
-                <Table
-                  cols={["Gast", "Periode", "Personen", "Status", "Offerte", "Datum"]}
-                  widths={["2fr", "2fr", "80px", "1fr", "1fr", "1fr"]}
-                  rows={aanvragen.map(a => [
-                    guestMap[a.guest_id] || "Onbekend",
-                    `${a.van} – ${a.tot}`,
-                    String(a.personen),
-                    <Badge key={a.id} status={a.status} />,
-                    a.offerte_bedrag ? `€ ${a.offerte_bedrag.toFixed(2)}` : "—",
-                    new Date(a.created_at).toLocaleDateString("nl-NL", { day: "numeric", month: "short" }),
-                  ])}
-                />
-              </>
+              <AanvragenTab aanvragen={aanvragen} setAanvragen={setAanvragen} />
             )}
 
             {/* PRODUCTEN */}
@@ -865,6 +850,210 @@ function TarievenTab() {
             </div>
           </div>
         ))
+      )}
+    </>
+  );
+}
+
+/* ═══ AANVRAGEN TAB ═══ */
+function AanvragenTab({ aanvragen, setAanvragen }: { aanvragen: Aanvraag[]; setAanvragen: (a: Aanvraag[]) => void }) {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "9px 12px", borderRadius: 8,
+    border: `1px solid ${C.border}`, background: C.card,
+    fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box",
+  };
+
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [forms, setForms] = useState<Record<string, { verblijf: string; belasting: string; schoonmaak: string; bericht: string }>>({});
+  const [saving, setSaving] = useState<string | null>(null);
+  const [result, setResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
+
+  const getForm = (id: string, a: Aanvraag) => {
+    if (forms[id]) return forms[id];
+    const nights = a.van && a.tot ? Math.round((new Date(a.tot).getTime() - new Date(a.van).getTime()) / 86400000) : 0;
+    return { verblijf: nights > 0 ? String(nights * 195) : "", belasting: String((a.personen || 2) * nights * 2.5), schoonmaak: "75", bericht: "" };
+  };
+
+  const updateForm = (id: string, a: Aanvraag, field: string, value: string) => {
+    setForms(prev => ({ ...prev, [id]: { ...getForm(id, a), [field]: value } }));
+  };
+
+  const sendOfferte = async (a: Aanvraag) => {
+    const f = getForm(a.id, a);
+    if (!f.verblijf) return;
+    setSaving(a.id);
+    setResult(prev => ({ ...prev, [a.id]: { ok: false, msg: "" } }));
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_offerte", id: a.id, prijsVerblijf: f.verblijf, toeristenbelasting: f.belasting, schoonmaak: f.schoonmaak, bericht: f.bericht }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        setAanvragen(aanvragen.map(x => x.id === a.id ? { ...x, status: "offerte_verstuurd", offerte_bedrag: parseFloat(d.totaal) } : x));
+        setExpandedId(null);
+        setResult(prev => ({ ...prev, [a.id]: { ok: true, msg: `Offerte € ${parseFloat(d.totaal).toFixed(2)} verstuurd` } }));
+      } else {
+        setResult(prev => ({ ...prev, [a.id]: { ok: false, msg: d.error || "Kon offerte niet versturen" } }));
+      }
+    } catch {
+      setResult(prev => ({ ...prev, [a.id]: { ok: false, msg: "Verbindingsfout" } }));
+    }
+    setSaving(null);
+  };
+
+  const reject = async (id: string) => {
+    if (!confirm("Aanvraag afwijzen?")) return;
+    setSaving(id);
+    try {
+      await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reject_aanvraag", id }),
+      });
+      setAanvragen(aanvragen.map(x => x.id === id ? { ...x, status: "afgewezen" } : x));
+    } catch {}
+    setSaving(null);
+  };
+
+  const openAanvragen = aanvragen.filter(a => a.status === "nieuw" || a.status === "offerte_verstuurd");
+  const closedAanvragen = aanvragen.filter(a => a.status !== "nieuw" && a.status !== "offerte_verstuurd");
+
+  const nights = (a: Aanvraag) => {
+    if (!a.van || !a.tot) return 0;
+    return Math.round((new Date(a.tot).getTime() - new Date(a.van).getTime()) / 86400000);
+  };
+
+  const renderCard = (a: Aanvraag) => {
+    const f = getForm(a.id, a);
+    const verblijf = parseFloat(f.verblijf) || 0;
+    const belasting = parseFloat(f.belasting) || 0;
+    const schoonmaak = parseFloat(f.schoonmaak) || 0;
+    const totaal = verblijf + belasting + schoonmaak;
+    const isExpanded = expandedId === a.id;
+    const isNew = a.status === "nieuw";
+    const isOfferteSent = a.status === "offerte_verstuurd";
+    const res = result[a.id];
+    const n = nights(a);
+
+    return (
+      <div key={a.id} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
+        {/* Header row */}
+        <div style={{ padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: isNew ? "pointer" : "default" }}
+          onClick={() => isNew && setExpandedId(isExpanded ? null : a.id)}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <span style={{ fontWeight: 500, fontSize: 14, color: C.text }}>{a.guest?.naam || "Gast"}</span>
+              <Badge status={a.status} />
+              {a.guest?.email && <span style={{ fontSize: 11, color: C.light }}>{a.guest.email}</span>}
+            </div>
+            <div style={{ fontSize: 12, color: C.muted }}>
+              {a.van} – {a.tot}
+              {n > 0 && <span style={{ color: C.light }}> · {n} nacht{n !== 1 ? "en" : ""}</span>}
+              <span style={{ marginLeft: 8 }}>{a.personen} {a.personen === 1 ? "persoon" : "personen"}</span>
+              {a.bericht && <span style={{ marginLeft: 8, fontStyle: "italic" }}>&ldquo;{a.bericht.slice(0, 60)}{a.bericht.length > 60 ? "…" : ""}&rdquo;</span>}
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {isOfferteSent && a.offerte_bedrag && (
+              <span style={{ fontSize: 13, color: C.muted }}>Offerte € {Number(a.offerte_bedrag).toFixed(2)}</span>
+            )}
+            {res?.ok && <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ {res.msg}</span>}
+            {isNew && (
+              <span style={{ fontSize: 12, color: C.gold, fontWeight: 500 }}>{isExpanded ? "▲ Sluiten" : "▼ Offerte maken"}</span>
+            )}
+            {isOfferteSent && (
+              <button onClick={(e) => { e.stopPropagation(); setExpandedId(isExpanded ? null : a.id); }} style={{
+                padding: "5px 12px", borderRadius: 6, border: `1px solid ${C.border}`,
+                background: C.bg, fontSize: 11, color: C.muted, cursor: "pointer",
+              }}>Opnieuw versturen</button>
+            )}
+          </div>
+        </div>
+
+        {/* Expanded form */}
+        {isExpanded && (isNew || isOfferteSent) && (
+          <div style={{ padding: "0 20px 20px", borderTop: `1px solid ${C.bg}` }}>
+            <div style={{ paddingTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Verblijf (€)</label>
+                <input value={f.verblijf} onChange={e => updateForm(a.id, a, "verblijf", e.target.value)} type="number" step="0.01" placeholder="bijv. 390" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Toeristenbelasting (€)</label>
+                <input value={f.belasting} onChange={e => updateForm(a.id, a, "belasting", e.target.value)} type="number" step="0.01" placeholder="bijv. 10" style={inputStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Eindschoonmaak (€)</label>
+                <input value={f.schoonmaak} onChange={e => updateForm(a.id, a, "schoonmaak", e.target.value)} type="number" step="0.01" placeholder="75" style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Persoonlijk bericht (optioneel)</label>
+              <input value={f.bericht} onChange={e => updateForm(a.id, a, "bericht", e.target.value)} placeholder="Welkom terug! We verheugen ons op jullie komst..." style={{ ...inputStyle }} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: C.green }}>
+                Totaal: € {totaal.toFixed(2)}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                {res && !res.ok && res.msg && (
+                  <span style={{ fontSize: 12, color: "#E24B4A", alignSelf: "center" }}>{res.msg}</span>
+                )}
+                <button onClick={() => reject(a.id)} disabled={saving === a.id} style={{
+                  padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+                  background: C.card, fontSize: 12, color: "#E24B4A", cursor: saving === a.id ? "not-allowed" : "pointer",
+                }}>Afwijzen</button>
+                <button onClick={() => sendOfferte(a)} disabled={!f.verblijf || saving === a.id} style={{
+                  padding: "8px 20px", borderRadius: 8, border: "none",
+                  background: f.verblijf && saving !== a.id ? C.green : C.border,
+                  fontSize: 12, fontWeight: 500, color: "#fff", cursor: f.verblijf && saving !== a.id ? "pointer" : "not-allowed",
+                }}>{saving === a.id ? "Versturen..." : "Offerte versturen →"}</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Terugkeer-aanvragen</div>
+      <div style={{ fontSize: 13, color: C.light, marginBottom: 24 }}>
+        {openAanvragen.length} open · {closedAanvragen.length} afgehandeld
+      </div>
+
+      {aanvragen.length === 0 && (
+        <div style={{ fontSize: 13, color: C.light, padding: 20, textAlign: "center" }}>Nog geen aanvragen ontvangen</div>
+      )}
+
+      {openAanvragen.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+          {openAanvragen.map(renderCard)}
+        </div>
+      )}
+
+      {closedAanvragen.length > 0 && (
+        <>
+          <div style={{ fontSize: 13, fontWeight: 500, color: C.light, marginBottom: 10, textTransform: "uppercase", letterSpacing: .5 }}>Afgehandeld</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {closedAanvragen.map(a => (
+              <div key={a.id} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", opacity: 0.6 }}>
+                <div>
+                  <span style={{ fontWeight: 500, fontSize: 13, color: C.text, marginRight: 10 }}>{a.guest?.naam || "Gast"}</span>
+                  <span style={{ fontSize: 12, color: C.muted }}>{a.van} – {a.tot} · {a.personen}p</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  {a.offerte_bedrag && <span style={{ fontSize: 12, color: C.muted }}>€ {Number(a.offerte_bedrag).toFixed(2)}</span>}
+                  <Badge status={a.status} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </>
   );
