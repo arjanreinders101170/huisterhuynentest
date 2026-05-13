@@ -971,12 +971,12 @@ function LodgeView({ lodgeId }: { lodgeId: string }) {
 
 /* ═══ TARIEVEN TAB ═══ */
 type PricingPeriod = { id: string; lodge_id: string; label: string; start_date: string; end_date: string; price_per_night: number };
-type SurchargeConfig = { feestdag_nl: number; feestdag_de: number; vakantie_nl: number; vakantie_ni: number; vakantie_nw: number; tt_assen: number };
+type SurchargeConfig = { feestdag_nl: number; feestdag_de: number; vakantie_nl: number; vakantie_ni: number; vakantie_nw: number; tt_assen: number; weekend: number };
 type PricingConfig = { lodge_id: string; base_price: number; surcharge_config: SurchargeConfig };
 type AvailabilityDiscount = { id?: string; lodge_id: string; days_before: number; discount_pct: number };
 type GenPeriod = { lodge_id: string; label: string; start_date: string; end_date: string; price_per_night: number; category: string };
 
-const DEFAULT_SURCHARGES: SurchargeConfig = { feestdag_nl: 15, feestdag_de: 15, vakantie_nl: 25, vakantie_ni: 20, vakantie_nw: 20, tt_assen: 50 };
+const DEFAULT_SURCHARGES: SurchargeConfig = { feestdag_nl: 15, feestdag_de: 15, vakantie_nl: 25, vakantie_ni: 20, vakantie_nw: 20, tt_assen: 50, weekend: 15 };
 const SURCHARGE_LABELS: Record<keyof SurchargeConfig, string> = {
   feestdag_nl: "Feestdag NL",
   feestdag_de: "Feestdag DE",
@@ -984,6 +984,7 @@ const SURCHARGE_LABELS: Record<keyof SurchargeConfig, string> = {
   vakantie_ni: "Schoolvakantie DE Niedersachsen",
   vakantie_nw: "Schoolvakantie DE NRW",
   tt_assen: "TT Assen / MotoGP",
+  weekend: "Weekend (vrijdag t/m zondag)",
 };
 
 function TarievenTab() {
@@ -1136,7 +1137,7 @@ function TarievenTab() {
     setPeriods(prev => prev.filter(p => p.id !== id));
   };
 
-  const CATEGORY_COLORS: Record<string, string> = { vakantie_nl: "#2196F3", vakantie_ni: "#9C27B0", vakantie_nw: "#673AB7", tt_assen: C.orange, feestdag_nl: "#4CAF50", feestdag_de: "#8BC34A" };
+  const CATEGORY_COLORS: Record<string, string> = { vakantie_nl: "#2196F3", vakantie_ni: "#9C27B0", vakantie_nw: "#673AB7", tt_assen: C.orange, feestdag_nl: "#4CAF50", feestdag_de: "#8BC34A", weekend: "#FF7043" };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>

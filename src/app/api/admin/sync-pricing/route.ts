@@ -27,6 +27,7 @@ export interface SurchargeConfig {
   vakantie_ni: number;
   vakantie_nw: number;
   tt_assen: number;
+  weekend: number;
 }
 
 export interface GeneratedPeriod {
@@ -107,6 +108,23 @@ function calcPrice(base: number, pct: number): number {
   return Math.round(base * (1 + pct / 100) * 100) / 100;
 }
 
+function generateWeekendPeriods(year: number, lodge_id: string, base_price: number, pct: number): GeneratedPeriod[] {
+  const result: GeneratedPeriod[] = [];
+  const yearEnd = new Date(year, 11, 31);
+  const d = new Date(year, 0, 1);
+  // Advance to first Friday
+  while (d.getDay() !== 5) d.setDate(d.getDate() + 1);
+  while (d.getFullYear() === year) {
+    const friday = d.toISOString().substring(0, 10);
+    const sundayDate = new Date(d);
+    sundayDate.setDate(sundayDate.getDate() + 2);
+    const sunday = (sundayDate <= yearEnd ? sundayDate : yearEnd).toISOString().substring(0, 10);
+    result.push({ lodge_id, label: "Weekend", start_date: friday, end_date: sunday, price_per_night: calcPrice(base_price, pct), category: "weekend" });
+    d.setDate(d.getDate() + 7);
+  }
+  return result;
+}
+
 export async function POST(request: NextRequest) {
   if (!isAuthed(request)) {
     return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
@@ -159,6 +177,11 @@ export async function POST(request: NextRequest) {
   }
   for (const h of deHolidays) {
     periods.push({ lodge_id, label: `${h.name} (feestdag DE)`, start_date: h.date, end_date: h.date, price_per_night: calcPrice(base_price, surcharges.feestdag_de), category: "feestdag_de" });
+  }
+
+  // Weekends (vrijdag t/m zondag)
+  if (surcharges.weekend > 0) {
+    periods.push(...generateWeekendPeriods(year, lodge_id, base_price, surcharges.weekend));
   }
 
   if (preview_only) {
