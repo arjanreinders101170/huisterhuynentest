@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
@@ -181,8 +182,7 @@ export default function BookingCalendar() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const OPEN_FROM = "2027-01-01";
-  const today = toISO(new Date()) < OPEN_FROM ? OPEN_FROM : toISO(new Date());
+  const today = toISO(new Date()) < BOOKINGS_OPEN_FROM ? BOOKINGS_OPEN_FROM : toISO(new Date());
 
   const fetchData = useCallback(async (l: Lodge) => {
     setLoadingCal(true);
@@ -232,7 +232,7 @@ export default function BookingCalendar() {
     setCheckOut(iso);
   };
 
-  const now = new Date(Math.max(new Date().getTime(), new Date("2027-01-01").getTime()));
+  const now = new Date(Math.max(new Date().getTime(), new Date(BOOKINGS_OPEN_FROM).getTime()));
   const month0 = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1);
   const month1 = new Date(now.getFullYear(), now.getMonth() + monthOffset + 1, 1);
 

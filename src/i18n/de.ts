@@ -221,6 +221,14 @@ export const de = {
     requesting: "Senden...",
     thankYou: "Anfrage gesendet!",
     thankYouSub: "Wir melden uns so schnell wie möglich mit dem besten Preis.",
+    loadingAvail: "Verfügbarkeit wird geladen...",
+    legendPreferred: "Lieblings-Lodge frei",
+    legendOther: "Andere Lodge frei",
+    legendBooked: "Ausgebucht",
+    matchedPreferred: "Ihre Lodge ist verfügbar",
+    matchedFallback: "Lieblings-Lodge belegt — andere Lodge frei",
+    matchedFlex: "Verfügbar — wir wählen die passende Lodge",
+    rangeUnavailable: "Dieser Zeitraum ist leider ausgebucht. Bitte andere Daten wählen.",
   },
 
   lodgeControl: {

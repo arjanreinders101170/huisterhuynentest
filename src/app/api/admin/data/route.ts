@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc, buildOfferteHtml } from "@/lib/email";
-import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK } from "@/data/lodge";
+import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -258,7 +258,7 @@ export async function POST(request: NextRequest) {
         }
 
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
-        const lodgeNaam = stay.lodge === "lodge_1" ? "Boomhut Lodge" : "Schaapskooi Lodge";
+        const lodgeNaam = lodgeName(stay.lodge);
         const checkInDate = new Date(stay.check_in).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
         const appLink = `${appUrl}?s=${stay.token}`;
 

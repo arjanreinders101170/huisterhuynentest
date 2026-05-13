@@ -161,7 +161,7 @@ export default function AdminDashboard() {
               fontSize: 13, color: tab === l ? C.text : C.muted, fontWeight: tab === l ? 500 : 400,
             }}>
               <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#2E7D32", marginRight: 8 }}></span>
-              {l === "lodge_1" ? "Lodge 1 — Boomhut" : "Lodge 2 — Schaapskooi"}
+              {l === "lodge_1" ? "Lodge 1 — De Heide" : "Lodge 2 — De Eik"}
             </div>
           ))}
         </div>
@@ -566,7 +566,7 @@ function Table({ cols, widths, rows }: { cols: string[]; widths: string[]; rows:
 }
 
 /* ═══ LODGE VIEW ═══ */
-const LODGE_NAMES: Record<string, string> = { lodge_1: "Lodge 1 — Boomhut", lodge_2: "Lodge 2 — Schaapskooi" };
+const LODGE_NAMES: Record<string, string> = { lodge_1: "Lodge 1 — De Heide", lodge_2: "Lodge 2 — De Eik" };
 
 type Preset = { label: string; icon: string; temp: number; light: string; desc: string };
 const PRESETS: Preset[] = [
@@ -1515,8 +1515,8 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
             <div>
               <label style={{ display: "block", fontSize: 12, color: C.muted, marginBottom: 4 }}>Lodge</label>
               <select value={form.lodge} onChange={e => setForm({ ...form, lodge: e.target.value })} style={inputStyle}>
-                <option value="lodge_1">Lodge 1 — Boomhut</option>
-                <option value="lodge_2">Lodge 2 — Schaapskooi</option>
+                <option value="lodge_1">Lodge 1 — De Heide</option>
+                <option value="lodge_2">Lodge 2 — De Eik</option>
               </select>
             </div>
             <div>
@@ -1549,7 +1549,7 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
           {stays.map(s => {
             const guest = s.guests;
             const sc = statusColor(s.status);
-            const lodge = s.lodge === "lodge_1" ? "Boomhut" : "Schaapskooi";
+            const lodge = s.lodge === "lodge_1" ? "De Heide" : "De Eik";
             const cin = new Date(s.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
             const cout = new Date(s.check_out).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
 
