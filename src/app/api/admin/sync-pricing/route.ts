@@ -60,7 +60,8 @@ async function fetchDEHolidays(year: number): Promise<{ date: string; name: stri
 }
 
 async function fetchNLSchoolHolidays(year: number): Promise<{ name: string; start: string; end: string }[]> {
-  const results: { name: string; start: string; end: string }[] = [];
+  // Merge all regions per vacation type: earliest start → latest end so every Dutch region is covered
+  const merged = new Map<string, { start: string; end: string }>();
   const schoolYears = [`${year - 1}-${year}`, `${year}-${year + 1}`];
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
@@ -79,20 +80,30 @@ async function fetchNLSchoolHolidays(year: number): Promise<{ name: string; star
 
       for (const item of items) {
         const name = item.vacationtype?.term || "Schoolvakantie";
-        const noord = (item.regions || []).find(r => r.region === "noord");
-        if (!noord) continue;
-        const start = toDateStr(noord.startdate);
-        const end = toDateStr(noord.enddate);
+        const regions = item.regions || [];
+        if (!regions.length) continue;
+
+        // Take the broadest date range across all regions
+        let start = regions.map(r => toDateStr(r.startdate)).sort()[0];
+        let end = regions.map(r => toDateStr(r.enddate)).sort().at(-1)!;
+
         if (end < yearStart || start > yearEnd) continue;
-        results.push({
-          name,
-          start: start < yearStart ? yearStart : start,
-          end: end > yearEnd ? yearEnd : end,
-        });
+        start = start < yearStart ? yearStart : start;
+        end = end > yearEnd ? yearEnd : end;
+
+        const existing = merged.get(name);
+        if (!existing) {
+          merged.set(name, { start, end });
+        } else {
+          // Keep the broadest range if the same vacation appears in both school years
+          if (start < existing.start) existing.start = start;
+          if (end > existing.end) existing.end = end;
+        }
       }
     } catch { continue; }
   }
-  return results;
+
+  return Array.from(merged.entries()).map(([name, { start, end }]) => ({ name, start, end }));
 }
 
 async function fetchDESchoolHolidays(year: number, state: "NI" | "NW"): Promise<{ name: string; start: string; end: string }[]> {
@@ -156,7 +167,7 @@ export async function POST(request: NextRequest) {
 
   // School holidays first (longer periods, higher priority)
   for (const h of nlSchool) {
-    periods.push({ lodge_id, label: `${h.name} (NL Noord)`, start_date: h.start, end_date: h.end, price_per_night: calcPrice(base_price, surcharges.vakantie_nl), category: "vakantie_nl" });
+    periods.push({ lodge_id, label: `${h.name} (NL)`, start_date: h.start, end_date: h.end, price_per_night: calcPrice(base_price, surcharges.vakantie_nl), category: "vakantie_nl" });
   }
   for (const h of niSchool) {
     periods.push({ lodge_id, label: `${h.name} (DE Niedersachsen)`, start_date: h.start, end_date: h.end, price_per_night: calcPrice(base_price, surcharges.vakantie_ni), category: "vakantie_ni" });

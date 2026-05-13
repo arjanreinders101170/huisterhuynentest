@@ -967,7 +967,7 @@ const DEFAULT_SURCHARGES: SurchargeConfig = { feestdag_nl: 15, feestdag_de: 15, 
 const SURCHARGE_LABELS: Record<keyof SurchargeConfig, string> = {
   feestdag_nl: "Feestdag NL",
   feestdag_de: "Feestdag DE",
-  vakantie_nl: "Schoolvakantie NL (Noord/Drenthe)",
+  vakantie_nl: "Schoolvakantie NL (heel Nederland)",
   vakantie_ni: "Schoolvakantie DE Niedersachsen",
   vakantie_nw: "Schoolvakantie DE NRW",
   tt_assen: "TT Assen / MotoGP",
