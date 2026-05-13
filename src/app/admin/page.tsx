@@ -44,7 +44,11 @@ function timeAgo(dateStr: string): string {
   return `${days} dag${days > 1 ? "en" : ""}`;
 }
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2";
+type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot";
+
+type NavItem = { id: Tab; label: string };
+type NavGroup = { groupLabel: string; sub: NavItem[] };
+type NavSection = { id: string; icon: string; label: string; direct?: Tab; items: (NavItem | NavGroup)[] };
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -58,6 +62,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [followUpSending, setFollowUpSending] = useState(false);
   const [followUpResult, setFollowUpResult] = useState("");
+  const [navSection, setNavSection] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -121,57 +126,130 @@ export default function AdminDashboard() {
 
   const font = "'Inter', system-ui, -apple-system, sans-serif";
 
-  const navItems: { id: Tab; label: string }[] = [
-    { id: "dashboard", label: "Dashboard" },
-    { id: "verblijven", label: "Verblijven" },
-    { id: "boekingen", label: "Boekingen" },
-    { id: "gasten", label: "Gasten" },
-    { id: "reviews", label: "Reviews" },
-    { id: "aanvragen", label: "Aanvragen" },
-    { id: "producten", label: "Producten" },
-    { id: "tarieven", label: "Tarieven" },
-    { id: "financieel", label: "Financieel" },
+  const navSections: NavSection[] = [
+    { id: "dashboard", icon: "⌂", label: "Dashboard", direct: "dashboard", items: [] },
+    { id: "reserveringen", icon: "📅", label: "Reserveringen", items: [
+      { id: "boekingen", label: "Boekingen" },
+      { id: "aanvragen", label: "Aanvragen" },
+    ]},
+    { id: "checkinout", icon: "🔑", label: "Check in / uit", items: [
+      { id: "verblijven", label: "Verblijven" },
+      { id: "gasten", label: "Gasten" },
+    ]},
+    { id: "housekeeping", icon: "🧹", label: "Housekeeping", items: [
+      { id: "housekeeping", label: "Overzicht" },
+    ]},
+    { id: "communicatie", icon: "💬", label: "Gastencommunicatie", items: [
+      { id: "reviews", label: "Reviews" },
+    ]},
+    { id: "pricing", icon: "📊", label: "Dynamic Pricing", items: [
+      { id: "tarieven", label: "Tarieven" },
+      { id: "producten", label: "Producten" },
+      { id: "financieel", label: "Financieel" },
+    ]},
+    { id: "lodges", icon: "🏡", label: "Lodges", items: [
+      { groupLabel: "Lodge 1 — De Heide", sub: [
+        { id: "lodge_1", label: "Overzicht" },
+        { id: "lodge_1_iot", label: "Bediening" },
+      ]},
+      { groupLabel: "Lodge 2 — De Eik", sub: [
+        { id: "lodge_2", label: "Overzicht" },
+        { id: "lodge_2_iot", label: "Bediening" },
+      ]},
+    ]},
   ];
+
+  const activeNavSectionId = navSections.find(s =>
+    s.direct === tab || s.items.some(item =>
+      "id" in item ? item.id === tab : item.sub.some(sub => sub.id === tab)
+    )
+  )?.id;
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", minHeight: "100vh", fontFamily: font }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-      {/* Sidebar */}
-      <div style={{ width: 220, background: C.card, borderRight: `1px solid ${C.border}`, padding: "20px 0", flexShrink: 0, display: "flex", flexDirection: "column" }}>
-        <div style={{ padding: "0 20px 24px" }}>
-          <div style={{ fontWeight: 600, fontSize: 14, color: C.text, letterSpacing: .5 }}>HUIS TER HUYNEN</div>
-          <div style={{ fontSize: 11, color: C.gold, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>Backoffice</div>
+      {/* Icon sidebar */}
+      <div style={{ width: 64, background: C.green, display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0", flexShrink: 0, zIndex: 10 }}>
+        <div style={{ marginBottom: 20, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: 0.5, lineHeight: 1.2, textAlign: "center" }}>HTH</div>
         </div>
-
-        <div style={{ padding: "0 12px", flex: 1 }}>
-          {navItems.map(n => (
-            <div key={n.id} onClick={() => setTab(n.id)} style={{
-              padding: "9px 14px", borderRadius: 8, marginBottom: 2, cursor: "pointer",
-              background: tab === n.id ? C.bg : "transparent",
-              color: tab === n.id ? C.text : C.muted,
-              fontSize: 13, fontWeight: tab === n.id ? 500 : 400,
-            }}>{n.label}</div>
-          ))}
-        </div>
-
-        <div style={{ padding: "16px 12px", borderTop: `1px solid ${C.border}`, marginTop: "auto" }}>
-          <div style={{ padding: "6px 14px", fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: .5 }}>Lodges</div>
-          {(["lodge_1", "lodge_2"] as Tab[]).map(l => (
-            <div key={l} onClick={() => setTab(l)} style={{
-              padding: "8px 14px", borderRadius: 8, marginBottom: 2, cursor: "pointer",
-              background: tab === l ? C.bg : "transparent",
-              fontSize: 13, color: tab === l ? C.text : C.muted, fontWeight: tab === l ? 500 : 400,
-            }}>
-              <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#2E7D32", marginRight: 8 }}></span>
-              {l === "lodge_1" ? "Lodge 1 — De Heide" : "Lodge 2 — De Eik"}
+        <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.15)", marginBottom: 12 }} />
+        {navSections.map(section => {
+          const isActive = navSection === section.id || (section.direct && activeNavSectionId === section.id);
+          return (
+            <div key={section.id}
+              onClick={() => {
+                if (section.direct) {
+                  setTab(section.direct);
+                  setNavSection(null);
+                } else {
+                  setNavSection(navSection === section.id ? null : section.id);
+                }
+              }}
+              title={section.label}
+              style={{
+                width: 44, height: 44, borderRadius: 10,
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", marginBottom: 2,
+                background: isActive ? "rgba(255,255,255,0.18)" : "transparent",
+                transition: "background 0.15s",
+              }}
+            >
+              <span style={{ fontSize: 20, lineHeight: 1 }}>{section.icon}</span>
             </div>
-          ))}
-        </div>
-
-        <div style={{ padding: "12px 12px 0", borderTop: `1px solid ${C.border}` }}>
-          <div onClick={logout} style={{ padding: "9px 14px", fontSize: 13, color: C.light, cursor: "pointer" }}>Uitloggen</div>
-        </div>
+          );
+        })}
+        <div style={{ flex: 1 }} />
+        <div style={{ width: 32, height: 1, background: "rgba(255,255,255,0.15)", marginBottom: 12 }} />
+        <div onClick={logout} title="Uitloggen"
+          style={{ width: 44, height: 44, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, color: "rgba(255,255,255,0.5)" }}
+        >↩</div>
       </div>
+
+      {/* Nav panel */}
+      {navSection && (
+        <div style={{ width: 220, background: C.card, borderRight: `1px solid ${C.border}`, padding: "20px 0", flexShrink: 0, display: "flex", flexDirection: "column" }}>
+          <div style={{ padding: "0 20px 16px", fontWeight: 600, fontSize: 13, color: C.text, letterSpacing: 0.3 }}>
+            {navSections.find(s => s.id === navSection)?.label}
+          </div>
+          <div style={{ flex: 1 }}>
+            {navSections.find(s => s.id === navSection)?.items.map((item, idx) => {
+              if ("groupLabel" in item) {
+                return (
+                  <div key={idx}>
+                    <div style={{ padding: "8px 20px 4px", fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: 0.8 }}>
+                      {item.groupLabel}
+                    </div>
+                    {item.sub.map(sub => (
+                      <div key={sub.id} onClick={() => setTab(sub.id)} style={{
+                        padding: "8px 20px 8px 28px", cursor: "pointer", fontSize: 13,
+                        color: tab === sub.id ? C.text : C.muted,
+                        background: tab === sub.id ? C.bg : "transparent",
+                        fontWeight: tab === sub.id ? 500 : 400,
+                        borderRadius: "0 8px 8px 0", marginRight: 12,
+                      }}>
+                        {sub.id.endsWith("_iot") && <span style={{ marginRight: 6, fontSize: 11 }}>⚡</span>}
+                        {sub.label}
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+              return (
+                <div key={item.id} onClick={() => setTab(item.id)} style={{
+                  padding: "9px 20px", cursor: "pointer", fontSize: 13,
+                  color: tab === item.id ? C.text : C.muted,
+                  background: tab === item.id ? C.bg : "transparent",
+                  fontWeight: tab === item.id ? 500 : 400,
+                  borderRadius: "0 8px 8px 0", marginRight: 12, marginBottom: 2,
+                }}>
+                  {item.label}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div style={{ flex: 1, padding: "28px 32px", overflowY: "auto" }}>
@@ -322,6 +400,34 @@ export default function AdminDashboard() {
 
             {(tab === "lodge_1" || tab === "lodge_2") && (
               <LodgeView lodgeId={tab} />
+            )}
+
+            {/* HOUSEKEEPING */}
+            {tab === "housekeeping" && (
+              <>
+                <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Housekeeping</div>
+                <div style={{ fontSize: 13, color: C.light, marginBottom: 32 }}>Schoonmaakplanning en status per lodge</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, maxWidth: 640 }}>
+                  {["Lodge 1 — De Heide", "Lodge 2 — De Eik"].map((name, i) => (
+                    <div key={i} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: "24px 24px" }}>
+                      <div style={{ fontWeight: 500, fontSize: 14, color: C.text, marginBottom: 12 }}>{name}</div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {["Kamers", "Badkamer", "Keuken", "Buiten"].map(area => (
+                          <span key={area} style={{ background: C.bg, color: C.muted, fontSize: 12, padding: "4px 10px", borderRadius: 6 }}>{area}</span>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 16, padding: "10px 14px", background: "#FFF3E0", borderRadius: 8, fontSize: 12, color: "#E67E22" }}>
+                        Wordt in een volgende versie ingevuld
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* LODGE IoT */}
+            {(tab === "lodge_1_iot" || tab === "lodge_2_iot") && (
+              <LodgeView lodgeId={tab === "lodge_1_iot" ? "lodge_1" : "lodge_2"} />
             )}
           </>
         )}
