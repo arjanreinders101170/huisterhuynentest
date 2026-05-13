@@ -169,100 +169,87 @@ export default function AdminDashboard() {
     <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", minHeight: "100vh", fontFamily: font, background: "#F0F1F3" }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
       {/* Sidebar */}
-      <div style={{ width: 80, background: "#F8F9FA", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0", flexShrink: 0, zIndex: 10 }}>
-        {/* Logo */}
-        <div style={{ marginBottom: 18, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: 1.5, textTransform: "uppercase" }}>HTH</div>
+      <div style={{ width: 248, background: "#fff", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", flexShrink: 0, zIndex: 10 }}>
+        {/* Brand */}
+        <div style={{ padding: "22px 24px 18px" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", letterSpacing: 0.2 }}>Huis ter Huynen</div>
+          <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 3, letterSpacing: 0.3, textTransform: "uppercase" }}>Backoffice</div>
         </div>
-        <div style={{ width: 36, height: 1, background: "#E5E7EB", marginBottom: 10 }} />
+        <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px 12px" }} />
 
-        {/* Nav items */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, width: "100%", padding: "0 8px" }}>
-          {navSections.map(section => {
-            const isActive = navSection === section.id || (section.direct && activeNavSectionId === section.id);
+        {/* Nav */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "0 12px" }}>
+          {/* Dashboard */}
+          <div onClick={() => { setTab("dashboard"); setNavSection(null); }} style={{
+            padding: "10px 14px", borderRadius: 8, marginBottom: 4, cursor: "pointer",
+            background: tab === "dashboard" ? "#EEF2FF" : "transparent",
+            color: tab === "dashboard" ? "#4F46E5" : "#111827",
+            fontSize: 15, fontWeight: 700,
+          }}>
+            Dashboard
+          </div>
+
+          {/* Sections */}
+          {navSections.filter(s => !s.direct).map(section => {
+            const sectionActive = section.items.some(item =>
+              "id" in item ? item.id === tab : item.sub.some(sub => sub.id === tab)
+            );
             return (
-              <div key={section.id}
-                onClick={() => {
-                  if (section.direct) {
-                    setTab(section.direct);
-                    setNavSection(null);
-                  } else {
-                    setNavSection(navSection === section.id ? null : section.id);
-                  }
-                }}
-                title={section.label}
-                style={{
-                  width: "100%", padding: "8px 0", borderRadius: 8,
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3,
-                  cursor: "pointer",
-                  background: isActive ? "#fff" : "transparent",
-                  borderLeft: isActive ? "3px solid #4F46E5" : "3px solid transparent",
-                  transition: "all 0.12s",
-                }}
-              >
-                <span style={{ fontSize: 16, lineHeight: 1, filter: isActive ? "none" : "grayscale(0.3) opacity(0.7)" }}>{section.icon}</span>
-                <span style={{ fontSize: 9, fontWeight: isActive ? 600 : 400, color: isActive ? "#4F46E5" : "#9CA3AF", letterSpacing: 0.2, textAlign: "center", lineHeight: 1.2 }}>
-                  {section.short}
-                </span>
+              <div key={section.id} style={{ marginBottom: 6 }}>
+                {/* Section header */}
+                <div style={{
+                  padding: "10px 14px 6px",
+                  fontSize: 15, fontWeight: 700,
+                  color: sectionActive ? "#4F46E5" : "#111827",
+                  letterSpacing: -0.1,
+                }}>
+                  {section.label}
+                </div>
+
+                {/* Sub-items */}
+                <div style={{ paddingLeft: 4 }}>
+                  {section.items.map((item, idx) => {
+                    if ("groupLabel" in item) {
+                      return (
+                        <div key={idx} style={{ marginBottom: 4 }}>
+                          <div style={{ padding: "5px 14px 3px", fontSize: 11, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.6 }}>
+                            {item.groupLabel}
+                          </div>
+                          {item.sub.map(sub => (
+                            <div key={sub.id} onClick={() => setTab(sub.id)} style={{
+                              padding: "8px 14px 8px 22px", borderRadius: 7, cursor: "pointer",
+                              fontSize: 13, fontWeight: tab === sub.id ? 600 : 400,
+                              color: tab === sub.id ? "#4F46E5" : "#6B7280",
+                              background: tab === sub.id ? "#EEF2FF" : "transparent",
+                            }}>
+                              {sub.id.endsWith("_iot") ? "⚡ " : ""}{sub.label}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={item.id} onClick={() => setTab(item.id)} style={{
+                        padding: "8px 14px", borderRadius: 7, cursor: "pointer", marginBottom: 1,
+                        fontSize: 13, fontWeight: tab === item.id ? 600 : 400,
+                        color: tab === item.id ? "#4F46E5" : "#6B7280",
+                        background: tab === item.id ? "#EEF2FF" : "transparent",
+                      }}>
+                        {item.label}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
         </div>
 
-        <div style={{ flex: 1 }} />
-        <div style={{ width: 36, height: 1, background: "#E5E7EB", marginBottom: 10 }} />
-
-        {/* Uitloggen */}
-        <div onClick={logout} title="Uitloggen" style={{ width: "100%", padding: "8px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, cursor: "pointer" }}>
-          <span style={{ fontSize: 15, color: "#9CA3AF" }}>↩</span>
-          <span style={{ fontSize: 9, color: "#9CA3AF", letterSpacing: 0.2 }}>Uitloggen</span>
+        <div style={{ height: 1, background: "#F3F4F6", margin: "8px 20px 0" }} />
+        <div onClick={logout} style={{ padding: "14px 26px 20px", fontSize: 13, fontWeight: 500, color: "#9CA3AF", cursor: "pointer" }}>
+          Uitloggen
         </div>
       </div>
-
-      {/* Nav panel */}
-      {navSection && (
-        <div style={{ width: 240, background: "#FAFAFA", borderRight: `1px solid ${C.border}`, padding: "20px 0", flexShrink: 0, display: "flex", flexDirection: "column" }}>
-          <div style={{ padding: "0 20px 16px", fontWeight: 600, fontSize: 13, color: C.text, letterSpacing: 0.3 }}>
-            {navSections.find(s => s.id === navSection)?.label}
-          </div>
-          <div style={{ flex: 1 }}>
-            {navSections.find(s => s.id === navSection)?.items.map((item, idx) => {
-              if ("groupLabel" in item) {
-                return (
-                  <div key={idx}>
-                    <div style={{ padding: "8px 20px 4px", fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: 0.8 }}>
-                      {item.groupLabel}
-                    </div>
-                    {item.sub.map(sub => (
-                      <div key={sub.id} onClick={() => setTab(sub.id)} style={{
-                        padding: "8px 20px 8px 28px", cursor: "pointer", fontSize: 13,
-                        color: tab === sub.id ? "#4F46E5" : C.muted,
-                        background: tab === sub.id ? "#EEF2FF" : "transparent",
-                        fontWeight: tab === sub.id ? 500 : 400,
-                        borderRadius: "0 8px 8px 0", marginRight: 12,
-                      }}>
-                        {sub.id.endsWith("_iot") && <span style={{ marginRight: 6, fontSize: 11 }}>⚡</span>}
-                        {sub.label}
-                      </div>
-                    ))}
-                  </div>
-                );
-              }
-              return (
-                <div key={item.id} onClick={() => setTab(item.id)} style={{
-                  padding: "9px 20px", cursor: "pointer", fontSize: 13,
-                  color: tab === item.id ? "#4F46E5" : C.muted,
-                  background: tab === item.id ? "#EEF2FF" : "transparent",
-                  fontWeight: tab === item.id ? 500 : 400,
-                  borderRadius: "0 8px 8px 0", marginRight: 12, marginBottom: 2,
-                }}>
-                  {item.label}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Content */}
       <div style={{ flex: 1, padding: "28px 32px", overflowY: "auto", background: "#F0F1F3" }}>
