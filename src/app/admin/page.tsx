@@ -9,8 +9,8 @@ type Product = { id: string; naam: string; omschrijving: string | null; prijs: n
 type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 
 const C = {
-  bg: "#F5F3EE", card: "#fff", border: "#E8E4DC",
-  text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5",
+  bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
+  text: "#111827", muted: "#6B7280", light: "#9CA3AF",
   green: "#2F4F3E", gold: "#B49A5E",
 };
 
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
 
       {/* Nav panel */}
       {navSection && (
-        <div style={{ width: 220, background: C.card, borderRight: `1px solid ${C.border}`, padding: "20px 0", flexShrink: 0, display: "flex", flexDirection: "column" }}>
+        <div style={{ width: 240, background: "#FAFAFA", borderRight: `1px solid ${C.border}`, padding: "20px 0", flexShrink: 0, display: "flex", flexDirection: "column" }}>
           <div style={{ padding: "0 20px 16px", fontWeight: 600, fontSize: 13, color: C.text, letterSpacing: 0.3 }}>
             {navSections.find(s => s.id === navSection)?.label}
           </div>
@@ -260,42 +260,58 @@ export default function AdminDashboard() {
             {/* DASHBOARD */}
             {tab === "dashboard" && (
               <>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                {/* Header */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
                   <div>
-                    <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Dashboard</div>
-                    <div style={{ fontSize: 13, color: C.light, marginTop: 2 }}>Overzicht van je lodges</div>
+                    <div style={{ fontSize: 20, fontWeight: 600, color: C.text, letterSpacing: -0.3 }}>Overzicht</div>
+                    <div style={{ fontSize: 13, color: C.light, marginTop: 3 }}>
+                      {new Date().toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" })}
+                    </div>
                   </div>
-                  <button onClick={sendFollowUps} disabled={followUpSending} style={{
-                    padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
-                    background: C.card, fontSize: 12, color: C.muted, cursor: followUpSending ? "not-allowed" : "pointer",
-                  }}>{followUpSending ? "Bezig..." : "Follow-up emails versturen"}</button>
+                  <span
+                    onClick={sendFollowUps}
+                    style={{ fontSize: 12, color: followUpSending ? C.light : C.muted, cursor: followUpSending ? "default" : "pointer", display: "flex", alignItems: "center", gap: 5, paddingTop: 4 }}
+                  >
+                    <span style={{ fontSize: 14, display: "inline-block", transform: followUpSending ? "rotate(180deg)" : "none", transition: "transform 0.5s" }}>↻</span>
+                    {followUpSending ? "Versturen…" : "Follow-ups versturen"}
+                  </span>
                 </div>
 
                 {followUpResult && (
-                  <div style={{ padding: "10px 16px", borderRadius: 8, background: "#E8F5E9", fontSize: 13, color: "#2E7D32", marginBottom: 16 }}>
+                  <div style={{ padding: "10px 16px", borderRadius: 8, background: "#F0FDF4", border: "1px solid #BBF7D0", fontSize: 13, color: "#166534", marginBottom: 20 }}>
                     {followUpResult}
                   </div>
                 )}
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 28 }}>
+                {/* Stat cards */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 28 }}>
                   {[
-                    { label: "Totaal gasten", value: guests.length, color: C.text },
-                    { label: "Nieuwe boekingen", value: newBookings, color: "#1565C0" },
-                    { label: "Open aanvragen", value: openAanvragen, color: "#E67E22" },
-                    { label: "Reviews", value: avgStars, color: "#2E7D32" },
+                    { label: "Gasten", value: guests.length, sub: "totaal" },
+                    { label: "Boekingen", value: newBookings, sub: "nieuw", accent: newBookings > 0 },
+                    { label: "Aanvragen", value: openAanvragen, sub: "open", accent: openAanvragen > 0 },
+                    { label: "Reviews", value: avgStars, sub: "gemiddeld" },
                   ].map((m, i) => (
-                    <div key={i} style={{ background: C.bg, borderRadius: 10, padding: "16px 18px" }}>
-                      <div style={{ fontSize: 12, color: C.light, marginBottom: 4 }}>{m.label}</div>
-                      <div style={{ fontSize: 24, fontWeight: 500, color: m.color }}>{m.value}</div>
+                    <div key={i} style={{
+                      background: C.card, borderRadius: 12, padding: "16px 20px",
+                      border: `1px solid ${m.accent ? "#FED7AA" : C.border}`,
+                    }}>
+                      <div style={{ fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 8 }}>{m.label}</div>
+                      <div style={{ fontSize: 26, fontWeight: 600, color: m.accent ? "#EA580C" : C.text, lineHeight: 1 }}>{m.value}</div>
+                      <div style={{ fontSize: 11, color: C.light, marginTop: 4 }}>{m.sub}</div>
                     </div>
                   ))}
                 </div>
 
-                <div style={{ fontSize: 15, fontWeight: 500, color: C.text, marginBottom: 12 }}>Recente boekingen</div>
+                {/* Tijdlijn */}
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: -0.1 }}>Bezettingstijdlijn</div>
+                <ReservationTimeline stays={stays} guests={guests} guestMap={guestMap} />
+
+                {/* Recente boekingen */}
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12, marginTop: 32, letterSpacing: -0.1 }}>Recente boekingen</div>
                 <Table
                   cols={["Gast", "Product", "Bedrag", "Status", "Datum"]}
                   widths={["2fr", "2fr", "1fr", "1fr", "1fr"]}
-                  rows={bookings.slice(0, 10).map(b => [
+                  rows={bookings.slice(0, 8).map(b => [
                     guestMap[b.guest_id] || "Onbekend",
                     b.product,
                     b.prijs ? `€ ${b.prijs.toFixed(2)}` : "—",
@@ -306,11 +322,11 @@ export default function AdminDashboard() {
 
                 {aanvragen.length > 0 && (
                   <>
-                    <div style={{ fontSize: 15, fontWeight: 500, color: C.text, marginBottom: 12, marginTop: 28 }}>Terugkeer-aanvragen</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12, marginTop: 28, letterSpacing: -0.1 }}>Terugkeer-aanvragen</div>
                     <Table
                       cols={["Gast", "Periode", "Personen", "Status", "Offerte"]}
                       widths={["2fr", "2fr", "1fr", "1fr", "1fr"]}
-                      rows={aanvragen.slice(0, 10).map(a => [
+                      rows={aanvragen.slice(0, 8).map(a => [
                         a.guest?.naam || guestMap[a.guest_id] || "Onbekend",
                         `${a.van} – ${a.tot}`,
                         String(a.personen),
@@ -646,6 +662,154 @@ function ProductenTab({ products, setProducts }: { products: Product[]; setProdu
         {fietsen.length === 0 && <div style={{ padding: 20, fontSize: 13, color: C.light, textAlign: "center" }}>Geen fietsen</div>}
       </div>
     </>
+  );
+}
+
+/* ═══ RESERVATION TIMELINE ═══ */
+function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]; guests: Guest[]; guestMap: Record<string, string> }) {
+  const DAYS = 21;
+  const DAY_W = 54;
+  const LEFT_W = 148;
+  const ROW_H = 62;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const windowStart = new Date(today);
+  windowStart.setDate(windowStart.getDate() - 3);
+
+  const days = Array.from({ length: DAYS }, (_, i) => {
+    const d = new Date(windowStart);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+
+  const toDay = (s: string) => { const d = new Date(s); d.setHours(0, 0, 0, 0); return d; };
+  const dayOffset = (d: Date) => (d.getTime() - windowStart.getTime()) / 86400000;
+  const todayOff = dayOffset(today);
+
+  const lodges = [
+    { id: "lodge_1", label: "Lodge 1", sub: "De Heide" },
+    { id: "lodge_2", label: "Lodge 2", sub: "De Eik" },
+  ];
+
+  const barColor = (status: string) => {
+    if (status === "actief") return "#10B981";
+    if (status === "verwacht" || status === "bevestigd") return "#3B82F6";
+    if (status === "uitgecheckt") return "#9CA3AF";
+    return "#8B5CF6";
+  };
+
+  return (
+    <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #E5E7EB", background: "#fff" }}>
+      <div style={{ minWidth: LEFT_W + DAYS * DAY_W }}>
+        {/* Header */}
+        <div style={{ display: "flex", borderBottom: "1px solid #E5E7EB" }}>
+          <div style={{ width: LEFT_W, flexShrink: 0, padding: "10px 16px", fontSize: 11, color: "#9CA3AF", fontWeight: 500, textTransform: "uppercase", letterSpacing: 0.6, background: "#FAFAFA", borderRight: "1px solid #E5E7EB" }}>
+            Lodge
+          </div>
+          {days.map((d, i) => {
+            const isToday = d.getTime() === today.getTime();
+            const isWknd = d.getDay() === 0 || d.getDay() === 6;
+            return (
+              <div key={i} style={{
+                width: DAY_W, flexShrink: 0, textAlign: "center", padding: "8px 0",
+                background: isToday ? "#EFF6FF" : "#FAFAFA",
+                borderLeft: "1px solid #F3F4F6",
+              }}>
+                <div style={{ fontSize: 10, color: isToday ? "#3B82F6" : "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.4 }}>
+                  {d.toLocaleDateString("nl-NL", { weekday: "short" })}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: isToday ? 700 : isWknd ? 500 : 400, color: isToday ? "#3B82F6" : isWknd ? "#374151" : "#6B7280", marginTop: 1 }}>
+                  {d.getDate()}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Lodge rows */}
+        {lodges.map((lodge, ri) => {
+          const lodgeStays = stays.filter(s => {
+            const ci = toDay(s.check_in);
+            const co = toDay(s.check_out);
+            return s.lodge === lodge.id && co > windowStart && ci < days[DAYS - 1];
+          });
+
+          return (
+            <div key={lodge.id} style={{ display: "flex", height: ROW_H, borderTop: ri > 0 ? "1px solid #E5E7EB" : "none" }}>
+              {/* Label */}
+              <div style={{
+                width: LEFT_W, flexShrink: 0, display: "flex", flexDirection: "column",
+                justifyContent: "center", padding: "0 16px",
+                borderRight: "1px solid #E5E7EB", background: "#FAFAFA",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: lodgeStays.some(s => s.status === "actief") ? "#10B981" : "#D1D5DB", flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>{lodge.label}</span>
+                </div>
+                <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 3, marginLeft: 14 }}>{lodge.sub}</div>
+              </div>
+
+              {/* Timeline */}
+              <div style={{ flex: 1, position: "relative", display: "flex", overflow: "hidden" }}>
+                {days.map((d, i) => {
+                  const isToday = d.getTime() === today.getTime();
+                  const isWknd = d.getDay() === 0 || d.getDay() === 6;
+                  return (
+                    <div key={i} style={{
+                      width: DAY_W, flexShrink: 0, height: "100%",
+                      background: isToday ? "#EFF6FF" : isWknd ? "#F9FAFB" : "#fff",
+                      borderLeft: "1px solid #F3F4F6",
+                    }} />
+                  );
+                })}
+
+                {/* Today line */}
+                <div style={{
+                  position: "absolute", left: todayOff * DAY_W + DAY_W / 2,
+                  top: 0, bottom: 0, width: 2, background: "#3B82F6", opacity: 0.25, borderRadius: 1,
+                }} />
+
+                {/* Bars */}
+                {lodgeStays.map(stay => {
+                  const ci = toDay(stay.check_in);
+                  const co = toDay(stay.check_out);
+                  const s0 = Math.max(0, dayOffset(ci));
+                  const e0 = Math.min(DAYS, dayOffset(co));
+                  if (e0 <= 0 || s0 >= DAYS) return null;
+                  const left = s0 * DAY_W + 4;
+                  const width = Math.max((e0 - s0) * DAY_W - 8, 24);
+                  const name = stay.guests?.naam || guestMap[stay.guest_id] || "Gast";
+                  const color = barColor(stay.status);
+                  const nights = Math.round(dayOffset(co) - dayOffset(ci));
+
+                  return (
+                    <div key={stay.id} title={`${name} · ${nights} nacht${nights !== 1 ? "en" : ""}`} style={{
+                      position: "absolute", left, top: "50%", transform: "translateY(-50%)",
+                      width, height: 36, background: "#fff",
+                      border: "1px solid #E5E7EB", borderRadius: 7,
+                      display: "flex", alignItems: "center", overflow: "hidden",
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.06)", zIndex: 1, cursor: "default",
+                    }}>
+                      <div style={{ width: 3, alignSelf: "stretch", background: color, flexShrink: 0, borderRadius: "6px 0 0 6px" }} />
+                      <span style={{ fontSize: 12, fontWeight: 500, color: "#374151", marginLeft: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 8 }}>
+                        {name}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                {lodgeStays.length === 0 && (
+                  <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#D1D5DB" }}>
+                    Geen verblijven gepland
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
