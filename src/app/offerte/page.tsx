@@ -16,7 +16,6 @@ function OfferteForm() {
   const van = params.get("van") || "";
   const tot = params.get("tot") || "";
   const personen = params.get("personen") || "2";
-  const secret = params.get("s") || "";
 
   const [prijsVerblijf, setPrijsVerblijf] = useState("");
   const [toeristenbelasting, setToeristenbelasting] = useState("");
@@ -41,7 +40,6 @@ function OfferteForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          adminSecret: secret,
           aanvraagId, gastEmail, gastNaam, van, tot,
           personen: parseInt(personen),
           prijsVerblijf, toeristenbelasting, schoonmaak, bericht,

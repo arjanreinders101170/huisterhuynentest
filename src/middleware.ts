@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ADMIN_COOKIE_NAME, parseSessionCookie } from "@/lib/admin-auth-edge";
 
 /* ═══ RATE LIMITER (in-memory, per serverless instance) ═══ */
 const hits = new Map<string, { count: number; reset: number }>();
@@ -34,7 +35,14 @@ function checkRateLimit(ip: string, path: string): boolean {
   return true;
 }
 
-export function middleware(request: NextRequest) {
+async function hasValidAdminCookie(request: NextRequest): Promise<boolean> {
+  const cookie = request.cookies.get(ADMIN_COOKIE_NAME);
+  if (!cookie) return false;
+  const parsed = await parseSessionCookie(cookie.value);
+  return Boolean(parsed);
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hostname = request.headers.get("host") || "";
 
@@ -54,20 +62,20 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Protect /admin routes (except login)
-  if (!pathname.startsWith("/admin")) return NextResponse.next();
-  if (pathname === "/admin/login") return NextResponse.next();
-  if (pathname.startsWith("/api/admin/login")) return NextResponse.next();
+  // Pagina's die een admin-sessie vereisen.
+  const requiresAdmin =
+    (pathname.startsWith("/admin") && pathname !== "/admin/login") ||
+    pathname.startsWith("/offerte");
 
-  const session = request.cookies.get("hth-admin-session");
-  if (!session || session.value !== process.env.ADMIN_SECRET) {
-    const loginUrl = new URL("/admin/login", request.url);
-    return NextResponse.redirect(loginUrl);
+  if (!requiresAdmin) return NextResponse.next();
+
+  if (!(await hasValidAdminCookie(request))) {
+    return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/app", "/admin/:path*", "/api/:path*"],
+  matcher: ["/", "/app", "/admin/:path*", "/offerte/:path*", "/offerte", "/api/:path*"],
 };

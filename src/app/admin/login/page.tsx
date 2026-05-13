@@ -1,37 +1,37 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function AdminLogin() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+function LoginForm() {
+  const params = useSearchParams();
+  const errorParam = params.get("error");
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState(
+    errorParam === "expired"
+      ? "Die link is verlopen of al gebruikt. Vraag een nieuwe aan."
+      : errorParam === "invalid"
+      ? "Ongeldige inloglink. Vraag een nieuwe aan."
+      : ""
+  );
   const [loading, setLoading] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password || loading) return;
+    if (!email || loading) return;
     setLoading(true);
     setError("");
-
-    if (username !== "admin") {
-      setError("Onbekende gebruiker");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const r = await fetch("/api/admin/login", {
+      const r = await fetch("/api/admin/request-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email }),
       });
-      const d = await r.json();
-
-      if (d.success) {
-        window.location.href = "/admin";
+      if (r.ok) {
+        setSent(true);
       } else {
-        setError(d.error || "Onjuist wachtwoord");
+        const d = await r.json().catch(() => ({}));
+        setError(d.error || "Er ging iets mis. Probeer het opnieuw.");
       }
     } catch {
       setError("Kon niet verbinden");
@@ -39,7 +39,7 @@ export default function AdminLogin() {
     setLoading(false);
   };
 
-  const canSubmit = username.length > 0 && password.length > 0 && !loading;
+  const canSubmit = email.includes("@") && !loading;
 
   return (
     <div style={{
@@ -52,7 +52,6 @@ export default function AdminLogin() {
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
       <div style={{ width: "100%", maxWidth: 380, textAlign: "center" }}>
-        {/* Logo */}
         <div style={{ marginBottom: 40 }}>
           <div style={{ fontSize: 18, fontWeight: 600, color: "#2A2418", letterSpacing: 1.5 }}>
             HUIS TER HUYNEN
@@ -62,111 +61,86 @@ export default function AdminLogin() {
           </div>
         </div>
 
-        {/* Card */}
         <div style={{
           background: "#fff", borderRadius: 16,
           border: "1px solid #E8E4DC", padding: "36px 32px",
           boxShadow: "0 2px 12px rgba(42,36,24,.04)",
           textAlign: "left",
         }}>
-          <h1 style={{ fontSize: 22, fontWeight: 500, color: "#2A2418", margin: "0 0 6px", textAlign: "center" }}>
-            Welkom terug
-          </h1>
-          <p style={{ fontSize: 13, color: "#8A7D6A", margin: "0 0 28px", textAlign: "center" }}>
-            Log in om verder te gaan
-          </p>
+          {sent ? (
+            <>
+              <h1 style={{ fontSize: 22, fontWeight: 500, color: "#2A2418", margin: "0 0 12px", textAlign: "center" }}>
+                Check je e-mail
+              </h1>
+              <p style={{ fontSize: 14, color: "#5A5142", lineHeight: 1.6, textAlign: "center", margin: "0 0 8px" }}>
+                Als <strong>{email}</strong> toegang heeft, hebben we een inloglink gestuurd. De link is 15 minuten geldig en eenmalig bruikbaar.
+              </p>
+              <p style={{ fontSize: 12, color: "#8A7D6A", textAlign: "center", margin: "20px 0 0" }}>
+                Niet ontvangen? Check spam, of <button onClick={() => setSent(false)} style={{ background: "none", border: "none", padding: 0, color: "#2F4F3E", cursor: "pointer", textDecoration: "underline", font: "inherit" }}>probeer opnieuw</button>.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 style={{ fontSize: 22, fontWeight: 500, color: "#2A2418", margin: "0 0 6px", textAlign: "center" }}>
+                Welkom terug
+              </h1>
+              <p style={{ fontSize: 13, color: "#8A7D6A", margin: "0 0 28px", textAlign: "center" }}>
+                Vul je e-mailadres in voor een inloglink
+              </p>
 
-          <form onSubmit={submit}>
-            {/* Username */}
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontSize: 13, color: "#8A7D6A", marginBottom: 6 }}>
-                Gebruikersnaam
-              </label>
-              <input
-                type="text"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                placeholder="admin"
-                autoFocus
-                autoComplete="username"
-                style={{
-                  width: "100%", padding: "12px 16px", borderRadius: 10,
-                  border: "1px solid #E8E4DC", background: "#FDFCFA",
-                  fontSize: 15, color: "#2A2418", outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
+              <form onSubmit={submit}>
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ display: "block", fontSize: 13, color: "#8A7D6A", marginBottom: 6 }}>
+                    E-mailadres
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="naam@voorbeeld.nl"
+                    autoFocus
+                    autoComplete="email"
+                    style={{
+                      width: "100%", padding: "12px 16px", borderRadius: 10,
+                      border: `1px solid ${error ? "#E24B4A" : "#E8E4DC"}`, background: "#FDFCFA",
+                      fontSize: 15, color: "#2A2418", outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
 
-            {/* Password */}
-            <div style={{ marginBottom: 6 }}>
-              <label style={{ display: "block", fontSize: 13, color: "#8A7D6A", marginBottom: 6 }}>
-                Wachtwoord
-              </label>
-              <div style={{ position: "relative" }}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  style={{
-                    width: "100%", padding: "12px 48px 12px 16px", borderRadius: 10,
-                    border: `1px solid ${error ? "#E24B4A" : "#E8E4DC"}`, background: "#FDFCFA",
-                    fontSize: 15, color: "#2A2418", outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
-                    background: "none", border: "none", cursor: "pointer", padding: 4,
-                    color: "#8A7D6A", display: "flex", alignItems: "center",
-                  }}
-                >
-                  {showPassword ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                      <line x1="1" y1="1" x2="23" y2="23" />
-                    </svg>
-                  ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
+                {error && (
+                  <div style={{ fontSize: 13, color: "#E24B4A", marginTop: 10, marginBottom: 4 }}>
+                    {error}
+                  </div>
+                )}
+
+                <button type="submit" disabled={!canSubmit} style={{
+                  width: "100%", padding: 14, borderRadius: 10, border: "none",
+                  background: canSubmit ? "#2F4F3E" : "#D4D0C8",
+                  color: "#fff", fontSize: 15, fontWeight: 500, marginTop: 16,
+                  cursor: canSubmit ? "pointer" : "not-allowed",
+                  transition: "background .2s",
+                }}>
+                  {loading ? "Even geduld..." : "Stuur inloglink"}
                 </button>
-              </div>
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div style={{ fontSize: 13, color: "#E24B4A", marginTop: 10, marginBottom: 4 }}>
-                {error}
-              </div>
-            )}
-
-            {/* Submit */}
-            <button type="submit" disabled={!canSubmit} style={{
-              width: "100%", padding: 14, borderRadius: 10, border: "none",
-              background: canSubmit ? "#2F4F3E" : "#D4D0C8",
-              color: "#fff", fontSize: 15, fontWeight: 500, marginTop: 16,
-              cursor: canSubmit ? "pointer" : "not-allowed",
-              transition: "background .2s",
-            }}>
-              {loading ? "Even geduld..." : "Inloggen"}
-            </button>
-          </form>
+              </form>
+            </>
+          )}
         </div>
 
-        {/* Footer */}
         <p style={{ fontSize: 11, color: "#B4AFA5", marginTop: 24 }}>
           Huis ter Huynen · Zuiderstraat 6 · Zeijen, Drenthe
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

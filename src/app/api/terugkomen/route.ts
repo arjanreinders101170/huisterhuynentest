@@ -49,7 +49,7 @@ function emailWrap(content: string): string {
 }
 
 /* ═══ OWNER EMAIL ═══ */
-function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string, adminSecret: string, lodgeNaam: string, wasFallback: boolean): string {
+function ownerEmailHtml(van: string, tot: string, email: string, naam: string, personen: number, bericht: string, aanvraagId: string, appUrl: string, lodgeNaam: string, wasFallback: boolean): string {
   const lodgeLine = lodgeNaam
     ? `<tr><td align="center" style="padding-top:8px;font-family:Arial,sans-serif;font-size:12px;color:#B49A5E;letter-spacing:1px;text-transform:uppercase;">
         ${wasFallback ? "Alternatief: " : "Gewenst: "}${lodgeNaam}${wasFallback ? " (voorkeur was bezet)" : ""}
@@ -106,7 +106,7 @@ function ownerEmailHtml(van: string, tot: string, email: string, naam: string, p
     <!-- CTA -->
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
       <tr><td align="center">
-        <a href="${appUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(naam)}&van=${encodeURIComponent(van)}&tot=${encodeURIComponent(tot)}&personen=${personen}&s=${adminSecret}"
+        <a href="${appUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(naam)}&van=${encodeURIComponent(van)}&tot=${encodeURIComponent(tot)}&personen=${personen}"
           style="display:inline-block;padding:14px 32px;background-color:#2F4F3E;color:#ffffff;text-decoration:none;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
           Stuur aanbod &rarr;
         </a>
@@ -201,8 +201,6 @@ export async function POST(request: NextRequest) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl";
 
-    const adminSecret = process.env.ADMIN_SECRET || "";
-
     const resendKey = process.env.RESEND_API_KEY;
     if (resendKey) {
       try {
@@ -213,7 +211,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
           subject: `Terugkeer aanvraag — ${name || email} · ${from} t/m ${to}`,
-          html: ownerEmailHtml(esc(from), esc(to), esc(email), esc(name || ""), persons || 2, esc(message || ""), aanvraagId, appUrl, adminSecret, esc(voorkeursLodgeNaam || ""), Boolean(wasFallback)),
+          html: ownerEmailHtml(esc(from), esc(to), esc(email), esc(name || ""), persons || 2, esc(message || ""), aanvraagId, appUrl, esc(voorkeursLodgeNaam || ""), Boolean(wasFallback)),
           replyTo: email,
         });
 
