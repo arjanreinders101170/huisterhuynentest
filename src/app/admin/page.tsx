@@ -108,8 +108,10 @@ export default function AdminDashboard() {
     setFollowUpSending(false);
   };
 
-  const logout = () => {
-    document.cookie = "hth-admin-session=; path=/; max-age=0";
+  const logout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch {}
     window.location.href = "/admin/login";
   };
 

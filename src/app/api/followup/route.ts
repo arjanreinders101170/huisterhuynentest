@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
+import { verifyAdminSession } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 
@@ -100,9 +101,7 @@ function followUpEmailHtml(naam: string, appUrl: string): string {
 
 // POST — send follow-up emails to guests who visited 14+ days ago
 export async function POST(request: NextRequest) {
-  // Admin auth check
-  const session = request.cookies.get("hth-admin-session");
-  if (session?.value !== process.env.ADMIN_SECRET) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
   }
 

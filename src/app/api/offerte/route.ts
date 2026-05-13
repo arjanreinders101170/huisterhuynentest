@@ -1,22 +1,21 @@
 import { esc, buildOfferteHtml } from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { verifyAdminSession } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 
 const LODGE_NAME = "Huis ter Huynen";
 
 export async function POST(request: NextRequest) {
+  if (!(await verifyAdminSession(request))) {
+    return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
+  }
+
   try {
     let body;
     try { body = await request.json(); } catch {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
-    }
-
-    // Admin auth check
-    const adminSecret = process.env.ADMIN_SECRET;
-    if (adminSecret && body.adminSecret !== adminSecret) {
-      return NextResponse.json({ error: "Geen toegang" }, { status: 403 });
     }
 
     const { aanvraagId, gastEmail, gastNaam, van, tot, personen, prijsVerblijf, toeristenbelasting, schoonmaak, bericht } = body;

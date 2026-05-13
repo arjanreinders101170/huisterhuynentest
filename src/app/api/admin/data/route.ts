@@ -2,17 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc, buildOfferteHtml } from "@/lib/email";
 import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
+import { verifyAdminSession } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 
-function isAuthed(request: NextRequest): boolean {
-  const session = request.cookies.get("hth-admin-session");
-  return session?.value === process.env.ADMIN_SECRET;
-}
-
 // GET — fetch table data
 export async function GET(request: NextRequest) {
-  if (!isAuthed(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
   }
 
@@ -115,7 +111,7 @@ export async function GET(request: NextRequest) {
 
 // POST — admin actions
 export async function POST(request: NextRequest) {
-  if (!isAuthed(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
   }
 
