@@ -44,7 +44,7 @@ function timeAgo(dateStr: string): string {
   return `${days} dag${days > 1 ? "en" : ""}`;
 }
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "lodge_1" | "lodge_2";
+type Tab = "dashboard" | "visueel" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "lodge_1" | "lodge_2";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -121,6 +121,7 @@ export default function AdminDashboard() {
 
   const navItems: { id: Tab; label: string }[] = [
     { id: "dashboard", label: "Dashboard" },
+    { id: "visueel", label: "Visueel" },
     { id: "verblijven", label: "Verblijven" },
     { id: "boekingen", label: "Boekingen" },
     { id: "gasten", label: "Gasten" },
@@ -240,6 +241,11 @@ export default function AdminDashboard() {
                   </>
                 )}
               </>
+            )}
+
+            {/* VISUEEL */}
+            {tab === "visueel" && (
+              <VisueelDashboard stays={stays} guestMap={guestMap} />
             )}
 
             {/* BOEKINGEN */}
@@ -1068,5 +1074,370 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
         </div>
       )}
     </>
+  );
+}
+
+/* ═══ VISUEEL DASHBOARD (PMS timeline + smart home tiles) ═══ */
+type TimelineRes = {
+  id: string;
+  lodge: "lodge_1" | "lodge_2";
+  guest: string;
+  email: string;
+  adults: number;
+  children: number;
+  startOffset: number; // days from "today" column 0
+  nights: number;
+  status: "checked_in" | "upcoming" | "blocked" | "confirmed";
+  note: string;
+  doorCode: string;
+  smartTip: string;
+};
+
+function VisueelDashboard({ stays, guestMap }: { stays: Stay[]; guestMap: Record<string, string> }) {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+  const COLS = 12; // days shown
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Build timeline data: prefer real stays, fall back to mock demo so the
+  // mockup is meaningful even with an empty database.
+  const fromStays: TimelineRes[] = stays
+    .map((s, i) => {
+      const cin = new Date(s.check_in);
+      const cout = new Date(s.check_out);
+      const offset = Math.round((cin.getTime() - today.getTime()) / 86400000);
+      const nights = Math.max(1, Math.round((cout.getTime() - cin.getTime()) / 86400000));
+      const status: TimelineRes["status"] =
+        s.status === "actief" ? "checked_in" : s.status === "gepland" ? "upcoming" : "confirmed";
+      return {
+        id: s.id,
+        lodge: (s.lodge as "lodge_1" | "lodge_2"),
+        guest: s.guests?.naam || guestMap[s.guest_id] || `Gast ${i + 1}`,
+        email: s.guests?.email || "",
+        adults: 2,
+        children: 0,
+        startOffset: offset,
+        nights,
+        status,
+        note: "Geboekt via website",
+        doorCode: s.door_code || "—",
+        smartTip: "Gast komt opnieuw. Bekende voorkeur: rust en lange wandelingen. Stuur welkomstmail en zet verwarming op 21°.",
+      };
+    })
+    .filter(r => r.startOffset > -r.nights && r.startOffset < COLS);
+
+  const mock: TimelineRes[] = [
+    { id: "m1", lodge: "lodge_1", guest: "Olivia Bennett", email: "olivia@voorbeeld.nl", adults: 2, children: 1, startOffset: 0, nights: 3, status: "checked_in", note: "Allergie voor pinda's. Extra handdoeken aangevraagd.", doorCode: "4827", smartTip: "Gast logeert van vandaag t/m vrijdag. Bij vorig verblijf voorkeur voor stille kamer. Verwarming staat op 21°, sfeerlicht warm." },
+    { id: "m2", lodge: "lodge_1", guest: "Maxwell Carter", email: "max@voorbeeld.nl", adults: 2, children: 0, startOffset: 4, nights: 4, status: "upcoming", note: "Late check-in om 22:00 aangekondigd.", doorCode: "6193", smartTip: "Aankomst over 4 dagen. Stuur welkomstmail morgen automatisch." },
+    { id: "m3", lodge: "lodge_1", guest: "Ethan Davis", email: "ethan@voorbeeld.nl", adults: 2, children: 2, startOffset: 9, nights: 3, status: "upcoming", note: "Gezin met twee kinderen, kinderstoel gewenst.", doorCode: "—", smartTip: "Aankomst over 9 dagen. Kinderstoel klaarzetten." },
+    { id: "m4", lodge: "lodge_2", guest: "Isabella Hughes", email: "isa@voorbeeld.nl", adults: 2, children: 0, startOffset: 1, nights: 5, status: "confirmed", note: "Verjaardag — bloemen besteld via Bloomon.", doorCode: "5520", smartTip: "Aankomst morgen. Bloemen en kaart klaarleggen. Sfeer 'Warm' instellen voor aankomst." },
+    { id: "m5", lodge: "lodge_2", guest: "Onderhoud schoonmaak", email: "", adults: 0, children: 0, startOffset: 7, nights: 1, status: "blocked", note: "Diepe schoonmaak en boilercheck.", doorCode: "—", smartTip: "Geblokkeerd voor onderhoud. Automations uit." },
+    { id: "m6", lodge: "lodge_2", guest: "Liam Johnson", email: "liam@voorbeeld.nl", adults: 2, children: 0, startOffset: 8, nights: 3, status: "upcoming", note: "Wil graag elektrische fietsen huren.", doorCode: "—", smartTip: "Aankomst over 8 dagen. Fietsen reserveren bij Tweewieler Zeijen." },
+  ];
+
+  const reservations: TimelineRes[] = fromStays.length > 0 ? fromStays : mock;
+  const [selectedId, setSelectedId] = useState<string>(reservations[0]?.id || "");
+  const selected = reservations.find(r => r.id === selectedId) || reservations[0];
+
+  // Day header labels
+  const days = Array.from({ length: COLS }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    return d;
+  });
+  const dayLabel = (d: Date) => d.toLocaleDateString("nl-NL", { weekday: "short" });
+  const dayNum = (d: Date) => d.toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
+
+  const statusStyle: Record<TimelineRes["status"], { bg: string; border: string; text: string }> = {
+    checked_in: { bg: "#E8F5E9", border: "#2E7D32", text: "#1B5E20" },
+    upcoming: { bg: "#FFF8E8", border: "#B49A5E", text: "#7A6230" },
+    confirmed: { bg: "#E3F2FD", border: "#1565C0", text: "#0D47A1" },
+    blocked: { bg: "#F5F5F5", border: "#9E9E9E", text: "#555" },
+  };
+  const statusLabel: Record<TimelineRes["status"], string> = {
+    checked_in: "Checked-in", upcoming: "Aankomend", confirmed: "Bevestigd", blocked: "Geblokkeerd",
+  };
+
+  // Smart home demo state per lodge
+  const [climate, setClimate] = useState({ lodge_1: 21, lodge_2: 19 });
+  const [scene, setScene] = useState<{ lodge_1: string; lodge_2: string }>({ lodge_1: "Warm", lodge_2: "Uit" });
+  const [doorLocked, setDoorLocked] = useState<{ lodge_1: boolean; lodge_2: boolean }>({ lodge_1: true, lodge_2: true });
+
+  const tileShell: React.CSSProperties = { background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: "16px 18px" };
+  const lodgeName = (l: "lodge_1" | "lodge_2") => l === "lodge_1" ? "De Heide" : "De Eik";
+  const lodges: ("lodge_1" | "lodge_2")[] = ["lodge_1", "lodge_2"];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* Header bar — search + today + status */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Visueel overzicht</div>
+          <div style={{ fontSize: 13, color: C.light, marginTop: 2 }}>Boekingen, gasten en lodge-status in één blik</div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 8, background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "8px 14px", minWidth: 280 }}>
+          <span style={{ color: C.light, fontSize: 14 }}>⌕</span>
+          <input placeholder="Zoek gast, lodge of code…" style={{ border: "none", outline: "none", flex: 1, fontSize: 13, background: "transparent", color: C.text }} />
+        </div>
+        <button style={{ padding: "8px 14px", borderRadius: 10, border: `1px solid ${C.border}`, background: C.card, fontSize: 13, color: C.text, cursor: "pointer" }}>
+          ◀ Vandaag ▶
+        </button>
+        <button style={{ padding: "8px 14px", borderRadius: 10, border: `1px solid ${C.border}`, background: C.card, fontSize: 13, color: C.muted, cursor: "pointer" }}>
+          Selecteer datum
+        </button>
+        <span style={{ padding: "6px 14px", borderRadius: 8, background: "rgba(46,125,50,.08)", color: "#2E7D32", fontSize: 12, fontWeight: 500 }}>● Alle systemen online</span>
+      </div>
+
+      {/* Timeline + side panel */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 16, alignItems: "start" }}>
+        {/* Mews-style timeline */}
+        <div style={{ ...tileShell, padding: 0, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: `160px repeat(${COLS}, 1fr)`, borderBottom: `1px solid ${C.border}`, background: C.bg }}>
+            <div style={{ padding: "12px 16px", fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: .5 }}>Lodge</div>
+            {days.map((d, i) => {
+              const isToday = i === 0;
+              const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+              return (
+                <div key={i} style={{
+                  padding: "10px 6px", textAlign: "center",
+                  background: isToday ? "rgba(180,154,94,.10)" : isWeekend ? "rgba(0,0,0,.02)" : "transparent",
+                  borderLeft: `1px solid ${C.border}`,
+                }}>
+                  <div style={{ fontSize: 10, color: isToday ? C.gold : C.light, textTransform: "uppercase", letterSpacing: .5 }}>{dayLabel(d)}</div>
+                  <div style={{ fontSize: 12, color: isToday ? C.text : C.muted, fontWeight: isToday ? 600 : 500, marginTop: 2 }}>{dayNum(d)}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          {lodges.map(lodge => {
+            const rows = reservations.filter(r => r.lodge === lodge);
+            return (
+              <div key={lodge} style={{
+                display: "grid", gridTemplateColumns: `160px repeat(${COLS}, 1fr)`,
+                borderBottom: `1px solid ${C.border}`, minHeight: 78, position: "relative",
+              }}>
+                <div style={{ padding: "16px", borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#2E7D32" }} />
+                    <span style={{ fontSize: 13, fontWeight: 500, color: C.text }}>{lodgeName(lodge)}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: C.light }}>{climate[lodge]}° · {scene[lodge]} · {doorLocked[lodge] ? "🔒" : "🔓"}</div>
+                </div>
+                {/* Grid background cells (for day lines) */}
+                {days.map((d, i) => {
+                  const isToday = i === 0;
+                  const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                  return (
+                    <div key={i} style={{
+                      borderLeft: `1px solid ${C.border}`,
+                      background: isToday ? "rgba(180,154,94,.06)" : isWeekend ? "rgba(0,0,0,.015)" : "transparent",
+                    }} />
+                  );
+                })}
+                {/* Reservation bars (absolutely positioned over the grid area) */}
+                <div style={{ position: "absolute", left: 160, right: 0, top: 12, bottom: 12, pointerEvents: "none" }}>
+                  {rows.map(r => {
+                    const start = Math.max(0, r.startOffset);
+                    const end = Math.min(COLS, r.startOffset + r.nights);
+                    const visibleNights = end - start;
+                    if (visibleNights <= 0) return null;
+                    const leftPct = (start / COLS) * 100;
+                    const widthPct = (visibleNights / COLS) * 100;
+                    const s = statusStyle[r.status];
+                    const isSelected = selectedId === r.id;
+                    return (
+                      <div
+                        key={r.id}
+                        onClick={() => setSelectedId(r.id)}
+                        style={{
+                          position: "absolute", left: `calc(${leftPct}% + 4px)`, width: `calc(${widthPct}% - 8px)`,
+                          top: 0, bottom: 0, pointerEvents: "auto",
+                          background: s.bg, border: `1px solid ${s.border}`,
+                          borderLeft: `4px solid ${s.border}`,
+                          borderRadius: 8, cursor: "pointer",
+                          display: "flex", alignItems: "center", gap: 8, padding: "0 10px",
+                          fontSize: 12, color: s.text, fontWeight: 500,
+                          boxShadow: isSelected ? `0 0 0 2px ${C.gold}` : "none",
+                          overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
+                          transition: "box-shadow .15s",
+                        }}
+                      >
+                        {r.status === "blocked" ? <span>⊗</span> : <span>{doorLocked[r.lodge] ? "🔒" : "🔓"}</span>}
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{r.guest}</span>
+                        <span style={{ marginLeft: "auto", fontSize: 10, opacity: .7 }}>{r.nights}n</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Legend */}
+          <div style={{ display: "flex", gap: 18, padding: "10px 16px", background: C.bg, fontSize: 11, color: C.muted }}>
+            {(Object.keys(statusStyle) as TimelineRes["status"][]).map(k => (
+              <div key={k} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 12, height: 12, borderRadius: 3, background: statusStyle[k].bg, border: `1px solid ${statusStyle[k].border}` }} />
+                {statusLabel[k]}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Reservation detail panel */}
+        {selected && (
+          <div style={tileShell}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+              <span style={{ fontSize: 16, color: C.muted, cursor: "pointer" }}>←</span>
+              <div style={{ fontSize: 15, fontWeight: 500, color: C.text }}>{selected.guest}</div>
+              <span style={{ marginLeft: "auto", padding: "3px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500,
+                background: statusStyle[selected.status].bg, color: statusStyle[selected.status].text, border: `1px solid ${statusStyle[selected.status].border}` }}>
+                {statusLabel[selected.status]}
+              </span>
+            </div>
+
+            <div style={{ display: "flex", gap: 18, marginBottom: 14, fontSize: 12, color: C.muted, borderBottom: `1px solid ${C.border}`, paddingBottom: 10 }}>
+              <span style={{ color: C.text, borderBottom: `2px solid ${C.gold}`, paddingBottom: 8, marginBottom: -10 }}>Reservering</span>
+              <span>Gast</span>
+              <span>Notities (3)</span>
+            </div>
+
+            <div style={{ fontSize: 13, color: C.text, marginBottom: 4 }}>
+              {new Date(today.getTime() + selected.startOffset * 86400000).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
+              {" → "}
+              {new Date(today.getTime() + (selected.startOffset + selected.nights) * 86400000).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
+            </div>
+            <div style={{ fontSize: 12, color: C.light, marginBottom: 14 }}>
+              {selected.nights} nachten · {selected.adults}× volwassene{selected.children > 0 ? `, ${selected.children}× kind` : ""} · Lodge {lodgeName(selected.lodge)}
+            </div>
+
+            <div style={{ background: C.bg, borderRadius: 10, padding: "12px 14px", marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: C.gold, fontWeight: 600, textTransform: "uppercase", letterSpacing: .5, marginBottom: 6 }}>
+                💡 Smart tip
+              </div>
+              <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.5 }}>{selected.smartTip}</div>
+              <div style={{ fontSize: 10, color: C.light, marginTop: 8, fontStyle: "italic" }}>Samengevat door AI — controleer kritieke informatie.</div>
+            </div>
+
+            <div style={{ fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: .5, marginBottom: 6 }}>Reserveringsnotitie</div>
+            <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.5, marginBottom: 14 }}>{selected.note}</div>
+
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <button style={{
+                flex: 1, padding: "10px 0", borderRadius: 8, border: "none",
+                background: C.text, color: "#fff", fontSize: 13, fontWeight: 500, cursor: "pointer",
+              }}>{selected.status === "checked_in" ? "Check-out" : "Check-in"}</button>
+              <button style={{ padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.muted, fontSize: 13, cursor: "pointer" }}>⋮</button>
+              <button style={{ padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.muted, fontSize: 13, cursor: "pointer" }}>🖶</button>
+            </div>
+
+            <div style={{ marginTop: 14, padding: "10px 12px", borderRadius: 8, background: "rgba(180,154,94,.06)", fontSize: 11, color: C.gold }}>
+              Deurcode bij aankomst: <strong style={{ fontFamily: "monospace", fontSize: 13 }}>{selected.doorCode}</strong>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Home Assistant style smart-home tiles per lodge */}
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+          <div style={{ fontSize: 15, fontWeight: 500, color: C.text }}>Lodges · Smart Home</div>
+          <div style={{ fontSize: 11, color: C.light }}>Live · gekoppeld aan Home Assistant (demo modus)</div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          {lodges.map(l => {
+            const occupied = reservations.some(r => r.lodge === l && r.startOffset <= 0 && r.startOffset + r.nights > 0 && r.status !== "blocked");
+            return (
+              <div key={l} style={{ ...tileShell, padding: 0, overflow: "hidden" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", background: C.bg, borderBottom: `1px solid ${C.border}` }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: occupied ? "#2E7D32" : C.light }} />
+                    <span style={{ fontSize: 14, fontWeight: 500, color: C.text }}>{lodgeName(l)}</span>
+                    <span style={{ fontSize: 11, color: C.muted, padding: "2px 8px", borderRadius: 5, background: C.card, border: `1px solid ${C.border}` }}>
+                      {occupied ? "Bezet" : "Vrij"}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11, color: C.muted }}>5/5 devices online</span>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1, background: C.border }}>
+                  {/* Climate */}
+                  <div style={{ background: C.card, padding: "16px 16px 18px" }}>
+                    <div style={{ fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: .5 }}>Klimaat</div>
+                    <div style={{ fontSize: 26, fontWeight: 600, color: C.green, marginTop: 4, lineHeight: 1 }}>{climate[l]}°</div>
+                    <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>Setpoint · airco standby</div>
+                    <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+                      <button onClick={() => setClimate(c => ({ ...c, [l]: Math.max(5, c[l] - 1) }))} style={{ width: 30, height: 30, borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.text, cursor: "pointer" }}>−</button>
+                      <button onClick={() => setClimate(c => ({ ...c, [l]: Math.min(28, c[l] + 1) }))} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: C.green, color: "#fff", cursor: "pointer" }}>+</button>
+                    </div>
+                  </div>
+
+                  {/* Light / scene */}
+                  <div style={{ background: C.card, padding: "16px" }}>
+                    <div style={{ fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: .5 }}>Sfeer (Hue)</div>
+                    <div style={{ fontSize: 18, fontWeight: 500, color: C.text, marginTop: 6 }}>{scene[l]}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 5, marginTop: 10 }}>
+                      {([
+                        { name: "Warm", color: "linear-gradient(135deg,#F5C97E,#E8A84C)" },
+                        { name: "Helder", color: "linear-gradient(135deg,#FFF8E8,#F5EDD6)" },
+                        { name: "Dim", color: "linear-gradient(135deg,#D4A56A,#8B6B3D)" },
+                        { name: "Uit", color: "#D4D0C8" },
+                      ]).map(opt => (
+                        <button key={opt.name} onClick={() => setScene(s => ({ ...s, [l]: opt.name }))} title={opt.name} style={{
+                          height: 26, borderRadius: 7, cursor: "pointer",
+                          border: scene[l] === opt.name ? `2px solid ${C.gold}` : `1px solid ${C.border}`,
+                          background: opt.color,
+                        }} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Door / Nuki */}
+                  <div style={{ background: C.card, padding: "16px" }}>
+                    <div style={{ fontSize: 11, color: C.light, textTransform: "uppercase", letterSpacing: .5 }}>Deurslot (Nuki)</div>
+                    <div style={{ fontSize: 26, marginTop: 4 }}>{doorLocked[l] ? "🔒" : "🔓"}</div>
+                    <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{doorLocked[l] ? "Op slot" : "Open"}</div>
+                    <button onClick={() => setDoorLocked(d => ({ ...d, [l]: !d[l] }))} style={{
+                      marginTop: 10, padding: "6px 12px", borderRadius: 7, border: `1px solid ${C.border}`,
+                      background: C.card, fontSize: 11, color: C.text, cursor: "pointer",
+                    }}>{doorLocked[l] ? "Ontgrendel" : "Vergrendel"}</button>
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 1, background: C.border, borderTop: `1px solid ${C.border}` }}>
+                  {[
+                    { label: "Energie", value: occupied ? "4.2 kW" : "0.4 kW", sub: "vandaag" },
+                    { label: "Laadpaal", value: "Standby", sub: "11 kW max" },
+                    { label: "Wifi", value: "1.2k req/h", sub: "HuynenGast" },
+                    { label: "Schoonmaak", value: occupied ? "Pending" : "Klaar", sub: "do 10:30" },
+                  ].map((m, i) => (
+                    <div key={i} style={{ background: C.card, padding: "12px 14px" }}>
+                      <div style={{ fontSize: 10, color: C.light, textTransform: "uppercase", letterSpacing: .5 }}>{m.label}</div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginTop: 4 }}>{m.value}</div>
+                      <div style={{ fontSize: 10, color: C.muted, marginTop: 2 }}>{m.sub}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: "flex", gap: 8, padding: "12px 16px", borderTop: `1px solid ${C.border}` }}>
+                  {["Gereed voor gast", "Afwezig", "Vorstbeveiliging", "Onderhoud"].map(s => (
+                    <button key={s} style={{
+                      flex: 1, padding: "8px 0", borderRadius: 8, border: `1px solid ${C.border}`,
+                      background: C.card, fontSize: 11, color: C.muted, cursor: "pointer",
+                    }}>{s}</button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={{ padding: "12px 18px", borderRadius: 10, background: "rgba(180,154,94,.06)", border: "1px solid rgba(180,154,94,.18)", fontSize: 12, color: C.gold, textAlign: "center" }}>
+        Mockup — bedoeld als voorbeeld van een gecombineerd PMS + Home Assistant overzicht. Boekingbalken gebruiken live data uit <code>stays</code> indien aanwezig; smart-home tegels zijn demo en zullen later koppelen aan Home Assistant via de NUC.
+      </div>
+    </div>
   );
 }
