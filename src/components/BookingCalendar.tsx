@@ -11,6 +11,8 @@ const T = {
 
 type ICalEvent = { start: string; end: string };
 type PricingPeriod = { id: string; label: string; start_date: string; end_date: string; price_per_night: number };
+type AvailabilityDiscount = { id: string; days_before: number; discount_pct: number };
+type PricingData = { base_price: number; periods: PricingPeriod[]; availability_discounts: AvailabilityDiscount[] };
 type Lodge = "lodge_1" | "lodge_2";
 
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
@@ -34,17 +36,42 @@ function isBooked(iso: string, events: ICalEvent[]): boolean {
   return events.some(e => iso >= e.start && iso < e.end);
 }
 
-function priceForDate(iso: string, periods: PricingPeriod[]): { price: number; label: string } | null {
-  const p = periods.find(p => iso >= p.start_date && iso <= p.end_date);
-  return p ? { price: p.price_per_night, label: p.label } : null;
+function priceForDate(
+  iso: string,
+  pricingData: PricingData,
+  events: ICalEvent[],
+  today: string,
+): { price: number; label: string; discounted?: boolean } | null {
+  // Pick highest-priced matching period (TT/vakantie beats feestdag beats standaard)
+  const matches = pricingData.periods.filter(p => iso >= p.start_date && iso <= p.end_date);
+  const period = matches.sort((a, b) => b.price_per_night - a.price_per_night)[0];
+  let price = period ? period.price_per_night : pricingData.base_price;
+  const label = period ? period.label : "Standaardtarief";
+
+  if (price === 0) return null;
+
+  // Apply availability discount if date is unbooked and within the window
+  if (!isBooked(iso, events) && pricingData.availability_discounts.length > 0) {
+    const daysUntil = Math.ceil((new Date(iso).getTime() - new Date(today).getTime()) / 86400000);
+    // Find the most aggressive applicable discount (smallest days_before that still covers daysUntil)
+    const applicable = pricingData.availability_discounts
+      .filter(d => daysUntil <= d.days_before)
+      .sort((a, b) => a.days_before - b.days_before)[0];
+    if (applicable) {
+      price = Math.round(price * (1 - applicable.discount_pct / 100) * 100) / 100;
+      return { price, label, discounted: true };
+    }
+  }
+
+  return { price, label };
 }
 
 function MonthCalendar({
-  year, month, events, periods, checkIn, checkOut, hovered,
+  year, month, events, pricingData, checkIn, checkOut, hovered,
   onDayClick, onDayHover, today,
 }: {
   year: number; month: number;
-  events: ICalEvent[]; periods: PricingPeriod[];
+  events: ICalEvent[]; pricingData: PricingData;
   checkIn: string | null; checkOut: string | null; hovered: string | null;
   onDayClick: (iso: string) => void;
   onDayHover: (iso: string | null) => void;
@@ -86,7 +113,7 @@ function MonthCalendar({
         {days.map(({ iso, inMonth }) => {
           const isPast = iso < today;
           const booked = isBooked(iso, events);
-          const pricing = priceForDate(iso, periods);
+          const pricing = priceForDate(iso, pricingData, events, today);
           const isCheckIn = iso === checkIn;
           const isCheckOut = iso === checkOut;
           const inRange = checkIn && rangeEnd && iso > checkIn && iso < rangeEnd;
@@ -144,8 +171,8 @@ function MonthCalendar({
                 {inMonth ? new Date(iso).getDate() : ""}
               </span>
               {inMonth && !isPast && !booked && pricing && !isCheckIn && !isCheckOut && (
-                <span style={{ fontFamily: T.sans, fontSize: 9, color: inRange ? T.green : T.gold, fontWeight: 500, lineHeight: 1, marginTop: 2 }}>
-                  €{pricing.price}
+                <span style={{ fontFamily: T.sans, fontSize: 9, color: pricing.discounted ? "#E67E22" : (inRange ? T.green : T.gold), fontWeight: 500, lineHeight: 1, marginTop: 2 }}>
+                  €{Math.round(pricing.price)}
                 </span>
               )}
               {inMonth && booked && (
@@ -167,7 +194,7 @@ function MonthCalendar({
 export default function BookingCalendar() {
   const [lodge, setLodge] = useState<Lodge>("lodge_1");
   const [events, setEvents] = useState<ICalEvent[]>([]);
-  const [periods, setPeriods] = useState<PricingPeriod[]>([]);
+  const [pricingData, setPricingData] = useState<PricingData>({ base_price: 0, periods: [], availability_discounts: [] });
   const [loadingCal, setLoadingCal] = useState(true);
   const [monthOffset, setMonthOffset] = useState(0);
   const [checkIn, setCheckIn] = useState<string | null>(null);
@@ -187,15 +214,19 @@ export default function BookingCalendar() {
   const fetchData = useCallback(async (l: Lodge) => {
     setLoadingCal(true);
     setEvents([]);
-    setPeriods([]);
+    setPricingData({ base_price: 0, periods: [], availability_discounts: [] });
     try {
       const [icalRes, pricingRes] = await Promise.all([
         fetch(`/api/ical?lodge=${l}`),
         fetch(`/api/pricing?lodge=${l}`),
       ]);
-      const [icalData, pricingData] = await Promise.all([icalRes.json(), pricingRes.json()]);
-      setEvents(icalData.events || []);
-      setPeriods(pricingData.data || []);
+      const [icalJson, pricingJson] = await Promise.all([icalRes.json(), pricingRes.json()]);
+      setEvents(icalJson.events || []);
+      setPricingData({
+        base_price: pricingJson.base_price ?? 0,
+        periods: pricingJson.periods || [],
+        availability_discounts: pricingJson.availability_discounts || [],
+      });
     } catch {}
     setLoadingCal(false);
   }, []);
@@ -238,17 +269,18 @@ export default function BookingCalendar() {
 
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;
 
-  // Calculate total price from pricing periods
+  // Calculate total price applying holiday surcharges + availability discounts
   let totalPrice = 0;
-  let priceBreakdown: { label: string; nights: number; price: number }[] = [];
+  let priceBreakdown: { label: string; nights: number; price: number; discounted?: boolean }[] = [];
   if (checkIn && checkOut && nights > 0) {
-    const grouped: Record<string, { label: string; nights: number; price: number }> = {};
+    const grouped: Record<string, { label: string; nights: number; price: number; discounted?: boolean }> = {};
     let d = checkIn;
     while (d < checkOut) {
-      const p = priceForDate(d, periods);
-      const key = p ? p.label : "Standaardtarief";
+      const p = priceForDate(d, pricingData, events, today);
+      const key = p ? `${p.label}${p.discounted ? "__disc" : ""}` : "Standaardtarief";
       const ppu = p ? p.price : 0;
-      if (!grouped[key]) grouped[key] = { label: key, nights: 0, price: ppu };
+      const displayLabel = p ? p.label : "Standaardtarief";
+      if (!grouped[key]) grouped[key] = { label: displayLabel, nights: 0, price: ppu, discounted: p?.discounted };
       grouped[key].nights++;
       totalPrice += ppu;
       d = addDays(d, 1);
@@ -322,10 +354,10 @@ export default function BookingCalendar() {
         <>
           {/* Calendar grid */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 40, marginBottom: 28 }}>
-            <MonthCalendar year={month0.getFullYear()} month={month0.getMonth()} events={events} periods={periods}
+            <MonthCalendar year={month0.getFullYear()} month={month0.getMonth()} events={events} pricingData={pricingData}
               checkIn={checkIn} checkOut={checkOut} hovered={hovered}
               onDayClick={handleDayClick} onDayHover={setHovered} today={today} />
-            <MonthCalendar year={month1.getFullYear()} month={month1.getMonth()} events={events} periods={periods}
+            <MonthCalendar year={month1.getFullYear()} month={month1.getMonth()} events={events} pricingData={pricingData}
               checkIn={checkIn} checkOut={checkOut} hovered={hovered}
               onDayClick={handleDayClick} onDayHover={setHovered} today={today} />
           </div>
@@ -413,8 +445,12 @@ export default function BookingCalendar() {
                           padding: "10px 16px", borderBottom: i < priceBreakdown.length - 1 ? `1px solid ${T.border}` : "none",
                           fontFamily: T.sans, fontSize: 13,
                         }}>
-                          <span style={{ color: T.text }}>{b.label} <span style={{ color: T.muted }}>× {b.nights} nacht{b.nights !== 1 ? "en" : ""}</span></span>
-                          <span style={{ fontWeight: 600, color: T.green }}>€ {(b.price * b.nights).toFixed(0)}</span>
+                          <span style={{ color: T.text }}>
+                            {b.label}
+                            {b.discounted && <span style={{ color: "#E67E22", fontSize: 10, marginLeft: 6, fontWeight: 600 }}>LAST-MINUTE</span>}
+                            {" "}<span style={{ color: T.muted }}>× {b.nights} nacht{b.nights !== 1 ? "en" : ""}</span>
+                          </span>
+                          <span style={{ fontWeight: 600, color: b.discounted ? "#E67E22" : T.green }}>€ {(b.price * b.nights).toFixed(0)}</span>
                         </div>
                       ))}
                       <div style={{
