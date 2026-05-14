@@ -190,20 +190,18 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", minHeight: "100vh", fontFamily: font, background: "#F0F1F3" }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", flexDirection: "column", fontFamily: font, background: "#F0F1F3" }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-      {/* Sidebar */}
-      <div style={{ width: 248, background: "#fff", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", flexShrink: 0, zIndex: 10 }}>
-        {/* Brand */}
-        <div style={{ padding: "22px 24px 18px" }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", letterSpacing: 0.2 }}>Huis ter Huynen</div>
-          <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 3, letterSpacing: 0.3, textTransform: "uppercase" }}>Backoffice</div>
-        </div>
-        <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px 12px" }} />
 
-        {/* Nav */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "0 12px" }}>
-          {/* Nav items */}
+      {/* Top nav */}
+      <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", padding: "0 32px", height: 56, flexShrink: 0, zIndex: 20 }}>
+        {/* Brand */}
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#111827", letterSpacing: 0.1, marginRight: 40, whiteSpace: "nowrap" }}>
+          Huis ter Huynen
+        </div>
+
+        {/* Nav items */}
+        <div style={{ display: "flex", alignItems: "center", flex: 1, gap: 2 }}>
           {navSections.map(section => {
             const isSingleItem = !section.direct && section.items.length === 1 && "id" in section.items[0];
             const singleTarget = isSingleItem ? (section.items[0] as NavItem).id : undefined;
@@ -229,49 +227,46 @@ export default function AdminDashboard() {
             };
 
             return (
-              <div key={section.id} style={{ marginBottom: 2 }}>
-                {/* Section header */}
+              <div key={section.id} style={{ position: "relative" }}>
                 <div onClick={handleHeaderClick} style={{
-                  padding: "9px 14px",
-                  fontSize: 14, fontWeight: 600,
-                  color: sectionActive ? "#4F46E5" : "#374151",
-                  letterSpacing: -0.1,
-                  cursor: "pointer",
-                  borderRadius: 8,
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  background: sectionActive && isDirectNav ? "#EEF2FF" : "transparent",
+                  padding: "0 14px", height: 56, display: "flex", alignItems: "center", gap: 5,
+                  fontSize: 14, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap",
+                  color: sectionActive ? "#111827" : "#6B7280",
+                  borderBottom: sectionActive ? "2px solid #111827" : "2px solid transparent",
                   userSelect: "none",
                 }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                    <span style={{ fontSize: 15, lineHeight: 1 }}>{section.icon}</span>
-                    {section.label}
-                  </span>
+                  {section.label}
                   {!isDirectNav && (
                     <span style={{
-                      fontSize: 9, color: sectionActive ? "#4F46E5" : "#9CA3AF",
+                      fontSize: 8, color: "#9CA3AF",
                       transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-                      transition: "transform 0.18s ease",
-                      display: "inline-block",
+                      transition: "transform 0.15s ease",
+                      display: "inline-block", marginTop: 1,
                     }}>▼</span>
                   )}
                 </div>
 
-                {/* Sub-items */}
+                {/* Dropdown */}
                 {expanded && (
-                  <div style={{ marginLeft: 14, paddingLeft: 12, borderLeft: "2px solid #E5E7EB", marginBottom: 4 }}>
+                  <div style={{
+                    position: "absolute", top: 56, left: 0,
+                    background: "#fff", border: "1px solid #E5E7EB", borderRadius: 8,
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.08)", minWidth: 180,
+                    padding: "6px 0", zIndex: 100,
+                  }}>
                     {section.items.map((item, idx) => {
                       if ("groupLabel" in item) {
                         return (
-                          <div key={idx} style={{ marginBottom: 4 }}>
-                            <div style={{ padding: "6px 10px 3px", fontSize: 10, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.7 }}>
+                          <div key={idx}>
+                            <div style={{ padding: "8px 16px 4px", fontSize: 10, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.7 }}>
                               {item.groupLabel}
                             </div>
                             {item.sub.map(sub => (
-                              <div key={sub.id} onClick={() => setTab(sub.id)} style={{
-                                padding: "7px 10px 7px 14px", borderRadius: 7, cursor: "pointer",
+                              <div key={sub.id} onClick={() => { setTab(sub.id); setExpandedSection(null); }} style={{
+                                padding: "9px 16px 9px 24px", cursor: "pointer",
                                 fontSize: 13, fontWeight: tab === sub.id ? 600 : 400,
-                                color: tab === sub.id ? "#4F46E5" : "#6B7280",
-                                background: tab === sub.id ? "#EEF2FF" : "transparent",
+                                color: tab === sub.id ? "#111827" : "#374151",
+                                background: tab === sub.id ? "#F9FAFB" : "transparent",
                               }}>
                                 {sub.id.endsWith("_iot") ? "⚡ " : ""}{sub.label}
                               </div>
@@ -280,11 +275,11 @@ export default function AdminDashboard() {
                         );
                       }
                       return (
-                        <div key={item.id} onClick={() => setTab(item.id)} style={{
-                          padding: "7px 10px", borderRadius: 7, cursor: "pointer", marginBottom: 1,
+                        <div key={item.id} onClick={() => { setTab(item.id); setExpandedSection(null); }} style={{
+                          padding: "9px 16px", cursor: "pointer",
                           fontSize: 13, fontWeight: tab === item.id ? 600 : 400,
-                          color: tab === item.id ? "#4F46E5" : "#6B7280",
-                          background: tab === item.id ? "#EEF2FF" : "transparent",
+                          color: tab === item.id ? "#111827" : "#374151",
+                          background: tab === item.id ? "#F9FAFB" : "transparent",
                         }}>
                           {item.label}
                         </div>
@@ -297,14 +292,19 @@ export default function AdminDashboard() {
           })}
         </div>
 
-        <div style={{ height: 1, background: "#F3F4F6", margin: "8px 20px 0" }} />
-        <div onClick={logout} style={{ padding: "14px 26px 20px", fontSize: 13, fontWeight: 500, color: "#9CA3AF", cursor: "pointer" }}>
+        {/* Logout */}
+        <div onClick={logout} style={{ fontSize: 13, fontWeight: 500, color: "#9CA3AF", cursor: "pointer", whiteSpace: "nowrap" }}>
           Uitloggen
         </div>
       </div>
 
+      {/* Backdrop to close dropdown on outside click */}
+      {expandedSection !== null && (
+        <div onClick={() => setExpandedSection(null)} style={{ position: "fixed", inset: 0, zIndex: 10 }} />
+      )}
+
       {/* Content */}
-      <div style={{ flex: 1, padding: "28px 32px", overflowY: "auto", background: "#F0F1F3" }}>
+      <div style={{ flex: 1, padding: "28px 32px", overflowY: "auto", background: "#F0F1F3", zIndex: 15 }}>
         {loading ? (
           <div style={{ fontSize: 14, color: C.muted, padding: 40, textAlign: "center" }}>Laden...</div>
         ) : (
