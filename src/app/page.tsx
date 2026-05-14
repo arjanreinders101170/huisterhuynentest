@@ -168,7 +168,7 @@ export default function LandingPage() {
           alt="Boutique Lodge De Heide van Huis ter Huynen, omgeven door Drentse heide en bos in Zeijen"
           fill
           priority
-          quality={65}
+          quality={45}
           sizes="100vw"
           style={{ objectFit: "cover", objectPosition: "center 40%", opacity: 0.52 }}
         />
@@ -555,12 +555,12 @@ export default function LandingPage() {
                       {w.afstand}
                     </span>
                   </div>
-                  <h4 style={{
+                  <h3 style={{
                     fontFamily: T.serif, fontSize: 17, color: T.text,
                     margin: "0 0 4px", fontWeight: 700,
                   }}>
                     {w.naam}
-                  </h4>
+                  </h3>
                   <div style={{
                     fontFamily: T.sans, fontSize: 12, color: T.muted,
                     fontWeight: 500, marginBottom: 10,
@@ -768,12 +768,12 @@ export default function LandingPage() {
                   }}>{c.icon}</span>
                 </div>
                 <div style={{ padding: "20px 20px 22px" }}>
-                  <h4 style={{
+                  <h3 style={{
                     fontFamily: T.serif, fontSize: 16, fontWeight: 700,
                     color: T.text, margin: "0 0 4px",
                   }}>
                     {c.cat}
-                  </h4>
+                  </h3>
                   <div style={{
                     fontFamily: T.sans, fontSize: 11, color: c.accent,
                     fontWeight: 600, marginBottom: 14, textTransform: "uppercase", letterSpacing: ".04em",
@@ -945,7 +945,7 @@ export default function LandingPage() {
               </div>
               <p style={{
                 fontFamily: T.sans, fontSize: 13, fontWeight: 300,
-                lineHeight: 1.7, margin: "0 0 16px", color: "rgba(255,255,255,.5)",
+                lineHeight: 1.7, margin: "0 0 16px", color: "rgba(255,255,255,.75)",
               }}>
                 Twee boutique lodges midden in het hart van Drenthe. Natuur, privacy en luxe — op loopafstand van de heide.
               </p>
@@ -1013,7 +1013,7 @@ export default function LandingPage() {
                 ].map((link, i) => (
                   <a key={i} href={link.href} style={{
                     fontFamily: T.sans, fontSize: 13, fontWeight: 300,
-                    color: "rgba(255,255,255,.6)", textDecoration: "none",
+                    color: "rgba(255,255,255,.8)", textDecoration: "none",
                     transition: "color .15s",
                   }}>
                     {link.label}
@@ -1028,10 +1028,10 @@ export default function LandingPage() {
             display: "flex", justifyContent: "space-between", alignItems: "center",
             flexWrap: "wrap", gap: 12, paddingTop: 28,
             fontFamily: T.sans, fontSize: 12, fontWeight: 300,
-            color: "rgba(255,255,255,.3)",
+            color: "rgba(255,255,255,.6)",
           }}>
             <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
-            <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.2)" }}>
+            <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.55)" }}>
               Boutique Lodge · KVK: 96382600
             </span>
           </div>

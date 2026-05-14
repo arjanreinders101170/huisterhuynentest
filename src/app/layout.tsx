@@ -154,6 +154,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
+        {/* LCP hero preload — ensures fetchpriority=high reaches the browser early */}
+        {/* eslint-disable-next-line @next/next/no-head-element */}
+        <link
+          rel="preload"
+          as="image"
+          href="/_next/image?url=%2Flodge-heide.jpg&w=828&q=45"
+        />
+
         {/* PWA — iOS */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

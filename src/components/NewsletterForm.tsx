@@ -116,7 +116,7 @@ export function NewsletterForm() {
             flex: "1 1 auto",
             padding: "13px 32px",
             background: T.gold,
-            color: T.green,
+            color: "#2A2418",
             border: "none", borderRadius: 10,
             fontFamily: T.sans, fontSize: 14, fontWeight: 700,
             cursor: status === "loading" ? "not-allowed" : "pointer",
@@ -136,7 +136,7 @@ export function NewsletterForm() {
         </p>
       )}
       <p style={{
-        fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.35)",
+        fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.7)",
         textAlign: "center", marginTop: 14, fontWeight: 300,
       }}>
         Geen spam. Alleen de opening en seizoensnieuws. Afmelden kan altijd.
