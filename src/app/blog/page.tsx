@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { getPublicSupabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Blog & Verhalen — Drenthe, natuur en het leven op de heide",
@@ -15,31 +16,46 @@ export const metadata: Metadata = {
   },
 };
 
+export const revalidate = 60;
+
 const T = {
-  bg: "#EAE3D2",
-  card: "#FDFBF6",
-  green: "#2F4F3E",
-  text: "#2A2418",
-  muted: "#8A7D6A",
-  gold: "#B49A5E",
+  bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
+  text: "#2A2418", muted: "#8A7D6A", gold: "#B49A5E",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
-const articles = [
-  {
-    slug: "waarom-zeijen",
-    titel: "Waarom ik koos voor Zeijen — het verhaal achter mijn twee lodges",
-    intro:
-      "Ik ben geen hotelier. Ik zit in vastgoed, en ik weet hoe locaties werken. Maar dit project begon ergens anders — bij een gevoel.",
-    datum: "Mei 2026",
-    leestijd: "4 minuten",
-    categorie: "Verhaal",
-  },
-];
+type BlogPost = {
+  slug: string;
+  titel: string;
+  intro: string;
+  categorie: string;
+  leestijd: string;
+  gepubliceerd_op: string | null;
+};
 
-export default function BlogOverzicht() {
+async function getPosts(): Promise<BlogPost[]> {
+  try {
+    const { data } = await getPublicSupabase()
+      .from("blog_posts")
+      .select("slug, titel, intro, categorie, leestijd, gepubliceerd_op")
+      .eq("gepubliceerd", true)
+      .order("gepubliceerd_op", { ascending: false });
+    return data || [];
+  } catch {
+    return [];
+  }
+}
+
+function fmtDate(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("nl-NL", { month: "long", year: "numeric" });
+}
+
+export default async function BlogOverzicht() {
+  const posts = await getPosts();
+
   return (
     <div style={{ background: T.bg, minHeight: "100vh" }}>
 
@@ -60,7 +76,7 @@ export default function BlogOverzicht() {
           </h1>
           <p style={{
             fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.65)",
-            fontWeight: 300, margin: 0, lineHeight: 1.7, maxWidth: 520, marginLeft: "auto", marginRight: "auto",
+            fontWeight: 300, margin: "0 auto", lineHeight: 1.7, maxWidth: 520,
           }}>
             Verhalen over de lodges, reistips voor de omgeving van Zeijen en
             alles wat Drenthe het hele jaar door te bieden heeft.
@@ -68,79 +84,62 @@ export default function BlogOverzicht() {
         </div>
       </div>
 
-      {/* Artikel kaartjes */}
+      {/* Artikelen */}
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "56px 24px" }}>
-        <div style={{ display: "grid", gap: 24 }}>
-          {articles.map((a) => (
-            <Link
-              key={a.slug}
-              href={`/blog/${a.slug}`}
-              style={{ textDecoration: "none" }}
-            >
-              <article style={{
-                background: T.card,
-                border: `1px solid ${T.border}`,
-                borderRadius: 16,
-                padding: "28px 32px",
-                display: "grid",
-                gridTemplateColumns: "1fr auto",
-                gap: "0 32px",
-                alignItems: "start",
-                cursor: "pointer",
-                transition: "box-shadow .18s, transform .18s",
-              }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(47,79,62,.10)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
-                  (e.currentTarget as HTMLElement).style.transform = "none";
-                }}
-              >
-                <div>
-                  <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12 }}>
-                    <span style={{
-                      fontFamily: T.sans, fontSize: 10, fontWeight: 700,
-                      color: T.green, background: "rgba(47,79,62,.08)",
-                      padding: "3px 10px", borderRadius: 20, textTransform: "uppercase", letterSpacing: 1,
-                    }}>
-                      {a.categorie}
-                    </span>
-                    <span style={{ fontFamily: T.sans, fontSize: 12, color: T.muted }}>
-                      {a.datum} · {a.leestijd}
-                    </span>
-                  </div>
-                  <h2 style={{
-                    fontFamily: T.serif, fontSize: "clamp(18px, 2.5vw, 22px)",
-                    color: T.text, margin: "0 0 10px", fontWeight: 700, lineHeight: 1.3,
-                  }}>
-                    {a.titel}
-                  </h2>
-                  <p style={{
-                    fontFamily: T.sans, fontSize: 14, color: T.muted,
-                    margin: 0, lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    {a.intro}
-                  </p>
-                </div>
-                <div style={{
-                  fontFamily: T.sans, fontSize: 22, color: T.gold,
-                  alignSelf: "center", flexShrink: 0,
+        {posts.length === 0 ? (
+          <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, textAlign: "center" }}>
+            Binnenkort verschijnen hier de eerste verhalen.
+          </p>
+        ) : (
+          <div style={{ display: "grid", gap: 24 }}>
+            {posts.map((a) => (
+              <Link key={a.slug} href={`/blog/${a.slug}`} style={{ textDecoration: "none" }}>
+                <article style={{
+                  background: T.card, border: `1px solid ${T.border}`,
+                  borderRadius: 16, padding: "28px 32px",
+                  display: "grid", gridTemplateColumns: "1fr auto",
+                  gap: "0 32px", alignItems: "center", cursor: "pointer",
                 }}>
-                  →
-                </div>
-              </article>
-            </Link>
-          ))}
-        </div>
+                  <div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 12 }}>
+                      <span style={{
+                        fontFamily: T.sans, fontSize: 10, fontWeight: 700,
+                        color: T.green, background: "rgba(47,79,62,.08)",
+                        padding: "3px 10px", borderRadius: 20,
+                        textTransform: "uppercase" as const, letterSpacing: 1,
+                      }}>
+                        {a.categorie}
+                      </span>
+                      <span style={{ fontFamily: T.sans, fontSize: 12, color: T.muted }}>
+                        {fmtDate(a.gepubliceerd_op)} · {a.leestijd}
+                      </span>
+                    </div>
+                    <h2 style={{
+                      fontFamily: T.serif, fontSize: "clamp(18px, 2.5vw, 22px)",
+                      color: T.text, margin: "0 0 10px", fontWeight: 700, lineHeight: 1.3,
+                    }}>
+                      {a.titel}
+                    </h2>
+                    <p style={{
+                      fontFamily: T.sans, fontSize: 14, color: T.muted,
+                      margin: 0, lineHeight: 1.7, fontWeight: 300,
+                    }}>
+                      {a.intro}
+                    </p>
+                  </div>
+                  <div style={{ fontFamily: T.sans, fontSize: 22, color: T.gold, flexShrink: 0 }}>
+                    →
+                  </div>
+                </article>
+              </Link>
+            ))}
+          </div>
+        )}
 
-        {/* Terug naar home */}
         <div style={{ marginTop: 40, textAlign: "center" }}>
           <Link href="/" style={{
             fontFamily: T.sans, fontSize: 13, color: T.muted,
-            textDecoration: "none", borderBottom: `1px solid ${T.border}`,
-            paddingBottom: 2,
+            textDecoration: "none", borderBottom: `1px solid ${T.border}`, paddingBottom: 2,
           }}>
             ← Terug naar home
           </Link>
