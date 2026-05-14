@@ -17,7 +17,7 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
-const SITE_URL = "https://huisterhuynen.nl";
+const SITE_URL = "https://www.huisterhuynen.nl";
 const OG_IMAGE = `${SITE_URL}/lodge-heide.jpg`;
 
 export const metadata: Metadata = {
