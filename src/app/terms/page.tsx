@@ -1,5 +1,5 @@
 "use client";
-const C = { bg: "#EAE3D2", text: "#2A2418", muted: "#8A7D6A", gold: "#B49A5E", border: "#D5C9B0" };
+const C = { bg: "#EAE3D2", text: "#2A2418", muted: "#5A534C", gold: "#B49A5E", border: "#D5C9B0" };
 
 const S = {
   h1: { fontFamily: "Georgia,serif", fontSize: 36, marginBottom: 12 } as React.CSSProperties,

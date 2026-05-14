@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 const C = {
-  bg: "#EAE3D2", card: "#FDFBF6", text: "#2A2418", muted: "#8A7D6A",
+  bg: "#EAE3D2", card: "#FDFBF6", text: "#2A2418", muted: "#5A534C",
   gold: "#B49A5E", green: "#2F4F3E", border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",

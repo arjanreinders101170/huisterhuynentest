@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
-  gold: "#B49A5E", text: "#2A2418", muted: "#8A7D6A", border: "#E0D8C8",
+  gold: "#B49A5E", text: "#2A2418", muted: "#5A534C", border: "#E0D8C8",
 };
 
 function OfferteForm() {

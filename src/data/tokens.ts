@@ -6,7 +6,7 @@ export const T = {
   green2: "#3A6350",
   gold: "#B49A5E",
   text: "#2A2418",
-  muted: "#8A7D6A",
+  muted: "#5A534C",
   border: "#E0D8C8",
   serif: "var(--font-playfair), Georgia, serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",

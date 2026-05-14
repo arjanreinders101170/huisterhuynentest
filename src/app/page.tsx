@@ -36,7 +36,7 @@ const T = {
   green: "#2F4F3E",
   green2: "#3A6350",
   text: "#2A2418",
-  muted: "#8A7D6A",
+  muted: "#5A534C",
   gold: "#B49A5E",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
@@ -52,7 +52,7 @@ function Eyebrow({ children }: { children: string }) {
   return (
     <div style={{
       fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-      color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase",
+      color: T.green, letterSpacing: "2.5px", textTransform: "uppercase",
       marginBottom: 12,
     }}>
       {children}
@@ -98,7 +98,7 @@ function BookingSection() {
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.green, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>
             Reserveren
           </div>
           <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 4vw, 40px)", color: T.text, margin: "0 0 6px", fontWeight: 700, lineHeight: 1.15 }}>
@@ -151,7 +151,7 @@ export default function LandingPage() {
     : FALLBACK_REVIEWS;
 
   return (
-    <div style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
+    <main style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
 
       {/* ══════════════════════════════════════════
           HERO
@@ -212,7 +212,7 @@ export default function LandingPage() {
             <a href="#reserveren" style={{
               padding: "17px 52px",
               background: T.gold,
-              color: T.green,
+              color: "#1A2E24",
               border: "none",
               borderRadius: 12,
               fontSize: 16, fontWeight: 700, cursor: "pointer",
@@ -385,7 +385,7 @@ export default function LandingPage() {
                   />
                   <div style={{
                     position: "absolute", top: 16, left: 16,
-                    background: T.gold, color: T.green,
+                    background: T.gold, color: "#1A2E24",
                     fontFamily: T.sans, fontSize: 11, fontWeight: 700,
                     letterSpacing: "1.5px", textTransform: "uppercase",
                     padding: "5px 12px", borderRadius: 6,
@@ -495,7 +495,7 @@ export default function LandingPage() {
           <div style={{ marginBottom: 56 }}>
             <div style={{
               fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-              color: T.gold, letterSpacing: "2px", textTransform: "uppercase",
+              color: T.green, letterSpacing: "2px", textTransform: "uppercase",
               marginBottom: 20,
             }}>
               Direct vanuit de lodge te belopen
@@ -562,7 +562,7 @@ export default function LandingPage() {
                     {w.naam}
                   </h4>
                   <div style={{
-                    fontFamily: T.sans, fontSize: 12, color: T.gold,
+                    fontFamily: T.sans, fontSize: 12, color: T.muted,
                     fontWeight: 500, marginBottom: 10,
                   }}>
                     {w.lengte}
@@ -590,7 +590,7 @@ export default function LandingPage() {
             }}>
               <div style={{
                 fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-                color: T.gold, letterSpacing: "2px", textTransform: "uppercase",
+                color: "white", letterSpacing: "2px", textTransform: "uppercase",
                 marginBottom: 14,
               }}>
                 Op 15 min rijden
@@ -623,7 +623,7 @@ export default function LandingPage() {
             }}>
               <div style={{
                 fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-                color: T.gold, letterSpacing: "2px", textTransform: "uppercase",
+                color: T.green, letterSpacing: "2px", textTransform: "uppercase",
                 marginBottom: 14,
               }}>
                 Op 25 min rijden
@@ -658,7 +658,7 @@ export default function LandingPage() {
           }}>
             <div style={{
               fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-              color: T.gold, letterSpacing: "2px", textTransform: "uppercase",
+              color: T.green, letterSpacing: "2px", textTransform: "uppercase",
               marginBottom: 20,
             }}>
               Elk seizoen zijn eigen magie
@@ -900,7 +900,7 @@ export default function LandingPage() {
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
           <div style={{
             fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-            color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase",
+            color: "rgba(255,255,255,.9)", letterSpacing: "2.5px", textTransform: "uppercase",
             marginBottom: 14,
           }}>
             Opening 1 januari 2027
@@ -1037,6 +1037,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }
