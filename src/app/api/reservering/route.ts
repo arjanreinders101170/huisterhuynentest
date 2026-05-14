@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       totalNum = Math.max(0, totalNum - discountAmt);
       promoInfo = { label: promoCode.toUpperCase(), discount: discountAmt };
       // Atomic increment — fire-and-forget
-      getSupabase().rpc("increment_discount_usage", { code_id: result.id }).catch(() => {});
+      void getSupabase().rpc("increment_discount_usage", { code_id: result.id });
     }
   }
 
