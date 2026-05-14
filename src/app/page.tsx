@@ -168,6 +168,7 @@ export default function LandingPage() {
           alt="Boutique Lodge De Heide van Huis ter Huynen, omgeven door Drentse heide en bos in Zeijen"
           fill
           priority
+          quality={65}
           sizes="100vw"
           style={{ objectFit: "cover", objectPosition: "center 40%", opacity: 0.52 }}
         />
@@ -378,6 +379,7 @@ export default function LandingPage() {
                     src={lodge.img}
                     alt={lodge.alt}
                     fill
+                    quality={65}
                     sizes="(max-width: 800px) 100vw, 50vw"
                     style={{ objectFit: "cover", objectPosition: "center 40%" }}
                   />
