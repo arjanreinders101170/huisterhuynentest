@@ -48,7 +48,7 @@ const COMPANY = {
   website: "www.huisterhuynen.nl",
   kvk: "96382600",
   btw: "",    // Arjan vult aan
-  iban: "",   // Arjan vult aan
+  iban: "NL20 INGB 0114 8757 90",
 };
 
 export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
