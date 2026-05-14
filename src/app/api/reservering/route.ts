@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSupabase } from "@/lib/supabase";
+import { reserveringSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
@@ -9,6 +11,40 @@ const LODGE_LABELS: Record<string, string> = {
   lodge_2: "Lodge De Eik",
 };
 
+type DiscountCode = {
+  id: string;
+  type: "percentage" | "fixed";
+  waarde: number;
+  omschrijving: string | null;
+  max_gebruik: number | null;
+  gebruik_count: number;
+  geldig_van: string | null;
+  geldig_tot: string | null;
+  min_nachten: number | null;
+  actief: boolean;
+};
+
+async function validateAndApplyCode(
+  code: string,
+  nights: number,
+): Promise<{ valid: true; discount: number; type: string; waarde: number; omschrijving: string | null; id: string } | { valid: false }> {
+  const { data } = await getSupabase()
+    .from("discount_codes")
+    .select("*")
+    .ilike("code", code)
+    .single<DiscountCode>();
+
+  if (!data || !data.actief) return { valid: false };
+
+  const today = new Date().toISOString().slice(0, 10);
+  if (data.geldig_van && today < data.geldig_van) return { valid: false };
+  if (data.geldig_tot && today > data.geldig_tot) return { valid: false };
+  if (data.max_gebruik !== null && data.gebruik_count >= data.max_gebruik) return { valid: false };
+  if (data.min_nachten !== null && nights < data.min_nachten) return { valid: false };
+
+  return { valid: true, discount: data.waarde, type: data.type, waarde: data.waarde, omschrijving: data.omschrijving, id: data.id };
+}
+
 function esc(s: string): string {
   return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 }
@@ -18,24 +54,40 @@ function fmtDate(iso: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  let body: Record<string, string>;
+  let rawBody: unknown;
   try {
-    body = await request.json();
+    rawBody = await request.json();
   } catch {
     return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
   }
 
-  const { naam, email, lodge, checkIn, checkOut, nights, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren } = body;
-
-  if (!naam || !email || !email.includes("@") || !lodge || !checkIn || !checkOut) {
-    return NextResponse.json({ error: "Vereiste velden ontbreken" }, { status: 400 });
+  const parsed = reserveringSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
   }
+
+  const { naam, email, lodge, checkIn, checkOut, nights, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode } = parsed.data;
 
   const lodgeLabel = LODGE_LABELS[lodge] || lodge;
   const checkInFmt = fmtDate(checkIn);
   const checkOutFmt = fmtDate(checkOut);
   const nightsNum = parseInt(nights) || 0;
-  const totalNum = parseFloat(totalPrice) || 0;
+  let totalNum = parseFloat(totalPrice) || 0;
+
+  // Server-side promo code validation and use-count increment
+  let promoInfo: { label: string; discount: number } | null = null;
+  if (promoCode) {
+    const result = await validateAndApplyCode(promoCode, nightsNum).catch(() => ({ valid: false as const }));
+    if (result.valid) {
+      const discountAmt = result.type === "percentage"
+        ? Math.round(totalNum * result.waarde / 100 * 100) / 100
+        : Math.min(result.waarde, totalNum);
+      totalNum = Math.max(0, totalNum - discountAmt);
+      promoInfo = { label: promoCode.toUpperCase(), discount: discountAmt };
+      // Atomic increment — fire-and-forget
+      getSupabase().rpc("increment_discount_usage", { code_id: result.id }).catch(() => {});
+    }
+  }
 
   const resendKey = process.env.RESEND_API_KEY;
   if (!resendKey) {
@@ -78,6 +130,7 @@ export async function POST(request: NextRequest) {
       <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Aantal personen</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(aantalPersonen || "–")}</td></tr>
       <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Huisdieren</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(huisdieren === "ja" ? "Ja 🐾" : "Nee")}</td></tr>
       <tr><td style="padding:8px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Tarief</td><td style="padding:8px 0;text-align:right;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">${esc(priceLabel || "")}</td></tr>
+      ${promoInfo ? `<tr><td style="padding:8px 0;color:#2E7D32;border-bottom:1px solid #E0D8C8;">Promotiecode ${esc(promoInfo.label)}</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2E7D32;border-bottom:1px solid #E0D8C8;">−€ ${promoInfo.discount.toFixed(2)}</td></tr>` : ""}
       <tr><td style="padding:8px 0;color:#8A7D6A;">Geschatte prijs</td><td style="padding:8px 0;text-align:right;font-weight:bold;color:#2F4F3E;font-size:18px;">€ ${totalNum.toFixed(2)}</td></tr>
     </table>
   </td></tr></table>
@@ -146,6 +199,7 @@ export async function POST(request: NextRequest) {
       <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Vertrek</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(checkOutFmt)}</td></tr>
       <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Aantal personen</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(aantalPersonen || "–")}</td></tr>
       <tr><td style="padding:6px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">Huisdieren</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2A2418;border-bottom:1px solid #E0D8C8;">${esc(huisdieren === "ja" ? "Ja" : "Nee")}</td></tr>
+      ${promoInfo ? `<tr><td style="padding:6px 0;color:#2E7D32;border-bottom:1px solid #E0D8C8;">Promotiecode ${esc(promoInfo.label)}</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2E7D32;border-bottom:1px solid #E0D8C8;">−€ ${promoInfo.discount.toFixed(2)}</td></tr>` : ""}
       <tr><td style="padding:6px 0;color:#8A7D6A;">Geschatte prijs</td><td style="padding:6px 0;text-align:right;font-weight:bold;color:#2F4F3E;font-size:16px;">€ ${totalNum.toFixed(2)}</td></tr>
     </table>
   </td></tr></table>

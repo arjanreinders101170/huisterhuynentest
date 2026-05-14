@@ -209,6 +209,18 @@ export default function BookingCalendar() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const [promoCode, setPromoCode] = useState("");
+  const [promoOpen, setPromoOpen] = useState(false);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoResult, setPromoResult] = useState<{
+    valid: boolean;
+    id?: string;
+    type?: "percentage" | "fixed";
+    waarde?: number;
+    omschrijving?: string;
+    error?: string;
+  } | null>(null);
+
   const today = toISO(new Date()) < BOOKINGS_OPEN_FROM ? BOOKINGS_OPEN_FROM : toISO(new Date());
 
   const fetchData = useCallback(async (l: Lodge) => {
@@ -288,8 +300,34 @@ export default function BookingCalendar() {
     priceBreakdown = Object.values(grouped);
   }
 
+  const promoDiscount = promoResult?.valid && totalPrice > 0
+    ? promoResult.type === "percentage"
+      ? Math.round(totalPrice * promoResult.waarde! / 100 * 100) / 100
+      : Math.min(promoResult.waarde!, totalPrice)
+    : 0;
+  const finalPrice = totalPrice - promoDiscount;
+
   const hasPrice = totalPrice > 0;
   const canSubmit = checkIn && checkOut && naam.trim() && email.includes("@") && !sending;
+
+  const validatePromo = async () => {
+    const code = promoCode.trim().toUpperCase();
+    if (!code) return;
+    setPromoLoading(true);
+    setPromoResult(null);
+    try {
+      const res = await fetch("/api/discount/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, nights }),
+      });
+      const data = await res.json();
+      setPromoResult(data);
+    } catch {
+      setPromoResult({ valid: false, error: "Kon code niet controleren" });
+    }
+    setPromoLoading(false);
+  };
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -306,11 +344,12 @@ export default function BookingCalendar() {
           checkIn,
           checkOut,
           nights: String(nights),
-          totalPrice: String(totalPrice),
+          totalPrice: String(finalPrice),
           priceLabel,
           bericht: bericht.trim(),
           aantalPersonen: String(aantalPersonen),
           huisdieren: huisdieren ? "ja" : "nee",
+          promoCode: promoResult?.valid ? promoCode.trim().toUpperCase() : undefined,
         }),
       });
       setSent(true);
@@ -428,7 +467,10 @@ export default function BookingCalendar() {
                 {hasPrice && (
                   <div style={{ textAlign: "right" }}>
                     <div style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.6)", marginBottom: 2 }}>Geschatte prijs</div>
-                    <div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.gold }}>€ {totalPrice.toFixed(0)}</div>
+                    {promoDiscount > 0 && (
+                      <div style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.5)", textDecoration: "line-through", marginBottom: 2 }}>€ {totalPrice.toFixed(0)}</div>
+                    )}
+                    <div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.gold }}>€ {finalPrice.toFixed(0)}</div>
                   </div>
                 )}
               </div>
@@ -453,12 +495,25 @@ export default function BookingCalendar() {
                           <span style={{ fontWeight: 600, color: b.discounted ? "#E67E22" : T.green }}>€ {(b.price * b.nights).toFixed(0)}</span>
                         </div>
                       ))}
+                      {promoDiscount > 0 && (
+                        <div style={{
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                          padding: "10px 16px", borderTop: `1px solid ${T.border}`,
+                          fontFamily: T.sans, fontSize: 13,
+                        }}>
+                          <span style={{ color: "#2E7D32" }}>
+                            Promotiecode <span style={{ fontWeight: 700 }}>{promoCode.toUpperCase()}</span>
+                            {promoResult?.type === "percentage" && ` (−${promoResult.waarde}%)`}
+                          </span>
+                          <span style={{ fontWeight: 600, color: "#2E7D32" }}>−€ {promoDiscount.toFixed(0)}</span>
+                        </div>
+                      )}
                       <div style={{
                         display: "flex", justifyContent: "space-between", alignItems: "center",
                         padding: "12px 16px", background: T.bg, fontFamily: T.sans,
                       }}>
                         <span style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Totaal (indicatief)</span>
-                        <span style={{ fontSize: 18, fontWeight: 700, color: T.green }}>€ {totalPrice.toFixed(0)}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700, color: T.green }}>€ {finalPrice.toFixed(0)}</span>
                       </div>
                     </div>
                     <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: "8px 0 0" }}>
@@ -474,7 +529,7 @@ export default function BookingCalendar() {
                     <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, margin: 0 }}>
                       We nemen binnen 24 uur contact met je op via {email}.
                     </p>
-                    <button onClick={() => { setCheckIn(null); setCheckOut(null); setSent(false); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); }}
+                    <button onClick={() => { setCheckIn(null); setCheckOut(null); setSent(false); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setPromoCode(""); setPromoResult(null); setPromoOpen(false); }}
                       style={{ marginTop: 20, padding: "10px 24px", borderRadius: 8, border: `1px solid ${T.border}`, background: "#fff", fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}>
                       Nieuwe zoekopdracht
                     </button>
@@ -534,6 +589,61 @@ export default function BookingCalendar() {
                       <textarea value={bericht} onChange={e => setBericht(e.target.value)} placeholder="Bijv. wensen, vragen..." rows={3}
                         style={{ ...inputStyle, resize: "vertical", fontFamily: T.sans }} />
                     </div>
+
+                    {/* Promotiecode */}
+                    <div style={{ marginBottom: 20 }}>
+                      <button
+                        type="button"
+                        onClick={() => setPromoOpen(o => !o)}
+                        style={{ background: "none", border: "none", padding: 0, fontFamily: T.sans, fontSize: 12, color: T.muted, cursor: "pointer", textDecoration: "underline" }}
+                      >
+                        {promoOpen ? "Geen promotiecode" : "Heb je een promotiecode?"}
+                      </button>
+                      {promoOpen && (
+                        <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+                          <input
+                            value={promoCode}
+                            onChange={e => { setPromoCode(e.target.value.toUpperCase()); setPromoResult(null); }}
+                            onKeyDown={e => e.key === "Enter" && validatePromo()}
+                            placeholder="bijv. VROEGVOGEL10"
+                            style={{ ...inputStyle, flex: 1, textTransform: "uppercase", letterSpacing: 1 }}
+                          />
+                          <button
+                            type="button"
+                            onClick={validatePromo}
+                            disabled={!promoCode.trim() || promoLoading}
+                            style={{
+                              padding: "0 18px", borderRadius: 10, border: `1px solid ${T.border}`,
+                              background: T.green, color: "#fff", fontFamily: T.sans, fontSize: 13,
+                              fontWeight: 600, cursor: promoCode.trim() ? "pointer" : "not-allowed",
+                              whiteSpace: "nowrap", flexShrink: 0,
+                            }}
+                          >
+                            {promoLoading ? "..." : "Toepassen"}
+                          </button>
+                        </div>
+                      )}
+                      {promoResult && (
+                        <div style={{
+                          marginTop: 8, padding: "10px 14px", borderRadius: 8,
+                          background: promoResult.valid ? "rgba(46,125,50,.08)" : "rgba(198,40,40,.07)",
+                          border: `1px solid ${promoResult.valid ? "#A5D6A7" : "#FFCDD2"}`,
+                          fontFamily: T.sans, fontSize: 13,
+                          color: promoResult.valid ? "#2E7D32" : "#C62828",
+                        }}>
+                          {promoResult.valid ? (
+                            <>
+                              ✓ Code geldig
+                              {promoResult.omschrijving && ` — ${promoResult.omschrijving}`}
+                              {hasPrice && promoDiscount > 0 && (
+                                <span style={{ fontWeight: 700 }}> (−€ {promoDiscount.toFixed(0)})</span>
+                              )}
+                            </>
+                          ) : promoResult.error}
+                        </div>
+                      )}
+                    </div>
+
                     <button onClick={handleSubmit} disabled={!canSubmit} style={{
                       width: "100%", padding: "15px", borderRadius: 12, border: "none",
                       background: canSubmit ? T.green : T.border,

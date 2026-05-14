@@ -34,3 +34,18 @@ export const checkoutSchema = z.object({
   gastEmail: z.string().email(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
+
+export const reserveringSchema = z.object({
+  naam: z.string().min(1).max(100),
+  email: z.string().email(),
+  lodge: z.enum(["lodge_1", "lodge_2"]),
+  checkIn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  checkOut: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  nights: z.string().max(10),
+  totalPrice: z.string().max(20),
+  priceLabel: z.string().max(200).optional(),
+  bericht: z.string().max(500).optional(),
+  aantalPersonen: z.string().max(5).optional(),
+  huisdieren: z.enum(["ja", "nee"]).optional(),
+  promoCode: z.string().max(50).optional(),
+});
