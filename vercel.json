@@ -1,6 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
+  "crons": [
+    { "path": "/api/cron/emails?type=morning", "schedule": "0 7 * * *" },
+    { "path": "/api/cron/emails?type=evening", "schedule": "0 18 * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
