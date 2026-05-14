@@ -65,6 +65,7 @@ export default function AdminDashboard() {
   const [followUpSending, setFollowUpSending] = useState(false);
   const [followUpResult, setFollowUpResult] = useState("");
   const [navSection, setNavSection] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function load() {
@@ -172,6 +173,22 @@ export default function AdminDashboard() {
     )
   )?.id;
 
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => {
+      const next = new Set(prev);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
+      } else {
+        next.add(sectionId);
+      }
+      return next;
+    });
+  };
+
+  const isSectionExpanded = (sectionId: string) => {
+    return expandedSections.has(sectionId) || activeNavSectionId === sectionId;
+  };
+
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", minHeight: "100vh", fontFamily: font, background: "#F0F1F3" }}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -201,52 +218,69 @@ export default function AdminDashboard() {
             const sectionActive = section.items.some(item =>
               "id" in item ? item.id === tab : item.sub.some(sub => sub.id === tab)
             );
+            const expanded = isSectionExpanded(section.id);
             return (
-              <div key={section.id} style={{ marginBottom: 6 }}>
+              <div key={section.id} style={{ marginBottom: 2 }}>
                 {/* Section header */}
-                <div style={{
-                  padding: "10px 14px 6px",
-                  fontSize: 15, fontWeight: 700,
+                <div onClick={() => toggleSection(section.id)} style={{
+                  padding: "10px 14px 10px",
+                  fontSize: 14, fontWeight: 600,
                   color: sectionActive ? "#4F46E5" : "#111827",
                   letterSpacing: -0.1,
+                  cursor: "pointer",
+                  borderRadius: 8,
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  background: sectionActive && !expanded ? "#EEF2FF" : "transparent",
+                  userSelect: "none",
                 }}>
-                  {section.label}
+                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 16 }}>{section.icon}</span>
+                    {section.label}
+                  </span>
+                  <span style={{
+                    fontSize: 10, color: sectionActive ? "#4F46E5" : "#9CA3AF",
+                    transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 0.2s ease",
+                    display: "inline-block",
+                  }}>▼</span>
                 </div>
 
                 {/* Sub-items */}
-                <div style={{ paddingLeft: 4 }}>
-                  {section.items.map((item, idx) => {
-                    if ("groupLabel" in item) {
-                      return (
-                        <div key={idx} style={{ marginBottom: 4 }}>
-                          <div style={{ padding: "5px 14px 3px", fontSize: 11, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.6 }}>
-                            {item.groupLabel}
-                          </div>
-                          {item.sub.map(sub => (
-                            <div key={sub.id} onClick={() => setTab(sub.id)} style={{
-                              padding: "8px 14px 8px 22px", borderRadius: 7, cursor: "pointer",
-                              fontSize: 13, fontWeight: tab === sub.id ? 600 : 400,
-                              color: tab === sub.id ? "#4F46E5" : "#6B7280",
-                              background: tab === sub.id ? "#EEF2FF" : "transparent",
-                            }}>
-                              {sub.id.endsWith("_iot") ? "⚡ " : ""}{sub.label}
+                {expanded && (
+                  <div style={{ paddingLeft: 4, paddingBottom: 4 }}>
+                    {section.items.map((item, idx) => {
+                      if ("groupLabel" in item) {
+                        return (
+                          <div key={idx} style={{ marginBottom: 4 }}>
+                            <div style={{ padding: "5px 14px 3px", fontSize: 11, fontWeight: 600, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: 0.6 }}>
+                              {item.groupLabel}
                             </div>
-                          ))}
+                            {item.sub.map(sub => (
+                              <div key={sub.id} onClick={() => setTab(sub.id)} style={{
+                                padding: "8px 14px 8px 22px", borderRadius: 7, cursor: "pointer",
+                                fontSize: 13, fontWeight: tab === sub.id ? 600 : 400,
+                                color: tab === sub.id ? "#4F46E5" : "#6B7280",
+                                background: tab === sub.id ? "#EEF2FF" : "transparent",
+                              }}>
+                                {sub.id.endsWith("_iot") ? "⚡ " : ""}{sub.label}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return (
+                        <div key={item.id} onClick={() => setTab(item.id)} style={{
+                          padding: "8px 14px", borderRadius: 7, cursor: "pointer", marginBottom: 1,
+                          fontSize: 13, fontWeight: tab === item.id ? 600 : 400,
+                          color: tab === item.id ? "#4F46E5" : "#6B7280",
+                          background: tab === item.id ? "#EEF2FF" : "transparent",
+                        }}>
+                          {item.label}
                         </div>
                       );
-                    }
-                    return (
-                      <div key={item.id} onClick={() => setTab(item.id)} style={{
-                        padding: "8px 14px", borderRadius: 7, cursor: "pointer", marginBottom: 1,
-                        fontSize: 13, fontWeight: tab === item.id ? 600 : 400,
-                        color: tab === item.id ? "#4F46E5" : "#6B7280",
-                        background: tab === item.id ? "#EEF2FF" : "transparent",
-                      }}>
-                        {item.label}
-                      </div>
-                    );
-                  })}
-                </div>
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
