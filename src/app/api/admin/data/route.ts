@@ -122,6 +122,14 @@ export async function GET(request: NextRequest) {
         const enriched = staysList.map((s: { guest_id: string }) => ({ ...s, guests: guestLookup[s.guest_id] || null }));
         return NextResponse.json({ data: enriched });
       }
+      case "blog_posts": {
+        const { data, error } = await getSupabase()
+          .from("blog_posts")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        return NextResponse.json({ data: data || [] });
+      }
       default:
         return NextResponse.json({ error: "Onbekende tabel" }, { status: 400 });
     }
@@ -738,6 +746,46 @@ export async function POST(request: NextRequest) {
       case "reset_discount_usage": {
         if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
         await getSupabase().from("discount_codes").update({ gebruik_count: 0 }).eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "create_blog_post": {
+        const { slug, titel, intro, inhoud, categorie, leestijd, auteur } = body;
+        if (!slug || !titel || !inhoud) return NextResponse.json({ error: "Slug, titel en inhoud zijn verplicht" }, { status: 400 });
+        const { data, error } = await getSupabase().from("blog_posts").insert({
+          slug: String(slug).toLowerCase().trim().replace(/\s+/g, "-"),
+          titel, intro, inhoud,
+          categorie: categorie || "Verhaal",
+          leestijd: leestijd || "4 minuten",
+          auteur: auteur || "Arjan Reinders",
+          gepubliceerd: false,
+        }).select().single();
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true, data });
+      }
+      case "update_blog_post": {
+        const { id, slug, titel, intro, inhoud, categorie, leestijd, auteur } = body;
+        if (!id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const { error } = await getSupabase().from("blog_posts").update({
+          slug: String(slug).toLowerCase().trim().replace(/\s+/g, "-"),
+          titel, intro, inhoud, categorie, leestijd, auteur,
+          updated_at: new Date().toISOString(),
+        }).eq("id", id);
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true });
+      }
+      case "publish_blog_post": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const gepubliceerd = body.gepubliceerd === true || body.gepubliceerd === "true";
+        await getSupabase().from("blog_posts").update({
+          gepubliceerd,
+          gepubliceerd_op: gepubliceerd ? new Date().toISOString().slice(0, 10) : null,
+          updated_at: new Date().toISOString(),
+        }).eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "delete_blog_post": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("blog_posts").delete().eq("id", body.id);
         return NextResponse.json({ success: true });
       }
       default:
