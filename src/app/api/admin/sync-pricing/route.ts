@@ -60,8 +60,7 @@ async function fetchDEHolidays(year: number): Promise<{ date: string; name: stri
 }
 
 async function fetchNLSchoolHolidays(year: number): Promise<{ name: string; start: string; end: string }[]> {
-  // Merge all regions per vacation type: earliest start → latest end so every Dutch region is covered
-  const merged = new Map<string, { start: string; end: string }>();
+  const results: { name: string; start: string; end: string }[] = [];
   const schoolYears = [`${year - 1}-${year}`, `${year}-${year + 1}`];
   const yearStart = `${year}-01-01`;
   const yearEnd = `${year}-12-31`;
@@ -83,7 +82,7 @@ async function fetchNLSchoolHolidays(year: number): Promise<{ name: string; star
         const regions = item.regions || [];
         if (!regions.length) continue;
 
-        // Take the broadest date range across all regions
+        // Broadest date range across all regions (noord, midden, zuid)
         let start = regions.map(r => toDateStr(r.startdate)).sort()[0];
         let end = regions.map(r => toDateStr(r.enddate)).sort().at(-1)!;
 
@@ -91,19 +90,15 @@ async function fetchNLSchoolHolidays(year: number): Promise<{ name: string; star
         start = start < yearStart ? yearStart : start;
         end = end > yearEnd ? yearEnd : end;
 
-        const existing = merged.get(name);
-        if (!existing) {
-          merged.set(name, { start, end });
-        } else {
-          // Keep the broadest range if the same vacation appears in both school years
-          if (start < existing.start) existing.start = start;
-          if (end > existing.end) existing.end = end;
-        }
+        // Push each vacation period separately — do NOT merge across school years.
+        // Merging by name would collapse Kerstvakantie (Jan) + Kerstvakantie (Dec)
+        // into a single period spanning the entire year.
+        results.push({ name, start, end });
       }
     } catch { continue; }
   }
 
-  return Array.from(merged.entries()).map(([name, { start, end }]) => ({ name, start, end }));
+  return results;
 }
 
 async function fetchDESchoolHolidays(year: number, state: "NI" | "NW"): Promise<{ name: string; start: string; end: string }[]> {
@@ -119,17 +114,19 @@ function calcPrice(base: number, pct: number): number {
   return Math.round(base * (1 + pct / 100) * 100) / 100;
 }
 
+function localDateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 function generateWeekendPeriods(year: number, lodge_id: string, base_price: number, pct: number): GeneratedPeriod[] {
   const result: GeneratedPeriod[] = [];
-  const yearEnd = new Date(year, 11, 31);
   const d = new Date(year, 0, 1);
-  // Advance to first Friday
   while (d.getDay() !== 5) d.setDate(d.getDate() + 1);
   while (d.getFullYear() === year) {
-    const friday = d.toISOString().substring(0, 10);
+    const friday = localDateStr(d);
     const sundayDate = new Date(d);
     sundayDate.setDate(sundayDate.getDate() + 2);
-    const sunday = (sundayDate <= yearEnd ? sundayDate : yearEnd).toISOString().substring(0, 10);
+    const sunday = sundayDate.getFullYear() === year ? localDateStr(sundayDate) : `${year}-12-31`;
     result.push({ lodge_id, label: "Weekend", start_date: friday, end_date: sunday, price_per_night: calcPrice(base_price, pct), category: "weekend" });
     d.setDate(d.getDate() + 7);
   }
