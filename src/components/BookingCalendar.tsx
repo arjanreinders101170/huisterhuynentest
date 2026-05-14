@@ -171,7 +171,7 @@ function MonthCalendar({
                 {inMonth ? new Date(iso).getDate() : ""}
               </span>
               {inMonth && !isPast && !booked && pricing && !isCheckIn && !isCheckOut && (
-                <span style={{ fontFamily: T.sans, fontSize: 9, color: pricing.discounted ? "#E67E22" : (inRange ? T.green : T.gold), fontWeight: 500, lineHeight: 1, marginTop: 2 }}>
+                <span style={{ fontFamily: T.sans, fontSize: 11, color: pricing.discounted ? "#B34A00" : (inRange ? T.green : T.text), fontWeight: 500, lineHeight: 1, marginTop: 2 }}>
                   €{Math.round(pricing.price)}
                 </span>
               )}
