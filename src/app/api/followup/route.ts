@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
 import { verifyAdminSession } from "@/lib/admin-auth";
+import { APP_URL_FALLBACK } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -106,7 +107,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl/app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
     const resendKey = process.env.RESEND_API_KEY;
     if (!resendKey) {
       return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
