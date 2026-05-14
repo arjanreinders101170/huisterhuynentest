@@ -19,12 +19,12 @@ const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De 
 const WEEKDAYS = ["Ma", "Di", "Wo", "Do", "Fr", "Za", "Zo"];
 
 function toISO(d: Date): string {
-  return d.toISOString().split("T")[0];
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function addDays(iso: string, n: number): string {
-  const d = new Date(iso);
-  d.setDate(d.getDate() + n);
+  const [y, m, day] = iso.split("-").map(Number);
+  const d = new Date(y, m - 1, day + n);
   return toISO(d);
 }
 
