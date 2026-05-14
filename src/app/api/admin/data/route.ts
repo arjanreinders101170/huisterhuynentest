@@ -339,7 +339,6 @@ export async function POST(request: NextRequest) {
         <tr><td style="padding:5px 0;color:#8A7D6A;">Vertrek</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkOutDate} · voor 11:00</td></tr>
         <tr><td style="padding:5px 0;color:#8A7D6A;">Lodge</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">Lodge ${esc(lodgeNaam)}</td></tr>
         <tr><td style="padding:5px 0;color:#8A7D6A;">Deurcode</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2F4F3E;letter-spacing:1px;">${stay.door_code}</td></tr>
-        <tr><td style="padding:5px 0;color:#8A7D6A;">Wi-Fi</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2F4F3E;">${WIFI_SSID} &middot; ${WIFI_PASSWORD}</td></tr>
       </table>
     </td></tr>
   </table>
