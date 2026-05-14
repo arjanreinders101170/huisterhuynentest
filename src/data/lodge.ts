@@ -11,7 +11,7 @@ export const ADDRESS_REGION = "Drenthe";
 export const PHONE_RAW = "+31642568603";
 export const PHONE_DISPLAY = "+31 6 42568603";
 
-export const APP_URL_FALLBACK = "https://huisterhuynen.nl/app";
+export const APP_URL_FALLBACK = "https://huisterhuynen.nl/concierge";
 
 /* Lodge identifiers used in DB (stays.lodge column) and the canonical
  * customer-facing names. Always import from here — never hardcode. */
