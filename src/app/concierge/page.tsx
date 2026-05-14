@@ -241,6 +241,8 @@ function AppInner() {
     try {
       const r = await fetch("/api/nuki/unlock", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: stay?.token || tokenParam }),
         signal: controller.signal,
       });
       clearTimeout(timeout);

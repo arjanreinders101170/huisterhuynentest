@@ -1,8 +1,38 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  // Validate stay token before unlocking
+  let token: string | undefined;
+  try {
+    const body = await request.json();
+    token = body?.token;
+  } catch {
+    // no body
+  }
+
+  if (!token) {
+    return NextResponse.json({ error: "Niet geautoriseerd" }, { status: 401 });
+  }
+
+  const { data: stay } = await getSupabase()
+    .from("stays")
+    .select("check_out")
+    .eq("token", token)
+    .single();
+
+  if (!stay) {
+    return NextResponse.json({ error: "Onbekende sessie" }, { status: 403 });
+  }
+
+  const checkOut = new Date(stay.check_out);
+  checkOut.setHours(23, 59, 59);
+  if (Date.now() > checkOut.getTime()) {
+    return NextResponse.json({ error: "Verblijf verlopen" }, { status: 403 });
+  }
+
   const apiKey = process.env.NUKI_API_KEY;
   const smartlockId = process.env.NUKI_SMARTLOCK_ID;
 
