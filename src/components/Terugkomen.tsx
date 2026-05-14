@@ -20,7 +20,7 @@ const DAYS_NL = ["Ma","Di","Wo","Do","Vr","Za","Zo"];
 const DAYS_DE = ["Mo","Di","Mi","Do","Fr","Sa","So"];
 const LODGE_LABELS: Record<Lodge, string> = LODGE_NAMES;
 
-function toKey(d: Date) { return d.toISOString().split("T")[0]; }
+function toKey(d: Date) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 function fromKey(s: string) { return new Date(s + "T12:00:00"); }
 function isDayBooked(iso: string, events: ICalEvent[]): boolean {
   return events.some(e => iso >= e.start && iso < e.end);

@@ -71,7 +71,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
   // Tomorrow's date as min for date picker
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDate = tomorrow.toISOString().split("T")[0];
+  const minDate = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, "0")}-${String(tomorrow.getDate()).padStart(2, "0")}`;
 
   /* ═══ PAYMENT ═══ */
   const startPayment = async (productId: string, displayPrice: number, meta?: Record<string, unknown>) => {
