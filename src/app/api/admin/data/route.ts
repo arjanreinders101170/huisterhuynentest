@@ -419,9 +419,6 @@ export async function POST(request: NextRequest) {
   <img src="${lodgePhotoLc}" alt="Lodge ${esc(lodgeNaamLc)}" width="480" style="display:block;width:100%;height:auto;" />
 </td></tr>
 <tr><td style="padding:32px 28px 28px;">
-  <h1 style="margin:0 0 14px;font-size:26px;color:#2A2418;text-align:center;font-family:Georgia,serif;line-height:1.2;">
-    Nog &eacute;&eacute;n nacht${firstName ? `, ${firstName}` : ""}
-  </h1>
   <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
     ${firstName ? `${firstName}, nog` : "Nog"} één nacht en dan zit het er weer op. We hopen dat jullie een heerlijk verblijf hebben gehad. Geniet vanavond nog even van de stilte.
   </p>
