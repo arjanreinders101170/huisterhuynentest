@@ -15,10 +15,12 @@ export default function AvailabilityCalendar({ lodgeId }: { lodgeId: "lodge_1" |
     const fetch_ = async () => {
       setLoading(true);
       try {
-        const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
-        const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0);
-        const s0 = startDate.toISOString().split("T")[0];
-        const s1 = endDate.toISOString().split("T")[0];
+        const y = month.getFullYear(), m = month.getMonth();
+        const startDate = new Date(y, m, 1);
+        const endDate = new Date(y, m + 1, 0);
+        const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+        const s0 = fmt(startDate);
+        const s1 = fmt(endDate);
 
         const { data: stays } = await getSupabase().from("stays").select("check_in, check_out").eq("lodge", lodgeId).gte("check_in", s0).lte("check_out", s1);
         const { data: blocked } = await getSupabase().from("blocked_dates").select("start_date, end_date, reason").eq("lodge_id", lodgeId).gte("start_date", s0).lte("end_date", s1);
@@ -26,7 +28,7 @@ export default function AvailabilityCalendar({ lodgeId }: { lodgeId: "lodge_1" |
         const days: CalendarDay[] = [];
         for (let day = new Date(startDate); day <= endDate; day.setDate(day.getDate() + 1)) {
           const cur = new Date(day).getTime();
-          const dateStr = new Date(day).toISOString().split("T")[0];
+          const dateStr = fmt(day);
           let status: AvailabilityStatus = "available";
           let reason: string | undefined;
           if (stays?.some(s => cur >= new Date(s.check_in).getTime() && cur < new Date(s.check_out).getTime())) status = "booked";
