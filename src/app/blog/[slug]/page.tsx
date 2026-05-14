@@ -54,7 +54,7 @@ export async function generateMetadata(
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
-  text: "#2A2418", muted: "#8A7D6A", gold: "#B49A5E",
+  text: "#2A2418", muted: "#5A534C", gold: "#B49A5E",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",

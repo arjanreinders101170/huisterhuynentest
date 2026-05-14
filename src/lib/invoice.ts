@@ -30,7 +30,7 @@ export type InvoiceData = {
 
 const COLORS = {
   text: "#2A2418",
-  muted: "#8A7D6A",
+  muted: "#5A534C",
   accent: "#B49A5E",
   green: "#2F4F3E",
   border: "#D6D1C7",
