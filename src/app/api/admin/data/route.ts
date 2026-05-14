@@ -387,6 +387,9 @@ export async function POST(request: NextRequest) {
 
         const appUrlLc = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
         const appLinkLc = `${appUrlLc}?s=${stay.token}`;
+        const baseUrlLc = new URL(appUrlLc).origin;
+        const lodgePhotoLc = stay.lodge === "lodge_1" ? `${baseUrlLc}/lodge-heide.jpg` : `${baseUrlLc}/lodge-eik.jpg`;
+        const lodgeNaamLc = lodgeName(stay.lodge);
         const esc = (s: string) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
         const firstName = esc((guest.naam || "").split(" ")[0] || guest.naam || "");
 
@@ -411,8 +414,10 @@ export async function POST(request: NextRequest) {
     <td style="width:28px;height:1px;background:#B49A5E;"></td>
   </tr></table></td></tr></table>
 </td></tr>
-<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
-<tr><td style="height:4px;background:#B49A5E;border-radius:12px 12px 0 0;">&nbsp;</td></tr>
+<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
+<tr><td style="padding:0;font-size:0;line-height:0;">
+  <img src="${lodgePhotoLc}" alt="Lodge ${esc(lodgeNaamLc)}" width="480" style="display:block;width:100%;height:auto;" />
+</td></tr>
 <tr><td style="padding:32px 28px 28px;">
   <h1 style="margin:0 0 14px;font-size:26px;color:#2A2418;text-align:center;font-family:Georgia,serif;line-height:1.2;">
     Nog &eacute;&eacute;n nacht${firstName ? `, ${firstName}` : ""}
