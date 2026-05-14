@@ -473,6 +473,7 @@ export async function POST(request: NextRequest) {
         const resendKey = process.env.RESEND_API_KEY;
         if (!resendKey) return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
 
+        const appUrlTy = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
         const esc = (s: string) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
         const naam = esc(guest.naam || "");
 
@@ -521,6 +522,23 @@ export async function POST(request: NextRequest) {
       <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.7;">
         We hopen dat Drenthe je goed heeft gedaan. Mocht je ooit terug willen &mdash; je bent altijd welkom.
       </p>
+
+      <!-- CTA: review -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+        <tr><td style="padding:20px;background-color:#F5F1E8;border-radius:8px;">
+          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#2F4F3E;">Vertel ons hoe het was</p>
+          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
+            Jouw ervaring helpt andere gasten en helpt ons om het nóg beter te maken.
+          </p>
+          <table role="presentation" cellpadding="0" cellspacing="0">
+            <tr><td align="center" style="background-color:#2F4F3E;border-radius:8px;">
+              <a href="${appUrlTy}" style="display:block;padding:12px 28px;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
+                Review achterlaten
+              </a>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
 
       <!-- Sign-off -->
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
