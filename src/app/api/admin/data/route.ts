@@ -418,14 +418,14 @@ export async function POST(request: NextRequest) {
     Nog &eacute;&eacute;n nacht${firstName ? `, ${firstName}` : ""}
   </h1>
   <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
-    Morgen om <strong style="color:#2A2418;">11:00</strong> verwachten we jullie sleutel-loos te zien vertrekken. Geniet vanavond nog van de stilte.
+    ${firstName ? `${firstName}, nog` : "Nog"} één nacht en dan zit het er weer op. We hopen dat jullie een heerlijk verblijf hebben gehad. Geniet vanavond nog even van de stilte.
   </p>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
     <tr><td style="padding:18px 20px;">
       <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2A2418;">Nog niet klaar om te gaan?</p>
       <p style="margin:0 0 14px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
-        Boek een late check-out tot 15:00 &mdash; ideaal voor een laatste boswandeling of brunch op het terras.
+        Boek een late check-out &mdash; ideaal voor een lekker lang ontbijt of nog even een boswandeling.
       </p>
       <table role="presentation" cellpadding="0" cellspacing="0"><tr>
         <td align="center" style="background:#2F4F3E;border-radius:10px;">
@@ -438,8 +438,8 @@ export async function POST(request: NextRequest) {
   </table>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Check-out tot 11:00 inbegrepen</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Sleutel mag in de lodge blijven</td></tr>
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Standaard check-out tot 11:00</td></tr>
+    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Late check-out tot 13:00 via de app</td></tr>
     <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Vergeet niet om de checklist in de app af te vinken</td></tr>
   </table>
 
