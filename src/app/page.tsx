@@ -1004,6 +1004,7 @@ export default function LandingPage() {
                   { label: "Onze lodges", href: "#" },
                   { label: "De omgeving", href: "#omgeving" },
                   { label: "Reserveren", href: "https://wa.me/31642568603" },
+                  { label: "Blog & Verhalen", href: "/blog" },
                   { label: "FAQ", href: "/faq" },
                   { label: "Privacybeleid", href: "/privacy" },
                   { label: "Algemene voorwaarden", href: "/terms" },
