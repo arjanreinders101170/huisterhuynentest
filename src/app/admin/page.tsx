@@ -709,7 +709,7 @@ function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]; guest
           </div>
           {days.map((d, i) => {
             const isToday = d.getTime() === today.getTime();
-            const isWknd = d.getDay() === 0 || d.getDay() === 6;
+            const isWknd = d.getDay() === 0 || d.getDay() === 5 || d.getDay() === 6;
             return (
               <div key={i} style={{
                 width: DAY_W, flexShrink: 0, textAlign: "center", padding: "8px 0",
@@ -754,7 +754,7 @@ function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]; guest
               <div style={{ flex: 1, position: "relative", display: "flex", overflow: "hidden" }}>
                 {days.map((d, i) => {
                   const isToday = d.getTime() === today.getTime();
-                  const isWknd = d.getDay() === 0 || d.getDay() === 6;
+                  const isWknd = d.getDay() === 0 || d.getDay() === 5 || d.getDay() === 6;
                   return (
                     <div key={i} style={{
                       width: DAY_W, flexShrink: 0, height: "100%",
