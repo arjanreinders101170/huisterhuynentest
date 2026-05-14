@@ -131,7 +131,7 @@ function MonthCalendar({
             if (isPast || booked) {
               bg = booked ? "#EDE8E0" : "transparent";
               color = T.muted;
-              opacity = booked ? 1 : 0.35;
+              opacity = booked ? 1 : 0;
             } else {
               cursor = "pointer";
               pointerEvents = "auto";
