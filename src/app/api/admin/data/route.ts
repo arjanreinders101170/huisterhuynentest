@@ -268,8 +268,13 @@ export async function POST(request: NextRequest) {
         }
 
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+        const baseUrl = new URL(appUrl).origin;
         const lodgeNaam = lodgeName(stay.lodge);
+        const lodgePhoto = stay.lodge === "lodge_1"
+          ? `${baseUrl}/lodge-heide.jpg`
+          : `${baseUrl}/lodge-eik.jpg`;
         const checkInDate = new Date(stay.check_in).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
+        const checkOutDate = new Date(stay.check_out).toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
         const appLink = `${appUrl}?s=${stay.token}`;
 
         const { Resend } = await import("resend");
@@ -282,7 +287,7 @@ export async function POST(request: NextRequest) {
           from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
           to: [guest.email],
           subject: `Jouw gast-app staat klaar — ${checkInDate}`,
-          html: `<!DOCTYPE html><html><head><meta charset="utf-8"/></head>
+          html: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
 <body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
 <tr><td align="center" style="padding:32px 16px;">
@@ -296,8 +301,10 @@ export async function POST(request: NextRequest) {
     <td style="width:28px;height:1px;background:#B49A5E;"></td>
   </tr></table></td></tr></table>
 </td></tr>
-<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
-<tr><td style="height:4px;background:#B49A5E;border-radius:12px 12px 0 0;">&nbsp;</td></tr>
+<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
+<tr><td style="padding:0;font-size:0;line-height:0;">
+  <img src="${lodgePhoto}" alt="Lodge ${esc(lodgeNaam)}" width="480" style="display:block;width:100%;height:auto;" />
+</td></tr>
 <tr><td style="padding:32px 28px 28px;">
 
   <!-- ► Personal greeting first -->
@@ -305,7 +312,7 @@ export async function POST(request: NextRequest) {
     Welkom${firstName ? `, ${firstName}` : ""}
   </h1>
   <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
-    Jullie ${esc(lodgeNaam)} staat klaar voor ${checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één tik en alles staat op zijn plek.
+    Jullie Lodge ${esc(lodgeNaam)} staat klaar voor ${checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één tik en alles staat op zijn plek.
   </p>
 
   <!-- ► Dominant CTA: open de gast-app -->
@@ -329,7 +336,8 @@ export async function POST(request: NextRequest) {
     <tr><td style="padding:16px 20px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:13px;">
         <tr><td style="padding:5px 0;color:#8A7D6A;">Aankomst</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkInDate} · vanaf 15:00</td></tr>
-        <tr><td style="padding:5px 0;color:#8A7D6A;">Lodge</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${esc(lodgeNaam)}</td></tr>
+        <tr><td style="padding:5px 0;color:#8A7D6A;">Vertrek</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkOutDate} · voor 11:00</td></tr>
+        <tr><td style="padding:5px 0;color:#8A7D6A;">Lodge</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">Lodge ${esc(lodgeNaam)}</td></tr>
         <tr><td style="padding:5px 0;color:#8A7D6A;">Deurcode</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2F4F3E;letter-spacing:1px;">${stay.door_code}</td></tr>
         <tr><td style="padding:5px 0;color:#8A7D6A;">Wi-Fi</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2F4F3E;">${WIFI_SSID} &middot; ${WIFI_PASSWORD}</td></tr>
       </table>
