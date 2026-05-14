@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
-import { getPublicSupabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 export const revalidate = 60;
 
@@ -19,7 +19,7 @@ type BlogPost = {
 
 async function getPost(slug: string): Promise<BlogPost | null> {
   try {
-    const { data } = await getPublicSupabase()
+    const { data } = await getSupabase()
       .from("blog_posts")
       .select("*")
       .eq("slug", slug)
