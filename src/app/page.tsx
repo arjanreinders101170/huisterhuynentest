@@ -36,7 +36,7 @@ const T = {
   green: "#2F4F3E",
   green2: "#3A6350",
   text: "#2A2418",
-  muted: "#8A7D6A",
+  muted: "#7A6D60",
   gold: "#B49A5E",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
@@ -52,7 +52,7 @@ function Eyebrow({ children }: { children: string }) {
   return (
     <div style={{
       fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-      color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase",
+      color: T.green, letterSpacing: "2.5px", textTransform: "uppercase",
       marginBottom: 12,
     }}>
       {children}
@@ -151,7 +151,7 @@ export default function LandingPage() {
     : FALLBACK_REVIEWS;
 
   return (
-    <div style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
+    <main style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
 
       {/* ══════════════════════════════════════════
           HERO
@@ -212,7 +212,7 @@ export default function LandingPage() {
             <a href="#reserveren" style={{
               padding: "17px 52px",
               background: T.gold,
-              color: T.green,
+              color: "#1A2E24",
               border: "none",
               borderRadius: 12,
               fontSize: 16, fontWeight: 700, cursor: "pointer",
@@ -385,7 +385,7 @@ export default function LandingPage() {
                   />
                   <div style={{
                     position: "absolute", top: 16, left: 16,
-                    background: T.gold, color: T.green,
+                    background: T.gold, color: "#1A2E24",
                     fontFamily: T.sans, fontSize: 11, fontWeight: 700,
                     letterSpacing: "1.5px", textTransform: "uppercase",
                     padding: "5px 12px", borderRadius: 6,
@@ -1037,6 +1037,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }
