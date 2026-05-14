@@ -33,7 +33,7 @@ export function CookieConsent() {
         onClick={accept}
         style={{
           flexShrink: 0, padding: "8px 16px", borderRadius: 8, border: "none",
-          background: "#B49A5E", color: "#fff", fontSize: 12, fontWeight: 600,
+          background: "#B49A5E", color: "#2A2418", fontSize: 12, fontWeight: 600,
           cursor: "pointer", whiteSpace: "nowrap",
         }}
       >
