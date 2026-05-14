@@ -19,6 +19,13 @@
     "resend": "^6.12.2",
     "zod": "^4.4.3"
   },
+  "browserslist": [
+    "chrome >= 93",
+    "edge >= 93",
+    "firefox >= 92",
+    "safari >= 15.4",
+    "not dead"
+  ],
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
