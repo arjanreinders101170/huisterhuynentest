@@ -84,7 +84,7 @@ export function NewsletterForm() {
           onChange={e => setNaam(e.target.value)}
           required
           style={{
-            flex: "1 1 160px", minWidth: 0, maxWidth: 200,
+            flex: "1 1 200px", minWidth: 0,
             padding: "13px 16px",
             background: "rgba(255,255,255,.1)",
             border: "1px solid rgba(255,255,255,.2)",
@@ -100,7 +100,7 @@ export function NewsletterForm() {
           onChange={e => setEmail(e.target.value)}
           required
           style={{
-            flex: "1 1 220px", minWidth: 0, maxWidth: 280,
+            flex: "1 1 200px", minWidth: 0,
             padding: "13px 16px",
             background: "rgba(255,255,255,.1)",
             border: "1px solid rgba(255,255,255,.2)",
@@ -113,7 +113,7 @@ export function NewsletterForm() {
           type="submit"
           disabled={status === "loading"}
           style={{
-            flex: "0 0 auto",
+            flex: "1 1 auto",
             padding: "13px 32px",
             background: T.gold,
             color: T.green,
