@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { NewsletterForm } from "@/components/NewsletterForm";
-import { getPublicSupabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Blog & Verhalen — Drenthe, natuur en het leven op de heide",
@@ -37,7 +37,7 @@ type BlogPost = {
 
 async function getPosts(): Promise<BlogPost[]> {
   try {
-    const { data } = await getPublicSupabase()
+    const { data } = await getSupabase()
       .from("blog_posts")
       .select("slug, titel, intro, categorie, leestijd, gepubliceerd_op")
       .eq("gepubliceerd", true)
