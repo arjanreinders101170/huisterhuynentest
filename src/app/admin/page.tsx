@@ -1135,13 +1135,6 @@ function TarievenTab() {
         </div>
       </div>
 
-      {/* SQL setup hint */}
-      <div style={{ fontSize: 12, color: C.muted, background: C.bg, borderRadius: 8, padding: "10px 14px", lineHeight: 1.6 }}>
-        <strong>Nieuwe tabellen nodig in Supabase:</strong>{" "}
-        <code style={{ fontSize: 10 }}>CREATE TABLE pricing_config (lodge_id text PRIMARY KEY, base_price numeric(10,2) NOT NULL DEFAULT 150, surcharge_config jsonb NOT NULL DEFAULT &apos;{"{}"}&apos;, updated_at timestamptz DEFAULT now());</code>{" · "}
-        <code style={{ fontSize: 10 }}>CREATE TABLE availability_discounts (id uuid DEFAULT gen_random_uuid() PRIMARY KEY, lodge_id text NOT NULL, days_before int NOT NULL, discount_pct numeric(5,2) NOT NULL, created_at timestamptz DEFAULT now());</code>
-      </div>
-
       {/* ── BASISPRIJS & OPSLAGEN ── */}
       {(["lodge_1", "lodge_2"] as const).map(lodgeId => (
         <div key={lodgeId} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: "20px 24px" }}>
