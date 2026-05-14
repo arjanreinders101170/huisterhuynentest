@@ -95,6 +95,14 @@ export async function GET(request: NextRequest) {
         if (error) return NextResponse.json({ data: [], error: error.message });
         return NextResponse.json({ data: data || [] });
       }
+      case "discount_codes": {
+        const { data, error } = await getSupabase()
+          .from("discount_codes")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        return NextResponse.json({ data: data || [] });
+      }
       case "stays": {
         const { data: staysRaw } = await getSupabase()
           .from("stays")
@@ -682,6 +690,54 @@ export async function POST(request: NextRequest) {
           status: "afgewezen",
           updated_at: new Date().toISOString(),
         }).eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "create_discount_code": {
+        const { code, omschrijving, type, waarde, geldig_van, geldig_tot, max_gebruik, min_nachten } = body;
+        if (!code || !type || !waarde) return NextResponse.json({ error: "Code, type en waarde zijn verplicht" }, { status: 400 });
+        const { data, error } = await getSupabase().from("discount_codes").insert({
+          code: String(code).toUpperCase().trim(),
+          omschrijving: omschrijving || null,
+          type,
+          waarde: parseFloat(waarde),
+          geldig_van: geldig_van || null,
+          geldig_tot: geldig_tot || null,
+          max_gebruik: max_gebruik ? parseInt(max_gebruik) : null,
+          min_nachten: min_nachten ? parseInt(min_nachten) : null,
+          actief: true,
+        }).select().single();
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true, data });
+      }
+      case "update_discount_code": {
+        const { id, code, omschrijving, type, waarde, geldig_van, geldig_tot, max_gebruik, min_nachten } = body;
+        if (!id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const { error } = await getSupabase().from("discount_codes").update({
+          code: String(code).toUpperCase().trim(),
+          omschrijving: omschrijving || null,
+          type,
+          waarde: parseFloat(waarde),
+          geldig_van: geldig_van || null,
+          geldig_tot: geldig_tot || null,
+          max_gebruik: max_gebruik ? parseInt(max_gebruik) : null,
+          min_nachten: min_nachten ? parseInt(min_nachten) : null,
+        }).eq("id", id);
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true });
+      }
+      case "toggle_discount_code": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("discount_codes").update({ actief: body.actief === "true" || body.actief === true }).eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "delete_discount_code": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("discount_codes").delete().eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "reset_discount_usage": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("discount_codes").update({ gebruik_count: 0 }).eq("id", body.id);
         return NextResponse.json({ success: true });
       }
       default:
