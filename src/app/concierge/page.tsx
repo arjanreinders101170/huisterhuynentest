@@ -21,7 +21,6 @@ import { Terugkomen } from "@/components/Terugkomen";
 import { DetailPage } from "@/components/DetailPage";
 import { Nav } from "@/components/Nav";
 import { LodgeControl } from "@/components/LodgeControl";
-import { InstallBanner } from "@/components/InstallBanner";
 
 type StaySession = {
   id: string;
@@ -379,10 +378,6 @@ function AppInner() {
         onNavigate={(r: Route) => setRoute(r)}
       />
 
-      {/* PWA install nudge — fires faster for token-arrivals (just opened email) */}
-      {ready && !showBegroeting && (
-        <InstallBanner delayMs={tokenArrival ? 2000 : 5000} />
-      )}
     </div>
   );
 }

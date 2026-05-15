@@ -206,7 +206,6 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
     return (
       <div style={{ padding: "0 24px 110px" }}>
         <div style={{ paddingTop: 60, textAlign: "center", animation: "fadeUp .5s ease both" }}>
-          <div style={{ fontSize: 48, marginBottom: 20 }}>🌿</div>
           <h1 style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 10px" }}>
             {t.terugkomen.thankYou}
           </h1>
