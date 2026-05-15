@@ -3031,8 +3031,8 @@ function AanvragenV2Tab({ requests, setRequests }: { requests: BookingRequest[];
 
         <div style={{ marginBottom: 14 }}>
           <button onClick={() => addRegel(req.id, { label: "", bedrag: "", soort: "toeslag" })} style={{
-            padding: "6px 12px", borderRadius: 6, border: `1px dashed ${C.border}`,
-            background: "transparent", fontSize: 12, color: C.muted, cursor: "pointer",
+            padding: "8px 14px", borderRadius: 6, border: `1px dashed ${C.green}`,
+            background: "transparent", fontSize: 12, fontWeight: 600, color: C.green, cursor: "pointer",
           }}>+ Extra regel</button>
         </div>
 
