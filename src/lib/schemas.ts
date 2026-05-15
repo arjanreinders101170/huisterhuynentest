@@ -12,6 +12,8 @@ export const bookingSchema = z.object({
 export const terugkomenSchema = z.object({
   from: z.string().min(1).max(50),
   to: z.string().min(1).max(50),
+  fromIso: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  toIso: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   email: z.string().email(),
   name: z.string().max(100).optional(),
   persons: z.number().int().min(1).max(4).optional(),

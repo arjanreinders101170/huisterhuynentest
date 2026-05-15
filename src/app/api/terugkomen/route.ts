@@ -2,7 +2,7 @@ import { esc } from "@/lib/email";
 import { terugkomenSchema } from "@/lib/schemas";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { safeInsertBookingRequest } from "@/lib/pricing";
+import { safeInsertBookingRequest, computeStayPrice } from "@/lib/pricing";
 
 export const runtime = "nodejs";
 
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const { from, to, email, name, persons, message, voorkeursLodge, voorkeursLodgeNaam, wasFallback } = body;
+    const { from, to, fromIso, toIso, email, name, persons, message, voorkeursLodge, voorkeursLodgeNaam, wasFallback } = body;
 
     const parsed = terugkomenSchema.safeParse(body);
     if (!parsed.success) {
@@ -200,17 +200,42 @@ export async function POST(request: NextRequest) {
       aanvraagId = data?.id || "";
     } catch (e) { console.error("Terugkeer insert failed:", e); }
 
-    // Dual-write naar unified funnel — terugkomers hebben geen ISO-datums (alleen "14 mei"),
-    // dus check_in/check_out blijven NULL en de periode komt in periode_tekst.
+    // Dual-write naar unified funnel. Als de Terugkomen-component ISO-datums
+    // meestuurt, slaan we die op zodat de offerte-editor de verblijfprijs kan
+    // voorinvullen via computeStayPrice.
+    const nachten = fromIso && toIso
+      ? Math.max(0, Math.round((new Date(toIso).getTime() - new Date(fromIso).getTime()) / 86400000))
+      : null;
+
+    let voorgesteldePrijs: number | null = null;
+    let voorgesteldeLabel: string | null = null;
+    if (fromIso && toIso && voorkeursLodge && nachten && nachten > 0) {
+      try {
+        const calc = await computeStayPrice({
+          lodge: voorkeursLodge,
+          checkIn: fromIso,
+          checkOut: toIso,
+          personen: persons || 2,
+        });
+        voorgesteldePrijs = calc.verblijf;
+        voorgesteldeLabel = calc.voorstelLabel;
+      } catch (e) { console.error("computeStayPrice (terugkomen) failed:", e); }
+    }
+
     await safeInsertBookingRequest({
       bron: "terugkomer",
       guest_id: guestId,
       gast_naam: name || "",
       gast_email: email,
       lodge: voorkeursLodge || null,
+      check_in: fromIso || null,
+      check_out: toIso || null,
+      nachten,
       personen: persons || 2,
       bericht: fullBericht,
       periode_tekst: `${from} — ${to}`,
+      voorgestelde_prijs: voorgesteldePrijs,
+      voorgestelde_prijs_label: voorgesteldeLabel,
       status: "nieuw",
       legacy_terugkeer_id: aanvraagId || null,
     });
