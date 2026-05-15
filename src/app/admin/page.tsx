@@ -96,6 +96,11 @@ export default function AdminDashboard() {
   const [navSection, setNavSection] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
+  // Sluit dropdown automatisch zodra er een tab gekozen wordt
+  useEffect(() => {
+    setExpandedSection(null);
+  }, [tab]);
+
   useEffect(() => {
     async function load() {
       try {

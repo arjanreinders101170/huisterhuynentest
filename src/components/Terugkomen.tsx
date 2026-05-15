@@ -190,6 +190,8 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
         body: JSON.stringify({
           from: formatDate(fromDate!),
           to: formatDate(toDate!),
+          fromIso: fromDate,
+          toIso: toDate,
           email, name, persons, message,
           voorkeursLodge: matchedLodge.lodge,
           voorkeursLodgeNaam: LODGE_LABELS[matchedLodge.lodge],
