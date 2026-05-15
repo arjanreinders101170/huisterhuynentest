@@ -7,6 +7,88 @@ export const runtime = "nodejs";
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
 
+type LoadedAanvraag = {
+  source: "v2" | "legacy";
+  id: string;
+  van: string;
+  tot: string;
+  personen: number;
+  status: string;          // genormaliseerd voor de frontend (bevestigd → geboekt)
+  rawStatus: string;
+  offerte_bedrag: number | null;
+  gastNaam: string;
+  gastEmail: string;
+};
+
+function fmtDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
+}
+
+async function loadFromBookingRequests(id: string, token: string | null): Promise<LoadedAanvraag | null> {
+  const { data, error } = await getSupabase().from("booking_requests").select("*").eq("id", id).maybeSingle();
+  if (error || !data) return null;
+  if (data.confirm_token && data.confirm_token !== token) return null;
+
+  // Gast info: eerst van guests-tabel (via guest_id), anders direct uit kolommen
+  let gastNaam = data.gast_naam || "";
+  let gastEmail = data.gast_email || "";
+  if (data.guest_id) {
+    const { data: g } = await getSupabase().from("guests").select("naam, email").eq("id", data.guest_id).maybeSingle();
+    if (g) {
+      gastNaam = g.naam || gastNaam;
+      gastEmail = g.email || gastEmail;
+    }
+  }
+
+  const van = data.check_in ? fmtDate(data.check_in)
+    : (data.periode_tekst?.split("—")[0]?.trim() || data.periode_tekst || "");
+  const tot = data.check_out ? fmtDate(data.check_out)
+    : (data.periode_tekst?.split("—")[1]?.trim() || "");
+
+  return {
+    source: "v2",
+    id: data.id,
+    van, tot,
+    personen: data.personen || 2,
+    status: data.status === "bevestigd" ? "geboekt" : data.status,
+    rawStatus: data.status,
+    offerte_bedrag: data.totaal != null ? Number(data.totaal) : null,
+    gastNaam, gastEmail,
+  };
+}
+
+async function loadFromLegacy(id: string, token: string | null): Promise<LoadedAanvraag | null> {
+  const { data, error } = await getSupabase().from("terugkeer_aanvragen").select("*").eq("id", id).maybeSingle();
+  if (error || !data) return null;
+  if (data.confirm_token && data.confirm_token !== token) return null;
+
+  let gastNaam = "";
+  let gastEmail = "";
+  if (data.guest_id) {
+    const { data: g } = await getSupabase().from("guests").select("naam, email").eq("id", data.guest_id).maybeSingle();
+    if (g) {
+      gastNaam = g.naam || "";
+      gastEmail = g.email || "";
+    }
+  }
+
+  return {
+    source: "legacy",
+    id: data.id,
+    van: data.van || "",
+    tot: data.tot || "",
+    personen: data.personen || 2,
+    status: data.status,
+    rawStatus: data.status,
+    offerte_bedrag: data.offerte_bedrag != null ? Number(data.offerte_bedrag) : null,
+    gastNaam, gastEmail,
+  };
+}
+
+async function load(id: string, token: string | null): Promise<LoadedAanvraag | null> {
+  return (await loadFromBookingRequests(id, token)) || (await loadFromLegacy(id, token));
+}
+
 // GET — load aanvraag data for confirmation page
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id");
@@ -14,45 +96,18 @@ export async function GET(request: NextRequest) {
   if (!id) return NextResponse.json({ error: "Geen aanvraag gevonden" }, { status: 400 });
 
   try {
-    const { data: aanvraag, error } = await getSupabase()
-      .from("terugkeer_aanvragen")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error || !aanvraag) {
-      return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
-    }
-
-    // Verify confirm token (if set)
-    if (aanvraag.confirm_token && aanvraag.confirm_token !== token) {
-      return NextResponse.json({ error: "Ongeldige link" }, { status: 403 });
-    }
-
-    // Then get guest info if available
-    let gastNaam = "";
-    let gastEmail = "";
-    if (aanvraag.guest_id) {
-      const { data: guest } = await getSupabase()
-        .from("guests")
-        .select("naam, email")
-        .eq("id", aanvraag.guest_id)
-        .single();
-      if (guest) {
-        gastNaam = guest.naam || "";
-        gastEmail = guest.email || "";
-      }
-    }
+    const a = await load(id, token);
+    if (!a) return NextResponse.json({ error: "Aanvraag niet gevonden of ongeldige link" }, { status: 404 });
 
     return NextResponse.json({
-      id: aanvraag.id,
-      van: aanvraag.van,
-      tot: aanvraag.tot,
-      personen: aanvraag.personen,
-      status: aanvraag.status,
-      offerte_bedrag: aanvraag.offerte_bedrag,
-      gastNaam,
-      gastEmail,
+      id: a.id,
+      van: a.van,
+      tot: a.tot,
+      personen: a.personen,
+      status: a.status,
+      offerte_bedrag: a.offerte_bedrag,
+      gastNaam: a.gastNaam,
+      gastEmail: a.gastEmail,
     });
   } catch (err) {
     console.error("Bevestig GET catch:", err);
@@ -66,83 +121,63 @@ export async function POST(request: NextRequest) {
     const { id, token } = await request.json();
     if (!id) return NextResponse.json({ error: "Geen ID" }, { status: 400 });
 
-    const { data, error } = await getSupabase()
-      .from("terugkeer_aanvragen")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const a = await load(id, token);
+    if (!a) return NextResponse.json({ error: "Aanvraag niet gevonden of ongeldige link" }, { status: 404 });
 
-    if (error || !data) {
-      return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
-    }
-
-    // Verify confirm token
-    if (data.confirm_token && data.confirm_token !== token) {
-      return NextResponse.json({ error: "Ongeldige link" }, { status: 403 });
-    }
-
-    if (data.status === "geboekt") {
+    if (a.status === "geboekt") {
       return NextResponse.json({ error: "Deze reservering is al bevestigd" }, { status: 400 });
     }
 
-    // Update status
-    await getSupabase().from("terugkeer_aanvragen").update({
-      status: "geboekt",
-      updated_at: new Date().toISOString(),
-    }).eq("id", id);
-
-    // Get guest info separately
-    let gastNaam = "Gast";
-    let gastEmail = "";
-    if (data.guest_id) {
-      const { data: guest } = await getSupabase()
-        .from("guests")
-        .select("naam, email")
-        .eq("id", data.guest_id)
-        .single();
-      if (guest) {
-        gastNaam = guest.naam || "Gast";
-        gastEmail = guest.email || "";
-      }
+    // Update status in de juiste tabel
+    if (a.source === "v2") {
+      await getSupabase().from("booking_requests").update({ status: "bevestigd" }).eq("id", id);
+    } else {
+      await getSupabase().from("terugkeer_aanvragen").update({
+        status: "geboekt",
+        updated_at: new Date().toISOString(),
+      }).eq("id", id);
     }
 
     // Send confirmation emails
     const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey && gastEmail) {
+    if (resendKey && a.gastEmail) {
       const { Resend } = await import("resend");
       const resend = new Resend(resendKey);
+
+      const bedrag = a.offerte_bedrag != null ? `&euro; ${a.offerte_bedrag.toFixed(2)}` : "—";
+      const gastNaam = a.gastNaam || "Gast";
 
       // To owner
       await resend.emails.send({
         from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
         to: [OWNER_EMAIL],
-        subject: `Reservering bevestigd! — ${esc(gastNaam)} · ${esc(data.van)} t/m ${esc(data.tot)}`,
+        subject: `Reservering bevestigd! — ${esc(gastNaam)} · ${esc(a.van)} t/m ${esc(a.tot)}`,
         html: emailWrap(`
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#2E7D32;letter-spacing:8px;">◆</span></td></tr></table>
           <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;text-align:center;">Reservering bevestigd!</h1>
           <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;">${esc(gastNaam)} heeft het aanbod geaccepteerd.</p>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:20px;">
             <tr><td style="padding:18px 20px;" align="center">
-              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(data.van)} t/m ${esc(data.tot)}</p>
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${data.personen} personen &middot; &euro; ${data.offerte_bedrag || "—"}</p>
+              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(a.van)} t/m ${esc(a.tot)}</p>
+              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${a.personen} personen &middot; ${bedrag}</p>
             </td></tr>
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">
-            <tr><td style="padding:10px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;width:80px;">E-mail</td><td style="padding:10px 0;border-bottom:1px solid #E0D8C8;"><a href="mailto:${esc(gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(gastEmail)}</a></td></tr>
+            <tr><td style="padding:10px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;width:80px;">E-mail</td><td style="padding:10px 0;border-bottom:1px solid #E0D8C8;"><a href="mailto:${esc(a.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(a.gastEmail)}</a></td></tr>
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;">
             <tr><td style="padding:16px 18px;background-color:#F9F4E8;border-left:3px solid #2F4F3E;border-radius:0 8px 8px 0;">
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2A2418;"><strong>Actie:</strong> Stuur een bevestigingsmail met praktische informatie.</p>
+              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2A2418;"><strong>Actie:</strong> Maak een verblijf aan in admin met deurcode en stuur de welkomstmail.</p>
             </td></tr>
           </table>
         `),
-        replyTo: gastEmail,
+        replyTo: a.gastEmail,
       });
 
       // To guest
       await resend.emails.send({
         from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
-        to: [gastEmail],
+        to: [a.gastEmail],
         subject: `Reservering bevestigd — ${LODGE_NAME}`,
         html: emailWrap(`
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">◆</span></td></tr></table>
@@ -153,8 +188,8 @@ export async function POST(request: NextRequest) {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:24px;">
             <tr><td style="padding:18px 20px;" align="center">
               <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Je verblijf</p>
-              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(data.van)} t/m ${esc(data.tot)}</p>
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${data.personen} personen</p>
+              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(a.van)} t/m ${esc(a.tot)}</p>
+              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${a.personen} personen</p>
             </td></tr>
           </table>
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">

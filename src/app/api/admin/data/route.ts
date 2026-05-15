@@ -972,6 +972,7 @@ export async function POST(request: NextRequest) {
         }
 
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+        const bevestigBase = new URL(appUrl).origin;
 
         const { Resend } = await import("resend");
         const resend = new Resend(resendKey);
@@ -983,7 +984,7 @@ export async function POST(request: NextRequest) {
             html: buildOfferteHtmlV2(
               esc(req.gast_naam || ""), esc(van), esc(tot),
               req.personen || 2, emailRegels, totaal, bericht || "",
-              requestId, appUrl, confirmToken,
+              requestId, bevestigBase, confirmToken,
             ),
             replyTo: "lodge@huisterhuynen.nl",
           });
