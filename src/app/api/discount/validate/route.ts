@@ -18,7 +18,7 @@ type DiscountCode = {
 };
 
 export async function POST(request: NextRequest) {
-  let body: { code?: string; nights?: number };
+  let body: { code?: string; nights?: number; checkIn?: string };
   try {
     body = await request.json();
   } catch {
@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
   }
 
   const nights = typeof body.nights === "number" ? body.nights : null;
+  const checkIn: string | null = typeof body.checkIn === "string" ? body.checkIn : null;
 
   const { data, error } = await getSupabase()
     .from("discount_codes")
@@ -46,12 +47,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ valid: false, error: "Code is niet meer geldig" });
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  if (data.geldig_van && today < data.geldig_van) {
-    return NextResponse.json({ valid: false, error: "Code is nog niet geldig" });
+  const stayDate = checkIn ?? new Date().toISOString().slice(0, 10);
+  if (data.geldig_van && stayDate < data.geldig_van) {
+    return NextResponse.json({ valid: false, error: "Code is niet geldig voor deze periode" });
   }
-  if (data.geldig_tot && today > data.geldig_tot) {
-    return NextResponse.json({ valid: false, error: "Code is verlopen" });
+  if (data.geldig_tot && stayDate > data.geldig_tot) {
+    return NextResponse.json({ valid: false, error: "Code is niet geldig voor deze periode" });
   }
   if (data.max_gebruik !== null && data.gebruik_count >= data.max_gebruik) {
     return NextResponse.json({ valid: false, error: "Code is al volledig gebruikt" });

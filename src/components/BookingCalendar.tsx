@@ -319,7 +319,7 @@ export default function BookingCalendar() {
       const res = await fetch("/api/discount/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, nights }),
+        body: JSON.stringify({ code, nights, checkIn }),
       });
       const data = await res.json();
       setPromoResult(data);
