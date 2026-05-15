@@ -130,6 +130,31 @@ export async function GET(request: NextRequest) {
         if (error) return NextResponse.json({ data: [], error: error.message });
         return NextResponse.json({ data: data || [] });
       }
+      case "booking_requests": {
+        const { data: raw, error } = await getSupabase()
+          .from("booking_requests")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(100);
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        const list = raw || [];
+        const guestIds = [...new Set(list.map((r: { guest_id: string | null }) => r.guest_id).filter(Boolean))] as string[];
+        let guestLookup: Record<string, { naam: string; email: string }> = {};
+        if (guestIds.length > 0) {
+          const { data: gd } = await getSupabase().from("guests").select("id, naam, email").in("id", guestIds);
+          if (gd) guestLookup = Object.fromEntries(gd.map((g: { id: string; naam: string; email: string }) => [g.id, { naam: g.naam, email: g.email }]));
+        }
+        const enriched = list.map((r: { guest_id: string | null }) => ({ ...r, guest: r.guest_id ? guestLookup[r.guest_id] || null : null }));
+        return NextResponse.json({ data: enriched });
+      }
+      case "fee_templates": {
+        const { data, error } = await getSupabase()
+          .from("fee_templates")
+          .select("*")
+          .order("volgorde", { ascending: true });
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        return NextResponse.json({ data: data || [] });
+      }
       default:
         return NextResponse.json({ error: "Onbekende tabel" }, { status: 400 });
     }
@@ -786,6 +811,53 @@ export async function POST(request: NextRequest) {
       case "delete_blog_post": {
         if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
         await getSupabase().from("blog_posts").delete().eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "create_fee_template": {
+        const { label, soort, bedrag, percentage, basis, volgorde } = body;
+        if (!label || !soort || !basis) {
+          return NextResponse.json({ error: "Label, soort en basis zijn verplicht" }, { status: 400 });
+        }
+        if (!["toeslag", "korting", "belasting"].includes(soort)) {
+          return NextResponse.json({ error: "Ongeldige soort" }, { status: 400 });
+        }
+        if (!["eenmalig", "per_nacht", "per_persoon", "per_persoon_per_nacht"].includes(basis)) {
+          return NextResponse.json({ error: "Ongeldige basis" }, { status: 400 });
+        }
+        const { data, error } = await getSupabase().from("fee_templates").insert({
+          label: String(label).trim(),
+          soort,
+          bedrag: bedrag !== undefined && bedrag !== "" ? parseFloat(bedrag) : null,
+          percentage: percentage !== undefined && percentage !== "" ? parseFloat(percentage) : null,
+          basis,
+          volgorde: volgorde !== undefined ? parseInt(volgorde) || 0 : 0,
+          actief: true,
+        }).select().single();
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true, data });
+      }
+      case "update_fee_template": {
+        const { id, label, soort, bedrag, percentage, basis, volgorde } = body;
+        if (!id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const updates: Record<string, unknown> = {};
+        if (label !== undefined) updates.label = String(label).trim();
+        if (soort !== undefined) updates.soort = soort;
+        if (bedrag !== undefined) updates.bedrag = bedrag === "" ? null : parseFloat(bedrag);
+        if (percentage !== undefined) updates.percentage = percentage === "" ? null : parseFloat(percentage);
+        if (basis !== undefined) updates.basis = basis;
+        if (volgorde !== undefined) updates.volgorde = parseInt(volgorde) || 0;
+        const { error } = await getSupabase().from("fee_templates").update(updates).eq("id", id);
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true });
+      }
+      case "toggle_fee_template": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("fee_templates").update({ actief: body.actief === true || body.actief === "true" }).eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "delete_fee_template": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("fee_templates").delete().eq("id", body.id);
         return NextResponse.json({ success: true });
       }
       default:
