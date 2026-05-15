@@ -138,12 +138,19 @@ export async function safeInsertBookingRequest(row: Record<string, unknown>): Pr
       .select("id")
       .single();
     if (error) {
-      console.error("[booking_requests] insert failed:", error.message);
+      console.error("[booking_requests] insert failed:", JSON.stringify({
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        row,
+      }));
       return null;
     }
+    console.log(`[booking_requests] inserted ${data?.id} (bron=${row.bron})`);
     return data?.id || null;
   } catch (e) {
-    console.error("[booking_requests] insert threw:", e);
+    console.error("[booking_requests] insert threw:", e, "row:", JSON.stringify(row));
     return null;
   }
 }

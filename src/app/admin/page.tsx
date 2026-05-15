@@ -2774,6 +2774,21 @@ function AanvragenV2Tab({ requests }: { requests: BookingRequest[] }) {
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
   const [filterBron, setFilterBron] = useState<"all" | "homepage" | "app" | "terugkomer">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | BookingRequest["status"]>("all");
+  const [diagnosing, setDiagnosing] = useState(false);
+  const [diagnosis, setDiagnosis] = useState<unknown>(null);
+
+  const runDiagnosis = async () => {
+    setDiagnosing(true);
+    setDiagnosis(null);
+    try {
+      const r = await fetch("/api/admin/diagnose-booking-requests");
+      const d = await r.json();
+      setDiagnosis(d);
+    } catch (e) {
+      setDiagnosis({ error: String(e) });
+    }
+    setDiagnosing(false);
+  };
 
   const filtered = requests.filter(r =>
     (filterBron === "all" || r.bron === filterBron) &&
@@ -2876,6 +2891,26 @@ function AanvragenV2Tab({ requests }: { requests: BookingRequest[] }) {
       <div style={{ marginTop: 20, padding: "12px 16px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 12, color: C.muted }}>
         ℹ️ Dit is een lees-only overzicht. De offerte-editor komt in een volgende fase. Tot dan blijft de werkende flow via &ldquo;Aanvragen&rdquo; (alleen terugkomers).
       </div>
+
+      <details style={{ marginTop: 16, padding: "10px 16px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 12, color: C.muted }}>
+        <summary style={{ cursor: "pointer", fontWeight: 500 }}>🔧 Diagnose: aanvragen komen niet binnen?</summary>
+        <div style={{ marginTop: 12 }}>
+          <p style={{ margin: "0 0 10px", lineHeight: 1.5 }}>
+            Test of de <code>booking_requests</code>-tabel bereikbaar en beschrijfbaar is. Doet een proef-insertie en ruimt die direct op.
+          </p>
+          <button onClick={runDiagnosis} disabled={diagnosing} style={{
+            padding: "7px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
+            background: C.card, fontSize: 12, color: C.text, cursor: diagnosing ? "not-allowed" : "pointer",
+          }}>{diagnosing ? "Bezig..." : "Diagnose starten"}</button>
+          {diagnosis !== null && (
+            <pre style={{
+              marginTop: 12, padding: 12, background: "#1F1F1F", color: "#E0E0E0",
+              borderRadius: 6, fontSize: 11, overflowX: "auto", maxHeight: 400,
+              fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+            }}>{JSON.stringify(diagnosis, null, 2)}</pre>
+          )}
+        </div>
+      </details>
     </>
   );
 }
