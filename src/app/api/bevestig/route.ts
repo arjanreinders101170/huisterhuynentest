@@ -23,6 +23,9 @@ type LoadedAanvraag = {
   gastNaam: string;
   gastEmail: string;
   lodge: string | null;    // bv. "lodge_1" / "lodge_2"
+  guestId: string | null;
+  checkInIso: string | null;
+  checkOutIso: string | null;
 };
 
 function fmtDate(iso: string): string {
@@ -60,6 +63,9 @@ async function loadFromBookingRequests(id: string, token: string | null): Promis
     offerte_bedrag: data.totaal != null ? Number(data.totaal) : null,
     gastNaam, gastEmail,
     lodge: data.lodge || null,
+    guestId: data.guest_id || null,
+    checkInIso: data.check_in || null,
+    checkOutIso: data.check_out || null,
   };
 }
 
@@ -100,6 +106,9 @@ async function loadFromLegacy(id: string, token: string | null): Promise<LoadedA
     offerte_bedrag: data.offerte_bedrag != null ? Number(data.offerte_bedrag) : null,
     gastNaam, gastEmail,
     lodge,
+    guestId: data.guest_id || null,
+    checkInIso: null,    // legacy heeft geen ISO datums
+    checkOutIso: null,
   };
 }
 
@@ -154,6 +163,39 @@ export async function POST(request: NextRequest) {
         status: "geboekt",
         updated_at: new Date().toISOString(),
       }).eq("id", id);
+    }
+
+    // Auto-create stays record voor v2 met volledige data. De welkomstmail
+    // wordt door /api/cron/emails op T-3 automatisch verstuurd.
+    if (a.source === "v2" && a.guestId && a.lodge && a.checkInIso && a.checkOutIso) {
+      try {
+        // Check of er al een stays-record bestaat voor deze gast + datums (bv. door dubbele klik)
+        const { data: existing } = await getSupabase()
+          .from("stays")
+          .select("id")
+          .eq("guest_id", a.guestId)
+          .eq("check_in", a.checkInIso)
+          .eq("check_out", a.checkOutIso)
+          .maybeSingle();
+        if (!existing) {
+          const { randomBytes, randomInt } = await import("crypto");
+          const token = randomBytes(24).toString("hex");
+          const door_code = String(randomInt(1000, 9999));
+          await getSupabase().from("stays").insert({
+            guest_id: a.guestId,
+            lodge: a.lodge,
+            check_in: a.checkInIso,
+            check_out: a.checkOutIso,
+            token,
+            door_code,
+            status: "gepland",
+            welcome_sent: false,
+          });
+        }
+      } catch (e) {
+        console.error("[bevestig] auto-create stay failed:", e);
+        // Niet falen — status is al op bevestigd, admin kan handmatig stay aanmaken
+      }
     }
 
     // Send confirmation emails

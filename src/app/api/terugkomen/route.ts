@@ -37,18 +37,8 @@ export async function POST(request: NextRequest) {
       ? `[Lodge: ${voorkeursLodgeNaam || voorkeursLodge}${wasFallback ? " — fallback, voorkeur was bezet" : ""}]\n${message || ""}`.trim()
       : (message || null);
 
-    let aanvraagId = "";
-    try {
-      const { data } = await getSupabase().from("terugkeer_aanvragen").insert({
-        guest_id: guestId, van: from, tot: to,
-        personen: persons || 2, bericht: fullBericht, status: "nieuw",
-      }).select("id").single();
-      aanvraagId = data?.id || "";
-    } catch (e) { console.error("Terugkeer insert failed:", e); }
-
-    // Dual-write naar unified funnel. Als de Terugkomen-component ISO-datums
-    // meestuurt, slaan we die op zodat de offerte-editor de verblijfprijs kan
-    // voorinvullen via computeStayPrice.
+    // Alleen nog naar booking_requests. De oude terugkeer_aanvragen-tabel wordt
+    // niet meer geschreven; admin werkt vanuit Aanvragen-tab op booking_requests.
     const nachten = fromIso && toIso
       ? Math.max(0, Math.round((new Date(toIso).getTime() - new Date(fromIso).getTime()) / 86400000))
       : null;
@@ -83,7 +73,6 @@ export async function POST(request: NextRequest) {
       voorgestelde_prijs: voorgesteldePrijs,
       voorgestelde_prijs_label: voorgesteldeLabel,
       status: "nieuw",
-      legacy_terugkeer_id: aanvraagId || null,
     });
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
@@ -100,8 +89,6 @@ export async function POST(request: NextRequest) {
       try {
         const { Resend } = await import("resend");
         const resend = new Resend(resendKey);
-
-        const offerteLink = `${baseUrl}/offerte?id=${aanvraagId}&email=${encodeURIComponent(email)}&naam=${encodeURIComponent(name || "")}&van=${encodeURIComponent(from)}&tot=${encodeURIComponent(to)}&personen=${personen}`;
 
         // E-mail naar eigenaar
         await resend.emails.send({
@@ -120,8 +107,8 @@ export async function POST(request: NextRequest) {
                 { label: "E-mail", value: esc(email), href: `mailto:${esc(email)}` },
                 ...(message ? [{ label: "Bericht", value: esc(message) }] : []),
               ]),
-              calloutBlock("Actie", "Open in admin &rarr; Aanvragen v2 en stuur een offerte. Onderstaande knop opent de legacy offerte-pagina."),
-              ctaButton(offerteLink, "Stuur aanbod (legacy)"),
+              calloutBlock("Volgende stap", "Open de admin en kies Reserveringen &rarr; Aanvragen om de offerte op te bouwen en te versturen."),
+              ctaButton(`${baseUrl}/admin`, "Open admin"),
             ],
             footer: `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(email)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(email)}</a>`,
           }),
