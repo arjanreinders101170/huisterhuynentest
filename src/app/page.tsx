@@ -14,7 +14,7 @@ interface GoogleReview {
 
 const FALLBACK_REVIEWS = [
   {
-    text: "Een onvergetelijk weekend in De Heide. De hottub onder de sterren, het geluid van de vogels — pure magie.",
+    text: "Een onvergetelijk weekend in De Heide. De hottub onder de sterren, het geluid van de vogels. Pure magie.",
     author: "Sarah & Mark",
     rating: 5,
   },
@@ -301,7 +301,7 @@ export default function LandingPage() {
           <SectionHeader
             eyebrow="Waarom Huis ter Huynen"
             title="Alles voor een onvergetelijk verblijf"
-            sub="Van privé-hottub tot laadfaciliteiten voor uw EV — wij denken aan alles, zodat u aan niets hoeft te denken."
+            sub="Van privé-hottub tot laadfaciliteiten voor uw EV. Wij denken aan alles zodat u aan niets hoeft te denken."
           />
           <div style={{
             display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
@@ -309,10 +309,10 @@ export default function LandingPage() {
           }}>
             {[
               { icon: "◈", label: "Privé Hottub", desc: "Genieten onder de sterren, op elk moment van de dag." },
-              { icon: "◈", label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen — direct om de hoek." },
+              { icon: "◈", label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek." },
               { icon: "◈", label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein." },
-              { icon: "◈", label: "Volledige privacy", desc: "Alleen ú en uw gezelschap — geen omringende buren." },
-              { icon: "◈", label: "Uniek design", desc: "De Heide én De Eik — elk met eigen karakter en sfeer." },
+              { icon: "◈", label: "Volledige privacy", desc: "Alleen ú en uw gezelschap, geen omringende buren." },
+              { icon: "◈", label: "Uniek design", desc: "De Heide én De Eik, elk met eigen karakter en sfeer." },
               { icon: "◈", label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf." },
             ].map((usp, i) => (
               <div key={i} style={{ borderTop: `2px solid ${T.gold}`, paddingTop: 20 }}>
@@ -458,7 +458,7 @@ export default function LandingPage() {
             color: "white", lineHeight: 1.45, fontWeight: 400,
             fontStyle: "italic", margin: "0 0 22px",
           }}>
-            &ldquo;De hottub onder de sterren, het geluid van de vogels in de strubben — dit is geen weekendje weg, dit is een reset.&rdquo;
+            &ldquo;De hottub onder de sterren, het geluid van de vogels in de strubben. Dit is geen weekendje weg, dit is een reset.&rdquo;
           </p>
           <div style={{ height: 1, width: 40, background: T.gold, margin: "0 auto 18px", opacity: 0.7 }} />
           <div style={{
@@ -509,7 +509,7 @@ export default function LandingPage() {
                 {
                   naam: "Veentjesroute Zeijen",
                   lengte: "7,5 km · ± 2 uur",
-                  afstand: "0 min — start bij de lodge",
+                  afstand: "0 min, start bij de lodge",
                   niveau: "Makkelijk",
                   desc: "De mooiste route vanuit de lodge. Langs houtwallen, veentjes en Drentse gedichten door het Zeijerwiek.",
                   kleur: T.green,
@@ -605,7 +605,7 @@ export default function LandingPage() {
                 fontFamily: T.sans, fontSize: 14, color: "rgba(255,255,255,.75)",
                 fontWeight: 300, margin: "0 0 20px", lineHeight: 1.7,
               }}>
-                Kronkelende beken, heidevelden en houtwallen. Het Boswachterspad langs het Oudemolense Diep is een aanrader — vlonderpaden en goede kans op de ijsvogel.
+                Kronkelende beken, heidevelden en houtwallen. Het Boswachterspad langs het Oudemolense Diep is een aanrader, met vlonderpaden en goede kans op de ijsvogel.
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {["Beekdal", "Boswachterspad", "IJsvogel"].map((t, i) => (
@@ -702,7 +702,7 @@ export default function LandingPage() {
           <SectionHeader
             eyebrow="Activiteiten in de omgeving"
             title="Wat er allemaal te doen is"
-            sub="Drenthe is véél meer dan wandelen. Fietsen door de knooppuntenroutes, cultuur snuiven bij de hunebedden of ontspannen in een van de wellnesscentra — het past allemaal binnen een halfuur."
+            sub="Drenthe is véél meer dan wandelen. Fietsen door de knooppuntenroutes, cultuur snuiven bij de hunebedden of ontspannen in een van de wellnesscentra. Het past allemaal binnen een halfuur."
           />
           <div style={{
             display: "grid",
@@ -947,7 +947,7 @@ export default function LandingPage() {
                 fontFamily: T.sans, fontSize: 13, fontWeight: 300,
                 lineHeight: 1.7, margin: "0 0 16px", color: "rgba(255,255,255,.75)",
               }}>
-                Twee boutique lodges midden in het hart van Drenthe. Natuur, privacy en luxe — op loopafstand van de heide.
+                Twee boutique lodges midden in het hart van Drenthe. Natuur, privacy en luxe, op loopafstand van de heide.
               </p>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {["De Heide · 4 pers.", "De Eik · 4 pers."].map((l, i) => (

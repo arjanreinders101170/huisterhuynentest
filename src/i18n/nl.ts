@@ -11,7 +11,7 @@ export const nl = {
   onboarding: {
     title: "Welkom",
     subtitle: "Vertel ons iets over je verblijf, dan stemmen we alles op jullie af.",
-    skip: "Overslaan — ik kijk liever zelf rond",
+    skip: "Overslaan, ik kijk liever zelf rond",
     profiles: {
       stel:    { label: "Als stel",       sub: "Romantiek, lekker eten & quality time" },
       gezin:   { label: "Met kinderen",   sub: "Avontuur, speelplezier & samen genieten" },
