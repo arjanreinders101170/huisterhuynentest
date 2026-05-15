@@ -2,6 +2,7 @@ import { esc } from "@/lib/email";
 import { terugkomenSchema } from "@/lib/schemas";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { safeInsertBookingRequest } from "@/lib/pricing";
 
 export const runtime = "nodejs";
 
@@ -198,6 +199,21 @@ export async function POST(request: NextRequest) {
       }).select("id").single();
       aanvraagId = data?.id || "";
     } catch (e) { console.error("Terugkeer insert failed:", e); }
+
+    // Dual-write naar unified funnel — terugkomers hebben geen ISO-datums (alleen "14 mei"),
+    // dus check_in/check_out blijven NULL en de periode komt in periode_tekst.
+    await safeInsertBookingRequest({
+      bron: "terugkomer",
+      guest_id: guestId,
+      gast_naam: name || "",
+      gast_email: email,
+      lodge: voorkeursLodge || null,
+      personen: persons || 2,
+      bericht: fullBericht,
+      periode_tekst: `${from} — ${to}`,
+      status: "nieuw",
+      legacy_terugkeer_id: aanvraagId || null,
+    });
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl";
 

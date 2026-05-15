@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
   gold: "#B49A5E", text: "#2A2418", muted: "#5A534C", border: "#E0D8C8",
 };
+
+// Tynaarlo belastingverordening 2026 — vakantiehuis (geen camping/groep)
+const TOERISTENBELASTING_PER_PPN = 1.50;
 
 function OfferteForm() {
   const params = useSearchParams();
@@ -15,18 +18,29 @@ function OfferteForm() {
   const gastNaam = params.get("naam") || "";
   const van = params.get("van") || "";
   const tot = params.get("tot") || "";
-  const personen = params.get("personen") || "2";
+  const personenParam = params.get("personen") || "2";
 
+  const [personen, setPersonen] = useState(personenParam);
+  const [nachten, setNachten] = useState("");
   const [prijsVerblijf, setPrijsVerblijf] = useState("");
   const [toeristenbelasting, setToeristenbelasting] = useState("");
+  const [belastingAuto, setBelastingAuto] = useState(true);
   const [schoonmaak, setSchoonmaak] = useState("75");
   const [bericht, setBericht] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const autoBelasting = useMemo(() => {
+    const p = parseInt(personen) || 0;
+    const n = parseInt(nachten) || 0;
+    return p > 0 && n > 0 ? (p * n * TOERISTENBELASTING_PER_PPN).toFixed(2) : "";
+  }, [personen, nachten]);
+
+  const effectieveBelasting = belastingAuto && autoBelasting ? autoBelasting : toeristenbelasting;
+
   const totaal = (
     (parseFloat(prijsVerblijf) || 0) +
-    (parseFloat(toeristenbelasting) || 0) +
+    (parseFloat(effectieveBelasting) || 0) +
     (parseFloat(schoonmaak) || 0)
   ).toFixed(2);
 
@@ -42,7 +56,9 @@ function OfferteForm() {
         body: JSON.stringify({
           aanvraagId, gastEmail, gastNaam, van, tot,
           personen: parseInt(personen),
-          prijsVerblijf, toeristenbelasting, schoonmaak, bericht,
+          prijsVerblijf,
+          toeristenbelasting: effectieveBelasting,
+          schoonmaak, bericht,
         }),
       });
       if (r.ok) setSent(true);
@@ -102,10 +118,6 @@ function OfferteForm() {
               <td style={{ padding: "4px 0", color: T.muted }}>Periode</td>
               <td style={{ padding: "4px 0", color: T.text, fontWeight: "bold" }}>{van} t/m {tot}</td>
             </tr>
-            <tr>
-              <td style={{ padding: "4px 0", color: T.muted }}>Personen</td>
-              <td style={{ padding: "4px 0", color: T.text }}>{personen}</td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -113,6 +125,18 @@ function OfferteForm() {
       {/* Price fields */}
       <div style={{ fontFamily: "Arial, sans-serif", fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: "1px", marginBottom: 12, fontWeight: "bold" }}>
         Prijsopbouw
+      </div>
+
+      {/* Personen + nachten — basis voor automatische toeristenbelasting */}
+      <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: T.text, display: "block", marginBottom: 4 }}>Personen</label>
+          <input value={personen} onChange={e => setPersonen(e.target.value)} type="number" min="1" max="6" style={inputStyle} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: T.text, display: "block", marginBottom: 4 }}>Nachten</label>
+          <input value={nachten} onChange={e => setNachten(e.target.value)} type="number" min="1" placeholder="7" style={inputStyle} />
+        </div>
       </div>
 
       <div style={{ marginBottom: 12 }}>
@@ -126,11 +150,33 @@ function OfferteForm() {
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <label style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: T.text, display: "block", marginBottom: 4 }}>Toeristenbelasting</label>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+          <label style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: T.text }}>
+            Toeristenbelasting
+            {belastingAuto && autoBelasting && (
+              <span style={{ marginLeft: 8, fontSize: 11, color: T.gold, fontWeight: "normal" }}>
+                auto: {personen}p × {nachten}n × € {TOERISTENBELASTING_PER_PPN.toFixed(2)}
+              </span>
+            )}
+          </label>
+          {!belastingAuto && (
+            <button type="button" onClick={() => { setBelastingAuto(true); setToeristenbelasting(""); }}
+              style={{ background: "none", border: "none", color: T.green, fontSize: 11, cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+              ↻ auto
+            </button>
+          )}
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: "Arial, sans-serif", fontSize: 16, color: T.muted }}>€</span>
-          <input value={toeristenbelasting} onChange={e => setToeristenbelasting(e.target.value)} placeholder="12.50" type="number" step="0.01" style={inputStyle} />
+          <input
+            value={belastingAuto ? autoBelasting : toeristenbelasting}
+            onChange={e => { setBelastingAuto(false); setToeristenbelasting(e.target.value); }}
+            placeholder={autoBelasting || "12.50"} type="number" step="0.01" style={inputStyle}
+          />
         </div>
+        <p style={{ margin: "4px 0 0", fontSize: 11, color: T.muted, fontFamily: "Arial, sans-serif" }}>
+          Tynaarlo 2026: € 1,50 p.p. per nacht (vakantiehuis)
+        </p>
       </div>
 
       <div style={{ marginBottom: 20 }}>
