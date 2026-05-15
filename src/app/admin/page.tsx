@@ -488,7 +488,7 @@ export default function AdminDashboard() {
             )}
 
             {tab === "aanvragen_v2" && (
-              <AanvragenV2Tab requests={bookingRequests} />
+              <AanvragenV2Tab requests={bookingRequests} setRequests={setBookingRequests} />
             )}
 
             {tab === "toeslagen" && (
@@ -2770,12 +2770,31 @@ const LODGE_SHORT_NAMES: Record<string, string> = {
   lodge_2: "De Eik",
 };
 
-function AanvragenV2Tab({ requests }: { requests: BookingRequest[] }) {
+type OfferteForm = {
+  prijsVerblijf: string;
+  schoonmaak: string;
+  toeristenbelasting: string;
+  extraRegels: { label: string; bedrag: string; soort: "toeslag" | "korting" | "belasting" }[];
+  bericht: string;
+};
+
+function AanvragenV2Tab({ requests, setRequests }: { requests: BookingRequest[]; setRequests: (r: BookingRequest[]) => void }) {
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
   const [filterBron, setFilterBron] = useState<"all" | "homepage" | "app" | "terugkomer">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | BookingRequest["status"]>("all");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [loadingPrefill, setLoadingPrefill] = useState<string | null>(null);
+  const [forms, setForms] = useState<Record<string, OfferteForm>>({});
+  const [saving, setSaving] = useState<string | null>(null);
+  const [result, setResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<unknown>(null);
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "9px 12px", borderRadius: 8,
+    border: `1px solid ${C.border}`, background: C.card,
+    fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box",
+  };
 
   const runDiagnosis = async () => {
     setDiagnosing(true);
@@ -2788,6 +2807,138 @@ function AanvragenV2Tab({ requests }: { requests: BookingRequest[] }) {
       setDiagnosis({ error: String(e) });
     }
     setDiagnosing(false);
+  };
+
+  const openEditor = async (req: BookingRequest) => {
+    if (expandedId === req.id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(req.id);
+    if (forms[req.id]) return; // al geladen
+
+    setLoadingPrefill(req.id);
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "prefill_offerte", requestId: req.id }),
+      });
+      const d = await r.json();
+      if (d.success && d.prefill) {
+        setForms(prev => ({
+          ...prev,
+          [req.id]: {
+            prijsVerblijf: d.prefill.verblijf > 0 ? String(d.prefill.verblijf) : "",
+            schoonmaak: d.prefill.schoonmaak > 0 ? String(d.prefill.schoonmaak) : "",
+            toeristenbelasting: d.prefill.toeristenbelasting > 0 ? String(d.prefill.toeristenbelasting) : "",
+            extraRegels: (d.prefill.extraRegels || []).map((x: { label: string; bedrag: number; soort: string }) => ({
+              label: x.label, bedrag: String(x.bedrag), soort: (x.soort as "toeslag" | "korting" | "belasting"),
+            })),
+            bericht: "",
+          },
+        }));
+      }
+    } catch (e) {
+      console.error("Prefill failed:", e);
+    }
+    setLoadingPrefill(null);
+  };
+
+  const updateForm = (id: string, patch: Partial<OfferteForm>) => {
+    setForms(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }));
+  };
+
+  const addRegel = (id: string, regel: { label: string; bedrag: string; soort: "toeslag" | "korting" | "belasting" }) => {
+    setForms(prev => ({
+      ...prev,
+      [id]: { ...prev[id], extraRegels: [...(prev[id]?.extraRegels || []), regel] },
+    }));
+  };
+
+  const removeRegel = (id: string, idx: number) => {
+    setForms(prev => ({
+      ...prev,
+      [id]: { ...prev[id], extraRegels: prev[id].extraRegels.filter((_, i) => i !== idx) },
+    }));
+  };
+
+  const updateRegel = (id: string, idx: number, patch: Partial<{ label: string; bedrag: string; soort: "toeslag" | "korting" | "belasting" }>) => {
+    setForms(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        extraRegels: prev[id].extraRegels.map((r, i) => i === idx ? { ...r, ...patch } : r),
+      },
+    }));
+  };
+
+  const computeTotal = (f: OfferteForm): number => {
+    const v = parseFloat(f.prijsVerblijf) || 0;
+    const s = parseFloat(f.schoonmaak) || 0;
+    const t = parseFloat(f.toeristenbelasting) || 0;
+    const extras = f.extraRegels.reduce((acc, r) => {
+      const b = Math.abs(parseFloat(r.bedrag) || 0);
+      return acc + (r.soort === "korting" ? -b : b);
+    }, 0);
+    return Math.max(0, v + s + t + extras);
+  };
+
+  const sendOfferte = async (req: BookingRequest) => {
+    const f = forms[req.id];
+    if (!f || !f.prijsVerblijf) return;
+    setSaving(req.id);
+    setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "" } }));
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "send_offerte_v2",
+          requestId: req.id,
+          prijsVerblijf: f.prijsVerblijf,
+          schoonmaak: f.schoonmaak,
+          toeristenbelasting: f.toeristenbelasting,
+          extraRegels: f.extraRegels.map(x => ({ label: x.label, bedrag: parseFloat(x.bedrag) || 0, soort: x.soort })),
+          bericht: f.bericht,
+        }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        setRequests(requests.map(x => x.id === req.id ? { ...x, status: "offerte_verstuurd", totaal: d.totaal } : x));
+        setExpandedId(null);
+        setResult(prev => ({ ...prev, [req.id]: { ok: true, msg: d.warning || `Offerte € ${Number(d.totaal).toFixed(2)} verstuurd` } }));
+      } else {
+        setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: d.error || "Kon offerte niet versturen" } }));
+      }
+    } catch {
+      setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "Verbindingsfout" } }));
+    }
+    setSaving(null);
+  };
+
+  const rejectRequest = async (id: string) => {
+    if (!confirm("Aanvraag afwijzen?")) return;
+    setSaving(id);
+    try {
+      await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reject_booking_request", id }),
+      });
+      setRequests(requests.map(x => x.id === id ? { ...x, status: "afgewezen" } : x));
+      setExpandedId(null);
+    } catch {}
+    setSaving(null);
+  };
+
+  const markInBehandeling = async (id: string) => {
+    await fetch("/api/admin/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "mark_booking_in_behandeling", id }),
+    });
+    setRequests(requests.map(x => x.id === id ? { ...x, status: "in_behandeling" } : x));
   };
 
   const filtered = requests.filter(r =>
@@ -2818,11 +2969,109 @@ function AanvragenV2Tab({ requests }: { requests: BookingRequest[] }) {
     terugkomer: requests.filter(r => r.bron === "terugkomer").length,
   };
 
+  const renderEditor = (req: BookingRequest) => {
+    const f = forms[req.id];
+    const isLoading = loadingPrefill === req.id;
+    if (isLoading || !f) {
+      return <div style={{ padding: 24, fontSize: 13, color: C.muted }}>Voorstel berekenen...</div>;
+    }
+    const total = computeTotal(f);
+    const isSaving = saving === req.id;
+    const res = result[req.id];
+
+    return (
+      <div style={{ padding: "20px 24px", background: "#FAFAF7", borderTop: `1px solid ${C.border}` }}>
+        <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, marginBottom: 12, fontWeight: 500 }}>
+          Offerte opbouwen
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Verblijf (€) *</label>
+            <input value={f.prijsVerblijf} onChange={e => updateForm(req.id, { prijsVerblijf: e.target.value })} type="number" step="0.01" placeholder="0.00" style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Eindschoonmaak (€)</label>
+            <input value={f.schoonmaak} onChange={e => updateForm(req.id, { schoonmaak: e.target.value })} type="number" step="0.01" placeholder="0.00" style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Toeristenbelasting (€)</label>
+            <input value={f.toeristenbelasting} onChange={e => updateForm(req.id, { toeristenbelasting: e.target.value })} type="number" step="0.01" placeholder="0.00" style={inputStyle} />
+          </div>
+        </div>
+
+        {f.extraRegels.length > 0 && (
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>Extra regels</div>
+            {f.extraRegels.map((r, idx) => {
+              const soort = SOORT_LABEL[r.soort];
+              return (
+                <div key={idx} style={{ display: "grid", gridTemplateColumns: "1fr 110px 130px 28px", gap: 8, marginBottom: 6, alignItems: "center" }}>
+                  <input value={r.label} onChange={e => updateRegel(req.id, idx, { label: e.target.value })} placeholder="Label" style={inputStyle} />
+                  <input value={r.bedrag} onChange={e => updateRegel(req.id, idx, { bedrag: e.target.value })} type="number" step="0.01" placeholder="0.00" style={inputStyle} />
+                  <select value={r.soort} onChange={e => updateRegel(req.id, idx, { soort: e.target.value as "toeslag" | "korting" | "belasting" })} style={{ ...inputStyle, color: soort.color, fontWeight: 500 }}>
+                    <option value="toeslag">Toeslag</option>
+                    <option value="korting">Korting</option>
+                    <option value="belasting">Belasting</option>
+                  </select>
+                  <button onClick={() => removeRegel(req.id, idx)} title="Verwijder regel" style={{
+                    width: 28, height: 28, borderRadius: 6, border: `1px solid ${C.border}`,
+                    background: C.card, color: "#E24B4A", cursor: "pointer", fontSize: 14, padding: 0,
+                  }}>×</button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div style={{ marginBottom: 14 }}>
+          <button onClick={() => addRegel(req.id, { label: "", bedrag: "", soort: "toeslag" })} style={{
+            padding: "6px 12px", borderRadius: 6, border: `1px dashed ${C.border}`,
+            background: "transparent", fontSize: 12, color: C.muted, cursor: "pointer",
+          }}>+ Extra regel</button>
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Persoonlijk bericht (optioneel)</label>
+          <textarea value={f.bericht} onChange={e => updateForm(req.id, { bericht: e.target.value })}
+            placeholder="Welkom! We verheugen ons op jullie komst..."
+            rows={3} style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }} />
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
+          <div style={{ fontSize: 16, fontWeight: 500, color: C.green }}>
+            Totaal: € {total.toFixed(2)}
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {res && !res.ok && res.msg && (
+              <span style={{ fontSize: 12, color: "#E24B4A" }}>{res.msg}</span>
+            )}
+            <button onClick={() => rejectRequest(req.id)} disabled={isSaving} style={{
+              padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+              background: C.card, fontSize: 12, color: "#E24B4A", cursor: isSaving ? "not-allowed" : "pointer",
+            }}>Wijs af</button>
+            {req.status === "nieuw" && (
+              <button onClick={() => markInBehandeling(req.id)} disabled={isSaving} style={{
+                padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+                background: C.card, fontSize: 12, color: C.muted, cursor: isSaving ? "not-allowed" : "pointer",
+              }}>In behandeling</button>
+            )}
+            <button onClick={() => sendOfferte(req)} disabled={!f.prijsVerblijf || isSaving} style={{
+              padding: "8px 20px", borderRadius: 8, border: "none",
+              background: f.prijsVerblijf && !isSaving ? C.green : C.border,
+              fontSize: 12, fontWeight: 500, color: "#fff", cursor: f.prijsVerblijf && !isSaving ? "pointer" : "not-allowed",
+            }}>{isSaving ? "Versturen..." : "Verstuur offerte →"}</button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Aanvragen v2</div>
       <div style={{ fontSize: 13, color: C.light, marginBottom: 20 }}>
-        Alle aanvragen uit alle bronnen — homepage, concierge-app en terugkomers — in één overzicht.
+        Alle aanvragen uit alle bronnen — homepage, concierge-app en terugkomers — in één overzicht. Klik op een aanvraag om een offerte op te bouwen.
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
@@ -2861,36 +3110,53 @@ function AanvragenV2Tab({ requests }: { requests: BookingRequest[] }) {
             const name = r.guest?.naam || r.gast_naam || "—";
             const email = r.guest?.email || r.gast_email || "";
             const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
+            const isExpanded = expandedId === r.id;
+            const isEditable = r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd";
+            const res = result[r.id];
+
             return (
-              <div key={r.id} style={{ display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px", padding: "14px 16px", borderTop: `1px solid ${C.border}`, fontSize: 13, color: C.text, alignItems: "center" }}>
-                <div title={bron.label} style={{ fontSize: 14 }}>{bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span></div>
-                <div>
-                  <div style={{ fontWeight: 500 }}>{name}</div>
-                  <div style={{ fontSize: 11, color: C.muted }}>{email}</div>
-                </div>
-                <div style={{ fontSize: 12, color: C.muted }}>
-                  {period(r)}
-                  <div style={{ fontSize: 11 }}>
-                    {(r.personen ?? 0) > 0 && `${r.personen}p`}
-                    {r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
-                    {r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
+              <div key={r.id} style={{ borderTop: `1px solid ${C.border}` }}>
+                <div
+                  onClick={() => isEditable && openEditor(r)}
+                  style={{
+                    display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px",
+                    padding: "14px 16px", fontSize: 13, color: C.text, alignItems: "center",
+                    cursor: isEditable ? "pointer" : "default",
+                    background: isExpanded ? "#FAFAF7" : "transparent",
+                  }}
+                >
+                  <div title={bron.label} style={{ fontSize: 14 }}>{bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span></div>
+                  <div>
+                    <div style={{ fontWeight: 500 }}>{name}</div>
+                    <div style={{ fontSize: 11, color: C.muted }}>{email}</div>
+                  </div>
+                  <div style={{ fontSize: 12, color: C.muted }}>
+                    {period(r)}
+                    <div style={{ fontSize: 11 }}>
+                      {(r.personen ?? 0) > 0 && `${r.personen}p`}
+                      {r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
+                      {r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 12, color: C.muted }}>{lodge}</div>
+                  <div style={{ textAlign: "right", fontWeight: 500, color: r.voorgestelde_prijs || r.totaal ? C.text : C.light }}>
+                    {r.totaal ? `€ ${Number(r.totaal).toFixed(2)}` : (r.voorgestelde_prijs ? `€ ${Number(r.voorgestelde_prijs).toFixed(2)}` : "—")}
+                  </div>
+                  <div>
+                    <Badge status={r.status} />
+                    {res?.ok && <div style={{ fontSize: 11, color: "#2E7D32", marginTop: 2 }}>✓ {res.msg}</div>}
+                  </div>
+                  <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>
+                    {timeAgo(r.created_at)}
+                    {isEditable && <div style={{ fontSize: 10, color: C.gold, marginTop: 2 }}>{isExpanded ? "▲" : "▼"}</div>}
                   </div>
                 </div>
-                <div style={{ fontSize: 12, color: C.muted }}>{lodge}</div>
-                <div style={{ textAlign: "right", fontWeight: 500, color: r.voorgestelde_prijs ? C.text : C.light }}>
-                  {r.voorgestelde_prijs ? `€ ${Number(r.voorgestelde_prijs).toFixed(2)}` : "—"}
-                </div>
-                <div><Badge status={r.status} /></div>
-                <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>{timeAgo(r.created_at)}</div>
+                {isExpanded && isEditable && renderEditor(r)}
               </div>
             );
           })}
         </div>
       )}
-
-      <div style={{ marginTop: 20, padding: "12px 16px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 12, color: C.muted }}>
-        ℹ️ Dit is een lees-only overzicht. De offerte-editor komt in een volgende fase. Tot dan blijft de werkende flow via &ldquo;Aanvragen&rdquo; (alleen terugkomers).
-      </div>
 
       <details style={{ marginTop: 16, padding: "10px 16px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 12, color: C.muted }}>
         <summary style={{ cursor: "pointer", fontWeight: 500 }}>🔧 Diagnose: aanvragen komen niet binnen?</summary>
