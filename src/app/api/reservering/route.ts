@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { reserveringSchema } from "@/lib/schemas";
+import { safeInsertBookingRequest } from "@/lib/pricing";
 
 export const runtime = "nodejs";
 
@@ -88,6 +89,31 @@ export async function POST(request: NextRequest) {
       void getSupabase().rpc("increment_discount_usage", { code_id: result.id });
     }
   }
+
+  // Upsert guest, then store request in unified funnel
+  let guestId: string | null = null;
+  try {
+    const { data } = await getSupabase().rpc("upsert_guest", { p_naam: naam, p_email: email });
+    guestId = data;
+  } catch (e) { console.error("Guest upsert failed:", e); }
+
+  await safeInsertBookingRequest({
+    bron: "homepage",
+    guest_id: guestId,
+    gast_naam: naam,
+    gast_email: email,
+    lodge,
+    check_in: checkIn,
+    check_out: checkOut,
+    nachten: nightsNum,
+    personen: aantalPersonen ? parseInt(aantalPersonen) || 2 : 2,
+    huisdieren: huisdieren === "ja",
+    bericht: bericht || null,
+    voorgestelde_prijs: totalNum,
+    voorgestelde_prijs_label: priceLabel || null,
+    promo_code: promoInfo?.label || null,
+    status: "nieuw",
+  });
 
   const resendKey = process.env.RESEND_API_KEY;
   if (!resendKey) {
