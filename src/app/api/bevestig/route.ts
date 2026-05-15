@@ -1,6 +1,10 @@
-import { esc, emailWrap } from "@/lib/email";
+import {
+  esc, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist,
+  teaserBlock, detailsBlock,
+} from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -18,6 +22,7 @@ type LoadedAanvraag = {
   offerte_bedrag: number | null;
   gastNaam: string;
   gastEmail: string;
+  lodge: string | null;    // bv. "lodge_1" / "lodge_2"
 };
 
 function fmtDate(iso: string): string {
@@ -54,6 +59,7 @@ async function loadFromBookingRequests(id: string, token: string | null): Promis
     rawStatus: data.status,
     offerte_bedrag: data.totaal != null ? Number(data.totaal) : null,
     gastNaam, gastEmail,
+    lodge: data.lodge || null,
   };
 }
 
@@ -72,6 +78,17 @@ async function loadFromLegacy(id: string, token: string | null): Promise<LoadedA
     }
   }
 
+  // Legacy-records bewaarden lodge als "[Lodge: De Heide]..." prefix in het bericht.
+  let lodge: string | null = null;
+  if (typeof data.bericht === "string") {
+    const m = data.bericht.match(/\[Lodge:\s*([^\]\n]+?)(?:\s*—|]\s*)/i);
+    if (m) {
+      const txt = m[1].toLowerCase();
+      if (txt.includes("heide")) lodge = "lodge_1";
+      else if (txt.includes("eik")) lodge = "lodge_2";
+    }
+  }
+
   return {
     source: "legacy",
     id: data.id,
@@ -82,6 +99,7 @@ async function loadFromLegacy(id: string, token: string | null): Promise<LoadedA
     rawStatus: data.status,
     offerte_bedrag: data.offerte_bedrag != null ? Number(data.offerte_bedrag) : null,
     gastNaam, gastEmail,
+    lodge,
   };
 }
 
@@ -147,31 +165,40 @@ export async function POST(request: NextRequest) {
       const bedrag = a.offerte_bedrag != null ? `&euro; ${a.offerte_bedrag.toFixed(2)}` : "—";
       const gastNaam = a.gastNaam || "Gast";
 
+      // Gedeelde lodge-variabelen voor beide e-mails
+      const appUrlBv = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+      const baseUrlBv = new URL(appUrlBv).origin;
+      const { url: photoUrl } = lodgePhoto(baseUrlBv, a.lodge);
+      const lodgeNaamBv = lodgeName(a.lodge || "lodge_1");
+      const firstName = esc((gastNaam || "").split(" ")[0] || gastNaam || "");
+      const periodLine = `${esc(a.van)} t/m ${esc(a.tot)}`;
+      const subLine = `Lodge ${esc(lodgeNaamBv)} &middot; ${a.personen} ${a.personen === 1 ? "persoon" : "personen"}${a.offerte_bedrag != null ? ` &middot; ${bedrag}` : ""}`;
+
       // To owner
       await resend.emails.send({
         from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
         to: [OWNER_EMAIL],
         subject: `Reservering bevestigd! — ${esc(gastNaam)} · ${esc(a.van)} t/m ${esc(a.tot)}`,
-        html: emailWrap(`
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#2E7D32;letter-spacing:8px;">◆</span></td></tr></table>
-          <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2A2418;text-align:center;">Reservering bevestigd!</h1>
-          <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;">${esc(gastNaam)} heeft het aanbod geaccepteerd.</p>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:20px;">
-            <tr><td style="padding:18px 20px;" align="center">
-              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(a.van)} t/m ${esc(a.tot)}</p>
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${a.personen} personen &middot; ${bedrag}</p>
-            </td></tr>
-          </table>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">
-            <tr><td style="padding:10px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;width:80px;">E-mail</td><td style="padding:10px 0;border-bottom:1px solid #E0D8C8;"><a href="mailto:${esc(a.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(a.gastEmail)}</a></td></tr>
-          </table>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;">
-            <tr><td style="padding:16px 18px;background-color:#F9F4E8;border-left:3px solid #2F4F3E;border-radius:0 8px 8px 0;">
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2A2418;"><strong>Actie:</strong> Maak een verblijf aan in admin met deurcode en stuur de welkomstmail.</p>
-            </td></tr>
-          </table>
-        `),
         replyTo: a.gastEmail,
+        html: lodgeEmail({
+          photoUrl, photoAlt: `Lodge ${esc(lodgeNaamBv)}`,
+          title: "Reservering bevestigd",
+          intro: `${esc(gastNaam)} heeft het aanbod geaccepteerd. Hieronder vind je de details om het verblijf in admin in te plannen.`,
+          blocks: [
+            infoBlock("Reservering", periodLine, subLine),
+            detailsBlock("Gast", [
+              { label: "Naam", value: esc(gastNaam) },
+              { label: "E-mail", value: esc(a.gastEmail), href: `mailto:${esc(a.gastEmail)}` },
+            ]),
+            calloutBlock("Volgende stap", "Maak een verblijf aan in admin met deurcode en stuur de welkomstmail enkele dagen voor aankomst."),
+            checklist([
+              "Aanbod door gast geaccepteerd",
+              "Status in admin op &lsquo;bevestigd&rsquo;",
+              "Bevestigingsmail naar gast verstuurd",
+            ]),
+          ],
+          footer: `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(a.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(a.gastEmail)}</a>`,
+        }),
       });
 
       // To guest
@@ -179,48 +206,21 @@ export async function POST(request: NextRequest) {
         from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
         to: [a.gastEmail],
         subject: `Reservering bevestigd — ${LODGE_NAME}`,
-        html: emailWrap(`
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">◆</span></td></tr></table>
-          <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;text-align:center;">Je reservering is bevestigd!</h1>
-          <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;line-height:1.6;">
-            Wat fijn${gastNaam !== "Gast" ? `, ${esc(gastNaam)}` : ""}! We verheugen ons op jullie komst.
-          </p>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:24px;">
-            <tr><td style="padding:18px 20px;" align="center">
-              <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Je verblijf</p>
-              <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(a.van)} t/m ${esc(a.tot)}</p>
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${a.personen} personen</p>
-            </td></tr>
-          </table>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-            <tr><td style="padding:18px 20px;background-color:#F9F4E8;border-radius:8px;">
-              <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#2F4F3E;">Wat nu?</p>
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#2A2418;line-height:1.6;">We nemen binnenkort contact op met praktische informatie over je verblijf: check-in, route, en tips voor je bezoek aan Drenthe.</p>
-            </td></tr>
-          </table>
-
-          <!-- ► Mini-teaser for the gast-app (arrives T-3) -->
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-            <tr><td style="padding:14px 18px;background-color:#FDFBF6;border:1px solid #E0D8C8;border-radius:8px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td style="vertical-align:middle;font-family:Arial,sans-serif;font-size:24px;width:42px;">&#127969;</td>
-                <td style="vertical-align:middle;">
-                  <p style="margin:0 0 2px;font-family:Georgia,serif;font-size:14px;font-weight:bold;color:#2A2418;">Een paar dagen voor aankomst</p>
-                  <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;line-height:1.5;">Krijg je je persoonlijke gast-app: deur, wi-fi, route en tips &mdash; alles op &eacute;&eacute;n plek.</p>
-                </td>
-              </tr></table>
-            </td></tr>
-          </table>
-
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-            <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Bevestiging ontvangen</td></tr>
-            <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Praktische info volgt per e-mail</td></tr>
-            <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Vragen? We staan voor je klaar</td></tr>
-          </table>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-            <tr><td style="padding:16px 0 0;"><p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">Bel of WhatsApp: <a href="tel:+31642568603" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">+31 6 42568603</a></p></td></tr>
-          </table>
-        `),
+        html: lodgeEmail({
+          photoUrl, photoAlt: `Lodge ${esc(lodgeNaamBv)}`,
+          title: `Bevestigd${firstName ? `, ${firstName}` : ""}`,
+          intro: `Jullie reservering voor Lodge ${esc(lodgeNaamBv)} staat klaar. We verheugen ons op de komst en nemen een paar dagen voor aankomst contact op met alle praktische informatie.`,
+          blocks: [
+            infoBlock("Je verblijf", periodLine, subLine),
+            calloutBlock("Wat nu?", "We sturen jullie een paar dagen voor aankomst een persoonlijke gast-app met deurcode, wi-fi, routebeschrijving en tips voor de omgeving."),
+            teaserBlock("&#127969;", "Een paar dagen voor aankomst", "Krijg je je gast-app: deurcode, wi-fi, route en lokale tips &mdash; alles op &eacute;&eacute;n plek."),
+            checklist([
+              "Reservering bevestigd",
+              "Bevestigingsmail is dit bericht",
+              "Praktische info volgt per gast-app",
+            ]),
+          ],
+        }),
       });
     }
 

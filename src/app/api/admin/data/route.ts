@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, buildOfferteHtml, buildOfferteHtmlV2, type OfferteRegel } from "@/lib/email";
+import {
+  esc, buildOfferteHtml, buildOfferteHtmlV2, type OfferteRegel,
+  lodgeEmail, lodgePhoto, infoBlock, calloutBlock, ctaButton,
+} from "@/lib/email";
 import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { verifyAdminSession } from "@/lib/admin-auth";
 import { computeStayPrice } from "@/lib/pricing";
@@ -516,8 +519,10 @@ export async function POST(request: NextRequest) {
         if (!resendKey) return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
 
         const appUrlTy = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
-        const esc = (s: string) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
+        const baseUrlTy = new URL(appUrlTy).origin;
         const naam = esc(guest.naam || "");
+        const firstName = naam.split(" ")[0] || naam;
+        const { url: photoUrlTy } = lodgePhoto(baseUrlTy, stay.lodge);
 
         const { Resend } = await import("resend");
         const resend = new Resend(resendKey);
@@ -526,86 +531,16 @@ export async function POST(request: NextRequest) {
           from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
           to: [guest.email],
           subject: "Bedankt voor je bezoek — Huis ter Huynen",
-          html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-<body style="margin:0;padding:0;background-color:#EAE3D2;font-family:Georgia,'Times New Roman',serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#EAE3D2;">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
-
-  <!-- Header -->
-  <tr><td align="center" style="padding:0 0 20px;">
-    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-      <td align="center" style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
-    </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
-      <td style="width:28px;height:1px;background-color:#B49A5E;"></td>
-      <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
-      <td style="width:28px;height:1px;background-color:#B49A5E;"></td>
-    </tr></table></td></tr></table>
-  </td></tr>
-
-  <!-- Hero image + Content card in single container -->
-  <tr><td>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
-    <tr><td style="padding:0;font-size:0;line-height:0;">
-      <img src="https://www.huisterhuynen.nl/heide3.jpg" alt="Drentse heide" width="520" style="display:block;width:100%;height:auto;" />
-    </td></tr>
-    <tr><td style="padding:32px 32px 28px;">
-
-      <h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;line-height:1.3;">
-        Tot snel, ${naam}
-      </h1>
-
-      <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.7;">
-        De heide kleurt, het bos ruist, en de hottub dampt zachtjes in de ochtendlucht. Zo gaat het hier elke dag verder &mdash; ook als je er even niet bent.
-      </p>
-
-      <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.7;">
-        We hopen dat Drenthe je goed heeft gedaan. Mocht je ooit terug willen &mdash; je bent altijd welkom.
-      </p>
-
-      <!-- CTA: review -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-        <tr><td style="padding:20px;background-color:#F5F1E8;border-radius:8px;">
-          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;color:#2F4F3E;">Vertel ons hoe het was</p>
-          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
-            Jouw ervaring helpt andere gasten en helpt ons om het nóg beter te maken.
-          </p>
-          <table role="presentation" cellpadding="0" cellspacing="0">
-            <tr><td align="center" style="background-color:#2F4F3E;border-radius:8px;">
-              <a href="${appUrlTy}" style="display:block;padding:12px 28px;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
-                Review achterlaten
-              </a>
-            </td></tr>
-          </table>
-        </td></tr>
-      </table>
-
-      <!-- Sign-off -->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-      <tr><td style="padding:20px 0 0;">
-        <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#2A2418;font-weight:bold;">Het Huynen team</p>
-        <p style="margin:0 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;">Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
-        <p style="margin:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;">
-          WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>
-        </p>
-      </td></tr>
-      </table>
-
-    </td></tr>
-    </table>
-  </td></tr>
-
-  <!-- Footer -->
-  <tr><td align="center" style="padding:24px 0 0;">
-    <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background-color:#B49A5E;"></td></tr></table>
-    <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">Huis ter Huynen &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
-  </td></tr>
-
-</table>
-</td></tr></table>
-</body></html>`,
+          html: lodgeEmail({
+            photoUrl: photoUrlTy, photoAlt: "Huis ter Huynen",
+            title: `Tot snel${firstName ? `, ${firstName}` : ""}`,
+            intro: "De heide kleurt, het bos ruist, en de hottub dampt zachtjes in de ochtendlucht. Zo gaat het hier elke dag verder &mdash; ook als je er even niet bent. We hopen dat Drenthe je goed heeft gedaan.",
+            blocks: [
+              calloutBlock("Vertel ons hoe het was", "Jouw ervaring helpt andere gasten en helpt ons om het n&oacute;g beter te maken. Het kost maar een paar minuten."),
+              ctaButton(appUrlTy, "Review achterlaten"),
+            ],
+            footer: "Mocht je ooit terug willen &mdash; je bent altijd welkom. Het Huynen team",
+          }),
         });
 
         // Update stay status
