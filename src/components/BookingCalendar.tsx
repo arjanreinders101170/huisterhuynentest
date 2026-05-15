@@ -427,7 +427,7 @@ export default function BookingCalendar() {
               </div>
             ))}
             <div style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: T.sans, fontSize: 12, color: T.muted }}>
-              <span style={{ fontFamily: T.sans, fontSize: 10, color: T.gold, fontWeight: 600 }}>€125</span>
+              <span style={{ fontFamily: T.sans, fontSize: 11, color: T.text, fontWeight: 600 }}>€125</span>
               <span>Prijs per nacht</span>
             </div>
           </div>
