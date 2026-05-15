@@ -228,7 +228,7 @@ export default function AdminDashboard() {
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
       {/* Top nav */}
-      <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", padding: "0 32px", height: 56, flexShrink: 0, zIndex: 20 }}>
+      <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", padding: "0 32px", height: 56, flexShrink: 0, position: "sticky", top: 0, zIndex: 50 }}>
         {/* Brand */}
         <div style={{ fontSize: 14, fontWeight: 700, color: "#111827", letterSpacing: 0.1, marginRight: 40, whiteSpace: "nowrap" }}>
           Huis ter Huynen
