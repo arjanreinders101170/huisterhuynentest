@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, buildOfferteHtml } from "@/lib/email";
+import { esc, buildOfferteHtml, buildOfferteHtmlV2, type OfferteRegel } from "@/lib/email";
 import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { verifyAdminSession } from "@/lib/admin-auth";
+import { computeStayPrice } from "@/lib/pricing";
 
 export const runtime = "nodejs";
 
@@ -811,6 +812,196 @@ export async function POST(request: NextRequest) {
       case "delete_blog_post": {
         if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
         await getSupabase().from("blog_posts").delete().eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "prefill_offerte": {
+        const { requestId } = body;
+        if (!requestId) return NextResponse.json({ error: "requestId verplicht" }, { status: 400 });
+
+        const sb = getSupabase();
+        const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", requestId).single();
+        if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+
+        const personen = req.personen || 2;
+        const nachten = req.nachten || (req.check_in && req.check_out
+          ? Math.max(0, Math.round((new Date(req.check_out).getTime() - new Date(req.check_in).getTime()) / 86400000))
+          : 0);
+
+        // 1. Verblijf: bereken server-side voor zekerheid; val terug op voorgestelde_prijs
+        let verblijf = Number(req.voorgestelde_prijs) || 0;
+        if (req.lodge && req.check_in && req.check_out && nachten > 0) {
+          try {
+            const calc = await computeStayPrice({
+              lodge: req.lodge,
+              checkIn: req.check_in,
+              checkOut: req.check_out,
+              personen,
+              huisdier: req.huisdieren || false,
+            });
+            verblijf = calc.verblijf;
+          } catch (e) { console.error("computeStayPrice failed:", e); }
+        }
+
+        // 2. Fee templates ophalen
+        const { data: feesData } = await sb.from("fee_templates").select("*").eq("actief", true).order("volgorde", { ascending: true });
+        const fees = (feesData || []) as Array<{ id: string; label: string; soort: string; bedrag: number | null; basis: string }>;
+
+        const feeAmount = (basis: string, bedrag: number) => {
+          switch (basis) {
+            case "eenmalig": return bedrag;
+            case "per_nacht": return bedrag * nachten;
+            case "per_persoon": return bedrag * personen;
+            case "per_persoon_per_nacht": return bedrag * personen * nachten;
+            default: return 0;
+          }
+        };
+
+        // 3. Splits: schoonmaak en toeristenbelasting krijgen eigen kolom; rest gaat naar extra_regels
+        let schoonmaak = 0;
+        let toeristenbelasting = 0;
+        const extraRegels: Array<{ label: string; bedrag: number; soort: string; fee_template_id: string }> = [];
+
+        for (const f of fees) {
+          const base = f.bedrag ?? 0;
+          if (base === 0) continue;
+          const amt = Math.round(feeAmount(f.basis, base) * 100) / 100;
+          if (amt === 0) continue;
+
+          // Huisdier alleen toepassen als gast huisdier meeneemt
+          if (/huisdier/i.test(f.label) && !req.huisdieren) continue;
+
+          if (/schoonmaak/i.test(f.label) && f.soort === "toeslag") {
+            schoonmaak = amt;
+          } else if (/toeristenbelasting/i.test(f.label) && f.soort === "belasting") {
+            toeristenbelasting = amt;
+          } else {
+            extraRegels.push({ label: f.label, bedrag: amt, soort: f.soort, fee_template_id: f.id });
+          }
+        }
+
+        return NextResponse.json({
+          success: true,
+          prefill: {
+            verblijf,
+            schoonmaak,
+            toeristenbelasting,
+            extraRegels,
+            nachten,
+            personen,
+            // Context
+            gast_naam: req.gast_naam,
+            gast_email: req.gast_email,
+            check_in: req.check_in,
+            check_out: req.check_out,
+            periode_tekst: req.periode_tekst,
+            lodge: req.lodge,
+            huisdieren: req.huisdieren,
+            bron: req.bron,
+            bericht: req.bericht,
+          },
+        });
+      }
+      case "send_offerte_v2": {
+        const { requestId, prijsVerblijf, schoonmaak, toeristenbelasting, extraRegels, bericht } = body;
+        if (!requestId) return NextResponse.json({ error: "requestId verplicht" }, { status: 400 });
+
+        const verblijf = parseFloat(prijsVerblijf) || 0;
+        const cleaning = parseFloat(schoonmaak) || 0;
+        const tax = parseFloat(toeristenbelasting) || 0;
+        const extras = Array.isArray(extraRegels) ? extraRegels : [];
+
+        if (verblijf <= 0) return NextResponse.json({ error: "Verblijfprijs is verplicht" }, { status: 400 });
+
+        // Sanitize extra regels
+        const cleanRegels = extras
+          .map((r: { label?: string; bedrag?: number | string; soort?: string }) => ({
+            label: String(r.label || "").slice(0, 80),
+            bedrag: parseFloat(String(r.bedrag ?? "0")) || 0,
+            soort: ["toeslag", "korting", "belasting"].includes(String(r.soort || "")) ? String(r.soort) : "toeslag",
+          }))
+          .filter((r) => r.label && r.bedrag !== 0);
+
+        const sb = getSupabase();
+        const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", requestId).single();
+        if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+        if (!req.gast_email) return NextResponse.json({ error: "Aanvraag heeft geen e-mailadres" }, { status: 400 });
+
+        // Bereken totaal: kortingen worden afgetrokken (zo opgeslagen in cleanRegels)
+        const extraSum = cleanRegels.reduce((s, r) => s + (r.soort === "korting" ? -Math.abs(r.bedrag) : Math.abs(r.bedrag)), 0);
+        const totaal = Math.max(0, Math.round((verblijf + cleaning + tax + extraSum) * 100) / 100);
+
+        const { randomBytes } = await import("crypto");
+        const confirmToken = randomBytes(32).toString("hex");
+
+        const { error: updErr } = await sb.from("booking_requests").update({
+          status: "offerte_verstuurd",
+          prijs_verblijf: verblijf,
+          schoonmaak: cleaning,
+          toeristenbelasting: tax,
+          extra_regels: cleanRegels,
+          totaal,
+          confirm_token: confirmToken,
+        }).eq("id", requestId);
+        if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
+
+        // Verstuur e-mail
+        const resendKey = process.env.RESEND_API_KEY;
+        if (!resendKey) {
+          return NextResponse.json({ success: true, totaal, emailSent: false, warning: "Resend niet geconfigureerd, offerte is wel opgeslagen" });
+        }
+
+        // Format periode voor e-mail
+        const fmt = (iso: string | null) => iso
+          ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })
+          : "";
+        const van = req.check_in ? fmt(req.check_in) : (req.periode_tekst?.split("—")[0]?.trim() || "");
+        const tot = req.check_out ? fmt(req.check_out) : (req.periode_tekst?.split("—")[1]?.trim() || "");
+
+        // Bouw regels voor e-mail (verblijf eerst, dan schoonmaak, toeristenbelasting, dan extras)
+        const emailRegels: OfferteRegel[] = [
+          { label: "Verblijf", bedrag: verblijf, soort: "verblijf" },
+        ];
+        if (cleaning > 0) emailRegels.push({ label: "Eindschoonmaak", bedrag: cleaning, soort: "toeslag" });
+        if (tax > 0) emailRegels.push({ label: "Toeristenbelasting", bedrag: tax, soort: "belasting" });
+        for (const r of cleanRegels) {
+          emailRegels.push({
+            label: r.label,
+            bedrag: Math.abs(r.bedrag),
+            soort: r.soort as OfferteRegel["soort"],
+          });
+        }
+
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+
+        const { Resend } = await import("resend");
+        const resend = new Resend(resendKey);
+        try {
+          await resend.emails.send({
+            from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+            to: [req.gast_email],
+            subject: "Persoonlijk aanbod — Huis ter Huynen",
+            html: buildOfferteHtmlV2(
+              esc(req.gast_naam || ""), esc(van), esc(tot),
+              req.personen || 2, emailRegels, totaal, bericht || "",
+              requestId, appUrl, confirmToken,
+            ),
+            replyTo: "lodge@huisterhuynen.nl",
+          });
+        } catch (e) {
+          console.error("Offerte v2 email failed:", e);
+          return NextResponse.json({ success: true, totaal, emailSent: false, warning: "Offerte opgeslagen, maar e-mail versturen faalde" });
+        }
+
+        return NextResponse.json({ success: true, totaal, emailSent: true });
+      }
+      case "reject_booking_request": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("booking_requests").update({ status: "afgewezen" }).eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "mark_booking_in_behandeling": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("booking_requests").update({ status: "in_behandeling" }).eq("id", body.id);
         return NextResponse.json({ success: true });
       }
       case "create_fee_template": {
