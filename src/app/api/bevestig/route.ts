@@ -1,4 +1,7 @@
-import { esc } from "@/lib/email";
+import {
+  esc, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist,
+  teaserBlock, detailsBlock,
+} from "@/lib/email";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
@@ -162,184 +165,62 @@ export async function POST(request: NextRequest) {
       const bedrag = a.offerte_bedrag != null ? `&euro; ${a.offerte_bedrag.toFixed(2)}` : "—";
       const gastNaam = a.gastNaam || "Gast";
 
-      // Gedeelde lodge-variabelen voor beide e-mails (owner + gast)
+      // Gedeelde lodge-variabelen voor beide e-mails
       const appUrlBv = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
       const baseUrlBv = new URL(appUrlBv).origin;
-      const lodgeKey = a.lodge || "lodge_1";
-      const lodgePhotoBv = lodgeKey === "lodge_2"
-        ? `${baseUrlBv}/lodge-eik.jpg`
-        : `${baseUrlBv}/lodge-heide.jpg`;
-      const lodgeNaamBv = lodgeName(lodgeKey);
+      const { url: photoUrl } = lodgePhoto(baseUrlBv, a.lodge);
+      const lodgeNaamBv = lodgeName(a.lodge || "lodge_1");
       const firstName = esc((gastNaam || "").split(" ")[0] || gastNaam || "");
+      const periodLine = `${esc(a.van)} t/m ${esc(a.tot)}`;
+      const subLine = `Lodge ${esc(lodgeNaamBv)} &middot; ${a.personen} ${a.personen === 1 ? "persoon" : "personen"}${a.offerte_bedrag != null ? ` &middot; ${bedrag}` : ""}`;
 
-      // To owner — zelfde lodge-foto stijl als de gastenmail
+      // To owner
       await resend.emails.send({
         from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
         to: [OWNER_EMAIL],
         subject: `Reservering bevestigd! — ${esc(gastNaam)} · ${esc(a.van)} t/m ${esc(a.tot)}`,
         replyTo: a.gastEmail,
-        html: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
-<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
-<tr><td align="center" style="padding:0 0 24px;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
-  </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-    <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-  </tr></table></td></tr></table>
-</td></tr>
-<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
-<tr><td style="padding:0;font-size:0;line-height:0;">
-  <img src="${lodgePhotoBv}" alt="Lodge ${esc(lodgeNaamBv)}" width="480" style="display:block;width:100%;height:auto;" />
-</td></tr>
-<tr><td style="padding:32px 28px 28px;">
-
-  <h1 style="margin:0 0 14px;font-size:28px;color:#2A2418;text-align:center;font-family:Georgia,serif;line-height:1.2;">
-    Reservering bevestigd
-  </h1>
-  <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
-    ${esc(gastNaam)} heeft het aanbod geaccepteerd. Hieronder vind je de details om het verblijf in admin in te plannen.
-  </p>
-
-  <!-- ► Verblijf-block -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:10px;margin-bottom:20px;">
-    <tr><td style="padding:18px 20px;" align="center">
-      <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Reservering</p>
-      <p style="margin:0 0 6px;font-family:Georgia,serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(a.van)} t/m ${esc(a.tot)}</p>
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">Lodge ${esc(lodgeNaamBv)} &middot; ${a.personen} ${a.personen === 1 ? "persoon" : "personen"} &middot; ${bedrag}</p>
-    </td></tr>
-  </table>
-
-  <!-- ► Gast-gegevens -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:10px;margin-bottom:20px;">
-    <tr><td style="padding:16px 20px;">
-      <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Gast</p>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">
-        <tr><td style="padding:4px 0;color:#8A7D6A;width:80px;">Naam</td><td style="padding:4px 0;color:#2A2418;font-weight:bold;">${esc(gastNaam)}</td></tr>
-        <tr><td style="padding:4px 0;color:#8A7D6A;">E-mail</td><td style="padding:4px 0;"><a href="mailto:${esc(a.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(a.gastEmail)}</a></td></tr>
-      </table>
-    </td></tr>
-  </table>
-
-  <!-- ► Actie-callout -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
-    <tr><td style="padding:18px 20px;">
-      <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2A2418;">Volgende stap</p>
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
-        Maak een verblijf aan in admin met deurcode en stuur de welkomstmail enkele dagen voor aankomst.
-      </p>
-    </td></tr>
-  </table>
-
-  <!-- ► Checklist -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Aanbod door gast geaccepteerd</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Status in admin op &lsquo;bevestigd&rsquo;</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Bevestigingsmail naar gast verstuurd</td></tr>
-  </table>
-
-  <!-- ► Footer -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-    <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;text-align:center;">
-      Reageer rechtstreeks naar de gast: <a href="mailto:${esc(a.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(a.gastEmail)}</a>
-    </td></tr>
-  </table>
-</td></tr></table></td></tr>
-<tr><td align="center" style="padding:24px 0 0;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
-  <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">${LODGE_NAME} &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
-</td></tr>
-</table></td></tr></table></body></html>`,
+        html: lodgeEmail({
+          photoUrl, photoAlt: `Lodge ${esc(lodgeNaamBv)}`,
+          title: "Reservering bevestigd",
+          intro: `${esc(gastNaam)} heeft het aanbod geaccepteerd. Hieronder vind je de details om het verblijf in admin in te plannen.`,
+          blocks: [
+            infoBlock("Reservering", periodLine, subLine),
+            detailsBlock("Gast", [
+              { label: "Naam", value: esc(gastNaam) },
+              { label: "E-mail", value: esc(a.gastEmail), href: `mailto:${esc(a.gastEmail)}` },
+            ]),
+            calloutBlock("Volgende stap", "Maak een verblijf aan in admin met deurcode en stuur de welkomstmail enkele dagen voor aankomst."),
+            checklist([
+              "Aanbod door gast geaccepteerd",
+              "Status in admin op &lsquo;bevestigd&rsquo;",
+              "Bevestigingsmail naar gast verstuurd",
+            ]),
+          ],
+          footer: `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(a.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(a.gastEmail)}</a>`,
+        }),
       });
 
-      // Verwijderde lokale herdefinitie — variabelen staan hierboven
-
+      // To guest
       await resend.emails.send({
         from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
         to: [a.gastEmail],
         subject: `Reservering bevestigd — ${LODGE_NAME}`,
-        html: `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
-<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
-<tr><td align="center" style="padding:0 0 24px;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
-  </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-    <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-  </tr></table></td></tr></table>
-</td></tr>
-<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
-<tr><td style="padding:0;font-size:0;line-height:0;">
-  <img src="${lodgePhotoBv}" alt="Lodge ${esc(lodgeNaamBv)}" width="480" style="display:block;width:100%;height:auto;" />
-</td></tr>
-<tr><td style="padding:32px 28px 28px;">
-
-  <h1 style="margin:0 0 14px;font-size:28px;color:#2A2418;text-align:center;font-family:Georgia,serif;line-height:1.2;">
-    Bevestigd${firstName ? `, ${firstName}` : ""}
-  </h1>
-  <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
-    Jullie reservering voor Lodge ${esc(lodgeNaamBv)} staat klaar. We verheugen ons op de komst en nemen een paar dagen voor aankomst contact op met alle praktische informatie.
-  </p>
-
-  <!-- ► Verblijf-block -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:10px;margin-bottom:20px;">
-    <tr><td style="padding:18px 20px;" align="center">
-      <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Je verblijf</p>
-      <p style="margin:0 0 6px;font-family:Georgia,serif;font-size:18px;color:#2A2418;font-weight:bold;">${esc(a.van)} t/m ${esc(a.tot)}</p>
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">Lodge ${esc(lodgeNaamBv)} &middot; ${a.personen} ${a.personen === 1 ? "persoon" : "personen"}${a.offerte_bedrag != null ? ` &middot; &euro; ${a.offerte_bedrag.toFixed(2)}` : ""}</p>
-    </td></tr>
-  </table>
-
-  <!-- ► Wat nu? -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
-    <tr><td style="padding:18px 20px;">
-      <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2A2418;">Wat nu?</p>
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
-        We sturen jullie een paar dagen voor aankomst een persoonlijke gast-app met deurcode, wi-fi, routebeschrijving en tips voor de omgeving.
-      </p>
-    </td></tr>
-  </table>
-
-  <!-- ► Mini-teaser voor gast-app -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-    <tr><td style="padding:14px 18px;background:#FDFBF6;border:1px solid #E0D8C8;border-radius:10px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-        <td style="vertical-align:middle;font-family:Arial,sans-serif;font-size:24px;width:42px;">&#127969;</td>
-        <td style="vertical-align:middle;">
-          <p style="margin:0 0 2px;font-family:Georgia,serif;font-size:14px;font-weight:bold;color:#2A2418;">Een paar dagen voor aankomst</p>
-          <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;line-height:1.5;">Krijg je je gast-app: deurcode, wi-fi, route en lokale tips &mdash; alles op &eacute;&eacute;n plek.</p>
-        </td>
-      </tr></table>
-    </td></tr>
-  </table>
-
-  <!-- ► Trust-checklist -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Reservering bevestigd</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Bevestigingsmail is dit bericht</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;Praktische info volgt per gast-app</td></tr>
-  </table>
-
-  <!-- ► Footer -->
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-    <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;text-align:center;">
-      Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>
-    </td></tr>
-  </table>
-</td></tr></table></td></tr>
-<tr><td align="center" style="padding:24px 0 0;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
-  <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">Huis ter Huynen &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
-</td></tr>
-</table></td></tr></table></body></html>`,
+        html: lodgeEmail({
+          photoUrl, photoAlt: `Lodge ${esc(lodgeNaamBv)}`,
+          title: `Bevestigd${firstName ? `, ${firstName}` : ""}`,
+          intro: `Jullie reservering voor Lodge ${esc(lodgeNaamBv)} staat klaar. We verheugen ons op de komst en nemen een paar dagen voor aankomst contact op met alle praktische informatie.`,
+          blocks: [
+            infoBlock("Je verblijf", periodLine, subLine),
+            calloutBlock("Wat nu?", "We sturen jullie een paar dagen voor aankomst een persoonlijke gast-app met deurcode, wi-fi, routebeschrijving en tips voor de omgeving."),
+            teaserBlock("&#127969;", "Een paar dagen voor aankomst", "Krijg je je gast-app: deurcode, wi-fi, route en lokale tips &mdash; alles op &eacute;&eacute;n plek."),
+            checklist([
+              "Reservering bevestigd",
+              "Bevestigingsmail is dit bericht",
+              "Praktische info volgt per gast-app",
+            ]),
+          ],
+        }),
       });
     }
 

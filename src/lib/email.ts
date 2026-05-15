@@ -9,6 +9,171 @@ export function esc(s: string): string {
 
 const LODGE_NAME = "Huis ter Huynen";
 
+/* ═══════════════════════════════════════════════════════════════
+   Gedeelde e-mail templates
+   ───────────────────────────────────────────────────────────────
+   Alle uitgaande mails gebruiken `lodgeEmail()` als basis zodat ze
+   dezelfde header, kaart, foto-positie en footer hebben. Per mail
+   bouw je de inhoud als array van EmailBlock-strings via de
+   `*Block`-helpers hieronder.
+   ═══════════════════════════════════════════════════════════════ */
+
+export type EmailBlock = string;
+
+/** Grijze info-kaart, bijv. voor verblijf-overzicht. */
+export function infoBlock(label: string, mainLine: string, subLine?: string): EmailBlock {
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:10px;margin-bottom:20px;">
+      <tr><td style="padding:18px 20px;" align="center">
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>
+        <p style="margin:0${subLine ? " 0 6px" : ""};font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${mainLine}</p>
+        ${subLine ? `<p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${subLine}</p>` : ""}
+      </td></tr>
+    </table>`;
+}
+
+/** Goud-getinte callout met titel + body. */
+export function calloutBlock(title: string, body: string): EmailBlock {
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
+      <tr><td style="padding:18px 20px;">
+        <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:bold;color:#2A2418;">${title}</p>
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">${body}</p>
+      </td></tr>
+    </table>`;
+}
+
+/** Groene vinkjes-lijst. */
+export function checklist(items: string[]): EmailBlock {
+  const rows = items.map(i =>
+    `<tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003;&ensp;${i}</td></tr>`
+  ).join("");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">${rows}</table>`;
+}
+
+/** Kleine kaart met emoji-icoon + titel + body (gast-app teaser). */
+export function teaserBlock(emoji: string, title: string, body: string): EmailBlock {
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+      <tr><td style="padding:14px 18px;background:#FDFBF6;border:1px solid #E0D8C8;border-radius:10px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td style="vertical-align:middle;font-family:Arial,sans-serif;font-size:24px;width:42px;">${emoji}</td>
+          <td style="vertical-align:middle;">
+            <p style="margin:0 0 2px;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:bold;color:#2A2418;">${title}</p>
+            <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;line-height:1.5;">${body}</p>
+          </td>
+        </tr></table>
+      </td></tr>
+    </table>`;
+}
+
+/** Witte kaart met label + rij(en) met label/waarde, bijv. voor gast-gegevens. */
+export type DetailRow = { label: string; value: string; href?: string };
+export function detailsBlock(label: string, rows: DetailRow[]): EmailBlock {
+  const tr = rows.map(r => {
+    const v = r.href
+      ? `<a href="${r.href}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${r.value}</a>`
+      : `<span style="color:#2A2418;font-weight:bold;">${r.value}</span>`;
+    return `<tr><td style="padding:4px 0;color:#8A7D6A;width:90px;">${r.label}</td><td style="padding:4px 0;">${v}</td></tr>`;
+  }).join("");
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:10px;margin-bottom:20px;">
+      <tr><td style="padding:16px 20px;">
+        <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">${tr}</table>
+      </td></tr>
+    </table>`;
+}
+
+/** Groene CTA-knop. */
+export function ctaButton(href: string, text: string): EmailBlock {
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+      <tr><td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+          <td align="center" style="background:#2F4F3E;border-radius:10px;">
+            <a href="${href}" style="display:block;padding:14px 28px;color:#fff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;border-radius:10px;">${text}</a>
+          </td>
+        </tr></table>
+      </td></tr>
+    </table>`;
+}
+
+/** Eenvoudige paragraaf. Default gecentreerd en in muted kleur. */
+export function paragraph(html: string, opts?: { align?: "left" | "center"; color?: "muted" | "text" }): EmailBlock {
+  const align = opts?.align ?? "center";
+  const color = opts?.color === "text" ? "#2A2418" : "#8A7D6A";
+  return `<p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:${color};line-height:1.6;text-align:${align};">${html}</p>`;
+}
+
+export function lodgePhoto(baseUrl: string, lodge: string | null | undefined): { url: string; key: string } {
+  const key = lodge === "lodge_2" ? "lodge_2" : "lodge_1";
+  const file = key === "lodge_2" ? "lodge-eik.jpg" : "lodge-heide.jpg";
+  return { url: `${baseUrl}/${file}`, key };
+}
+
+export type LodgeEmailOpts = {
+  /** Volledige URL naar de hero-foto. Geef niets door om de foto weg te laten. */
+  photoUrl?: string;
+  photoAlt?: string;
+  /** H1-tekst (al ge-escape'd). */
+  title: string;
+  /** Optionele intro-paragraaf direct onder de titel, gecentreerd. */
+  intro?: string;
+  /** Pre-gerenderde HTML-blokken (via *Block-helpers). */
+  blocks: EmailBlock[];
+  /** Footer-regel direct onder de divider. Default: WhatsApp-contact. */
+  footer?: string;
+};
+
+const DEFAULT_FOOTER = `Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`;
+
+/** Hoofd-template. Alle uitgaande mails moeten hier doorheen. */
+export function lodgeEmail(opts: LodgeEmailOpts): string {
+  const photo = opts.photoUrl
+    ? `<tr><td style="padding:0;font-size:0;line-height:0;"><img src="${opts.photoUrl}" alt="${opts.photoAlt || "Huis ter Huynen"}" width="480" style="display:block;width:100%;height:auto;" /></td></tr>`
+    : "";
+  const intro = opts.intro ? paragraph(opts.intro) : "";
+  const footer = opts.footer ?? DEFAULT_FOOTER;
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,'Times New Roman',serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
+<tr><td align="center" style="padding:32px 16px;">
+<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+
+  <tr><td align="center" style="padding:0 0 24px;">
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
+    </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="width:28px;height:1px;background:#B49A5E;"></td>
+      <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
+      <td style="width:28px;height:1px;background:#B49A5E;"></td>
+    </tr></table></td></tr></table>
+  </td></tr>
+
+  <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
+    ${photo}
+    <tr><td style="padding:32px 28px 28px;">
+      <h1 style="margin:0 0 14px;font-size:28px;color:#2A2418;text-align:center;font-family:Georgia,'Times New Roman',serif;line-height:1.2;">${opts.title}</h1>
+      ${intro}
+      ${opts.blocks.join("\n")}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
+        <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;text-align:center;">${footer}</td></tr>
+      </table>
+    </td></tr>
+  </table></td></tr>
+
+  <tr><td align="center" style="padding:24px 0 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
+    <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">${LODGE_NAME} &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
+  </td></tr>
+
+</table>
+</td></tr></table>
+</body></html>`;
+}
+
 export function emailWrap(content: string): string {
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
