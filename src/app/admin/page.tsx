@@ -179,8 +179,7 @@ export default function AdminDashboard() {
     { id: "dashboard", icon: "⌂", label: "Dashboard", short: "Home", direct: "dashboard", items: [] },
     { id: "reserveringen", icon: "📅", label: "Reserveringen", short: "Reserveer.", items: [
       { id: "boekingen", label: "Boekingen" },
-      { id: "aanvragen", label: "Aanvragen" },
-      { id: "aanvragen_v2", label: "Aanvragen v2" },
+      { id: "aanvragen_v2", label: "Aanvragen" },
     ]},
     { id: "checkinout", icon: "🔑", label: "Check in / uit", short: "Check in", items: [
       { id: "verblijven", label: "Verblijven" },
@@ -3074,7 +3073,7 @@ function AanvragenV2Tab({ requests, setRequests }: { requests: BookingRequest[];
 
   return (
     <>
-      <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Aanvragen v2</div>
+      <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Aanvragen</div>
       <div style={{ fontSize: 13, color: C.light, marginBottom: 20 }}>
         Alle aanvragen uit alle bronnen — homepage, concierge-app en terugkomers — in één overzicht. Klik op een aanvraag om een offerte op te bouwen.
       </div>
