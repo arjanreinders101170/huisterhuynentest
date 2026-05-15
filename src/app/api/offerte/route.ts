@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(resendKey);
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://huisterhuynen.nl";
+    const bevestigBase = new URL(appUrl).origin;
 
     await resend.emails.send({
       from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
         esc(gastNaam || ""), esc(van || ""), esc(tot || ""),
         personen || 2,
         verblijf.toFixed(2), belasting.toFixed(2), cleaning.toFixed(2), totaal,
-        esc(bericht || ""), aanvraagId || "", appUrl, confirmToken,
+        esc(bericht || ""), aanvraagId || "", bevestigBase, confirmToken,
       ),
       replyTo: "lodge@huisterhuynen.nl",
     });
