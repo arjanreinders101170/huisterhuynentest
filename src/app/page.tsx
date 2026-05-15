@@ -94,7 +94,7 @@ function BookingSection() {
     <section id="reserveren" style={{
       background: "white",
       padding: "80px 40px",
-      borderTop: `3px solid ${T.gold}`,
+      borderTop: `3px solid ${T.green}`,
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }}>
