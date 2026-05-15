@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Booking = { id: string; product: string; prijs: number; status: string; created_at: string; guest_id: string; metadata: Record<string, unknown> };
 type Guest = { id: string; naam: string; email: string; profiel: string; laatste_bezoek: string };
@@ -93,8 +93,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [followUpSending, setFollowUpSending] = useState(false);
   const [followUpResult, setFollowUpResult] = useState("");
-  const [navSection, setNavSection] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sluit dropdown automatisch zodra er een tab gekozen wordt
   useEffect(() => {
@@ -220,13 +220,32 @@ export default function AdminDashboard() {
     )
   )?.id;
 
-  const toggleSection = (sectionId: string) => {
-    setExpandedSection(prev => prev === sectionId ? null : sectionId);
+  const cancelClose = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
   };
 
-  const isSectionExpanded = (sectionId: string) => {
-    return expandedSection === sectionId || (expandedSection === null && activeNavSectionId === sectionId);
+  const openSection = (sectionId: string) => {
+    cancelClose();
+    setExpandedSection(sectionId);
   };
+
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimerRef.current = setTimeout(() => {
+      setExpandedSection(null);
+      closeTimerRef.current = null;
+    }, 120);
+  };
+
+  const closeNow = () => {
+    cancelClose();
+    setExpandedSection(null);
+  };
+
+  const isSectionExpanded = (sectionId: string) => expandedSection === sectionId;
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 999, display: "flex", flexDirection: "column", fontFamily: font, background: "#F0F1F3" }}>
@@ -255,18 +274,22 @@ export default function AdminDashboard() {
             const handleHeaderClick = () => {
               if (section.direct) {
                 setTab(section.direct);
-                setNavSection(null);
-                setExpandedSection(null);
+                closeNow();
               } else if (isSingleItem && singleTarget) {
                 setTab(singleTarget);
-                setExpandedSection(null);
+                closeNow();
               } else {
-                toggleSection(section.id);
+                openSection(section.id);
               }
             };
 
             return (
-              <div key={section.id} style={{ position: "relative" }}>
+              <div
+                key={section.id}
+                style={{ position: "relative" }}
+                onMouseEnter={() => { if (!isDirectNav) openSection(section.id); }}
+                onMouseLeave={() => { if (!isDirectNav) scheduleClose(); }}
+              >
                 <div onClick={handleHeaderClick} style={{
                   padding: "0 14px", height: 56, display: "flex", alignItems: "center", gap: 5,
                   fontSize: 14, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap",
@@ -301,7 +324,7 @@ export default function AdminDashboard() {
                               {item.groupLabel}
                             </div>
                             {item.sub.map(sub => (
-                              <div key={sub.id} onClick={() => { setTab(sub.id); setExpandedSection(null); }} style={{
+                              <div key={sub.id} onClick={() => { setTab(sub.id); closeNow(); }} style={{
                                 padding: "9px 16px 9px 24px", cursor: "pointer",
                                 fontSize: 13, fontWeight: tab === sub.id ? 600 : 400,
                                 color: tab === sub.id ? "#111827" : "#374151",
@@ -314,7 +337,7 @@ export default function AdminDashboard() {
                         );
                       }
                       return (
-                        <div key={item.id} onClick={() => { setTab(item.id); setExpandedSection(null); }} style={{
+                        <div key={item.id} onClick={() => { setTab(item.id); closeNow(); }} style={{
                           padding: "9px 16px", cursor: "pointer",
                           fontSize: 13, fontWeight: tab === item.id ? 600 : 400,
                           color: tab === item.id ? "#111827" : "#374151",
@@ -337,9 +360,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Backdrop to close dropdown on outside click */}
+      {/* Backdrop to close dropdown on outside click (touch / non-hover) */}
       {expandedSection !== null && (
-        <div onClick={() => setExpandedSection(null)} style={{ position: "fixed", inset: 0, zIndex: 10 }} />
+        <div onClick={closeNow} style={{ position: "fixed", inset: 0, zIndex: 10 }} />
       )}
 
       {/* Content */}
