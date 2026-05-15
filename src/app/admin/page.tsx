@@ -9,6 +9,31 @@ type Product = { id: string; naam: string; omschrijving: string | null; prijs: n
 type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 type DiscountCode = { id: string; code: string; omschrijving: string | null; type: "percentage" | "fixed"; waarde: number; geldig_van: string | null; geldig_tot: string | null; max_gebruik: number | null; gebruik_count: number; min_nachten: number | null; actief: boolean; created_at: string };
 type BlogPost = { id: string; slug: string; titel: string; intro: string; inhoud: string; categorie: string; leestijd: string; auteur: string; gepubliceerd: boolean; gepubliceerd_op: string | null; created_at: string };
+type BookingRequest = {
+  id: string; created_at: string; updated_at: string;
+  bron: "homepage" | "app" | "terugkomer";
+  guest_id: string | null;
+  gast_naam: string; gast_email: string;
+  lodge: string | null;
+  check_in: string | null; check_out: string | null;
+  nachten: number | null; personen: number | null; huisdieren: boolean;
+  bericht: string | null; periode_tekst: string | null;
+  voorgestelde_prijs: number | null; voorgestelde_prijs_label: string | null;
+  promo_code: string | null;
+  prijs_verblijf: number | null; schoonmaak: number | null; toeristenbelasting: number | null;
+  extra_regels: { label: string; bedrag: number; soort: string }[];
+  totaal: number | null;
+  status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen";
+  legacy_terugkeer_id: string | null;
+  guest?: { naam: string; email: string } | null;
+};
+type FeeTemplate = {
+  id: string; label: string;
+  soort: "toeslag" | "korting" | "belasting";
+  bedrag: number | null; percentage: number | null;
+  basis: "eenmalig" | "per_nacht" | "per_persoon" | "per_persoon_per_nacht";
+  actief: boolean; volgorde: number; created_at: string;
+};
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -46,7 +71,7 @@ function timeAgo(dateStr: string): string {
   return `${days} dag${days > 1 ? "en" : ""}`;
 }
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog";
+type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "toeslagen";
 
 type NavItem = { id: Tab; label: string };
 type NavGroup = { groupLabel: string; sub: NavItem[] };
@@ -62,6 +87,8 @@ export default function AdminDashboard() {
   const [stays, setStays] = useState<Stay[]>([]);
   const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [bookingRequests, setBookingRequests] = useState<BookingRequest[]>([]);
+  const [feeTemplates, setFeeTemplates] = useState<FeeTemplate[]>([]);
   const [guestMap, setGuestMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [followUpSending, setFollowUpSending] = useState(false);
@@ -72,7 +99,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function load() {
       try {
-        const [bRes, gRes, rRes, aRes, pRes, sRes, dcRes, bpRes] = await Promise.all([
+        const [bRes, gRes, rRes, aRes, pRes, sRes, dcRes, bpRes, brRes, ftRes] = await Promise.all([
           fetch("/api/admin/data?table=bookings"),
           fetch("/api/admin/data?table=guests"),
           fetch("/api/admin/data?table=reviews"),
@@ -81,10 +108,13 @@ export default function AdminDashboard() {
           fetch("/api/admin/data?table=stays"),
           fetch("/api/admin/data?table=discount_codes"),
           fetch("/api/admin/data?table=blog_posts"),
+          fetch("/api/admin/data?table=booking_requests"),
+          fetch("/api/admin/data?table=fee_templates"),
         ]);
-        const [bData, gData, rData, aData, pData, sData, dcData, bpData] = await Promise.all([
+        const [bData, gData, rData, aData, pData, sData, dcData, bpData, brData, ftData] = await Promise.all([
           bRes.json(), gRes.json(), rRes.json(), aRes.json(),
           pRes.json(), sRes.json(), dcRes.json(), bpRes.json(),
+          brRes.json(), ftRes.json(),
         ]);
         setBookings(bData.data || []);
         setGuests(gData.data || []);
@@ -94,6 +124,8 @@ export default function AdminDashboard() {
         setStays(sData.data || []);
         setDiscountCodes(dcData.data || []);
         setBlogPosts(bpData.data || []);
+        setBookingRequests(brData.data || []);
+        setFeeTemplates(ftData.data || []);
 
         // Build guest name map
         const map: Record<string, string> = {};
@@ -143,6 +175,7 @@ export default function AdminDashboard() {
     { id: "reserveringen", icon: "📅", label: "Reserveringen", short: "Reserveer.", items: [
       { id: "boekingen", label: "Boekingen" },
       { id: "aanvragen", label: "Aanvragen" },
+      { id: "aanvragen_v2", label: "Aanvragen v2" },
     ]},
     { id: "checkinout", icon: "🔑", label: "Check in / uit", short: "Check in", items: [
       { id: "verblijven", label: "Verblijven" },
@@ -157,6 +190,7 @@ export default function AdminDashboard() {
     { id: "pricing", icon: "📊", label: "Dynamic Pricing", short: "Pricing", items: [
       { id: "tarieven", label: "Tarieven" },
       { id: "producten", label: "Producten" },
+      { id: "toeslagen", label: "Toeslagen" },
       { id: "financieel", label: "Financieel" },
     ]},
     { id: "marketing", icon: "🎯", label: "Marketing", short: "Marketing", items: [
@@ -451,6 +485,14 @@ export default function AdminDashboard() {
             {/* AANVRAGEN */}
             {tab === "aanvragen" && (
               <AanvragenTab aanvragen={aanvragen} setAanvragen={setAanvragen} />
+            )}
+
+            {tab === "aanvragen_v2" && (
+              <AanvragenV2Tab requests={bookingRequests} />
+            )}
+
+            {tab === "toeslagen" && (
+              <ToeslagenTab templates={feeTemplates} setTemplates={setFeeTemplates} />
             )}
 
             {/* PRODUCTEN */}
@@ -2712,5 +2754,340 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: BlogPos
         )}
       </div>
     </div>
+  );
+}
+
+/* ═══ AANVRAGEN V2 TAB — unified booking_requests overview ═══ */
+
+const BRON_LABELS: Record<string, { icon: string; label: string }> = {
+  homepage:   { icon: "🏠", label: "Homepage" },
+  app:        { icon: "📱", label: "App" },
+  terugkomer: { icon: "↩️", label: "Terugkomer" },
+};
+
+const LODGE_SHORT_NAMES: Record<string, string> = {
+  lodge_1: "De Heide",
+  lodge_2: "De Eik",
+};
+
+function AanvragenV2Tab({ requests }: { requests: BookingRequest[] }) {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+  const [filterBron, setFilterBron] = useState<"all" | "homepage" | "app" | "terugkomer">("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | BookingRequest["status"]>("all");
+
+  const filtered = requests.filter(r =>
+    (filterBron === "all" || r.bron === filterBron) &&
+    (filterStatus === "all" || r.status === filterStatus)
+  );
+
+  const fmtDate = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "short" }) : "—";
+
+  const period = (r: BookingRequest) => {
+    if (r.check_in && r.check_out) {
+      return `${fmtDate(r.check_in)} → ${fmtDate(r.check_out)}${r.nachten ? ` · ${r.nachten}n` : ""}`;
+    }
+    return r.periode_tekst || "—";
+  };
+
+  const chipStyle = (active: boolean): React.CSSProperties => ({
+    padding: "5px 12px", borderRadius: 14, border: `1px solid ${active ? C.green : C.border}`,
+    background: active ? C.green : C.card, color: active ? "#fff" : C.muted,
+    fontSize: 12, fontWeight: 500, cursor: "pointer", whiteSpace: "nowrap",
+  });
+
+  const counts = {
+    all: requests.length,
+    homepage:   requests.filter(r => r.bron === "homepage").length,
+    app:        requests.filter(r => r.bron === "app").length,
+    terugkomer: requests.filter(r => r.bron === "terugkomer").length,
+  };
+
+  return (
+    <>
+      <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Aanvragen v2</div>
+      <div style={{ fontSize: 13, color: C.light, marginBottom: 20 }}>
+        Alle aanvragen uit alle bronnen — homepage, concierge-app en terugkomers — in één overzicht.
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+        <button onClick={() => setFilterBron("all")} style={chipStyle(filterBron === "all")}>Alle bronnen ({counts.all})</button>
+        <button onClick={() => setFilterBron("homepage")}   style={chipStyle(filterBron === "homepage")}>🏠 Homepage ({counts.homepage})</button>
+        <button onClick={() => setFilterBron("app")}        style={chipStyle(filterBron === "app")}>📱 App ({counts.app})</button>
+        <button onClick={() => setFilterBron("terugkomer")} style={chipStyle(filterBron === "terugkomer")}>↩️ Terugkomer ({counts.terugkomer})</button>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
+        <button onClick={() => setFilterStatus("all")} style={chipStyle(filterStatus === "all")}>Alle statussen</button>
+        {(["nieuw", "in_behandeling", "offerte_verstuurd", "bevestigd", "afgewezen"] as const).map(s => (
+          <button key={s} onClick={() => setFilterStatus(s)} style={chipStyle(filterStatus === s)}>{s.replace("_", " ")}</button>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div style={{ fontSize: 13, color: C.light, padding: 40, textAlign: "center", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12 }}>
+          Geen aanvragen in deze selectie
+        </div>
+      )}
+
+      {filtered.length > 0 && (
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px", padding: "12px 16px", background: C.bg, fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, fontWeight: 500 }}>
+            <div>Bron</div>
+            <div>Gast</div>
+            <div>Periode</div>
+            <div>Lodge</div>
+            <div style={{ textAlign: "right" }}>Voorstel</div>
+            <div>Status</div>
+            <div style={{ textAlign: "right" }}>Ontvangen</div>
+          </div>
+          {filtered.map(r => {
+            const bron = BRON_LABELS[r.bron] || { icon: "·", label: r.bron };
+            const name = r.guest?.naam || r.gast_naam || "—";
+            const email = r.guest?.email || r.gast_email || "";
+            const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
+            return (
+              <div key={r.id} style={{ display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px", padding: "14px 16px", borderTop: `1px solid ${C.border}`, fontSize: 13, color: C.text, alignItems: "center" }}>
+                <div title={bron.label} style={{ fontSize: 14 }}>{bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span></div>
+                <div>
+                  <div style={{ fontWeight: 500 }}>{name}</div>
+                  <div style={{ fontSize: 11, color: C.muted }}>{email}</div>
+                </div>
+                <div style={{ fontSize: 12, color: C.muted }}>
+                  {period(r)}
+                  <div style={{ fontSize: 11 }}>
+                    {(r.personen ?? 0) > 0 && `${r.personen}p`}
+                    {r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
+                    {r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, color: C.muted }}>{lodge}</div>
+                <div style={{ textAlign: "right", fontWeight: 500, color: r.voorgestelde_prijs ? C.text : C.light }}>
+                  {r.voorgestelde_prijs ? `€ ${Number(r.voorgestelde_prijs).toFixed(2)}` : "—"}
+                </div>
+                <div><Badge status={r.status} /></div>
+                <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>{timeAgo(r.created_at)}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div style={{ marginTop: 20, padding: "12px 16px", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 12, color: C.muted }}>
+        ℹ️ Dit is een lees-only overzicht. De offerte-editor komt in een volgende fase. Tot dan blijft de werkende flow via &ldquo;Aanvragen&rdquo; (alleen terugkomers).
+      </div>
+    </>
+  );
+}
+
+/* ═══ TOESLAGEN TAB — fee_templates CRUD ═══ */
+
+const SOORT_LABEL: Record<FeeTemplate["soort"], { label: string; color: string }> = {
+  toeslag:   { label: "Toeslag",   color: "#E67E22" },
+  korting:   { label: "Korting",   color: "#2E7D32" },
+  belasting: { label: "Belasting", color: "#1565C0" },
+};
+
+const BASIS_LABEL: Record<FeeTemplate["basis"], string> = {
+  eenmalig:              "eenmalig",
+  per_nacht:             "per nacht",
+  per_persoon:           "per persoon",
+  per_persoon_per_nacht: "p.p. per nacht",
+};
+
+function ToeslagenTab({ templates, setTemplates }: { templates: FeeTemplate[]; setTemplates: (t: FeeTemplate[]) => void }) {
+  const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
+  const [editing, setEditing] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const blank = { label: "", soort: "toeslag" as FeeTemplate["soort"], bedrag: "", basis: "eenmalig" as FeeTemplate["basis"], volgorde: "0" };
+  const [form, setForm] = useState(blank);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", padding: "9px 12px", borderRadius: 8,
+    border: `1px solid ${C.border}`, background: C.card,
+    fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box",
+  };
+
+  const startEdit = (t: FeeTemplate) => {
+    setEditing(t.id);
+    setCreating(false);
+    setForm({ label: t.label, soort: t.soort, bedrag: t.bedrag != null ? String(t.bedrag) : "", basis: t.basis, volgorde: String(t.volgorde) });
+    setErr("");
+  };
+
+  const startCreate = () => {
+    setCreating(true);
+    setEditing(null);
+    setForm(blank);
+    setErr("");
+  };
+
+  const cancel = () => { setEditing(null); setCreating(false); setErr(""); };
+
+  const save = async () => {
+    if (!form.label.trim()) { setErr("Label is verplicht"); return; }
+    setSaving(true);
+    setErr("");
+    try {
+      const action = editing ? "update_fee_template" : "create_fee_template";
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, id: editing, ...form }),
+      });
+      const d = await r.json();
+      if (!d.success) {
+        setErr(d.error || "Kon niet opslaan");
+        setSaving(false);
+        return;
+      }
+      const refresh = await fetch("/api/admin/data?table=fee_templates");
+      const rd = await refresh.json();
+      setTemplates(rd.data || []);
+      cancel();
+    } catch {
+      setErr("Verbindingsfout");
+    }
+    setSaving(false);
+  };
+
+  const toggle = async (t: FeeTemplate) => {
+    await fetch("/api/admin/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "toggle_fee_template", id: t.id, actief: !t.actief }),
+    });
+    setTemplates(templates.map(x => x.id === t.id ? { ...x, actief: !t.actief } : x));
+  };
+
+  const remove = async (t: FeeTemplate) => {
+    if (!confirm(`"${t.label}" verwijderen?`)) return;
+    await fetch("/api/admin/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete_fee_template", id: t.id }),
+    });
+    setTemplates(templates.filter(x => x.id !== t.id));
+  };
+
+  const renderForm = () => (
+    <div style={{ background: C.card, border: `1px solid ${C.gold}`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+      <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 16 }}>
+        {creating ? "Nieuwe regel toevoegen" : "Regel bewerken"}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", gap: 12, marginBottom: 12 }}>
+        <div>
+          <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Label</label>
+          <input value={form.label} onChange={e => setForm({ ...form, label: e.target.value })} placeholder="bijv. Huisdier, Vroegboekkorting" style={inputStyle} />
+        </div>
+        <div>
+          <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Soort</label>
+          <select value={form.soort} onChange={e => setForm({ ...form, soort: e.target.value as FeeTemplate["soort"] })} style={inputStyle}>
+            <option value="toeslag">Toeslag</option>
+            <option value="korting">Korting</option>
+            <option value="belasting">Belasting</option>
+          </select>
+        </div>
+        <div>
+          <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Bedrag (€)</label>
+          <input value={form.bedrag} onChange={e => setForm({ ...form, bedrag: e.target.value })} type="number" step="0.01" placeholder="25.00" style={inputStyle} />
+        </div>
+        <div>
+          <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Basis</label>
+          <select value={form.basis} onChange={e => setForm({ ...form, basis: e.target.value as FeeTemplate["basis"] })} style={inputStyle}>
+            <option value="eenmalig">Eenmalig</option>
+            <option value="per_nacht">Per nacht</option>
+            <option value="per_persoon">Per persoon</option>
+            <option value="per_persoon_per_nacht">P.p. per nacht</option>
+          </select>
+        </div>
+        <div>
+          <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Volgorde</label>
+          <input value={form.volgorde} onChange={e => setForm({ ...form, volgorde: e.target.value })} type="number" style={inputStyle} />
+        </div>
+      </div>
+      {err && <div style={{ fontSize: 12, color: "#E24B4A", marginBottom: 12 }}>{err}</div>}
+      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+        <button onClick={cancel} disabled={saving} style={{
+          padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+          background: C.card, fontSize: 12, color: C.muted, cursor: saving ? "not-allowed" : "pointer",
+        }}>Annuleren</button>
+        <button onClick={save} disabled={saving} style={{
+          padding: "8px 20px", borderRadius: 8, border: "none",
+          background: saving ? C.border : C.green,
+          fontSize: 12, fontWeight: 500, color: "#fff", cursor: saving ? "not-allowed" : "pointer",
+        }}>{saving ? "Opslaan..." : (editing ? "Bijwerken" : "Toevoegen")}</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 20 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Toeslagen, kortingen &amp; belastingen</div>
+          <div style={{ fontSize: 13, color: C.light }}>
+            Templates die de offerte-editor automatisch voorstelt op basis van aantal personen en nachten.
+          </div>
+        </div>
+        {!creating && !editing && (
+          <button onClick={startCreate} style={{
+            padding: "9px 18px", borderRadius: 8, border: "none",
+            background: C.green, fontSize: 13, fontWeight: 500, color: "#fff", cursor: "pointer",
+          }}>+ Nieuwe regel</button>
+        )}
+      </div>
+
+      {(creating || editing) && renderForm()}
+
+      {templates.length === 0 && !creating && (
+        <div style={{ fontSize: 13, color: C.light, padding: 40, textAlign: "center", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12 }}>
+          Nog geen templates. Klik &ldquo;+ Nieuwe regel&rdquo; om te beginnen.
+        </div>
+      )}
+
+      {templates.length > 0 && (
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 110px 120px 140px 80px 180px", padding: "12px 16px", background: C.bg, fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, fontWeight: 500 }}>
+            <div>Label</div>
+            <div>Soort</div>
+            <div style={{ textAlign: "right" }}>Bedrag</div>
+            <div>Basis</div>
+            <div style={{ textAlign: "center" }}>Actief</div>
+            <div style={{ textAlign: "right" }}>Acties</div>
+          </div>
+          {templates.map(t => {
+            const soort = SOORT_LABEL[t.soort];
+            return (
+              <div key={t.id} style={{ display: "grid", gridTemplateColumns: "2fr 110px 120px 140px 80px 180px", padding: "14px 16px", borderTop: `1px solid ${C.border}`, fontSize: 13, color: C.text, alignItems: "center", opacity: t.actief ? 1 : 0.55 }}>
+                <div style={{ fontWeight: 500 }}>{t.label}</div>
+                <div><span style={{ fontSize: 11, padding: "3px 10px", borderRadius: 6, background: `${soort.color}15`, color: soort.color, fontWeight: 500 }}>{soort.label}</span></div>
+                <div style={{ textAlign: "right", fontWeight: 500 }}>{t.bedrag != null ? `€ ${Number(t.bedrag).toFixed(2)}` : "—"}</div>
+                <div style={{ fontSize: 12, color: C.muted }}>{BASIS_LABEL[t.basis]}</div>
+                <div style={{ textAlign: "center" }}>
+                  <button onClick={() => toggle(t)} style={{
+                    padding: "4px 10px", borderRadius: 6, border: `1px solid ${C.border}`,
+                    background: t.actief ? "#E8F5E9" : C.bg, color: t.actief ? "#2E7D32" : C.muted,
+                    fontSize: 11, fontWeight: 500, cursor: "pointer",
+                  }}>{t.actief ? "Aan" : "Uit"}</button>
+                </div>
+                <div style={{ textAlign: "right", display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                  <button onClick={() => startEdit(t)} style={{
+                    padding: "5px 12px", borderRadius: 6, border: `1px solid ${C.border}`,
+                    background: C.card, fontSize: 11, color: C.muted, cursor: "pointer",
+                  }}>Bewerk</button>
+                  <button onClick={() => remove(t)} style={{
+                    padding: "5px 12px", borderRadius: 6, border: `1px solid ${C.border}`,
+                    background: C.card, fontSize: 11, color: "#E24B4A", cursor: "pointer",
+                  }}>Verwijder</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 }
