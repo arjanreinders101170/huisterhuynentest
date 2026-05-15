@@ -164,6 +164,13 @@ export default async function ArtikelPagina(
 
       {/* Artikel */}
       <article style={{ maxWidth: 720, margin: "0 auto", padding: "56px 24px 40px" }}>
+        <p style={{
+          fontFamily: T.sans, fontSize: 18, color: T.text,
+          lineHeight: 1.8, margin: "0 0 40px", fontWeight: 400,
+          borderLeft: `3px solid ${T.gold}`, paddingLeft: 20,
+        }}>
+          {post.intro}
+        </p>
         {renderInhoud(post.inhoud)}
 
         {/* CTA blok */}
