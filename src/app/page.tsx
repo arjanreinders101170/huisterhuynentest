@@ -741,7 +741,7 @@ export default function LandingPage() {
                 cat: "Wellness",
                 icon: "♨",
                 hoogtepunt: "Sauna's binnen 20 min",
-                items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Massage aan huis mogelijk"],
+                items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Wellnessresort Waterlelie Zevenhuizen"],
                 img: "/welness_drenthe.jpg",
                 alt: "Buitensauna en wellness in een bosrijke omgeving in Drenthe",
                 accent: "#7B6B3A",
