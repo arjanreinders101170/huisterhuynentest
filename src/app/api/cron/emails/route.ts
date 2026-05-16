@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
+import { esc, welcomeEmail, lateCheckoutEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
 function localDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function esc(s: string): string {
-  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] ?? c));
 }
 
 // GET — called by Vercel Cron. ?type=morning (09:00) or ?type=evening (20:00)
@@ -59,7 +56,15 @@ export async function GET(request: NextRequest) {
             from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
             to: [guest.email],
             subject: `Jouw gast-app staat klaar — ${checkInDate}`,
-            html: welcomeHtml(firstName, lodgeNaam, photo, checkInDate, checkOutDate, `${appUrl}?s=${stay.token}`, stay.door_code),
+            html: welcomeEmail({
+              firstName,
+              lodgeNaam: esc(lodgeNaam),
+              photoUrl: photo,
+              checkInDate,
+              checkOutDate,
+              appLink: `${appUrl}?s=${stay.token}`,
+              doorCode: String(stay.door_code),
+            }),
           });
           await getSupabase().from("stays")
             .update({ welcome_sent: true, welcome_sent_at: new Date().toISOString() })
@@ -173,7 +178,12 @@ export async function GET(request: NextRequest) {
             from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
             to: [guest.email],
             subject: "Nog één nacht — tot morgen 11:00",
-            html: lateCheckoutHtml(firstName, lodgeNaam, photo, `${appUrl}?s=${stay.token}`),
+            html: lateCheckoutEmail({
+              firstName,
+              lodgeNaam: esc(lodgeNaam),
+              photoUrl: photo,
+              appLink: `${appUrl}?s=${stay.token}`,
+            }),
           });
           await getSupabase().from("bookings").insert({
             guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "betaald",
@@ -195,131 +205,6 @@ export async function GET(request: NextRequest) {
 }
 
 // ═══ EMAIL TEMPLATES ═══
-
-function welcomeHtml(firstName: string, lodgeNaam: string, photo: string, checkInDate: string, checkOutDate: string, appLink: string, doorCode: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
-<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
-<tr><td align="center" style="padding:0 0 24px;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
-  </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-    <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-  </tr></table></td></tr></table>
-</td></tr>
-<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
-<tr><td style="padding:0;font-size:0;line-height:0;">
-  <img src="${photo}" alt="Lodge ${lodgeNaam}" width="480" style="display:block;width:100%;height:auto;" />
-</td></tr>
-<tr><td style="padding:32px 28px 28px;">
-  <h1 style="margin:0 0 14px;font-size:28px;color:#2A2418;text-align:center;font-family:Georgia,serif;line-height:1.2;">
-    Welkom${firstName ? `, ${firstName}` : ""}
-  </h1>
-  <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
-    Jullie Lodge ${lodgeNaam} staat klaar voor ${checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één tik en alles staat op zijn plek.
-  </p>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
-    <tr><td align="center">
-      <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;"><tr>
-        <td align="center" style="background:#2F4F3E;border-radius:14px;">
-          <a href="${appLink}" style="display:block;padding:18px 24px;color:#fff;text-decoration:none;font-family:Georgia,serif;font-size:17px;font-weight:bold;border-radius:14px;">
-            Open jullie gast-app &#8594;
-          </a>
-        </td>
-      </tr></table>
-    </td></tr>
-  </table>
-  <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;text-align:center;line-height:1.5;">
-    Tip: zet 'm op je beginscherm zodat je 'm bij aankomst direct paraat hebt.
-  </p>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:10px;margin-bottom:20px;">
-    <tr><td style="padding:16px 20px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:13px;">
-        <tr><td style="padding:5px 0;color:#8A7D6A;">Aankomst</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkInDate} · vanaf 15:00</td></tr>
-        <tr><td style="padding:5px 0;color:#8A7D6A;">Vertrek</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">${checkOutDate} · voor 11:00</td></tr>
-        <tr><td style="padding:5px 0;color:#8A7D6A;">Lodge</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2A2418;">Lodge ${lodgeNaam}</td></tr>
-        <tr><td style="padding:5px 0;color:#8A7D6A;">Deurcode</td><td style="padding:5px 0;text-align:right;font-weight:bold;color:#2F4F3E;letter-spacing:1px;">${doorCode}</td></tr>
-      </table>
-    </td></tr>
-  </table>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Inchecken vanaf 15:00, sleutel niet nodig</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Laadpaal beschikbaar op locatie</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Tips, route en extra's regelen via de app</td></tr>
-  </table>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-    <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;text-align:center;">
-      <strong style="color:#2A2418;">Route:</strong> A28 → afslag Zeijen → Zuiderstraat 6<br/>
-      Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>
-    </td></tr>
-  </table>
-</td></tr></table></td></tr>
-<tr><td align="center" style="padding:24px 0 0;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
-  <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">Huis ter Huynen &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
-</td></tr>
-</table></td></tr></table></body></html>`;
-}
-
-function lateCheckoutHtml(firstName: string, lodgeNaam: string, photo: string, appLink: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
-<body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,serif;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
-<tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
-<tr><td align="center" style="padding:0 0 24px;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td>
-  </tr><tr><td align="center" style="padding-top:6px;"><table role="presentation" cellpadding="0" cellspacing="0"><tr>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-    <td style="padding:0 10px;font-family:Arial,sans-serif;font-size:9px;color:#B49A5E;letter-spacing:3px;text-transform:uppercase;">Boutique Lodge</td>
-    <td style="width:28px;height:1px;background:#B49A5E;"></td>
-  </tr></table></td></tr></table>
-</td></tr>
-<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
-<tr><td style="padding:0;font-size:0;line-height:0;">
-  <img src="${photo}" alt="Lodge ${lodgeNaam}" width="480" style="display:block;width:100%;height:auto;" />
-</td></tr>
-<tr><td style="padding:32px 28px 28px;">
-  <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
-    ${firstName ? `${firstName}, nog` : "Nog"} één nacht en dan zit het er weer op. We hopen dat jullie een heerlijk verblijf hebben gehad. Geniet vanavond nog even van de stilte.
-  </p>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
-    <tr><td style="padding:18px 20px;">
-      <p style="margin:0 0 4px;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2A2418;">Nog niet klaar om te gaan?</p>
-      <p style="margin:0 0 14px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
-        Boek een late check-out &mdash; ideaal voor een lekker lang ontbijt of nog even een boswandeling.
-      </p>
-      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-        <td align="center" style="background:#2F4F3E;border-radius:10px;">
-          <a href="${appLink}" style="display:block;padding:12px 24px;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;border-radius:10px;">
-            Vraag late check-out aan
-          </a>
-        </td>
-      </tr></table>
-    </td></tr>
-  </table>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Standaard check-out tot 11:00</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Late check-out tot 13:00 via de app</td></tr>
-    <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;">&#10003; Vergeet niet om de checklist in de app af te vinken</td></tr>
-  </table>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-    <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;text-align:center;">
-      Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>
-    </td></tr>
-  </table>
-</td></tr></table></td></tr>
-<tr><td align="center" style="padding:24px 0 0;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
-  <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">Huis ter Huynen &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
-</td></tr>
-</table></td></tr></table></body></html>`;
-}
 
 function thankyouHtml(naam: string, appUrl: string): string {
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

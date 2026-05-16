@@ -68,31 +68,54 @@ export function teaserBlock(emoji: string, title: string, body: string): EmailBl
 }
 
 /** Witte kaart met label + rij(en) met label/waarde, bijv. voor gast-gegevens. */
-export type DetailRow = { label: string; value: string; href?: string };
-export function detailsBlock(label: string, rows: DetailRow[]): EmailBlock {
+export type DetailRow = {
+  label: string;
+  value: string;
+  href?: string;
+  /** Accent geeft de waarde een groene kleur en letter-spacing — geschikt voor codes als deurcode. */
+  accent?: boolean;
+};
+export function detailsBlock(label: string, rows: DetailRow[], opts?: { background?: "card" | "muted"; compact?: boolean }): EmailBlock {
+  const bg = opts?.background === "muted" ? "#F5F1E8" : "#FDFBF6";
+  const border = opts?.background === "muted" ? "transparent" : "#E0D8C8";
+  const rowPadding = opts?.compact ? "5px 0" : "4px 0";
   const tr = rows.map(r => {
+    const valColor = r.accent ? "#2F4F3E" : "#2A2418";
+    const valExtra = r.accent ? "letter-spacing:1px;" : "";
     const v = r.href
       ? `<a href="${r.href}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${r.value}</a>`
-      : `<span style="color:#2A2418;font-weight:bold;">${r.value}</span>`;
-    return `<tr><td style="padding:4px 0;color:#8A7D6A;width:90px;">${r.label}</td><td style="padding:4px 0;">${v}</td></tr>`;
+      : `<span style="color:${valColor};font-weight:bold;${valExtra}">${r.value}</span>`;
+    const align = opts?.compact ? `style="padding:${rowPadding};text-align:right;"` : `style="padding:${rowPadding};"`;
+    return `<tr><td style="padding:${rowPadding};color:#8A7D6A;">${r.label}</td><td ${align}>${v}</td></tr>`;
   }).join("");
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:10px;margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};${border !== "transparent" ? `border:1px solid ${border};` : ""}border-radius:10px;margin-bottom:20px;">
       <tr><td style="padding:16px 20px;">
-        <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">${tr}</table>
+        ${label ? `<p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>` : ""}
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:${opts?.compact ? "13" : "14"}px;">${tr}</table>
       </td></tr>
     </table>`;
 }
 
-/** Groene CTA-knop. */
-export function ctaButton(href: string, text: string): EmailBlock {
+/** Kleine genuanceerde tekst, bijv. een tip onder een CTA-knop. */
+export function smallNote(html: string): EmailBlock {
+  return `<p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;line-height:1.5;text-align:center;">${html}</p>`;
+}
+
+/** Groene CTA-knop. `prominent: true` geeft een grotere full-width versie (voor primaire calls-to-action zoals "Open gast-app"). */
+export function ctaButton(href: string, text: string, opts?: { prominent?: boolean; marginBottom?: number }): EmailBlock {
+  const prominent = opts?.prominent === true;
+  const padding = prominent ? "18px 24px" : "14px 28px";
+  const radius = prominent ? "14px" : "10px";
+  const fontSize = prominent ? "17px" : "15px";
+  const innerWidth = prominent ? ' style="width:100%;"' : "";
+  const mb = opts?.marginBottom ?? 20;
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:${mb}px;">
       <tr><td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-          <td align="center" style="background:#2F4F3E;border-radius:10px;">
-            <a href="${href}" style="display:block;padding:14px 28px;color:#fff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;border-radius:10px;">${text}</a>
+        <table role="presentation" cellpadding="0" cellspacing="0"${innerWidth}><tr>
+          <td align="center" style="background:#2F4F3E;border-radius:${radius};">
+            <a href="${href}" style="display:block;padding:${padding};color:#fff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:${fontSize};font-weight:bold;border-radius:${radius};">${text}</a>
           </td>
         </tr></table>
       </td></tr>
@@ -208,6 +231,72 @@ export function emailWrap(content: string): string {
     </td></tr>
   </table>
 </body></html>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Specifieke mails — wrappers rond lodgeEmail()
+   ═══════════════════════════════════════════════════════════════ */
+
+export type WelcomeEmailOpts = {
+  firstName: string;
+  lodgeNaam: string;
+  photoUrl: string;
+  checkInDate: string;     // bv. "maandag 14 mei"
+  checkOutDate: string;    // bv. "vrijdag 18 mei"
+  appLink: string;
+  doorCode: string;
+};
+
+/** Welkomstmail (T-3 of handmatig vanuit admin). */
+export function welcomeEmail(opts: WelcomeEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: `Lodge ${opts.lodgeNaam}`,
+    title: `Welkom${opts.firstName ? `, ${opts.firstName}` : ""}`,
+    intro: `Jullie Lodge ${opts.lodgeNaam} staat klaar voor ${opts.checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één tik en alles staat op zijn plek.`,
+    blocks: [
+      ctaButton(opts.appLink, "Open jullie gast-app &#8594;", { prominent: true, marginBottom: 14 }),
+      smallNote("Tip: zet 'm op je beginscherm zodat je 'm bij aankomst direct paraat hebt."),
+      detailsBlock("", [
+        { label: "Aankomst",  value: `${opts.checkInDate} · vanaf 15:00` },
+        { label: "Vertrek",   value: `${opts.checkOutDate} · voor 11:00` },
+        { label: "Lodge",     value: `Lodge ${opts.lodgeNaam}` },
+        { label: "Deurcode",  value: opts.doorCode, accent: true },
+      ], { background: "muted", compact: true }),
+      checklist([
+        "Inchecken vanaf 15:00, sleutel niet nodig",
+        "Laadpaal beschikbaar op locatie",
+        "Tips, route en extra's regelen via de app",
+      ]),
+    ],
+    footer: `<strong style="color:#2A2418;">Route:</strong> A28 → afslag Zeijen → Zuiderstraat 6<br/>Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`,
+  });
+}
+
+export type LateCheckoutEmailOpts = {
+  firstName: string;
+  lodgeNaam: string;
+  photoUrl: string;
+  appLink: string;
+};
+
+/** Late-checkout reminder mail (avond voor vertrek). */
+export function lateCheckoutEmail(opts: LateCheckoutEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: `Lodge ${opts.lodgeNaam}`,
+    title: "Nog één nacht",
+    intro: `${opts.firstName ? `${opts.firstName}, nog` : "Nog"} één nacht en dan zit het er weer op. We hopen dat jullie een heerlijk verblijf hebben gehad. Geniet vanavond nog even van de stilte.`,
+    blocks: [
+      calloutBlock("Nog niet klaar om te gaan?", "Boek een late check-out &mdash; ideaal voor een lekker lang ontbijt of nog even een boswandeling."),
+      ctaButton(opts.appLink, "Vraag late check-out aan"),
+      checklist([
+        "Standaard check-out tot 11:00",
+        "Late check-out tot 13:00 via de app",
+        "Vergeet niet om de checklist in de app af te vinken",
+      ]),
+    ],
+  });
 }
 
 export type OfferteRegel = { label: string; bedrag: number; soort: "toeslag" | "korting" | "belasting" | "verblijf" };
