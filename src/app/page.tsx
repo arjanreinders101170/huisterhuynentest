@@ -158,7 +158,7 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <section style={{
         minHeight: 680,
-        background: `linear-gradient(160deg, #2F4F3E 0%, #3A5C45 40%, #6B5B3A 100%)`,
+        background: `#141210`,
         display: "flex", alignItems: "center", justifyContent: "center",
         textAlign: "center", color: "white", position: "relative", overflow: "hidden",
       }}>
@@ -170,12 +170,12 @@ export default function LandingPage() {
           priority
           quality={45}
           sizes="100vw"
-          style={{ objectFit: "cover", objectPosition: "center 40%", opacity: 0.52 }}
+          style={{ objectFit: "cover", objectPosition: "center 40%", opacity: 0.72 }}
         />
         {/* gradient scrim */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to bottom, rgba(47,79,62,.30) 0%, rgba(47,79,62,.52) 100%)",
+          background: "linear-gradient(to bottom, rgba(10,8,4,.12) 0%, rgba(10,8,4,.52) 100%)",
         }} />
 
         <div style={{ position: "relative", zIndex: 2, maxWidth: 640, padding: "60px 32px" }}>
