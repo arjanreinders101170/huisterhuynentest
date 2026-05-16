@@ -102,7 +102,9 @@ function renderInhoud(inhoud: string) {
         fontFamily: T.sans, fontSize: 16, color: T.text,
         lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
       }}>
-        {trimmed}
+        {trimmed.split("\n").map((line, j, arr) => (
+          <span key={j}>{line}{j < arr.length - 1 && <br />}</span>
+        ))}
       </p>
     );
   });
