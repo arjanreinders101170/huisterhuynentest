@@ -32,13 +32,36 @@ export function infoBlock(label: string, mainLine: string, subLine?: string): Em
     </table>`;
 }
 
-/** Goud-getinte callout met titel + body. */
-export function calloutBlock(title: string, body: string): EmailBlock {
+/** Goud-getinte callout met titel + body. Optioneel een CTA-knop binnenin. */
+export function calloutBlock(
+  title: string,
+  body: string,
+  opts?: { cta?: { href: string; text: string; style?: "primary" | "secondary" }; background?: "gold" | "muted" },
+): EmailBlock {
+  const bg = opts?.background === "muted" ? "#F5F1E8" : "#F9F4E8";
+  const cta = opts?.cta;
+  const ctaHtml = cta
+    ? (() => {
+        const isSecondary = cta.style === "secondary";
+        const tdStyle = isSecondary
+          ? "border:2px solid #2F4F3E;border-radius:8px;"
+          : "background:#2F4F3E;border-radius:8px;";
+        const linkColor = isSecondary ? "#2F4F3E" : "#fff";
+        return `
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:14px;">
+          <tr><td align="center" style="${tdStyle}">
+            <a href="${cta.href}" style="display:block;padding:12px 28px;color:${linkColor};text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">${cta.text}</a>
+          </td></tr>
+        </table>`;
+      })()
+    : "";
+  const padding = cta ? "20px" : "18px 20px";
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
-      <tr><td style="padding:18px 20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};border-radius:10px;margin-bottom:20px;">
+      <tr><td style="padding:${padding};">
         <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:bold;color:#2A2418;">${title}</p>
         <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">${body}</p>
+        ${ctaHtml}
       </td></tr>
     </table>`;
 }
@@ -68,31 +91,54 @@ export function teaserBlock(emoji: string, title: string, body: string): EmailBl
 }
 
 /** Witte kaart met label + rij(en) met label/waarde, bijv. voor gast-gegevens. */
-export type DetailRow = { label: string; value: string; href?: string };
-export function detailsBlock(label: string, rows: DetailRow[]): EmailBlock {
+export type DetailRow = {
+  label: string;
+  value: string;
+  href?: string;
+  /** Accent geeft de waarde een groene kleur en letter-spacing — geschikt voor codes als deurcode. */
+  accent?: boolean;
+};
+export function detailsBlock(label: string, rows: DetailRow[], opts?: { background?: "card" | "muted"; compact?: boolean }): EmailBlock {
+  const bg = opts?.background === "muted" ? "#F5F1E8" : "#FDFBF6";
+  const border = opts?.background === "muted" ? "transparent" : "#E0D8C8";
+  const rowPadding = opts?.compact ? "5px 0" : "4px 0";
   const tr = rows.map(r => {
+    const valColor = r.accent ? "#2F4F3E" : "#2A2418";
+    const valExtra = r.accent ? "letter-spacing:1px;" : "";
     const v = r.href
       ? `<a href="${r.href}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${r.value}</a>`
-      : `<span style="color:#2A2418;font-weight:bold;">${r.value}</span>`;
-    return `<tr><td style="padding:4px 0;color:#8A7D6A;width:90px;">${r.label}</td><td style="padding:4px 0;">${v}</td></tr>`;
+      : `<span style="color:${valColor};font-weight:bold;${valExtra}">${r.value}</span>`;
+    const align = opts?.compact ? `style="padding:${rowPadding};text-align:right;"` : `style="padding:${rowPadding};"`;
+    return `<tr><td style="padding:${rowPadding};color:#8A7D6A;">${r.label}</td><td ${align}>${v}</td></tr>`;
   }).join("");
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:10px;margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};${border !== "transparent" ? `border:1px solid ${border};` : ""}border-radius:10px;margin-bottom:20px;">
       <tr><td style="padding:16px 20px;">
-        <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">${tr}</table>
+        ${label ? `<p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>` : ""}
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:${opts?.compact ? "13" : "14"}px;">${tr}</table>
       </td></tr>
     </table>`;
 }
 
-/** Groene CTA-knop. */
-export function ctaButton(href: string, text: string): EmailBlock {
+/** Kleine genuanceerde tekst, bijv. een tip onder een CTA-knop. */
+export function smallNote(html: string): EmailBlock {
+  return `<p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;line-height:1.5;text-align:center;">${html}</p>`;
+}
+
+/** Groene CTA-knop. `prominent: true` geeft een grotere full-width versie (voor primaire calls-to-action zoals "Open gast-app"). */
+export function ctaButton(href: string, text: string, opts?: { prominent?: boolean; marginBottom?: number }): EmailBlock {
+  const prominent = opts?.prominent === true;
+  const padding = prominent ? "18px 24px" : "14px 28px";
+  const radius = prominent ? "14px" : "10px";
+  const fontSize = prominent ? "17px" : "15px";
+  const innerWidth = prominent ? ' style="width:100%;"' : "";
+  const mb = opts?.marginBottom ?? 20;
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:${mb}px;">
       <tr><td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-          <td align="center" style="background:#2F4F3E;border-radius:10px;">
-            <a href="${href}" style="display:block;padding:14px 28px;color:#fff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:bold;border-radius:10px;">${text}</a>
+        <table role="presentation" cellpadding="0" cellspacing="0"${innerWidth}><tr>
+          <td align="center" style="background:#2F4F3E;border-radius:${radius};">
+            <a href="${href}" style="display:block;padding:${padding};color:#fff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:${fontSize};font-weight:bold;border-radius:${radius};">${text}</a>
           </td>
         </tr></table>
       </td></tr>
@@ -210,6 +256,125 @@ export function emailWrap(content: string): string {
 </body></html>`;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Specifieke mails — wrappers rond lodgeEmail()
+   ═══════════════════════════════════════════════════════════════ */
+
+export type WelcomeEmailOpts = {
+  firstName: string;
+  lodgeNaam: string;
+  photoUrl: string;
+  checkInDate: string;     // bv. "maandag 14 mei"
+  checkOutDate: string;    // bv. "vrijdag 18 mei"
+  appLink: string;
+  doorCode: string;
+};
+
+/** Welkomstmail (T-3 of handmatig vanuit admin). */
+export function welcomeEmail(opts: WelcomeEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: `Lodge ${opts.lodgeNaam}`,
+    title: `Welkom${opts.firstName ? `, ${opts.firstName}` : ""}`,
+    intro: `Jullie Lodge ${opts.lodgeNaam} staat klaar voor ${opts.checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één klik en alles staat op zijn plek.`,
+    blocks: [
+      ctaButton(opts.appLink, "Open jullie gast-app &#8594;", { prominent: true, marginBottom: 14 }),
+      smallNote("Tip: zet 'm op je beginscherm zodat je 'm bij aankomst direct paraat hebt."),
+      detailsBlock("", [
+        { label: "Aankomst",  value: `${opts.checkInDate} · vanaf 15:00` },
+        { label: "Vertrek",   value: `${opts.checkOutDate} · voor 11:00` },
+        { label: "Lodge",     value: `Lodge ${opts.lodgeNaam}` },
+        { label: "Deurcode",  value: opts.doorCode, accent: true },
+      ], { background: "muted", compact: true }),
+      checklist([
+        "Inchecken vanaf 15:00, sleutel niet nodig",
+        "Laadpaal beschikbaar op locatie",
+        "Tips, route en extra's regelen via de app",
+      ]),
+    ],
+    footer: `<strong style="color:#2A2418;">Route:</strong> A28 → afslag Zeijen → Zuiderstraat 6<br/>Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`,
+  });
+}
+
+export type LateCheckoutEmailOpts = {
+  firstName: string;
+  lodgeNaam: string;
+  photoUrl: string;
+  appLink: string;
+};
+
+/** Late-checkout reminder mail (avond voor vertrek). */
+export function lateCheckoutEmail(opts: LateCheckoutEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: `Lodge ${opts.lodgeNaam}`,
+    title: "Nog één nacht",
+    intro: `${opts.firstName ? `${opts.firstName}, nog` : "Nog"} één nacht en dan zit het er weer op. We hopen dat jullie een heerlijk verblijf hebben gehad. Geniet vanavond nog even van de stilte.`,
+    blocks: [
+      calloutBlock("Nog niet klaar om te gaan?", "Boek een late check-out &mdash; ideaal voor een lekker lang ontbijt of nog even een boswandeling."),
+      ctaButton(opts.appLink, "Vraag late check-out aan"),
+      checklist([
+        "Standaard check-out tot 11:00",
+        "Late check-out tot 13:00 via de app",
+        "Vergeet niet om de checklist in de app af te vinken",
+      ]),
+    ],
+  });
+}
+
+export type ThankYouEmailOpts = {
+  firstName: string;
+  photoUrl: string;
+  reviewLink: string;
+};
+
+/** Bedankt-na-vertrek mail. Verstuurd dag na check-out door cron, of handmatig vanuit admin. */
+export function thankYouEmail(opts: ThankYouEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: "Huis ter Huynen",
+    title: `Tot snel${opts.firstName ? `, ${opts.firstName}` : ""}`,
+    intro: "De heide kleurt, het bos ruist, en de hottub dampt zachtjes in de ochtendlucht. Zo gaat het hier elke dag verder &mdash; ook als je er even niet bent. We hopen dat Drenthe je goed heeft gedaan.",
+    blocks: [
+      calloutBlock(
+        "Vertel ons hoe het was",
+        "Jouw ervaring helpt andere gasten en helpt ons om het n&oacute;g beter te maken. Het kost maar een paar minuten.",
+        { cta: { href: opts.reviewLink, text: "Review achterlaten", style: "primary" }, background: "muted" },
+      ),
+    ],
+    footer: "Mocht je ooit terug willen &mdash; je bent altijd welkom. Het Huynen team",
+  });
+}
+
+export type FollowUpEmailOpts = {
+  firstName: string;
+  photoUrl: string;
+  reviewLink: string;
+  bookLink: string;
+};
+
+/** Follow-up mail (~14+ dagen na vertrek). Twee CTAs: review en opnieuw boeken. */
+export function followUpEmail(opts: FollowUpEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: "Huis ter Huynen",
+    title: "Hoe kijk je terug?",
+    intro: `${opts.firstName ? `Hoi ${opts.firstName}, het` : "Het"} is alweer even geleden dat je bij ons was. We hopen dat je genoten hebt van Drenthe!`,
+    blocks: [
+      calloutBlock(
+        "Vertel ons hoe het was",
+        "Jouw ervaring helpt andere gasten en helpt ons om het n&oacute;g beter te maken.",
+        { cta: { href: opts.reviewLink, text: "Review achterlaten", style: "primary" }, background: "muted" },
+      ),
+      calloutBlock(
+        "Kom nog eens terug",
+        "Als terugkerende gast ontvang je altijd een persoonlijk aanbod &mdash; scherper dan op boekingssites.",
+        { cta: { href: opts.bookLink, text: "Bekijk beschikbaarheid", style: "secondary" } },
+      ),
+    ],
+  });
+}
+
 export type OfferteRegel = { label: string; bedrag: number; soort: "toeslag" | "korting" | "belasting" | "verblijf" };
 
 export function buildOfferteHtmlV2(
@@ -303,92 +468,3 @@ export function buildOfferteHtmlV2(
   `);
 }
 
-export function buildOfferteHtml(
-  gastNaam: string, van: string, tot: string, personen: number,
-  prijsVerblijf: string, toeristenbelasting: string, schoonmaak: string,
-  totaal: string, bericht: string, aanvraagId: string, appUrl: string, confirmToken: string,
-): string {
-  return emailWrap(`
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      <tr><td align="center" style="padding:0 0 20px;"><span style="font-size:22px;color:#B49A5E;letter-spacing:8px;">◆</span></td></tr>
-    </table>
-
-    <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;text-align:center;">
-      Persoonlijk aanbod
-    </h1>
-    <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;text-align:center;">
-      Speciaal voor ${gastNaam || "jou"}
-    </p>
-    <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:12px;color:#B49A5E;text-align:center;letter-spacing:1px;text-transform:uppercase;">
-      Exclusief &middot; Beste prijs garantie
-    </p>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:24px;">
-      <tr><td style="padding:18px 20px;" align="center">
-        <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Je verblijf</p>
-        <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${van} t/m ${tot}</p>
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;font-weight:bold;">${personen} ${personen === 1 ? "persoon" : "personen"}</p>
-      </td></tr>
-    </table>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;margin-bottom:4px;">
-      <tr>
-        <td style="padding:14px 0;color:#2A2418;border-bottom:1px solid #E0D8C8;">Verblijf</td>
-        <td align="right" style="padding:14px 0;color:#2A2418;font-weight:bold;border-bottom:1px solid #E0D8C8;">&euro; ${prijsVerblijf}</td>
-      </tr>
-      <tr>
-        <td style="padding:14px 0;color:#2A2418;border-bottom:1px solid #E0D8C8;">Toeristenbelasting</td>
-        <td align="right" style="padding:14px 0;color:#2A2418;font-weight:bold;border-bottom:1px solid #E0D8C8;">&euro; ${toeristenbelasting}</td>
-      </tr>
-      <tr>
-        <td style="padding:14px 0;color:#2A2418;border-bottom:1px solid #E0D8C8;">Eindschoonmaak</td>
-        <td align="right" style="padding:14px 0;color:#2A2418;font-weight:bold;border-bottom:1px solid #E0D8C8;">&euro; ${schoonmaak}</td>
-      </tr>
-    </table>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;margin-bottom:24px;">
-      <tr>
-        <td style="padding:16px 0;font-size:18px;font-weight:bold;color:#2A2418;">Totaal</td>
-        <td align="right" style="padding:16px 0;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;color:#2F4F3E;">&euro; ${totaal}</td>
-      </tr>
-    </table>
-
-    ${bericht ? `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-      <tr><td style="padding:18px 20px;background-color:#F9F4E8;border-radius:8px;">
-        <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Persoonlijk bericht</p>
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#2A2418;line-height:1.6;">${bericht}</p>
-      </td></tr>
-    </table>
-    ` : ""}
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Beste prijs garantie &mdash; altijd scherper dan boekingssites</td></tr>
-      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Persoonlijk afgestemd op jouw verblijf</td></tr>
-      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Geen verplichting &mdash; neem rustig de tijd</td></tr>
-    </table>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-      <tr><td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0">
-          <tr>
-            <td align="center" style="background-color:#2F4F3E;border-radius:10px;">
-              <a href="${appUrl}/bevestig?id=${aanvraagId}&t=${confirmToken}"
-                style="display:block;padding:18px 48px;color:#ffffff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;border-radius:10px;">
-                Bevestig reservering &#8594;
-              </a>
-            </td>
-          </tr>
-        </table>
-      </td></tr>
-    </table>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
-      <tr><td style="padding:16px 0 0;">
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">
-          Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">+31 6 42568603</a>
-        </p>
-      </td></tr>
-    </table>
-  `);
-}

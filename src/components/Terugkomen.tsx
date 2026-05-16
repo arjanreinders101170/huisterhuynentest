@@ -12,6 +12,8 @@ type DayStatus = "preferred" | "other" | "booked";
 type Props = {
   onNavigate: (r: Route) => void;
   preferredLodge?: Lodge | null;
+  /** Herkomst van de aanvraag — bepaalt de 'bron' in booking_requests. */
+  bron?: "terugkomer" | "app";
 };
 
 const MONTHS_NL = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
@@ -26,7 +28,7 @@ function isDayBooked(iso: string, events: ICalEvent[]): boolean {
   return events.some(e => iso >= e.start && iso < e.end);
 }
 
-export function Terugkomen({ onNavigate, preferredLodge }: Props) {
+export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: Props) {
   const { t, lang } = useLanguage();
   const MONTHS = lang === "de" ? MONTHS_DE : MONTHS_NL;
   const DAYS = lang === "de" ? DAYS_DE : DAYS_NL;
@@ -196,6 +198,7 @@ export function Terugkomen({ onNavigate, preferredLodge }: Props) {
           voorkeursLodge: matchedLodge.lodge,
           voorkeursLodgeNaam: LODGE_LABELS[matchedLodge.lodge],
           wasFallback: matchedLodge.fallback,
+          bron,
         }),
       });
     } catch {}

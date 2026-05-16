@@ -368,6 +368,7 @@ function AppInner() {
             <Terugkomen
               onNavigate={(r: Route) => setRoute(r)}
               preferredLodge={stay?.lodge === "lodge_1" || stay?.lodge === "lodge_2" ? stay.lodge : null}
+              bron="app"
             />
           )}
         </>
