@@ -11,7 +11,6 @@ const LIMITS: Record<string, { max: number; window: number }> = {
   "/api/checkout":    { max: 10, window: 3600000 },    // 10/hour
   "/api/reviews":     { max: 10, window: 60000 },      // 10/min
   "/api/nuki/unlock": { max: 3,  window: 60000 },      // 3/min
-  "/api/offerte":     { max: 5,  window: 3600000 },    // 5/hour
   "/api/bevestig":    { max: 10, window: 3600000 },    // 10/hour
   "/api/stay":        { max: 30, window: 60000 },      // 30/min — token lookups
 };

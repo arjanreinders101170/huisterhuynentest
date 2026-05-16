@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import {
-  esc, buildOfferteHtml, buildOfferteHtmlV2, type OfferteRegel,
+  esc, buildOfferteHtmlV2, type OfferteRegel,
   lodgeEmail, lodgePhoto, infoBlock, calloutBlock, ctaButton,
 } from "@/lib/email";
 import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
@@ -43,24 +43,6 @@ export async function GET(request: NextRequest) {
           .order("created_at", { ascending: false })
           .limit(50);
         return NextResponse.json({ data: data || [] });
-      }
-      case "aanvragen": {
-        const { data: aanvragenRaw } = await getSupabase()
-          .from("terugkeer_aanvragen")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(50);
-        const aanvragenList = aanvragenRaw || [];
-        const guestIds = [...new Set(aanvragenList.map((a: { guest_id: string }) => a.guest_id).filter(Boolean))];
-        let guestLookup: Record<string, { naam: string; email: string }> = {};
-        if (guestIds.length > 0) {
-          const { data: guestsData } = await getSupabase().from("guests").select("id, naam, email").in("id", guestIds);
-          if (guestsData) {
-            guestLookup = Object.fromEntries(guestsData.map((g: { id: string; naam: string; email: string }) => [g.id, { naam: g.naam, email: g.email }]));
-          }
-        }
-        const enriched = aanvragenList.map((a: { guest_id: string }) => ({ ...a, guest: guestLookup[a.guest_id] || null }));
-        return NextResponse.json({ data: enriched });
       }
       case "products": {
         const { data } = await getSupabase()
@@ -603,62 +585,6 @@ export async function POST(request: NextRequest) {
       case "delete_pricing_period": {
         if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
         await getSupabase().from("pricing_periods").delete().eq("id", body.id);
-        return NextResponse.json({ success: true });
-      }
-      case "send_offerte": {
-        const { id, prijsVerblijf, toeristenbelasting, schoonmaak, bericht } = body;
-        if (!id || !prijsVerblijf) {
-          return NextResponse.json({ error: "Aanvraag ID en verblijfsprijs zijn verplicht" }, { status: 400 });
-        }
-        const { data: aanvraag } = await getSupabase().from("terugkeer_aanvragen").select("*").eq("id", id).single();
-        if (!aanvraag) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
-
-        const { data: guest } = await getSupabase().from("guests").select("naam, email").eq("id", aanvraag.guest_id).single();
-        if (!guest?.email) return NextResponse.json({ error: "Gast of e-mailadres niet gevonden" }, { status: 404 });
-
-        const verblijf = parseFloat(prijsVerblijf) || 0;
-        const belasting = parseFloat(toeristenbelasting) || 0;
-        const cleaning = parseFloat(schoonmaak) || 0;
-        const totaal = (verblijf + belasting + cleaning).toFixed(2);
-
-        const { randomBytes } = await import("crypto");
-        const confirmToken = randomBytes(32).toString("hex");
-
-        await getSupabase().from("terugkeer_aanvragen").update({
-          status: "offerte_verstuurd",
-          offerte_bedrag: parseFloat(totaal),
-          confirm_token: confirmToken,
-          updated_at: new Date().toISOString(),
-        }).eq("id", id);
-
-        const resendKey = process.env.RESEND_API_KEY;
-        if (!resendKey) return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
-
-        const { Resend } = await import("resend");
-        const resend = new Resend(resendKey);
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
-
-        await resend.emails.send({
-          from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
-          to: [guest.email],
-          subject: "Persoonlijk aanbod — Huis ter Huynen",
-          html: buildOfferteHtml(
-            esc(guest.naam || ""), esc(aanvraag.van || ""), esc(aanvraag.tot || ""),
-            aanvraag.personen || 2,
-            verblijf.toFixed(2), belasting.toFixed(2), cleaning.toFixed(2), totaal,
-            esc(bericht || ""), id, appUrl, confirmToken,
-          ),
-          replyTo: "lodge@huisterhuynen.nl",
-        });
-
-        return NextResponse.json({ success: true, totaal });
-      }
-      case "reject_aanvraag": {
-        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
-        await getSupabase().from("terugkeer_aanvragen").update({
-          status: "afgewezen",
-          updated_at: new Date().toISOString(),
-        }).eq("id", body.id);
         return NextResponse.json({ success: true });
       }
       case "create_discount_code": {
