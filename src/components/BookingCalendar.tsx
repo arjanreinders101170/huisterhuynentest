@@ -426,10 +426,6 @@ export default function BookingCalendar() {
                 {l.label}
               </div>
             ))}
-            <div style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: T.sans, fontSize: 12, color: T.muted }}>
-              <span style={{ fontFamily: T.sans, fontSize: 11, color: T.text, fontWeight: 600 }}>€125</span>
-              <span>Prijs per nacht</span>
-            </div>
           </div>
 
           {/* Hint when no dates selected */}
