@@ -61,12 +61,22 @@ const T = {
 };
 
 /** Parses plain-text blog content into React elements.
- *  ## Heading → <h2>, blank line → paragraph break */
+ *  #   → <h1>, ## → <h2>, ### → <h3>, blank line → paragraph break */
 function renderInhoud(inhoud: string) {
   const blocks = inhoud.split(/\n\n+/);
   return blocks.map((block, i) => {
     const trimmed = block.trim();
     if (!trimmed) return null;
+    if (trimmed.startsWith("### ")) {
+      return (
+        <h3 key={i} style={{
+          fontFamily: T.serif, fontSize: "clamp(16px, 2vw, 18px)",
+          color: T.text, margin: "32px 0 10px", fontWeight: 600, lineHeight: 1.4,
+        }}>
+          {trimmed.slice(4)}
+        </h3>
+      );
+    }
     if (trimmed.startsWith("## ")) {
       return (
         <h2 key={i} style={{
@@ -77,12 +87,24 @@ function renderInhoud(inhoud: string) {
         </h2>
       );
     }
+    if (trimmed.startsWith("# ")) {
+      return (
+        <h1 key={i} style={{
+          fontFamily: T.serif, fontSize: "clamp(24px, 3vw, 32px)",
+          color: T.text, margin: "56px 0 20px", fontWeight: 700, lineHeight: 1.2,
+        }}>
+          {trimmed.slice(2)}
+        </h1>
+      );
+    }
     return (
       <p key={i} style={{
         fontFamily: T.sans, fontSize: 16, color: T.text,
         lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
       }}>
-        {trimmed}
+        {trimmed.split("\n").map((line, j, arr) => (
+          <span key={j}>{line}{j < arr.length - 1 && <br />}</span>
+        ))}
       </p>
     );
   });
