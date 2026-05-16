@@ -11,11 +11,11 @@ type Props = {
 export function Nav({ currentPage, onNavigate }: Props) {
   const { t } = useLanguage();
   const items = [
-    { icon: <IcHome />, label: t.nav.home,    page: "home" as Route },
-    { icon: <IcKey />,  label: t.nav.verblijf, page: "verblijf" as Route },
-    { icon: <IcChat />, label: "",             page: "chat" as Route },
-    { icon: <IcCart />, label: t.nav.extras,  page: "reserveren" as Route },
-    { icon: <IcInfo />, label: t.nav.info,    page: "info" as Route },
+    { icon: <IcHome />, label: t.nav.home,    ariaLabel: t.nav.home,     page: "home" as Route },
+    { icon: <IcKey />,  label: t.nav.verblijf, ariaLabel: t.nav.verblijf, page: "verblijf" as Route },
+    { icon: <IcChat />, label: "",             ariaLabel: t.nav.chat,     page: "chat" as Route },
+    { icon: <IcCart />, label: t.nav.extras,  ariaLabel: t.nav.extras,   page: "reserveren" as Route },
+    { icon: <IcInfo />, label: t.nav.info,    ariaLabel: t.nav.info,     page: "info" as Route },
   ];
   return (
     <nav style={{
@@ -28,7 +28,7 @@ export function Nav({ currentPage, onNavigate }: Props) {
         const active = currentPage === n.page;
         const isChat = n.page === "chat";
         return (
-          <button key={n.page} onClick={() => onNavigate(n.page)} style={{
+          <button key={n.page} onClick={() => onNavigate(n.page)} aria-label={n.ariaLabel} aria-current={active ? "page" : undefined} style={{
             background: isChat ? (active ? T.green : "rgba(47,79,62,.06)") : "none",
             border: "none", cursor: "pointer",
             display: "flex", flexDirection: isChat ? "row" : "column",

@@ -172,6 +172,7 @@ export function Chat({ msgs, input, onInputChange, onSend, busy, endRef, profile
           id="chat-send-btn"
           onClick={onSend}
           disabled={busy || !input.trim()}
+          aria-label={t.a11y.sendMessage}
           style={{
             width: 46,
             height: 46,

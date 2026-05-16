@@ -307,6 +307,7 @@ export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: 
               <button
                 onClick={prevMonth}
                 disabled={!canGoBack}
+                aria-label={t.a11y.prevMonth}
                 style={{
                   background: "none", border: "none",
                   cursor: canGoBack ? "pointer" : "not-allowed",
@@ -318,7 +319,7 @@ export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: 
               <div style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 600, color: T.text }}>
                 {MONTHS[calMonth.month]} {calMonth.year}
               </div>
-              <button onClick={nextMonth} style={{ background: "none", border: "none", cursor: "pointer", color: T.muted, padding: 4 }}>
+              <button onClick={nextMonth} aria-label={t.a11y.nextMonth} style={{ background: "none", border: "none", cursor: "pointer", color: T.muted, padding: 4 }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><polyline points="9 18 15 12 9 6" /></svg>
               </button>
             </div>

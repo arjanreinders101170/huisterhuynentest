@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function Header({ today, weather, onMenuOpen }: Props) {
-  const { lang, setLang } = useLanguage();
+  const { lang, setLang, t } = useLanguage();
   const WeatherIcon = weather ? WEATHER_ICONS[weather.icon] || IcCloud : IcCloud;
   const temp = weather ? `${weather.temp}°C` : "…";
   const desc = weather?.description || "";
@@ -24,7 +24,7 @@ export function Header({ today, weather, onMenuOpen }: Props) {
   return (
     <header style={{ background: T.bg, position: "sticky", top: 0, zIndex: 50, padding: "14px 20px 0" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <button onClick={onMenuOpen} style={{ background: "none", border: "none", color: T.text, cursor: "pointer", padding: 4, WebkitTapHighlightColor: "transparent" }}>
+        <button onClick={onMenuOpen} aria-label={t.nav.menu} style={{ background: "none", border: "none", color: T.text, cursor: "pointer", padding: 4, WebkitTapHighlightColor: "transparent" }}>
           <IcMenu />
         </button>
         <div style={{ textAlign: "center" }}>
@@ -53,6 +53,7 @@ export function Header({ today, weather, onMenuOpen }: Props) {
         {/* Language switcher */}
         <button
           onClick={() => setLang(lang === "nl" ? "de" : "nl")}
+          aria-label={lang === "nl" ? "Switch to German" : "Switch to Dutch"}
           style={{
             background: "none", border: `1px solid ${T.border}`,
             borderRadius: 8, cursor: "pointer",
