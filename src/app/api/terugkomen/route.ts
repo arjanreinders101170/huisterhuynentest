@@ -19,7 +19,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const { from, to, fromIso, toIso, email, name, persons, message, voorkeursLodge, voorkeursLodgeNaam, wasFallback } = body;
+    const { from, to, fromIso, toIso, email, name, persons, message, voorkeursLodge, voorkeursLodgeNaam, wasFallback, bron: requestBron } = body;
+    const bron: "terugkomer" | "app" = requestBron === "app" ? "app" : "terugkomer";
 
     const parsed = terugkomenSchema.safeParse(body);
     if (!parsed.success) {
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     await safeInsertBookingRequest({
-      bron: "terugkomer",
+      bron,
       guest_id: guestId,
       gast_naam: name || "",
       gast_email: email,
@@ -94,12 +95,14 @@ export async function POST(request: NextRequest) {
         await resend.emails.send({
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
-          subject: `Terugkeer aanvraag — ${name || email} · ${from} t/m ${to}`,
+          subject: `${bron === "app" ? "App-aanvraag" : "Terugkeer aanvraag"} — ${name || email} · ${from} t/m ${to}`,
           replyTo: email,
           html: lodgeEmail({
             photoUrl, photoAlt: `Lodge ${lodgeLabel}`,
-            title: "Terugkeer aanvraag",
-            intro: "Een gast wil graag terugkomen. Open in admin om een persoonlijk aanbod op te bouwen.",
+            title: bron === "app" ? "Nieuwe aanvraag via app" : "Terugkeer aanvraag",
+            intro: bron === "app"
+              ? "Een gast heeft via de concierge-app een aanvraag gedaan. Open in admin om een persoonlijk aanbod op te bouwen."
+              : "Een gast wil graag terugkomen. Open in admin om een persoonlijk aanbod op te bouwen.",
             blocks: [
               infoBlock("Gewenste periode", periodLine, subLine),
               detailsBlock("Gast", [

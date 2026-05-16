@@ -21,6 +21,7 @@ export const terugkomenSchema = z.object({
   voorkeursLodge: z.enum(["lodge_1", "lodge_2"]).optional(),
   voorkeursLodgeNaam: z.string().max(60).optional(),
   wasFallback: z.boolean().optional(),
+  bron: z.enum(["terugkomer", "app"]).optional(),
 });
 
 export const reviewSchema = z.object({
