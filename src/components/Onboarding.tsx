@@ -63,7 +63,7 @@ export function Onboarding({ onSelect }: Props) {
             <div style={{ width: 28, height: 1, background: T.gold }} />
             <span style={{
               fontFamily: T.sans, fontSize: 9, fontWeight: 500,
-              color: T.gold, letterSpacing: ".22em", textTransform: "uppercase",
+              color: "#52502E", letterSpacing: ".22em", textTransform: "uppercase",
             }}>
               Boutique Lodge
             </span>

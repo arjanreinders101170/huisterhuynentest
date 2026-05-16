@@ -43,7 +43,7 @@ export function Header({ today, weather, onMenuOpen }: Props) {
             <div style={{ width: 24, height: 1, background: T.gold }} />
             <span style={{
               fontFamily: T.sans, fontSize: 8.5, fontWeight: 500,
-              color: T.gold, letterSpacing: ".2em", textTransform: "uppercase",
+              color: "#52502E", letterSpacing: ".2em", textTransform: "uppercase",
             }}>
               Boutique Lodge
             </span>
@@ -75,7 +75,7 @@ export function Header({ today, weather, onMenuOpen }: Props) {
         }}>
           <WeatherIcon /> {temp}
           {desc && (
-            <span style={{ fontSize: 11, opacity: 0.7 }}> · {desc}</span>
+            <span style={{ fontSize: 11 }}> · {desc}</span>
           )}
         </span>
         <span style={{

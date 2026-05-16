@@ -484,7 +484,7 @@ export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: 
             </div>
             <button onClick={() => setStep(1)} style={{
               background: "none", border: "none", cursor: "pointer",
-              fontFamily: T.sans, fontSize: 12, color: T.gold, fontWeight: 400,
+              fontFamily: T.sans, fontSize: 12, color: T.green, fontWeight: 500,
             }}>{lang === "de" ? "Ändern" : "Wijzig"}</button>
           </div>
 
