@@ -6,6 +6,14 @@ export const de = {
     verblijf: "Aufenthalt",
     extras: "Extras",
     info: "Info",
+    chat: "Chat",
+    menu: "Menü",
+  },
+
+  a11y: {
+    prevMonth: "Vorheriger Monat",
+    nextMonth: "Nächster Monat",
+    sendMessage: "Nachricht senden",
   },
 
   onboarding: {
