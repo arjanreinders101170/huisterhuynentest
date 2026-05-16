@@ -253,7 +253,7 @@ export function welcomeEmail(opts: WelcomeEmailOpts): string {
     photoUrl: opts.photoUrl,
     photoAlt: `Lodge ${opts.lodgeNaam}`,
     title: `Welkom${opts.firstName ? `, ${opts.firstName}` : ""}`,
-    intro: `Jullie Lodge ${opts.lodgeNaam} staat klaar voor ${opts.checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één tik en alles staat op zijn plek.`,
+    intro: `Jullie Lodge ${opts.lodgeNaam} staat klaar voor ${opts.checkInDate}. We hebben een persoonlijke gast-app voor jullie ingericht &mdash; één klik en alles staat op zijn plek.`,
     blocks: [
       ctaButton(opts.appLink, "Open jullie gast-app &#8594;", { prominent: true, marginBottom: 14 }),
       smallNote("Tip: zet 'm op je beginscherm zodat je 'm bij aankomst direct paraat hebt."),
