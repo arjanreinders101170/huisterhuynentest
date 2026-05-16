@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 312" width="820" height="312" font-family="Georgia, 'Times New Roman', serif">
+  <defs>
+    <!-- Sky gradient -->
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a3a5c;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#2e6b9e;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#e8925a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c0632a;stop-opacity:1" />
+    </linearGradient>
+    <!-- Ground gradient -->
+    <linearGradient id="ground" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#7b4f8c;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#5a3a6b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d1a3a;stop-opacity:1" />
+    </linearGradient>
+    <!-- Overlay for text legibility -->
+    <linearGradient id="overlay" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.55" />
+      <stop offset="40%" style="stop-color:#000000;stop-opacity:0.30" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.10" />
+    </linearGradient>
+    <!-- Sun glow -->
+    <radialGradient id="sun" cx="65%" cy="45%" r="18%">
+      <stop offset="0%" style="stop-color:#fff5c0;stop-opacity:0.9" />
+      <stop offset="30%" style="stop-color:#f9c96a;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#e8925a;stop-opacity:0" />
+    </radialGradient>
+    <!-- Water reflection -->
+    <linearGradient id="water" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2e6b9e;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#1a3a5c;stop-opacity:0.9" />
+    </linearGradient>
+    <filter id="blur-sm">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+    <filter id="blur-lg">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="820" height="312" fill="url(#sky)"/>
+
+  <!-- Sun glow -->
+  <ellipse cx="533" cy="140" rx="110" ry="80" fill="url(#sun)"/>
+
+  <!-- Distant treeline (silhouette, blurred) -->
+  <!-- Far trees right -->
+  <g opacity="0.35" filter="url(#blur-sm)">
+    <rect x="460" y="148" width="12" height="48" fill="#1a2e1a"/>
+    <polygon points="466,108 444,172 488,172" fill="#1a2e1a"/>
+    <polygon points="466,92 448,152 484,152" fill="#1a2e1a"/>
+
+    <rect x="500" y="142" width="14" height="54" fill="#1a2e1a"/>
+    <polygon points="507,96 482,168 532,168" fill="#1a2e1a"/>
+    <polygon points="507,78 486,148 528,148" fill="#1a2e1a"/>
+
+    <rect x="548" y="150" width="11" height="46" fill="#1a2e1a"/>
+    <polygon points="553,112 534,170 572,170" fill="#1a2e1a"/>
+    <polygon points="553,96 537,152 569,152" fill="#1a2e1a"/>
+
+    <rect x="585" y="145" width="13" height="51" fill="#1a2e1a"/>
+    <polygon points="591,100 568,168 614,168" fill="#1a2e1a"/>
+    <polygon points="591,84 572,148 610,148" fill="#1a2e1a"/>
+
+    <rect x="630" y="148" width="12" height="48" fill="#1a2e1a"/>
+    <polygon points="636,108 614,172 658,172" fill="#1a2e1a"/>
+    <polygon points="636,90 618,150 654,150" fill="#1a2e1a"/>
+
+    <rect x="670" y="144" width="14" height="52" fill="#1a2e1a"/>
+    <polygon points="677,98 654,170 700,170" fill="#1a2e1a"/>
+    <polygon points="677,80 658,148 696,148" fill="#1a2e1a"/>
+
+    <rect x="714" y="146" width="12" height="50" fill="#1a2e1a"/>
+    <polygon points="720,104 698,170 742,170" fill="#1a2e1a"/>
+    <polygon points="720,86 702,150 738,150" fill="#1a2e1a"/>
+
+    <rect x="752" y="150" width="10" height="46" fill="#1a2e1a"/>
+    <polygon points="757,115 738,170 776,170" fill="#1a2e1a"/>
+    <polygon points="757,98 741,152 773,152" fill="#1a2e1a"/>
+
+    <rect x="785" y="148" width="12" height="48" fill="#1a2e1a"/>
+    <polygon points="791,110 770,172 812,172" fill="#1a2e1a"/>
+    <polygon points="791,92 774,152 808,152" fill="#1a2e1a"/>
+  </g>
+
+  <!-- Heathland ground (purple/mauve) -->
+  <path d="M0,195 Q205,178 410,188 Q615,198 820,182 L820,312 L0,312 Z" fill="url(#ground)"/>
+
+  <!-- Middle heide layer -->
+  <path d="M0,215 Q150,205 300,210 Q450,215 600,208 Q720,202 820,210 L820,312 L0,312 Z" fill="#4a2a5c" opacity="0.7"/>
+
+  <!-- Foreground heathland -->
+  <path d="M0,248 Q100,238 220,244 Q380,252 520,242 Q660,232 820,245 L820,312 L0,312 Z" fill="#2d1a3a" opacity="0.9"/>
+
+  <!-- Small heather bushes - middle ground -->
+  <g opacity="0.8">
+    <ellipse cx="290" cy="210" rx="28" ry="10" fill="#8b5a9e"/>
+    <ellipse cx="340" cy="207" rx="22" ry="8" fill="#7a4a8c"/>
+    <ellipse cx="395" cy="212" rx="30" ry="11" fill="#9b6aae"/>
+    <ellipse cx="450" cy="208" rx="25" ry="9" fill="#8b5a9e"/>
+    <ellipse cx="510" cy="211" rx="20" ry="8" fill="#7a4a8c"/>
+    <ellipse cx="560" cy="209" rx="26" ry="10" fill="#9b6aae"/>
+    <ellipse cx="620" cy="212" rx="22" ry="8" fill="#8b5a9e"/>
+    <ellipse cx="680" cy="210" rx="30" ry="11" fill="#7a4a8c"/>
+    <ellipse cx="740" cy="213" rx="24" ry="9" fill="#9b6aae"/>
+    <ellipse cx="790" cy="210" rx="18" ry="7" fill="#8b5a9e"/>
+  </g>
+
+  <!-- Small heather bushes - foreground -->
+  <g opacity="0.9">
+    <ellipse cx="60" cy="256" rx="35" ry="13" fill="#5a3a6b"/>
+    <ellipse cx="140" cy="252" rx="28" ry="10" fill="#6b4a7c"/>
+    <ellipse cx="230" cy="258" rx="40" ry="14" fill="#5a3a6b"/>
+    <ellipse cx="340" cy="253" rx="32" ry="12" fill="#6b4a7c"/>
+    <ellipse cx="440" cy="257" rx="38" ry="13" fill="#5a3a6b"/>
+    <ellipse cx="550" cy="252" rx="30" ry="11" fill="#6b4a7c"/>
+    <ellipse cx="650" cy="256" rx="36" ry="13" fill="#5a3a6b"/>
+    <ellipse cx="755" cy="253" rx="28" ry="10" fill="#6b4a7c"/>
+  </g>
+
+  <!-- Small pond/ven (Drenthe kenmerkend) -->
+  <ellipse cx="680" cy="220" rx="55" ry="18" fill="url(#water)" opacity="0.55"/>
+  <ellipse cx="680" cy="220" rx="50" ry="15" fill="#4a8abf" opacity="0.25"/>
+
+  <!-- Stars / subtle dots in sky -->
+  <g fill="white" opacity="0.5">
+    <circle cx="120" cy="22" r="1"/>
+    <circle cx="185" cy="14" r="0.8"/>
+    <circle cx="245" cy="30" r="1.2"/>
+    <circle cx="95" cy="45" r="0.7"/>
+    <circle cx="160" cy="38" r="1"/>
+    <circle cx="210" cy="18" r="0.8"/>
+    <circle cx="70" cy="30" r="1"/>
+    <circle cx="290" cy="25" r="0.6"/>
+    <circle cx="320" cy="40" r="0.9"/>
+    <circle cx="350" cy="15" r="0.7"/>
+    <circle cx="55" cy="60" r="0.8"/>
+    <circle cx="130" cy="65" r="0.6"/>
+  </g>
+
+  <!-- Overlay for text area -->
+  <rect width="820" height="312" fill="url(#overlay)"/>
+
+  <!-- Lodge silhouette (simple, elegant) -->
+  <g opacity="0.25" transform="translate(590, 100)">
+    <!-- House body -->
+    <rect x="0" y="60" width="120" height="75" fill="#1a0e0a"/>
+    <!-- Roof -->
+    <polygon points="-10,60 60,10 130,60" fill="#0d0806"/>
+    <!-- Chimney -->
+    <rect x="85" y="18" width="12" height="30" fill="#0d0806"/>
+    <!-- Windows -->
+    <rect x="12" y="78" width="22" height="26" fill="#f9c96a" opacity="0.6"/>
+    <rect x="48" y="78" width="22" height="26" fill="#f9c96a" opacity="0.4"/>
+    <rect x="84" y="78" width="22" height="26" fill="#f9c96a" opacity="0.6"/>
+    <!-- Door -->
+    <rect x="46" y="104" width="28" height="31" fill="#0d0806"/>
+    <!-- Trees flanking -->
+    <rect x="-30" y="55" width="8" height="80" fill="#0d0806"/>
+    <polygon points="-26,20 -46,72 -6,72" fill="#0d0806"/>
+    <polygon points="-26,6 -44,55 -8,55" fill="#0d0806"/>
+    <rect x="142" y="58" width="8" height="77" fill="#0d0806"/>
+    <polygon points="146,22 126,70 166,70" fill="#0d0806"/>
+    <polygon points="146,8 128,52 164,52" fill="#0d0806"/>
+  </g>
+
+  <!-- === TEXT === -->
+
+  <!-- Decorative top line -->
+  <line x1="28" y1="68" x2="380" y2="68" stroke="#c9a96e" stroke-width="0.8" opacity="0.7"/>
+
+  <!-- Tagline above -->
+  <text x="32" y="62" fill="#c9a96e" font-size="11" letter-spacing="5" font-family="Georgia, serif" opacity="0.9">BOUTIQUE LODGE · ZEIJEN, DRENTHE</text>
+
+  <!-- Main title -->
+  <text x="28" y="132" fill="#ffffff" font-size="54" font-weight="bold" letter-spacing="2" font-family="Georgia, 'Times New Roman', serif" style="text-shadow: 0 2px 8px rgba(0,0,0,0.6)">Huis ter Huynen</text>
+
+  <!-- Decorative bottom line -->
+  <line x1="28" y1="148" x2="380" y2="148" stroke="#c9a96e" stroke-width="0.8" opacity="0.7"/>
+
+  <!-- Subtitle / descriptor -->
+  <text x="30" y="175" fill="#f0e4c8" font-size="16.5" letter-spacing="3" font-family="Georgia, serif" opacity="0.92">Rust · Natuur · Beleving</text>
+
+  <!-- Website / CTA -->
+  <text x="30" y="210" fill="#c9a96e" font-size="12.5" letter-spacing="2" font-family="Georgia, serif" opacity="0.85">www.huisterhuynen.nl</text>
+
+  <!-- Bottom decorative bar -->
+  <rect x="0" y="295" width="820" height="17" fill="#c9a96e" opacity="0.18"/>
+  <text x="410" y="307" fill="#c9a96e" text-anchor="middle" font-size="10" letter-spacing="6" font-family="Georgia, serif" opacity="0.7">✦  VERBORGEN GEM VAN DRENTHE  ✦</text>
+</svg>
