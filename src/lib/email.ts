@@ -32,13 +32,36 @@ export function infoBlock(label: string, mainLine: string, subLine?: string): Em
     </table>`;
 }
 
-/** Goud-getinte callout met titel + body. */
-export function calloutBlock(title: string, body: string): EmailBlock {
+/** Goud-getinte callout met titel + body. Optioneel een CTA-knop binnenin. */
+export function calloutBlock(
+  title: string,
+  body: string,
+  opts?: { cta?: { href: string; text: string; style?: "primary" | "secondary" }; background?: "gold" | "muted" },
+): EmailBlock {
+  const bg = opts?.background === "muted" ? "#F5F1E8" : "#F9F4E8";
+  const cta = opts?.cta;
+  const ctaHtml = cta
+    ? (() => {
+        const isSecondary = cta.style === "secondary";
+        const tdStyle = isSecondary
+          ? "border:2px solid #2F4F3E;border-radius:8px;"
+          : "background:#2F4F3E;border-radius:8px;";
+        const linkColor = isSecondary ? "#2F4F3E" : "#fff";
+        return `
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:14px;">
+          <tr><td align="center" style="${tdStyle}">
+            <a href="${cta.href}" style="display:block;padding:12px 28px;color:${linkColor};text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">${cta.text}</a>
+          </td></tr>
+        </table>`;
+      })()
+    : "";
+  const padding = cta ? "20px" : "18px 20px";
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F9F4E8;border-radius:10px;margin-bottom:20px;">
-      <tr><td style="padding:18px 20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};border-radius:10px;margin-bottom:20px;">
+      <tr><td style="padding:${padding};">
         <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:bold;color:#2A2418;">${title}</p>
         <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">${body}</p>
+        ${ctaHtml}
       </td></tr>
     </table>`;
 }
@@ -295,6 +318,59 @@ export function lateCheckoutEmail(opts: LateCheckoutEmailOpts): string {
         "Late check-out tot 13:00 via de app",
         "Vergeet niet om de checklist in de app af te vinken",
       ]),
+    ],
+  });
+}
+
+export type ThankYouEmailOpts = {
+  firstName: string;
+  photoUrl: string;
+  reviewLink: string;
+};
+
+/** Bedankt-na-vertrek mail. Verstuurd dag na check-out door cron, of handmatig vanuit admin. */
+export function thankYouEmail(opts: ThankYouEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: "Huis ter Huynen",
+    title: `Tot snel${opts.firstName ? `, ${opts.firstName}` : ""}`,
+    intro: "De heide kleurt, het bos ruist, en de hottub dampt zachtjes in de ochtendlucht. Zo gaat het hier elke dag verder &mdash; ook als je er even niet bent. We hopen dat Drenthe je goed heeft gedaan.",
+    blocks: [
+      calloutBlock(
+        "Vertel ons hoe het was",
+        "Jouw ervaring helpt andere gasten en helpt ons om het n&oacute;g beter te maken. Het kost maar een paar minuten.",
+        { cta: { href: opts.reviewLink, text: "Review achterlaten", style: "primary" }, background: "muted" },
+      ),
+    ],
+    footer: "Mocht je ooit terug willen &mdash; je bent altijd welkom. Het Huynen team",
+  });
+}
+
+export type FollowUpEmailOpts = {
+  firstName: string;
+  photoUrl: string;
+  reviewLink: string;
+  bookLink: string;
+};
+
+/** Follow-up mail (~14+ dagen na vertrek). Twee CTAs: review en opnieuw boeken. */
+export function followUpEmail(opts: FollowUpEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: "Huis ter Huynen",
+    title: "Hoe kijk je terug?",
+    intro: `${opts.firstName ? `Hoi ${opts.firstName}, het` : "Het"} is alweer even geleden dat je bij ons was. We hopen dat je genoten hebt van Drenthe!`,
+    blocks: [
+      calloutBlock(
+        "Vertel ons hoe het was",
+        "Jouw ervaring helpt andere gasten en helpt ons om het n&oacute;g beter te maken.",
+        { cta: { href: opts.reviewLink, text: "Review achterlaten", style: "primary" }, background: "muted" },
+      ),
+      calloutBlock(
+        "Kom nog eens terug",
+        "Als terugkerende gast ontvang je altijd een persoonlijk aanbod &mdash; scherper dan op boekingssites.",
+        { cta: { href: opts.bookLink, text: "Bekijk beschikbaarheid", style: "secondary" } },
+      ),
     ],
   });
 }

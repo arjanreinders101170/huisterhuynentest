@@ -3,7 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 import {
   esc, buildOfferteHtmlV2, type OfferteRegel,
   lodgeEmail, lodgePhoto, infoBlock, calloutBlock, ctaButton,
-  welcomeEmail,
+  welcomeEmail, thankYouEmail,
 } from "@/lib/email";
 import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { verifyAdminSession } from "@/lib/admin-auth";
@@ -434,8 +434,7 @@ export async function POST(request: NextRequest) {
 
         const appUrlTy = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
         const baseUrlTy = new URL(appUrlTy).origin;
-        const naam = esc(guest.naam || "");
-        const firstName = naam.split(" ")[0] || naam;
+        const firstName = esc((guest.naam || "").split(" ")[0] || guest.naam || "");
         const { url: photoUrlTy } = lodgePhoto(baseUrlTy, stay.lodge);
 
         const { Resend } = await import("resend");
@@ -445,16 +444,7 @@ export async function POST(request: NextRequest) {
           from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
           to: [guest.email],
           subject: "Bedankt voor je bezoek — Huis ter Huynen",
-          html: lodgeEmail({
-            photoUrl: photoUrlTy, photoAlt: "Huis ter Huynen",
-            title: `Tot snel${firstName ? `, ${firstName}` : ""}`,
-            intro: "De heide kleurt, het bos ruist, en de hottub dampt zachtjes in de ochtendlucht. Zo gaat het hier elke dag verder &mdash; ook als je er even niet bent. We hopen dat Drenthe je goed heeft gedaan.",
-            blocks: [
-              calloutBlock("Vertel ons hoe het was", "Jouw ervaring helpt andere gasten en helpt ons om het n&oacute;g beter te maken. Het kost maar een paar minuten."),
-              ctaButton(appUrlTy, "Review achterlaten"),
-            ],
-            footer: "Mocht je ooit terug willen &mdash; je bent altijd welkom. Het Huynen team",
-          }),
+          html: thankYouEmail({ firstName, photoUrl: photoUrlTy, reviewLink: appUrlTy }),
         });
 
         // Update stay status
