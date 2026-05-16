@@ -289,9 +289,12 @@ export default function BookingCalendar() {
     let d = checkIn;
     while (d < checkOut) {
       const p = priceForDate(d, pricingData, events, today);
-      const key = p ? `${p.label}${p.discounted ? "__disc" : ""}` : "Standaardtarief";
       const ppu = p ? p.price : 0;
-      const displayLabel = p ? p.label : "Standaardtarief";
+      const [y, m, dy] = d.split("-").map(Number);
+      const dow = new Date(y, m - 1, dy).getDay();
+      const isWeekend = dow === 5 || dow === 6 || dow === 0;
+      const displayLabel = isWeekend ? "Weekenddagen" : "Weekdagen";
+      const key = `${displayLabel}__${ppu}${p?.discounted ? "__disc" : ""}`;
       if (!grouped[key]) grouped[key] = { label: displayLabel, nights: 0, price: ppu, discounted: p?.discounted };
       grouped[key].nights++;
       totalPrice += ppu;
