@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { pushEvent, baseEnvelope } from "@/lib/tracking/dataLayer";
 
 const T = {
   gold: "#B49A5E",
@@ -31,6 +32,12 @@ export function NewsletterForm() {
         setErrorMsg(data.error ?? "Er ging iets mis. Probeer het opnieuw.");
         setStatus("error");
       } else {
+        pushEvent({
+          ...baseEnvelope("Subscribe"),
+          ecommerce: { currency: "EUR", value: 5 },
+          subscription: { source: "footer_newsletter" },
+          user: { em: email.trim(), fn: naam.trim() || undefined },
+        });
         setStatus("success");
       }
     } catch {

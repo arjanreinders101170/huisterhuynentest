@@ -70,7 +70,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
   }
 
-  const { naam, email, lodge, checkIn, checkOut, nights, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode } = parsed.data;
+  const { naam, email, lodge, checkIn, checkOut, nights, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode, _meta } = parsed.data;
+
+  /* Tracking signals — for Meta CAPI deduplication when the booking later
+   * converts to a paid Mollie transaction. fbp/fbc come from cookies set
+   * by the Pixel; anonymous_id from localStorage via _meta. */
+  const fbp = request.cookies.get("_fbp")?.value ?? null;
+  const fbc = request.cookies.get("_fbc")?.value ?? null;
 
   const lodgeLabel = LODGE_LABELS[lodge] || lodge;
   const checkInFmt = fmtDate(checkIn);
@@ -116,6 +122,10 @@ export async function POST(request: NextRequest) {
     voorgestelde_prijs_label: priceLabel || null,
     promo_code: promoInfo?.label || null,
     status: "nieuw",
+    meta_event_id: _meta?.event_id ?? null,
+    anonymous_id: _meta?.anonymous_id ?? null,
+    fbp,
+    fbc,
   });
 
   const resendKey = process.env.RESEND_API_KEY;

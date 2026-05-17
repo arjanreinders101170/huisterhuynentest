@@ -13,7 +13,18 @@ export default function PrivacyPage() {
           <p>Naam, e-mailadres, verblijfsdata, betaalgegevens (via Mollie), IP-adres.</p>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>3. Uw rechten</h2>
           <p>U heeft recht op inzage, correctie, verwijdering en portabiliteit van uw gegevens. Contact: <a href="mailto:lodge@huisterhuynen.nl" style={{ color: C.gold }}>lodge@huisterhuynen.nl</a></p>
-          <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>4. Contact</h2>
+          <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>4. Cookies & tracking</h2>
+          <p>
+            Wij gebruiken Meta Pixel + Conversions API en Google Tag Manager om bezoekersstatistieken te meten en gepersonaliseerde advertenties te tonen. Deze cookies worden alleen geplaatst als u daarvoor toestemming geeft. U kunt uw keuze op elk moment wijzigen:{" "}
+            <button
+              type="button"
+              onClick={() => typeof window !== "undefined" && window.dispatchEvent(new Event("hth:open-consent"))}
+              style={{ background: "none", border: "none", color: C.gold, cursor: "pointer", textDecoration: "underline", padding: 0, font: "inherit" }}
+            >
+              Cookie-instellingen openen
+            </button>.
+          </p>
+          <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>5. Contact</h2>
           <p>Huis ter Huynen · Zuiderstraat 6 · 9491 EC Zeijen · <a href="tel:+31642568603" style={{ color: C.gold }}>+31 6 42568603</a></p>
         </div>
         <div style={{ marginTop: 60, textAlign: "center", fontSize: 13 }}>

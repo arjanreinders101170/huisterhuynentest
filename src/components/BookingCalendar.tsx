@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
+import { pushEvent, baseEnvelope, newEventId } from "@/lib/tracking/dataLayer";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
@@ -245,6 +246,29 @@ export default function BookingCalendar() {
 
   useEffect(() => { fetchData(lodge); }, [lodge, fetchData]);
 
+  /* ─── Meta: ViewContent + LodgeView when lodge becomes active ─── */
+  useEffect(() => {
+    if (pricingData.base_price === 0 && pricingData.periods.length === 0) return;
+    const avgPrice = pricingData.periods.length > 0
+      ? pricingData.periods.reduce((s, p) => s + p.price_per_night, 0) / pricingData.periods.length
+      : pricingData.base_price;
+    pushEvent({
+      ...baseEnvelope("ViewContent"),
+      ecommerce: {
+        content_type: "lodge",
+        content_ids: [lodge],
+        content_name: LODGE_LABELS[lodge],
+        content_category: "Boutique Lodge Drenthe",
+        currency: "EUR",
+        value: Math.round(avgPrice * 100) / 100,
+      },
+    });
+    pushEvent({
+      ...baseEnvelope("LodgeView"),
+      ecommerce: { content_ids: [lodge], content_name: LODGE_LABELS[lodge] },
+    });
+  }, [lodge, pricingData]);
+
   const handleLodge = (l: Lodge) => {
     setLodge(l);
     setCheckIn(null);
@@ -313,6 +337,27 @@ export default function BookingCalendar() {
   const hasPrice = totalPrice > 0;
   const canSubmit = checkIn && checkOut && naam.trim() && email.includes("@") && !sending;
 
+  /* ─── Meta: AvailabilityCheck — fires once per valid date+lodge combo ─── */
+  const lastAvailabilityKey = useRef<string>("");
+  useEffect(() => {
+    if (!checkIn || !checkOut || nights <= 0 || finalPrice <= 0) return;
+    const key = `${lodge}:${checkIn}:${checkOut}`;
+    if (lastAvailabilityKey.current === key) return;
+    lastAvailabilityKey.current = key;
+    pushEvent({
+      ...baseEnvelope("AvailabilityCheck"),
+      ecommerce: {
+        content_type: "lodge",
+        content_ids: [lodge],
+        content_name: LODGE_LABELS[lodge],
+        currency: "EUR",
+        value: finalPrice,
+        num_items: nights,
+      },
+      booking: { check_in: checkIn, check_out: checkOut, lodge, nights, total: finalPrice },
+    });
+  }, [lodge, checkIn, checkOut, nights, finalPrice]);
+
   const validatePromo = async () => {
     const code = promoCode.trim().toUpperCase();
     if (!code) return;
@@ -337,6 +382,31 @@ export default function BookingCalendar() {
     setSending(true);
     try {
       const priceLabel = priceBreakdown.map(b => b.label).join(" / ");
+
+      /* ─── Meta: InitiateCheckout ─── */
+      const metaEventId = newEventId();
+      const [firstName, ...rest] = naam.trim().split(/\s+/);
+      const lastName = rest.join(" ") || undefined;
+      pushEvent({
+        ...baseEnvelope("InitiateCheckout"),
+        event_id: metaEventId,
+        ecommerce: {
+          content_type: "lodge",
+          content_ids: [lodge],
+          content_name: LODGE_LABELS[lodge],
+          currency: "EUR",
+          value: finalPrice,
+          num_items: nights,
+        },
+        booking: { check_in: checkIn!, check_out: checkOut!, lodge, nights, guests: aantalPersonen, total: finalPrice },
+        user: {
+          em: email.trim(),
+          fn: firstName,
+          ln: lastName,
+          external_id: undefined,
+        },
+      });
+
       await fetch("/api/reservering", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -353,8 +423,19 @@ export default function BookingCalendar() {
           aantalPersonen: String(aantalPersonen),
           huisdieren: huisdieren ? "ja" : "nee",
           promoCode: promoResult?.valid ? promoCode.trim().toUpperCase() : undefined,
+          _meta: { event_id: metaEventId },
         }),
       });
+
+      /* ─── Meta: Lead (after request landed) — reuse the same event_id so
+       * a later Mollie Purchase still has its own dedup key. */
+      pushEvent({
+        ...baseEnvelope("Lead"),
+        ecommerce: { currency: "EUR", value: finalPrice },
+        lead: { form: "homepage_reservering", value: finalPrice },
+        user: { em: email.trim(), fn: firstName, ln: lastName },
+      });
+
       setSent(true);
     } catch {}
     setSending(false);
