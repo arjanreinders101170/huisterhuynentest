@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
 import { generateInvoicePdf } from "@/lib/invoice";
 import { findOrCreateRelation, pushInvoice } from "@/lib/eboekhouden";
+import { sendCapi, buildUser } from "@/lib/tracking/capi";
 
 export const runtime = "nodejs";
 
@@ -190,6 +191,55 @@ export async function POST(request: NextRequest) {
         } catch (e) {
           console.error("Webhook email failed:", e);
         }
+      }
+
+      // ═══ META CAPI — server-of-record Purchase event ═══
+      // Fires once per paid booking. Same event_id as the browser
+      // InitiateCheckout is used so Meta dedups the funnel correctly.
+      try {
+        const { data: bookingRow } = await getSupabase()
+          .from("bookings")
+          .select("metadata")
+          .eq("id", bookingId)
+          .single();
+        const meta_event_id =
+          (bookingRow?.metadata as Record<string, unknown> | null)?.meta_event_id as string | undefined ??
+          `purchase-${bookingId}`;
+        const fbp = (bookingRow?.metadata as Record<string, unknown> | null)?.fbp as string | undefined;
+        const fbc = (bookingRow?.metadata as Record<string, unknown> | null)?.fbc as string | undefined;
+        const anonymous_id = (bookingRow?.metadata as Record<string, unknown> | null)?.anonymous_id as string | undefined;
+
+        const totalEx = Math.round((amountValue - (amountValue - prijsExcl)) * 100) / 100;
+        const [firstName, ...rest] = (meta.gastNaam || "").trim().split(/\s+/);
+        const lastName = rest.join(" ") || undefined;
+
+        await sendCapi([{
+          event_name: "Purchase",
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: meta_event_id,
+          event_source_url: `https://www.huisterhuynen.nl/betaald?booking=${bookingId}`,
+          action_source: "website",
+          user_data: buildUser({
+            email: meta.gastEmail,
+            firstName: firstName || undefined,
+            lastName,
+            country: "NL",
+            externalId: anonymous_id,
+            fbp,
+            fbc,
+          }),
+          custom_data: {
+            currency: "EUR",
+            value: totalEx,
+            content_type: "product",
+            content_ids: [productId || "concierge"],
+            content_name: product,
+            num_items: 1,
+            order_id: bookingId,
+          },
+        }]);
+      } catch (e) {
+        console.error("[CAPI Purchase] failed:", e);
       }
 
       // ═══ SAVE INVOICE TO DB + PUSH TO E-BOEKHOUDEN ═══

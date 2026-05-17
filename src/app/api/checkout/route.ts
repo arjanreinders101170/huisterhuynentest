@@ -47,7 +47,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
 
-    const { productId, gastNaam, gastEmail, metadata } = parsed.data;
+    const { productId, gastNaam, gastEmail, metadata, _meta } = parsed.data;
+
+    /* Meta CAPI signals — stored in bookings.metadata so the Mollie webhook
+     * can later fire a deduplicated Purchase event with the same event_id. */
+    const fbp = request.cookies.get("_fbp")?.value;
+    const fbc = request.cookies.get("_fbc")?.value;
+    const trackingMeta = {
+      meta_event_id: _meta?.event_id,
+      anonymous_id: _meta?.anonymous_id,
+      fbp,
+      fbc,
+    };
 
     // Server-side price determination — client cannot set amount
     let amount: number;
@@ -96,7 +107,7 @@ export async function POST(request: NextRequest) {
         product: productName,
         prijs: amount,
         status: "nieuw",
-        metadata: metadata || {},
+        metadata: { ...(metadata || {}), ...trackingMeta },
       }).select("id").single();
       bookingId = data?.id;
     } catch (e) { console.error("Booking insert:", e); }
@@ -153,7 +164,7 @@ export async function POST(request: NextRequest) {
     if (bookingId) {
       try {
         await getSupabase().from("bookings").update({
-          metadata: { ...(metadata || {}), molliePaymentId: payment.id },
+          metadata: { ...(metadata || {}), ...trackingMeta, molliePaymentId: payment.id },
         }).eq("id", bookingId);
       } catch {}
     }

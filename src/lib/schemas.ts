@@ -36,6 +36,10 @@ export const checkoutSchema = z.object({
   gastNaam: z.string().min(1).max(100),
   gastEmail: z.string().email(),
   metadata: z.record(z.string(), z.unknown()).optional(),
+  _meta: z.object({
+    event_id: z.string().min(8).max(80),
+    anonymous_id: z.string().max(80).optional(),
+  }).optional(),
 });
 
 export const reserveringSchema = z.object({
@@ -51,4 +55,8 @@ export const reserveringSchema = z.object({
   aantalPersonen: z.string().max(5).optional(),
   huisdieren: z.enum(["ja", "nee"]).optional(),
   promoCode: z.string().max(50).optional(),
+  _meta: z.object({
+    event_id: z.string().min(8).max(80),
+    anonymous_id: z.string().max(80).optional(),
+  }).optional(),
 });
