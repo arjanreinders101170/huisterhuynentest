@@ -134,7 +134,7 @@ const FALLBACKS_NL: Record<string, string> = {
   wellness: "LOFF in Assen (kleinschalig, Finse sauna) en SpaWell Peize zijn aanraders. 💆",
   fiets: "Huur een e-bike via 'Extra's' in de app — Drenthe is de fietsprovincie. 🚴",
   regen: "Bij regen: Ballorig (binnen), Drents Museum of Hunebedcentrum Borger. 🌧️",
-  romantisch: "Jufferen Lunsingh bij haardvuur, of een privé massage bij de lodge. 💕",
+  romantisch: "Jufferen Lunsingh bij haardvuur, of een dag verwennen bij Wellnessresort Waterlelie in Zevenhuizen. 💕",
   uitje: "Kano op de Hunze (2-3 uur), Museumdorp Orvelte of een dagje WILDLANDS. 🛶",
   stil: "Zeijerstrubben (3 min) is het stilste bos hier in de buurt. 🤫",
   deur: "Open de deur via 'Verblijf' in de app — je persoonlijke toegangscode staat daar.",
