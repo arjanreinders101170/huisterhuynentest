@@ -139,3 +139,11 @@
 | E | Wifi/deurcode: vast of roterend per verblijf? | Bepaalt security-aanpak |
 | F | AI chat: tekst-only of uitbreiden naar spraak? | Bepaalt kosten + architectuur |
 | G | Backoffice: apart domein (admin.huisterhuynen.nl)? | Bepaalt routing-structuur |
+
+---
+
+## Open — Tracking & integraties (18 mei 2026)
+
+| # | Item | Prioriteit | Toelichting |
+|---|------|-----------|-------------|
+| 70 | e-Boekhouden relation error oplossen | Middel | Mollie webhook logt `e-Boekhouden relation error: Error: e-Boekhouden API...` (zichtbaar in Vercel logs, voor het eerst opgevangen tijdens Mollie test-purchase 18 mei). Niet blocking voor CAPI of bevestigingsmails — wél voor automatisch doorboeken van facturen. Check `EBOEKHOUDEN_API_TOKEN` env var, mogelijk verlopen of mist scope. |
