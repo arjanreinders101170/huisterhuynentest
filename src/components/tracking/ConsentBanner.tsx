@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   readConsent,
   writeConsent,
+  applyConsentToDataLayer,
   DEFAULT_CONSENT,
 } from "@/lib/tracking/consent";
 import type { ConsentCategory, ConsentState } from "@/lib/tracking/types";
@@ -65,6 +66,11 @@ export function ConsentBanner() {
     setState(current.state);
     setOpen(!current.decided);
     setLang((navigator.language || "nl").toLowerCase().startsWith("de") ? "de" : "nl");
+
+    /* Returning visitors: replay the stored consent so GTM picks it up on
+     * this page load. Without this, default-deny stays active and tags
+     * requiring ad_storage never fire after the first session. */
+    if (current.decided) applyConsentToDataLayer(current.state);
 
     const reopen = () => {
       const c = readConsent();
