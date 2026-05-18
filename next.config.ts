@@ -2,19 +2,21 @@ import type { NextConfig } from "next";
 
 const cspHeader = [
   "default-src 'self'",
-  // Next.js requires 'unsafe-inline' for its runtime scripts and JSON-LD
-  "script-src 'self' 'unsafe-inline'",
+  // Next.js requires 'unsafe-inline' for its runtime scripts and JSON-LD.
+  // Meta Pixel + GTM load external scripts from googletagmanager.com (gtm.js)
+  // and connect.facebook.net (fbevents.js).
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net",
   // Inline styles are used extensively; Google Fonts stylesheet is loaded via next/font (no external CSS request)
   "style-src 'self' 'unsafe-inline'",
   // Google Fonts glyphs
   "font-src 'self' https://fonts.gstatic.com",
-  // Images: self, data URIs, blob URLs
-  "img-src 'self' data: blob:",
-  // API calls: own origin + Supabase
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
-  // No plugins, objects, or frames from external sources
+  // Images: self, data URIs, blob URLs, Meta Pixel 1x1 tracking pixels, GTM resources
+  "img-src 'self' data: blob: https://www.facebook.com https://www.googletagmanager.com",
+  // API calls: own origin + Supabase + Meta CAPI/Pixel beacons + GTM telemetry
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.facebook.com https://graph.facebook.com",
+  // GTM noscript iframe fallback
+  "frame-src https://www.googletagmanager.com",
   "object-src 'none'",
-  "frame-src 'none'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
