@@ -36,7 +36,7 @@ export function writeConsent(state: ConsentState): void {
   const normalized: ConsentState = { ...state, functional: true };
   localStorage.setItem(KEY, JSON.stringify({ v: VERSION, state: normalized, ts: Date.now() }));
   window.dispatchEvent(new CustomEvent("hth:consent-change", { detail: normalized }));
-  pushConsentUpdate(normalized);
+  applyConsentToDataLayer(normalized);
 }
 
 export function getConsentSnapshot(): ConsentSnapshot {
@@ -47,22 +47,39 @@ export function getConsentSnapshot(): ConsentSnapshot {
 declare global {
   interface Window {
     dataLayer: Record<string, unknown>[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
-function pushConsentUpdate(state: ConsentState): void {
+export function applyConsentToDataLayer(state: ConsentState): void {
+  if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer ?? [];
-  window.dataLayer.push({
-    event: "consent_update",
-    consent: {
-      ad_storage: state.marketing ? "granted" : "denied",
-      ad_user_data: state.marketing ? "granted" : "denied",
-      ad_personalization: state.marketing ? "granted" : "denied",
-      analytics_storage: state.statistics ? "granted" : "denied",
-      functionality_storage: "granted",
-      security_storage: "granted",
-    },
-  });
+
+  const consentValues = {
+    ad_storage: state.marketing ? "granted" : "denied",
+    ad_user_data: state.marketing ? "granted" : "denied",
+    ad_personalization: state.marketing ? "granted" : "denied",
+    analytics_storage: state.statistics ? "granted" : "denied",
+    functionality_storage: "granted",
+    security_storage: "granted",
+  };
+
+  /* Consent Mode v2 update — GTM only recognises consent commands pushed in
+   * the gtag-Arguments format. The gtag function was defined globally by
+   * CONSENT_DEFAULT_DENY_SNIPPET; we call it directly so GTM updates its
+   * internal consent state and tags requiring ad_storage start firing. */
+  if (typeof window.gtag === "function") {
+    window.gtag("consent", "update", consentValues);
+  } else {
+    /* Fallback: push the array literally — GTM iterates array-like dataLayer
+     * entries and dispatches them as commands the same way Arguments objects
+     * are processed. */
+    window.dataLayer.push(["consent", "update", consentValues] as unknown as Record<string, unknown>);
+  }
+
+  /* Custom event so our own client-side code (e.g. pushEvent gating) can
+   * react to consent changes. */
+  window.dataLayer.push({ event: "consent_update", consent: consentValues });
 }
 
 /* Inline snippet — must run before GTM loads so default-deny is in place
