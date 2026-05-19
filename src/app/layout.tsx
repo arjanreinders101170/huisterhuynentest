@@ -76,6 +76,11 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
+    languages: {
+      nl: SITE_URL,
+      de: `${SITE_URL}/de`,
+      "x-default": SITE_URL,
+    },
   },
   manifest: "/manifest.json",
 };

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Agenda laden...</div> });
 
 interface GoogleReview {
@@ -152,6 +153,7 @@ export default function LandingPage() {
 
   return (
     <main style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
+      <LanguageSwitcher currentLang="nl" />
 
       {/* ══════════════════════════════════════════
           HERO
