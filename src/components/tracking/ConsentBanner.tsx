@@ -191,7 +191,7 @@ function Layer1({
       <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,.78)", lineHeight: 1.55 }}>
         {body}{" "}
         <a
-          href={lang === "de" ? "/privacy" : "/privacy"}
+          href={lang === "de" ? "/datenschutz" : "/privacy"}
           style={{ color: PALETTE.gold, textDecoration: "underline", textUnderlineOffset: 3 }}
         >
           {lang === "de" ? "Datenschutz" : "Privacybeleid"}
