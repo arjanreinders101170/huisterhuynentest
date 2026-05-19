@@ -1021,6 +1021,31 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
+
+            {/* Deutsch — DSGVO/TMG required pages for German market */}
+            <div>
+              <div style={{
+                fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+                color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
+              }}>
+                Deutsch
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  { label: "Datenschutz", href: "/datenschutz" },
+                  { label: "Impressum", href: "/impressum" },
+                  { label: "AGB", href: "/agb" },
+                ].map((link, i) => (
+                  <a key={i} href={link.href} hrefLang="de" style={{
+                    fontFamily: T.sans, fontSize: 13, fontWeight: 300,
+                    color: "rgba(255,255,255,.8)", textDecoration: "none",
+                    transition: "color .15s",
+                  }}>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Bottom bar */}
