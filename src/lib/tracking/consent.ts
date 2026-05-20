@@ -90,7 +90,36 @@ export const CONSENT_DEFAULT_DENY_SNIPPET = `
   gtag('consent','default',{
     ad_storage:'denied', ad_user_data:'denied', ad_personalization:'denied',
     analytics_storage:'denied', functionality_storage:'granted',
-    security_storage:'granted', wait_for_update:500,
+    security_storage:'granted', wait_for_update:2000,
     region:['NL','DE','EEA']
   });
 `;
+
+/* Reads stored consent from localStorage and immediately replays it as a
+ * consent update so GTM sees the correct state before it finishes loading.
+ * This prevents the wait_for_update window from expiring before React hydrates. */
+export function consentReplaySnippet(version: string): string {
+  return `(function(){
+  try {
+    var raw = localStorage.getItem('hth-consent-v2');
+    if (!raw) return;
+    var p = JSON.parse(raw);
+    if (p.v !== '${version}' || !p.state) return;
+    var s = p.state;
+    var vals = {
+      ad_storage: s.marketing ? 'granted' : 'denied',
+      ad_user_data: s.marketing ? 'granted' : 'denied',
+      ad_personalization: s.marketing ? 'granted' : 'denied',
+      analytics_storage: s.statistics ? 'granted' : 'denied',
+      functionality_storage: 'granted',
+      security_storage: 'granted'
+    };
+    if (typeof gtag === 'function') {
+      gtag('consent', 'update', vals);
+    } else {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(['consent', 'update', vals]);
+    }
+  } catch(e) {}
+})();`;
+}

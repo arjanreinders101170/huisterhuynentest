@@ -1,8 +1,9 @@
 import Script from "next/script";
-import { CONSENT_DEFAULT_DENY_SNIPPET } from "@/lib/tracking/consent";
+import { CONSENT_DEFAULT_DENY_SNIPPET, consentReplaySnippet } from "@/lib/tracking/consent";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 const SGTM = process.env.NEXT_PUBLIC_SGTM_URL;
+const CONSENT_VERSION = process.env.NEXT_PUBLIC_CONSENT_VERSION ?? "1";
 
 function gtmSrc(): string {
   if (SGTM) return `${SGTM}/gtm.js?id=${GTM_ID}`;
@@ -22,6 +23,10 @@ export function GTM() {
       {/* Consent Mode v2 default-deny — must run before gtm.js */}
       <Script id="consent-default" strategy="beforeInteractive">
         {CONSENT_DEFAULT_DENY_SNIPPET}
+      </Script>
+      {/* Replay stored consent immediately so GTM doesn't time out waiting for React */}
+      <Script id="consent-replay" strategy="beforeInteractive">
+        {consentReplaySnippet(CONSENT_VERSION)}
       </Script>
       {/* GTM loader */}
       <Script id="gtm-init" strategy="afterInteractive">
