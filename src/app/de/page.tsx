@@ -569,6 +569,109 @@ export default function LandingPageDE() {
         </div>
       </section>
 
+      {/* ══ AKTIVITÄTEN — 4 Kategorien mit Fotos ══ */}
+      <section style={{ background: T.bg, padding: "80px 40px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <SectionHeader
+            eyebrow="Aktivitäten in der Umgebung"
+            title="Was Sie alles erleben können"
+            sub="Drenthe bietet weit mehr als Wandern. Radfahren auf Knotenpunktstrecken, Kultur bei den Hünengräbern oder Entspannen in einem der Wellnesszentren — alles in unter einer halben Stunde erreichbar."
+          />
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 24,
+          }}>
+            {[
+              {
+                cat: "Wandern & Natur",
+                icon: "🌿",
+                hoogtepunt: "Veentjesroute Zeijen",
+                items: ["Direkt ab der Lodge", "13+ Routen in der Umgebung", "Nationalpark in 15 Min"],
+                img: "/wandel_drenthe.jpg",
+                alt: "Wanderweg durch die Drentse Heide mit blühender Heide",
+                accent: T.green,
+              },
+              {
+                cat: "Radfahren",
+                icon: "🚴",
+                hoogtepunt: "1.000+ km Knotenpunktnetz",
+                items: ["E-Bikes leihbar in Assen", "Lieferung vor Ort möglich", "MTB-Routen verfügbar"],
+                img: "/rent_a_bike.jpg",
+                alt: "Fahrräder zur Miete entlang eines Drentse Radweges im Wald",
+                accent: "#7B6B3A",
+              },
+              {
+                cat: "Kultur & UNESCO",
+                icon: "🗿",
+                hoogtepunt: "52 Hünengräber · Drents Museum",
+                items: ["Hunebed Highway (N34)", "Camp Westerbork", "Museumdorf Orvelte"],
+                img: "/museum_drenthe.jpg",
+                alt: "Hünengrab in Drenthe, prähistorisches Grabmal in grüner Landschaft",
+                accent: T.green,
+              },
+              {
+                cat: "Wellness",
+                icon: "♨",
+                hoogtepunt: "Saunas in 20 Min",
+                items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Wellnessresort Waterlelie"],
+                img: "/welness_drenthe.jpg",
+                alt: "Außensauna und Wellness in waldreicher Umgebung in Drenthe",
+                accent: "#7B6B3A",
+              },
+            ].map((c, i) => (
+              <div key={i} style={{
+                background: "white", borderRadius: 14,
+                border: `1px solid ${T.border}`,
+                overflow: "hidden",
+                boxShadow: "0 2px 12px rgba(0,0,0,.06)",
+              }}>
+                <div style={{ position: "relative", height: 180 }}>
+                  <Image
+                    src={c.img}
+                    alt={c.alt}
+                    fill
+                    sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 25vw"
+                    style={{ objectFit: "cover" }}
+                  />
+                  <span style={{
+                    position: "absolute", top: 10, right: 10,
+                    background: "rgba(255,255,255,.85)", borderRadius: 8,
+                    padding: "4px 8px", fontSize: 18, lineHeight: 1,
+                  }}>{c.icon}</span>
+                </div>
+                <div style={{ padding: "20px 20px 22px" }}>
+                  <h3 style={{
+                    fontFamily: T.serif, fontSize: 16, fontWeight: 700,
+                    color: T.text, margin: "0 0 4px",
+                  }}>
+                    {c.cat}
+                  </h3>
+                  <div style={{
+                    fontFamily: T.sans, fontSize: 11, color: c.accent,
+                    fontWeight: 600, marginBottom: 14, textTransform: "uppercase", letterSpacing: ".04em",
+                  }}>
+                    {c.hoogtepunt}
+                  </div>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                    {c.items.map((item, j) => (
+                      <li key={j} style={{
+                        fontFamily: T.sans, fontSize: 13, color: T.muted,
+                        fontWeight: 300, paddingBottom: 6, lineHeight: 1.5,
+                        borderBottom: j < c.items.length - 1 ? `1px solid ${T.border}` : "none",
+                        marginBottom: j < c.items.length - 1 ? 6 : 0,
+                      }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ══ REVIEWS ══ */}
       <section style={{ background: T.bg, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
