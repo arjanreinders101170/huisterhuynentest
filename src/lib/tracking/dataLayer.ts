@@ -7,6 +7,30 @@ import type { BaseEvent, Locale, TrackingEvent } from "./types";
 import { getConsentSnapshot } from "./consent";
 
 const ANON_KEY = "hth-aid";
+const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+
+/* ── fbq types ── */
+type FbqArgs = [string, ...unknown[]];
+interface FbqFunction {
+  (...args: FbqArgs): void;
+  callMethod?: (...args: FbqArgs) => void;
+  queue: FbqArgs[];
+  push: FbqFunction;
+  loaded: boolean;
+  version: string;
+}
+declare global {
+  interface Window {
+    fbq: FbqFunction;
+    _fbq?: FbqFunction;
+  }
+}
+
+/* Standard Meta Pixel event names (use fbq('track',...)); rest use fbq('trackCustom',...) */
+const PIXEL_STANDARD_EVENTS = new Set([
+  "PageView", "ViewContent", "InitiateCheckout", "Purchase",
+  "Contact", "Lead", "Subscribe",
+]);
 
 export function newEventId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -51,13 +75,71 @@ export function baseEnvelope(eventName: string): Pick<BaseEvent, "event" | "even
   };
 }
 
+export function initMetaPixel(): void {
+  if (!PIXEL_ID || typeof window === "undefined") return;
+  if (typeof window.fbq === "function") return;
+
+  /* Standard Meta Pixel base code — queues calls until fbevents.js loads. */
+  const n: FbqFunction = function (...args: FbqArgs) {
+    if (n.callMethod) n.callMethod.apply(n, args);
+    else n.queue.push(args);
+  };
+  n.push = n;
+  n.loaded = true;
+  n.version = "2.0";
+  n.queue = [];
+  if (!window._fbq) window._fbq = n;
+  window.fbq = n;
+
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://connect.facebook.net/en_US/fbevents.js";
+  document.head.appendChild(s);
+
+  window.fbq("init", PIXEL_ID);
+}
+
+function firePixelEvent(payload: TrackingEvent): void {
+  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+  if (!payload.consent_snapshot.marketing) return;
+
+  const customData = buildPixelCustomData(payload);
+  const options = { eventID: payload.event_id };
+
+  if (PIXEL_STANDARD_EVENTS.has(payload.event)) {
+    window.fbq("track", payload.event, customData, options);
+  } else {
+    window.fbq("trackCustom", payload.event, customData, options);
+  }
+}
+
+function buildPixelCustomData(payload: TrackingEvent): Record<string, unknown> {
+  const d: Record<string, unknown> = {};
+  if (payload.ecommerce) {
+    if (payload.ecommerce.value !== undefined) d.value = payload.ecommerce.value;
+    if (payload.ecommerce.currency) d.currency = payload.ecommerce.currency;
+    if (payload.ecommerce.content_ids) d.content_ids = payload.ecommerce.content_ids;
+    if (payload.ecommerce.content_type) d.content_type = payload.ecommerce.content_type;
+    if (payload.ecommerce.content_name) d.content_name = payload.ecommerce.content_name;
+    if (payload.ecommerce.num_items !== undefined) d.num_items = payload.ecommerce.num_items;
+  }
+  if (payload.booking) {
+    d.checkin_date = payload.booking.check_in;
+    d.checkout_date = payload.booking.check_out;
+    d.num_nights = payload.booking.nights;
+    if (payload.booking.guests !== undefined) d.num_adults = payload.booking.guests;
+  }
+  return d;
+}
+
 export function pushEvent(payload: TrackingEvent): void {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer ?? [];
   window.dataLayer.push(payload as unknown as Record<string, unknown>);
 
-  /* Mirror to server-side CAPI for events that need it.
-   * Pixel itself is fired by GTM listening to the same dataLayer.push. */
+  /* Fire browser pixel directly — no GTM tag required for deduplication. */
+  firePixelEvent(payload);
+
   if (shouldMirrorToCapi(payload)) {
     fireCapi(payload);
   }
