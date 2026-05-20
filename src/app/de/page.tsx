@@ -569,6 +569,109 @@ export default function LandingPageDE() {
         </div>
       </section>
 
+      {/* ══ AKTIVITÄTEN — 4 Kategorien mit Fotos ══ */}
+      <section style={{ background: T.bg, padding: "80px 40px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <SectionHeader
+            eyebrow="Aktivitäten in der Umgebung"
+            title="Was Sie alles erleben können"
+            sub="Drenthe bietet weit mehr als Wandern. Radfahren auf Knotenpunktstrecken, Kultur bei den Hünengräbern oder Entspannen in einem der Wellnesszentren — alles in unter einer halben Stunde erreichbar."
+          />
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 24,
+          }}>
+            {[
+              {
+                cat: "Wandern & Natur",
+                icon: "🌿",
+                hoogtepunt: "Veentjesroute Zeijen",
+                items: ["Direkt ab der Lodge", "13+ Routen in der Umgebung", "Nationalpark in 15 Min"],
+                img: "/wandel_drenthe.jpg",
+                alt: "Wanderweg durch die Drentse Heide mit blühender Heide",
+                accent: T.green,
+              },
+              {
+                cat: "Radfahren",
+                icon: "🚴",
+                hoogtepunt: "1.000+ km Knotenpunktnetz",
+                items: ["E-Bikes leihbar in Assen", "Lieferung vor Ort möglich", "MTB-Routen verfügbar"],
+                img: "/rent_a_bike.jpg",
+                alt: "Fahrräder zur Miete entlang eines Drentse Radweges im Wald",
+                accent: "#7B6B3A",
+              },
+              {
+                cat: "Kultur & UNESCO",
+                icon: "🗿",
+                hoogtepunt: "52 Hünengräber · Drents Museum",
+                items: ["Hunebed Highway (N34)", "Camp Westerbork", "Museumdorf Orvelte"],
+                img: "/museum_drenthe.jpg",
+                alt: "Hünengrab in Drenthe, prähistorisches Grabmal in grüner Landschaft",
+                accent: T.green,
+              },
+              {
+                cat: "Wellness",
+                icon: "♨",
+                hoogtepunt: "Saunas in 20 Min",
+                items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Wellnessresort Waterlelie"],
+                img: "/welness_drenthe.jpg",
+                alt: "Außensauna und Wellness in waldreicher Umgebung in Drenthe",
+                accent: "#7B6B3A",
+              },
+            ].map((c, i) => (
+              <div key={i} style={{
+                background: "white", borderRadius: 14,
+                border: `1px solid ${T.border}`,
+                overflow: "hidden",
+                boxShadow: "0 2px 12px rgba(0,0,0,.06)",
+              }}>
+                <div style={{ position: "relative", height: 180 }}>
+                  <Image
+                    src={c.img}
+                    alt={c.alt}
+                    fill
+                    sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 25vw"
+                    style={{ objectFit: "cover" }}
+                  />
+                  <span style={{
+                    position: "absolute", top: 10, right: 10,
+                    background: "rgba(255,255,255,.85)", borderRadius: 8,
+                    padding: "4px 8px", fontSize: 18, lineHeight: 1,
+                  }}>{c.icon}</span>
+                </div>
+                <div style={{ padding: "20px 20px 22px" }}>
+                  <h3 style={{
+                    fontFamily: T.serif, fontSize: 16, fontWeight: 700,
+                    color: T.text, margin: "0 0 4px",
+                  }}>
+                    {c.cat}
+                  </h3>
+                  <div style={{
+                    fontFamily: T.sans, fontSize: 11, color: c.accent,
+                    fontWeight: 600, marginBottom: 14, textTransform: "uppercase", letterSpacing: ".04em",
+                  }}>
+                    {c.hoogtepunt}
+                  </div>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                    {c.items.map((item, j) => (
+                      <li key={j} style={{
+                        fontFamily: T.sans, fontSize: 13, color: T.muted,
+                        fontWeight: 300, paddingBottom: 6, lineHeight: 1.5,
+                        borderBottom: j < c.items.length - 1 ? `1px solid ${T.border}` : "none",
+                        marginBottom: j < c.items.length - 1 ? 6 : 0,
+                      }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ══ REVIEWS ══ */}
       <section style={{ background: T.bg, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -603,6 +706,14 @@ export default function LandingPageDE() {
                 borderRadius: 14, position: "relative", overflow: "hidden",
                 boxShadow: "0 2px 16px rgba(47,79,62,.06)",
               }}>
+                <div style={{
+                  position: "absolute", top: 16, right: 20,
+                  fontFamily: T.serif, fontSize: 72, color: T.gold,
+                  opacity: 0.12, lineHeight: 1, userSelect: "none",
+                  fontWeight: 700,
+                }}>
+                  "
+                </div>
                 <div style={{
                   fontFamily: T.sans, fontSize: 13, color: T.gold,
                   marginBottom: 14, letterSpacing: "1px",
@@ -785,14 +896,21 @@ export default function LandingPageDE() {
                 </div>
                 <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 400,
-                  color: "#25D366", textDecoration: "none",
+                  color: "#25D366", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
                 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
                   WhatsApp
                 </a>
                 <a href="mailto:lodge@huisterhuynen.nl" style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 400,
-                  color: "rgba(255,255,255,.7)", textDecoration: "none",
+                  color: "rgba(255,255,255,.7)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
                 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
                   lodge@huisterhuynen.nl
                 </a>
               </div>
