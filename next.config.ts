@@ -13,7 +13,7 @@ const cspHeader = [
   // Images: self, data URIs, blob URLs, Meta Pixel 1x1 tracking pixels, GTM resources
   "img-src 'self' data: blob: https://www.facebook.com https://www.googletagmanager.com",
   // API calls: own origin + Supabase + Meta CAPI/Pixel beacons + GTM telemetry
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://www.facebook.com https://graph.facebook.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com https://graph.facebook.com",
   // GTM noscript iframe fallback
   "frame-src https://www.googletagmanager.com",
   "object-src 'none'",

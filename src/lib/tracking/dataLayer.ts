@@ -8,7 +8,6 @@ import { getConsentSnapshot } from "./consent";
 
 const ANON_KEY = "hth-aid";
 const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-let _pixelInitialPageViewDone = false;
 
 /* ── fbq types ── */
 type FbqArgs = [string, ...unknown[]];
@@ -32,6 +31,38 @@ const PIXEL_STANDARD_EVENTS = new Set([
   "PageView", "ViewContent", "InitiateCheckout", "Purchase",
   "Contact", "Lead", "Subscribe",
 ]);
+
+/* Sets up the fbq queue and loads fbevents.js if not already done.
+ * Returns true when fbq is available (either just set up or already existed). */
+function ensurePixelLoaded(): boolean {
+  if (!PIXEL_ID || typeof window === "undefined") return false;
+  if (typeof window.fbq === "function") return true;
+
+  const n: FbqFunction = function (...args: FbqArgs) {
+    if (n.callMethod) n.callMethod.apply(n, args);
+    else n.queue.push(args);
+  };
+  n.push = n;
+  n.loaded = true;
+  n.version = "2.0";
+  n.queue = [];
+  if (!window._fbq) window._fbq = n;
+  window.fbq = n;
+
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://connect.facebook.net/en_US/fbevents.js";
+  document.head.appendChild(s);
+
+  window.fbq("init", PIXEL_ID);
+  return true;
+}
+
+/* Called from MetaPixel component on consent grant — ensures pixel is loaded
+ * so the first pushEvent() call doesn't have to set it up itself. */
+export function initMetaPixel(): void {
+  ensurePixelLoaded();
+}
 
 export function newEventId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -76,43 +107,11 @@ export function baseEnvelope(eventName: string): Pick<BaseEvent, "event" | "even
   };
 }
 
-export function initMetaPixel(): void {
-  if (!PIXEL_ID || typeof window === "undefined") return;
-  if (typeof window.fbq === "function") return;
-
-  /* Standard Meta Pixel base code — queues calls until fbevents.js loads. */
-  const n: FbqFunction = function (...args: FbqArgs) {
-    if (n.callMethod) n.callMethod.apply(n, args);
-    else n.queue.push(args);
-  };
-  n.push = n;
-  n.loaded = true;
-  n.version = "2.0";
-  n.queue = [];
-  if (!window._fbq) window._fbq = n;
-  window.fbq = n;
-
-  const s = document.createElement("script");
-  s.async = true;
-  s.src = "https://connect.facebook.net/en_US/fbevents.js";
-  document.head.appendChild(s);
-
-  window.fbq("init", PIXEL_ID);
-  /* Standard pattern: fire PageView immediately after init so the initial
-   * page load is always tracked, regardless of React effect order. */
-  window.fbq("track", "PageView");
-}
-
 function firePixelEvent(payload: TrackingEvent): void {
-  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
   if (!payload.consent_snapshot.marketing) return;
-  /* Skip PageView on initial load — initMetaPixel() already fires it as part
-   * of the standard init+PageView pattern. Subsequent route-change PageViews
-   * (path changed) still go through here. */
-  if (payload.event === "PageView" && !_pixelInitialPageViewDone) {
-    _pixelInitialPageViewDone = true;
-    return;
-  }
+  /* Ensure pixel is loaded — handles the case where pushEvent fires before
+   * MetaPixel's useEffect has run, or when fbq was never set up at all. */
+  if (!ensurePixelLoaded()) return;
 
   const customData = buildPixelCustomData(payload);
   const options = { eventID: payload.event_id };
