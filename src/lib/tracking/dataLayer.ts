@@ -8,6 +8,7 @@ import { getConsentSnapshot } from "./consent";
 
 const ANON_KEY = "hth-aid";
 const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+let _pixelInitialPageViewDone = false;
 
 /* ── fbq types ── */
 type FbqArgs = [string, ...unknown[]];
@@ -97,11 +98,21 @@ export function initMetaPixel(): void {
   document.head.appendChild(s);
 
   window.fbq("init", PIXEL_ID);
+  /* Standard pattern: fire PageView immediately after init so the initial
+   * page load is always tracked, regardless of React effect order. */
+  window.fbq("track", "PageView");
 }
 
 function firePixelEvent(payload: TrackingEvent): void {
   if (typeof window === "undefined" || typeof window.fbq !== "function") return;
   if (!payload.consent_snapshot.marketing) return;
+  /* Skip PageView on initial load — initMetaPixel() already fires it as part
+   * of the standard init+PageView pattern. Subsequent route-change PageViews
+   * (path changed) still go through here. */
+  if (payload.event === "PageView" && !_pixelInitialPageViewDone) {
+    _pixelInitialPageViewDone = true;
+    return;
+  }
 
   const customData = buildPixelCustomData(payload);
   const options = { eventID: payload.event_id };
