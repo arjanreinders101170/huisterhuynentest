@@ -1,6 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import { pushEvent, baseEnvelope } from "@/lib/tracking/dataLayer";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
@@ -10,6 +11,21 @@ const T = {
 function BetaaldContent() {
   const params = useSearchParams();
   const product = params.get("product") || "je bestelling";
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("hth-pending-purchase");
+      if (!raw) return;
+      sessionStorage.removeItem("hth-pending-purchase");
+      const pending = JSON.parse(raw) as { event_id: string; value: number };
+      pushEvent({
+        ...baseEnvelope("Purchase"),
+        event_id: pending.event_id,
+        ecommerce: { currency: "EUR", value: pending.value, content_type: "product", content_name: product },
+      });
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Product-specific hero image
   const heroImage = (() => {
