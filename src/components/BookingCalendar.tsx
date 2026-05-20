@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
-import { pushEvent, baseEnvelope, newEventId } from "@/lib/tracking/dataLayer";
+import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
@@ -387,8 +387,10 @@ export default function BookingCalendar() {
       const metaEventId = newEventId();
       const [firstName, ...rest] = naam.trim().split(/\s+/);
       const lastName = rest.join(" ") || undefined;
+      saveUserCache({ em: email.trim(), fn: firstName, ln: lastName });
+      const baseIC = baseEnvelope("InitiateCheckout");
       pushEvent({
-        ...baseEnvelope("InitiateCheckout"),
+        ...baseIC,
         event_id: metaEventId,
         ecommerce: {
           content_type: "lodge",
@@ -399,12 +401,7 @@ export default function BookingCalendar() {
           num_items: nights,
         },
         booking: { check_in: checkIn!, check_out: checkOut!, lodge, nights, guests: aantalPersonen, total: finalPrice },
-        user: {
-          em: email.trim(),
-          fn: firstName,
-          ln: lastName,
-          external_id: undefined,
-        },
+        user: { ...baseIC.user, em: email.trim(), fn: firstName, ln: lastName },
       });
 
       await fetch("/api/reservering", {
@@ -429,11 +426,12 @@ export default function BookingCalendar() {
 
       /* ─── Meta: Lead (after request landed) — reuse the same event_id so
        * a later Mollie Purchase still has its own dedup key. */
+      const baseLead = baseEnvelope("Lead");
       pushEvent({
-        ...baseEnvelope("Lead"),
+        ...baseLead,
         ecommerce: { currency: "EUR", value: finalPrice },
         lead: { form: "homepage_reservering", value: finalPrice },
-        user: { em: email.trim(), fn: firstName, ln: lastName },
+        user: { ...baseLead.user, em: email.trim(), fn: firstName, ln: lastName },
       });
 
       setSent(true);

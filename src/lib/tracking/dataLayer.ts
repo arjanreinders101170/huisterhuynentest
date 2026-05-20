@@ -7,6 +7,7 @@ import type { BaseEvent, Locale, TrackingEvent } from "./types";
 import { getConsentSnapshot } from "./consent";
 
 const ANON_KEY = "hth-aid";
+const USER_CACHE_KEY = "hth-user-ctx";
 const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 /* ── fbq types ── */
@@ -86,6 +87,33 @@ export function getAnonymousId(): string {
   return id;
 }
 
+/* Persist raw user PII so later events (ViewContent, AvailabilityCheck) can
+ * include name + email signals even before the user re-enters the form. */
+export function saveUserCache(user: { em?: string; fn?: string; ln?: string }): void {
+  if (typeof window === "undefined") return;
+  try {
+    const clean: Record<string, string> = {};
+    if (user.em) clean.em = user.em;
+    if (user.fn) clean.fn = user.fn;
+    if (user.ln) clean.ln = user.ln;
+    localStorage.setItem(USER_CACHE_KEY, JSON.stringify(clean));
+  } catch { /* storage unavailable */ }
+}
+
+function readUserCache(): { em?: string; fn?: string; ln?: string } {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(USER_CACHE_KEY);
+    if (!raw) return {};
+    const p = JSON.parse(raw);
+    return {
+      em: typeof p.em === "string" ? p.em : undefined,
+      fn: typeof p.fn === "string" ? p.fn : undefined,
+      ln: typeof p.ln === "string" ? p.ln : undefined,
+    };
+  } catch { return {}; }
+}
+
 function detectLocale(): Locale {
   if (typeof navigator === "undefined") return "nl";
   const lang = (navigator.language || "nl").toLowerCase();
@@ -93,6 +121,9 @@ function detectLocale(): Locale {
 }
 
 export function baseEnvelope(eventName: string): Pick<BaseEvent, "event" | "event_id" | "event_time" | "page" | "consent_snapshot" | "user"> {
+  const locale = detectLocale();
+  const country = locale === "de" ? "DE" as const : "NL" as const;
+  const cached = readUserCache();
   return {
     event: eventName,
     event_id: newEventId(),
@@ -100,10 +131,10 @@ export function baseEnvelope(eventName: string): Pick<BaseEvent, "event" | "even
     page: {
       path: typeof location !== "undefined" ? location.pathname + location.search : "/",
       title: typeof document !== "undefined" ? document.title : "",
-      locale: detectLocale(),
+      locale,
     },
     consent_snapshot: getConsentSnapshot(),
-    user: { external_id: getAnonymousId() },
+    user: { external_id: getAnonymousId(), country, ...cached },
   };
 }
 
