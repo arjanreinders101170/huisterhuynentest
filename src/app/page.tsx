@@ -61,14 +61,14 @@ function Eyebrow({ children }: { children: string }) {
   );
 }
 
-function SectionTitle({ children }: { children: string }) {
+function SectionTitle({ children, as: Tag = "h2" }: { children: string; as?: "h2" | "h3" }) {
   return (
-    <h2 style={{
-      fontFamily: T.serif, fontSize: "clamp(28px, 4vw, 40px)",
+    <Tag style={{
+      fontFamily: T.serif, fontSize: Tag === "h2" ? "clamp(28px, 4vw, 40px)" : "clamp(22px, 3vw, 30px)",
       color: T.text, margin: "0 0 6px", fontWeight: 700, lineHeight: 1.15,
     }}>
       {children}
-    </h2>
+    </Tag>
   );
 }
 
@@ -99,13 +99,9 @@ function BookingSection() {
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.green, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 12 }}>
-            Reserveren
-          </div>
-          <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 4vw, 40px)", color: T.text, margin: "0 0 6px", fontWeight: 700, lineHeight: 1.15 }}>
-            Boek uw verblijf
-          </h2>
-          <div style={{ height: 2, width: 48, background: T.gold, margin: "14px auto 0" }} />
+          <Eyebrow>Reserveren</Eyebrow>
+          <SectionTitle>Boek uw verblijf</SectionTitle>
+          <GoldRule />
           <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
             Kies uw reisdata en stuur een aanvraag. Wij bevestigen binnen 24 uur persoonlijk.
           </p>
@@ -310,20 +306,20 @@ export default function LandingPage() {
             gap: "40px 32px",
           }}>
             {[
-              { icon: "◈", label: "Privé Hottub", desc: "Genieten onder de sterren, op elk moment van de dag." },
-              { icon: "◈", label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek." },
-              { icon: "◈", label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein." },
-              { icon: "◈", label: "Volledige privacy", desc: "Alleen ú en uw gezelschap, geen omringende buren." },
-              { icon: "◈", label: "Uniek design", desc: "De Heide én De Eik, elk met eigen karakter en sfeer." },
-              { icon: "◈", label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf." },
+              { label: "Privé Hottub", desc: "Genieten onder de sterren, op elk moment van de dag." },
+              { label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek." },
+              { label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein." },
+              { label: "Volledige privacy", desc: "Alleen ú en uw gezelschap, geen omringende buren." },
+              { label: "Uniek design", desc: "De Heide én De Eik, elk met eigen karakter en sfeer." },
+              { label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf." },
             ].map((usp, i) => (
               <div key={i} style={{ borderTop: `2px solid ${T.gold}`, paddingTop: 20 }}>
-                <div style={{
+                <h3 style={{
                   fontFamily: T.serif, fontSize: 16, fontWeight: 700,
-                  color: T.green, marginBottom: 8,
+                  color: T.green, marginBottom: 8, marginTop: 0,
                 }}>
                   {usp.label}
-                </div>
+                </h3>
                 <p style={{
                   fontFamily: T.sans, fontSize: 14, color: T.muted,
                   fontWeight: 300, margin: 0, lineHeight: 1.65,
@@ -422,15 +418,16 @@ export default function LandingPage() {
                       </span>
                     ))}
                   </div>
-                  <button style={{
-                    width: "100%", padding: "13px",
+                  <a href="#reserveren" style={{
+                    display: "block", textAlign: "center",
+                    width: "100%", padding: "13px 0",
                     background: T.green, color: "white",
-                    border: "none", borderRadius: 10,
-                    fontSize: 14, fontWeight: 600, cursor: "pointer",
+                    border: "none", borderRadius: 10, boxSizing: "border-box",
+                    fontSize: 14, fontWeight: 600, textDecoration: "none",
                     letterSpacing: "0.3px",
                   }}>
                     Bekijk {lodge.name}
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}
