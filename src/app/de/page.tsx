@@ -524,51 +524,6 @@ export default function LandingPageDE() {
         </div>
       </section>
 
-      {/* ══ LOCATION — Drenthe ══ */}
-      <section id="umgebung" style={{ background: "white", padding: "80px 40px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <SectionHeader
-            eyebrow="Lage"
-            title="Drenthe entdecken"
-            sub="Huis ter Huynen liegt in einer der schönsten Naturregionen der Niederlande. Entdecken Sie ausgedehnte Heidelandschaften, stille Wälder und charmante Dörfer direkt vor Ihrer Unterkunft."
-          />
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 24,
-            marginBottom: 40,
-          }}>
-            {[
-              { icon: "🥾", title: "Wandern", desc: "Direkt ab der Lodge erkunden Sie die Heide und alte Eichenwälder Drenthes." },
-              { icon: "🚴", title: "Radfahren", desc: "Über 1.000 km vernetzte Radwege, ideal für Tages- und E-Bike-Touren." },
-              { icon: "🧘", title: "Entspannen", desc: "Private Sauna, Hot Tub und Stille — ohne Termin und ohne Eile." },
-              { icon: "🌿", title: "Natur genießen", desc: "Nationalpark Drentsche Aa und Dwingelderveld in nur 15-25 Minuten Fahrt." },
-            ].map((c, i) => (
-              <div key={i} style={{
-                background: T.card, borderRadius: 14,
-                border: `1px solid ${T.border}`, padding: "24px 22px",
-                boxShadow: "0 2px 12px rgba(0,0,0,.04)",
-              }}>
-                <div style={{ fontSize: 28, marginBottom: 10 }}>{c.icon}</div>
-                <h3 style={{
-                  fontFamily: T.serif, fontSize: 16, fontWeight: 700,
-                  color: T.text, margin: "0 0 6px",
-                }}>{c.title}</h3>
-                <p style={{
-                  fontFamily: T.sans, fontSize: 13, color: T.muted,
-                  margin: 0, lineHeight: 1.65, fontWeight: 300,
-                }}>{c.desc}</p>
-              </div>
-            ))}
-          </div>
-          <p style={{
-            fontFamily: T.sans, fontSize: 15, color: T.muted,
-            textAlign: "center", lineHeight: 1.8, maxWidth: 700, margin: "0 auto", fontWeight: 300,
-          }}>
-            Und gleichzeitig erreichen Sie gemütliche Restaurants, kulturelle Sehenswürdigkeiten und attraktive Tagesausflüge in kurzer Zeit.
-          </p>
-        </div>
-      </section>
-
       {/* ══ AKTIVITÄTEN — 4 Kategorien mit Fotos ══ */}
       <section style={{ background: T.bg, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>

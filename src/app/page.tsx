@@ -480,53 +480,6 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          DRENTHE ONTDEKKEN — 4 icon cards
-      ══════════════════════════════════════════ */}
-      <section style={{ background: "white", padding: "80px 40px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <SectionHeader
-            eyebrow="Ligging"
-            title="Drenthe ontdekken"
-            sub="Huis ter Huynen ligt in een van de mooiste natuurgebieden van Nederland. Ontdek uitgestrekte heidelandschappen, stille bossen en charmante dorpen direct vanuit uw lodge."
-          />
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 24,
-            marginBottom: 40,
-          }}>
-            {[
-              { icon: "🥾", title: "Wandelen", desc: "Direct vanuit de lodge ontdekt u de heide en oude eikenbossen van Drenthe." },
-              { icon: "🚴", title: "Fietsen", desc: "Meer dan 1.000 km verbonden fietspaden, ideaal voor dag- en e-biketochten." },
-              { icon: "🧘", title: "Ontspannen", desc: "Privé sauna, hottub en stilte — zonder afspraak en zonder haast." },
-              { icon: "🌿", title: "Natuur genieten", desc: "Nationaal Park Drentsche Aa en Dwingelderveld op slechts 15-25 minuten rijden." },
-            ].map((c, i) => (
-              <div key={i} style={{
-                background: T.card, borderRadius: 14,
-                border: `1px solid ${T.border}`, padding: "24px 22px",
-                boxShadow: "0 2px 12px rgba(0,0,0,.04)",
-              }}>
-                <div style={{ fontSize: 28, marginBottom: 10 }}>{c.icon}</div>
-                <h3 style={{
-                  fontFamily: T.serif, fontSize: 16, fontWeight: 700,
-                  color: T.text, margin: "0 0 6px",
-                }}>{c.title}</h3>
-                <p style={{
-                  fontFamily: T.sans, fontSize: 13, color: T.muted,
-                  margin: 0, lineHeight: 1.65, fontWeight: 300,
-                }}>{c.desc}</p>
-              </div>
-            ))}
-          </div>
-          <p style={{
-            fontFamily: T.sans, fontSize: 15, color: T.muted,
-            textAlign: "center", lineHeight: 1.8, maxWidth: 700, margin: "0 auto", fontWeight: 300,
-          }}>
-            En tegelijkertijd bereikt u gezellige restaurants, culturele bezienswaardigheden en aantrekkelijke dagtochten binnen korte tijd.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
           OMGEVING — natuur & wat te doen
       ══════════════════════════════════════════ */}
       <section id="omgeving" style={{ background: T.bg, padding: "80px 40px" }}>
