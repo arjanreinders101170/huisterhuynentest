@@ -3,6 +3,7 @@ import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ConsentBanner } from "@/components/tracking/ConsentBanner";
 import { GTM, GTMNoscript } from "@/components/tracking/GTM";
+import { MetaPixel } from "@/components/tracking/MetaPixel";
 import { RouteChangePixel } from "@/components/tracking/RouteChangePixel";
 import { TrackingListeners } from "@/components/tracking/TrackingListeners";
 
@@ -185,6 +186,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body style={{ background: "#EAE3D2", margin: 0, fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
         <GTMNoscript />
+        <MetaPixel />
         <RouteChangePixel />
         <TrackingListeners />
         {children}
