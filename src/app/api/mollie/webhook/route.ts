@@ -209,7 +209,6 @@ export async function POST(request: NextRequest) {
         const fbc = (bookingRow?.metadata as Record<string, unknown> | null)?.fbc as string | undefined;
         const anonymous_id = (bookingRow?.metadata as Record<string, unknown> | null)?.anonymous_id as string | undefined;
 
-        const totalEx = Math.round((amountValue - (amountValue - prijsExcl)) * 100) / 100;
         const [firstName, ...rest] = (meta.gastNaam || "").trim().split(/\s+/);
         const lastName = rest.join(" ") || undefined;
 
@@ -230,7 +229,7 @@ export async function POST(request: NextRequest) {
           }),
           custom_data: {
             currency: "EUR",
-            value: totalEx,
+            value: amountValue,
             content_type: "product",
             content_ids: [productId || "concierge"],
             content_name: product,
