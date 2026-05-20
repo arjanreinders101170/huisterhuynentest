@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { T, cardStyle } from "@/data/tokens";
+import { newEventId, getAnonymousId } from "@/lib/tracking/dataLayer";
 import { IcBike, IcClock, IcCheck, IcGift, IcBasket } from "./icons";
 
 type Upsell = { id: string; title: string; sub: string; price: string };
@@ -77,6 +78,10 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
   const startPayment = async (productId: string, displayPrice: number, meta?: Record<string, unknown>) => {
     if (!gastNaam.trim() || !gastEmail.includes("@") || sending) return;
     setSending(true);
+    const eventId = newEventId();
+    try {
+      sessionStorage.setItem("hth-pending-purchase", JSON.stringify({ event_id: eventId, value: displayPrice }));
+    } catch {}
     try {
       const r = await fetch("/api/checkout", {
         method: "POST",
@@ -86,6 +91,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
           gastNaam: gastNaam.trim(),
           gastEmail: gastEmail.trim(),
           metadata: { ...meta, datum: gastDatum || undefined },
+          _meta: { event_id: eventId, anonymous_id: getAnonymousId() },
         }),
       });
       const d = await r.json();

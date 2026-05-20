@@ -164,7 +164,6 @@ const CAPI_EVENTS = new Set([
   "Purchase",
   "Contact",
   "Lead",
-  "BookingComRedirect",
   "Subscribe",
 ]);
 
