@@ -107,7 +107,8 @@ const jsonLd = {
   email: "lodge@huisterhuynen.nl",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Zeijen",
+    streetAddress: "Zuiderstraat 6",
+    postalCode: "9491 EC",
     addressLocality: "Zeijen",
     addressRegion: "Drenthe",
     addressCountry: "NL",
@@ -152,6 +153,15 @@ const jsonLd = {
       ],
     },
   ],
+  checkInTime: "T15:00:00",
+  checkOutTime: "T11:00:00",
+  petsAllowed: true,
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    opens: "00:00",
+    closes: "23:59",
+  },
   hasMap: "https://maps.google.com/?q=Zeijen,Drenthe",
   keywords:
     "lodge Drenthe, vakantiewoning Drenthe, hottub Drenthe, chalet Drenthe, romantisch weekend, wandelen heide, fietsen Drenthe, Assen vakantie",
@@ -178,6 +188,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Tracking — preconnect saves ~150ms TLS handshake on first event */}
         <link rel="preconnect" href="https://connect.facebook.net" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+
+        {/* Geo */}
+        <meta name="geo.region" content="NL-DR" />
+        <meta name="geo.placename" content="Zeijen, Drenthe" />
+        <meta name="geo.position" content="53.0167;6.5667" />
+        <meta name="ICBM" content="53.0167, 6.5667" />
 
         {/* PWA — iOS */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
