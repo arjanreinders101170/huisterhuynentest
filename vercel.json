@@ -3,7 +3,8 @@
   "framework": "nextjs",
   "crons": [
     { "path": "/api/cron/emails?type=morning", "schedule": "0 7 * * *" },
-    { "path": "/api/cron/emails?type=evening", "schedule": "0 18 * * *" }
+    { "path": "/api/cron/emails?type=evening", "schedule": "0 18 * * *" },
+    { "path": "/api/cron/publish-posts", "schedule": "0 * * * *" }
   ],
   "headers": [
     {

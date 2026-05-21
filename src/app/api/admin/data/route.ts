@@ -11,6 +11,16 @@ import { computeStayPrice } from "@/lib/pricing";
 
 export const runtime = "nodejs";
 
+// Normaliseert een geplande publicatie-datum vanuit het admin formulier.
+// Geeft null voor lege waarde, een ISO-string voor geldige input, of
+// "invalid" voor onparsebare input.
+function parsePlannedDate(value: unknown): string | null | "invalid" {
+  if (value === undefined || value === null || value === "") return null;
+  const d = new Date(String(value));
+  if (Number.isNaN(d.getTime())) return "invalid";
+  return d.toISOString();
+}
+
 // GET — fetch table data
 export async function GET(request: NextRequest) {
   if (!(await verifyAdminSession(request))) {
@@ -558,8 +568,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true });
       }
       case "create_blog_post": {
-        const { slug, titel, intro, inhoud, categorie, leestijd, auteur } = body;
+        const { slug, titel, intro, inhoud, categorie, leestijd, auteur, geplande_publicatie } = body;
         if (!slug || !titel || !inhoud) return NextResponse.json({ error: "Slug, titel en inhoud zijn verplicht" }, { status: 400 });
+        const planned = parsePlannedDate(geplande_publicatie);
+        if (planned === "invalid") return NextResponse.json({ error: "Ongeldige plan-datum" }, { status: 400 });
         const { data, error } = await getSupabase().from("blog_posts").insert({
           slug: String(slug).toLowerCase().trim().replace(/\s+/g, "-"),
           titel, intro, inhoud,
@@ -567,16 +579,20 @@ export async function POST(request: NextRequest) {
           leestijd: leestijd || "4 minuten",
           auteur: auteur || "Arjan Reinders",
           gepubliceerd: false,
+          geplande_publicatie: planned,
         }).select().single();
         if (error) return NextResponse.json({ error: error.message }, { status: 400 });
         return NextResponse.json({ success: true, data });
       }
       case "update_blog_post": {
-        const { id, slug, titel, intro, inhoud, categorie, leestijd, auteur } = body;
+        const { id, slug, titel, intro, inhoud, categorie, leestijd, auteur, geplande_publicatie } = body;
         if (!id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const planned = parsePlannedDate(geplande_publicatie);
+        if (planned === "invalid") return NextResponse.json({ error: "Ongeldige plan-datum" }, { status: 400 });
         const { error } = await getSupabase().from("blog_posts").update({
           slug: String(slug).toLowerCase().trim().replace(/\s+/g, "-"),
           titel, intro, inhoud, categorie, leestijd, auteur,
+          geplande_publicatie: planned,
           updated_at: new Date().toISOString(),
         }).eq("id", id);
         if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -588,6 +604,7 @@ export async function POST(request: NextRequest) {
         await getSupabase().from("blog_posts").update({
           gepubliceerd,
           gepubliceerd_op: gepubliceerd ? new Date().toISOString().slice(0, 10) : null,
+          geplande_publicatie: null,
           updated_at: new Date().toISOString(),
         }).eq("id", body.id);
         return NextResponse.json({ success: true });
