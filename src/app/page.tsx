@@ -795,6 +795,16 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+
+          <div style={{ textAlign: "center", marginTop: 44 }}>
+            <a href="/omgeving" style={{
+              display: "inline-block", fontFamily: T.sans, fontSize: 13, fontWeight: 600,
+              color: T.green, border: `1px solid ${T.green}`, padding: "12px 28px",
+              borderRadius: 8, textDecoration: "none", letterSpacing: ".02em",
+            }}>
+              Alle fietsroutes en wandelroutes bekijken →
+            </a>
+          </div>
         </div>
       </section>
 
