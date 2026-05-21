@@ -9,4 +9,4 @@ Disallow: /bevestig
 Disallow: /offerte
 Disallow: /concierge
 
-Sitemap: https://huisterhuynen.nl/sitemap.xml
+Sitemap: https://www.huisterhuynen.nl/sitemap.xml
