@@ -1,10 +1,12 @@
 import { MetadataRoute } from "next";
+import { getSupabase } from "@/lib/supabase";
 
 const SITE_URL = "https://www.huisterhuynen.nl";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
-  return [
+
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
       lastModified,
@@ -28,6 +30,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
           de: `${SITE_URL}/de`,
         },
       },
+    },
+    {
+      url: `${SITE_URL}/omgeving`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       url: `${SITE_URL}/faq`,
@@ -72,4 +86,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
   ];
+
+  // Dynamically include all published blog posts
+  let blogPosts: MetadataRoute.Sitemap = [];
+  try {
+    const { data } = await getSupabase()
+      .from("blog_posts")
+      .select("slug, gepubliceerd_op")
+      .eq("gepubliceerd", true)
+      .order("gepubliceerd_op", { ascending: false });
+
+    if (data) {
+      blogPosts = data.map((post) => ({
+        url: `${SITE_URL}/blog/${post.slug}`,
+        lastModified: post.gepubliceerd_op ? new Date(post.gepubliceerd_op) : lastModified,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }));
+    }
+  } catch {
+    // Static pages still served if Supabase is unavailable during build
+  }
+
+  return [...staticPages, ...blogPosts];
 }
