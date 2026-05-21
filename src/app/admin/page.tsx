@@ -7,7 +7,7 @@ type Review = { id: string; naam: string; sterren: number; tekst: string; zichtb
 type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number; grootboek_code: string };
 type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 type DiscountCode = { id: string; code: string; omschrijving: string | null; type: "percentage" | "fixed"; waarde: number; geldig_van: string | null; geldig_tot: string | null; max_gebruik: number | null; gebruik_count: number; min_nachten: number | null; actief: boolean; created_at: string };
-type BlogPost = { id: string; slug: string; titel: string; intro: string; inhoud: string; categorie: string; leestijd: string; auteur: string; gepubliceerd: boolean; gepubliceerd_op: string | null; created_at: string };
+type BlogPost = { id: string; slug: string; titel: string; intro: string; inhoud: string; categorie: string; leestijd: string; auteur: string; gepubliceerd: boolean; gepubliceerd_op: string | null; geplande_publicatie: string | null; created_at: string };
 type BookingRequest = {
   id: string; created_at: string; updated_at: string;
   bron: "homepage" | "app" | "terugkomer";
@@ -2291,7 +2291,7 @@ function ActiesTab({ codes, setCodes }: { codes: DiscountCode[]; setCodes: (c: D
 // Blog beheer
 // ─────────────────────────────────────────────
 
-const EMPTY_POST = { id: "", slug: "", titel: "", intro: "", inhoud: "", categorie: "Verhaal", leestijd: "4 minuten", auteur: "Arjan Reinders" };
+const EMPTY_POST = { id: "", slug: "", titel: "", intro: "", inhoud: "", categorie: "Verhaal", leestijd: "4 minuten", auteur: "Arjan Reinders", geplande_publicatie: "" };
 
 function slugify(s: string): string {
   return s.toLowerCase().trim()
@@ -2299,6 +2299,23 @@ function slugify(s: string): string {
     .replace(/[ìíîï]/g, "i").replace(/[òóôõö]/g, "o")
     .replace(/[ùúûü]/g, "u").replace(/[ç]/g, "c")
     .replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
+}
+
+// ISO timestamp uit DB → <input type="datetime-local"> string in lokale tijd.
+function isoToLocalInput(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// "GEPLAND op vrijdag 23 mei 14:30"-tekst voor een geplande post.
+function fmtPlanned(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString("nl-NL", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 }
 
 function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: BlogPost[]) => void }) {
@@ -2318,7 +2335,11 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: BlogPos
 
   const startNew = () => { setForm(EMPTY_POST); setMsg(""); setPreview(false); setView("edit"); };
   const startEdit = (p: BlogPost) => {
-    setForm({ id: p.id, slug: p.slug, titel: p.titel, intro: p.intro, inhoud: p.inhoud, categorie: p.categorie, leestijd: p.leestijd, auteur: p.auteur });
+    setForm({
+      id: p.id, slug: p.slug, titel: p.titel, intro: p.intro, inhoud: p.inhoud,
+      categorie: p.categorie, leestijd: p.leestijd, auteur: p.auteur,
+      geplande_publicatie: isoToLocalInput(p.geplande_publicatie),
+    });
     setMsg(""); setPreview(false); setView("edit");
   };
   const backToList = () => { setView("list"); setForm(EMPTY_POST); setMsg(""); };
@@ -2326,6 +2347,9 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: BlogPos
   const save = async (publishAfter = false) => {
     if (!form.titel || !form.inhoud) { setMsg("Titel en inhoud zijn verplicht"); return; }
     if (!form.slug) form.slug = slugify(form.titel);
+    if (publishAfter && form.geplande_publicatie && new Date(form.geplande_publicatie).getTime() > Date.now()) {
+      if (!confirm(`Er staat een geplande publicatie op ${fmtPlanned(form.geplande_publicatie)}. Direct publiceren wist deze planning. Doorgaan?`)) return;
+    }
     setSaving(true); setMsg("");
     const action = creating ? "create_blog_post" : "update_blog_post";
     const res = await fetch("/api/admin/data", {
@@ -2409,27 +2433,32 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: BlogPos
         <p style={{ fontSize: 13, color: C.muted }}>Nog geen artikelen. Klik op &quot;Nieuw artikel&quot; om te beginnen.</p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {posts.map(p => (
+          {posts.map(p => {
+            const planned = !p.gepubliceerd && p.geplande_publicatie && new Date(p.geplande_publicatie).getTime() > Date.now();
+            const statusLabel = p.gepubliceerd ? "GEPUBLICEERD" : planned ? "GEPLAND" : "CONCEPT";
+            const statusBg = p.gepubliceerd ? "#E8F5E9" : planned ? "#E3F2FD" : "#F5F5F5";
+            const statusColor = p.gepubliceerd ? "#2E7D32" : planned ? "#1565C0" : C.muted;
+            return (
             <div key={p.id} style={{
               background: C.card, border: `1px solid ${C.border}`, borderRadius: 10,
               padding: "16px 18px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
-              opacity: p.gepubliceerd ? 1 : 0.65,
+              opacity: p.gepubliceerd ? 1 : 0.75,
             }}>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                   <span style={{
                     fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4,
-                    background: p.gepubliceerd ? "#E8F5E9" : "#F5F5F5",
-                    color: p.gepubliceerd ? "#2E7D32" : C.muted,
+                    background: statusBg, color: statusColor,
                   }}>
-                    {p.gepubliceerd ? "GEPUBLICEERD" : "CONCEPT"}
+                    {statusLabel}
                   </span>
                   <span style={{ fontSize: 11, color: C.muted }}>{p.categorie} · {p.leestijd}</span>
                 </div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: C.text }}>{p.titel}</div>
                 <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>
                   /blog/{p.slug}
-                  {p.gepubliceerd_op && ` · ${new Date(p.gepubliceerd_op).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}`}
+                  {p.gepubliceerd && p.gepubliceerd_op && ` · gepubliceerd ${new Date(p.gepubliceerd_op).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })}`}
+                  {planned && ` · live op ${fmtPlanned(p.geplande_publicatie)}`}
                 </div>
               </div>
               <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
@@ -2457,7 +2486,8 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: BlogPos
                 }}>✕</button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -2542,22 +2572,70 @@ function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: BlogPos
             />
           </div>
 
+          {(() => {
+            const futurePlan = !!form.geplande_publicatie && new Date(form.geplande_publicatie).getTime() > Date.now();
+            return (
+              <div style={{
+                background: futurePlan ? "#F0F7FF" : "#FAFAFA",
+                border: `1px solid ${futurePlan ? "#BBDEFB" : C.border}`,
+                borderRadius: 10, padding: "14px 16px",
+              }}>
+                <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 6, fontWeight: 600 }}>
+                  Plan publicatie (optioneel)
+                </label>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <input
+                    type="datetime-local"
+                    value={form.geplande_publicatie}
+                    onChange={e => setForm(f => ({ ...f, geplande_publicatie: e.target.value }))}
+                    style={{ ...inp, width: "auto", minWidth: 220 }}
+                  />
+                  {form.geplande_publicatie && (
+                    <button onClick={() => setForm(f => ({ ...f, geplande_publicatie: "" }))} style={{
+                      background: "none", border: `1px solid ${C.border}`, padding: "6px 12px",
+                      borderRadius: 6, fontSize: 11, color: C.muted, cursor: "pointer",
+                    }}>Wis planning</button>
+                  )}
+                </div>
+                <p style={{ fontSize: 11, color: C.muted, margin: "8px 0 0", lineHeight: 1.5 }}>
+                  {futurePlan
+                    ? `Wordt automatisch gepubliceerd op ${fmtPlanned(form.geplande_publicatie)} (binnen het uur na dit moment).`
+                    : "Laat leeg om handmatig te publiceren. De cron draait elk uur."}
+                </p>
+              </div>
+            );
+          })()}
+
           {msg && <p style={{ fontSize: 12, color: "#C62828", margin: 0 }}>{msg}</p>}
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => save(false)} disabled={saving} style={{
-              padding: "10px 20px", borderRadius: 8, border: `1px solid ${C.border}`,
-              background: "#fff", fontSize: 13, color: C.text, fontWeight: 600, cursor: "pointer",
-            }}>
-              {saving ? "Opslaan..." : "Opslaan als concept"}
-            </button>
-            <button onClick={() => save(true)} disabled={saving} style={{
-              padding: "10px 24px", borderRadius: 8, border: "none",
-              background: C.green, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer",
-            }}>
-              {saving ? "Bezig..." : creating ? "Opslaan & publiceren →" : "Publiceren →"}
-            </button>
-          </div>
+          {(() => {
+            const futurePlan = !!form.geplande_publicatie && new Date(form.geplande_publicatie).getTime() > Date.now();
+            const saveLabel = saving ? "Opslaan..." : futurePlan ? "Opslaan & inplannen" : "Opslaan als concept";
+            const publishLabel = saving ? "Bezig..." : creating ? "Opslaan & direct publiceren →" : "Direct publiceren →";
+            return (
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => save(false)} disabled={saving} style={{
+                  padding: "10px 20px", borderRadius: 8,
+                  border: futurePlan ? "none" : `1px solid ${C.border}`,
+                  background: futurePlan ? "#1565C0" : "#fff",
+                  fontSize: 13, color: futurePlan ? "#fff" : C.text, fontWeight: 600, cursor: "pointer",
+                }}>
+                  {saveLabel}
+                </button>
+                <button onClick={() => save(true)} disabled={saving} style={{
+                  padding: "10px 24px", borderRadius: 8, border: "none",
+                  background: futurePlan ? "#fff" : C.green,
+                  color: futurePlan ? C.text : "#fff",
+                  borderStyle: futurePlan ? "solid" : "none",
+                  borderWidth: futurePlan ? 1 : 0,
+                  borderColor: futurePlan ? C.border : "transparent",
+                  fontSize: 13, fontWeight: 600, cursor: "pointer",
+                }}>
+                  {publishLabel}
+                </button>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Live preview */}
