@@ -40,14 +40,29 @@ export async function generateMetadata(
   return {
     title: post.titel,
     description: post.intro,
-    alternates: { canonical: `https://huisterhuynen.nl/blog/${post.slug}` },
+    alternates: { canonical: `https://www.huisterhuynen.nl/blog/${post.slug}` },
     openGraph: {
       title: post.titel,
       description: post.intro,
-      url: `https://huisterhuynen.nl/blog/${post.slug}`,
+      url: `https://www.huisterhuynen.nl/blog/${post.slug}`,
       type: "article",
       publishedTime: post.gepubliceerd_op || undefined,
+      modifiedTime: post.gepubliceerd_op || undefined,
       authors: [post.auteur],
+      images: [
+        {
+          url: "https://www.huisterhuynen.nl/lodge-heide.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Huis ter Huynen – Boutique Lodge Drenthe",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.titel,
+      description: post.intro,
+      images: ["https://www.huisterhuynen.nl/lodge-heide.jpg"],
     },
   };
 }
@@ -130,12 +145,40 @@ export default async function ArtikelPagina(
     description: post.intro,
     author: { "@type": "Person", name: post.auteur },
     datePublished: post.gepubliceerd_op || undefined,
+    dateModified: post.gepubliceerd_op || undefined,
     publisher: {
       "@type": "Organization",
       name: "Huis ter Huynen",
       url: "https://huisterhuynen.nl",
     },
     mainEntityOfPage: `https://huisterhuynen.nl/blog/${post.slug}`,
+    image: "https://www.huisterhuynen.nl/lodge-heide.jpg",
+    inLanguage: "nl-NL",
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.huisterhuynen.nl",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: "https://www.huisterhuynen.nl/blog",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.titel,
+        item: `https://www.huisterhuynen.nl/blog/${post.slug}`,
+      },
+    ],
   };
 
   return (
@@ -143,6 +186,10 @@ export default async function ArtikelPagina(
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       {/* Hero */}
