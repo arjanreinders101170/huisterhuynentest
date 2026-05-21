@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const SITE_URL = "https://huisterhuynen.nl";
+const SITE_URL = "https://www.huisterhuynen.nl";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
