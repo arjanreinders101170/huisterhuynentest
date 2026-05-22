@@ -340,6 +340,64 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ success: true });
       }
+      case "get_stay_link": {
+        // Returnt de persoonlijke magic-link zodat admin 'm via WhatsApp/SMS
+        // kan delen als de welkomstmail in spam belandt.
+        const stayId = body.id;
+        if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
+
+        const { data: stay } = await getSupabase()
+          .from("stays")
+          .select("token, status, check_out")
+          .eq("id", stayId)
+          .single();
+        if (!stay) return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
+        if (stay.status === "vertrokken") {
+          return NextResponse.json({ error: "Verblijf afgesloten" }, { status: 400 });
+        }
+        const checkOut = new Date(stay.check_out);
+        checkOut.setHours(23, 59, 59);
+        if (Date.now() > checkOut.getTime()) {
+          return NextResponse.json({ error: "Verblijf verlopen" }, { status: 400 });
+        }
+
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+        return NextResponse.json({ link: `${appUrl}?s=${stay.token}` });
+      }
+      case "rotate_stay_token": {
+        // Genereert een nieuwe stay-token. Te gebruiken bij verdacht
+        // tokenlek. De oude link werkt direct niet meer; de stay-cookie
+        // blijft tot expiry geldig (gebruik STAY_COOKIE_SECRET rotatie of
+        // status='vertrokken' voor volledige revoke).
+        const stayId = body.id;
+        if (!stayId) return NextResponse.json({ error: "Stay ID verplicht" }, { status: 400 });
+
+        const { data: stay } = await getSupabase()
+          .from("stays")
+          .select("status, check_out")
+          .eq("id", stayId)
+          .single();
+        if (!stay) return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
+        if (stay.status === "vertrokken") {
+          return NextResponse.json({ error: "Verblijf afgesloten" }, { status: 400 });
+        }
+        const checkOut = new Date(stay.check_out);
+        checkOut.setHours(23, 59, 59);
+        if (Date.now() > checkOut.getTime()) {
+          return NextResponse.json({ error: "Verblijf verlopen" }, { status: 400 });
+        }
+
+        const { randomBytes } = await import("crypto");
+        const newToken = randomBytes(24).toString("hex");
+        const { error } = await getSupabase()
+          .from("stays")
+          .update({ token: newToken })
+          .eq("id", stayId);
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+        return NextResponse.json({ success: true, link: `${appUrl}?s=${newToken}` });
+      }
       case "send_late_checkout": {
         // Evening-before-departure reminder with one-tap booking link
         const stayId = body.id;

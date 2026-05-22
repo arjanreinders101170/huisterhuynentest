@@ -1878,6 +1878,8 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
   const [form, setForm] = useState({ naam: "", email: "", lodge: "lodge_1", check_in: "", check_out: "" });
   const [saving, setSaving] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [linkError, setLinkError] = useState<string | null>(null);
 
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
 
@@ -1950,6 +1952,54 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
     setSendingId(null);
   };
 
+  const copyStayLink = async (stayId: string) => {
+    setLinkError(null);
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_stay_link", id: stayId }),
+      });
+      const d = await r.json();
+      if (!r.ok || !d.link) {
+        setLinkError(d.error || "Kon link niet ophalen");
+        return;
+      }
+      await navigator.clipboard.writeText(d.link);
+      setCopiedId(stayId);
+      setTimeout(() => setCopiedId(prev => (prev === stayId ? null : prev)), 2000);
+    } catch {
+      setLinkError("Kopiëren mislukt — controleer je browser-rechten");
+    }
+  };
+
+  const rotateStayToken = async (stayId: string) => {
+    if (!confirm("Nieuwe toegangslink genereren? De oude link werkt direct niet meer.")) return;
+    setLinkError(null);
+    setSendingId(stayId);
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "rotate_stay_token", id: stayId }),
+      });
+      const d = await r.json();
+      if (!r.ok || !d.link) {
+        setLinkError(d.error || "Kon token niet vernieuwen");
+        return;
+      }
+      try { await navigator.clipboard.writeText(d.link); } catch {}
+      setCopiedId(stayId);
+      setTimeout(() => setCopiedId(prev => (prev === stayId ? null : prev)), 2500);
+      const res = await fetch("/api/admin/data?table=stays");
+      const data = await res.json();
+      setStays(data.data || []);
+    } catch {
+      setLinkError("Token-rotatie mislukt");
+    }
+    setSendingId(null);
+  };
+
   const statusColor = (s: string) => {
     if (s === "actief") return { bg: "#E8F5E9", text: "#2E7D32" };
     if (s === "gepland") return { bg: "#E3F2FD", text: "#1565C0" };
@@ -2013,6 +2063,13 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
         </div>
       )}
 
+      {linkError && (
+        <div style={{
+          background: "#FDECEA", border: "1px solid #F5C2C0", color: "#B71C1C",
+          fontSize: 12, padding: "8px 12px", borderRadius: 6, marginBottom: 12,
+        }}>{linkError}</div>
+      )}
+
       {stays.length === 0 ? (
         <div style={{ fontSize: 13, color: C.light, padding: 20, textAlign: "center" }}>Nog geen verblijven aangemaakt</div>
       ) : (
@@ -2039,28 +2096,42 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
                     {cin} – {cout} · Deurcode: <strong>{s.door_code}</strong> · Wi-Fi: <strong>HuynenGast</strong> (statisch)
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  {!s.welcome_sent ? (
-                    <button onClick={() => sendWelcome(s.id)} disabled={sendingId === s.id} style={{
-                      padding: "6px 14px", borderRadius: 6, border: "none",
-                      background: C.green, color: "#fff", fontSize: 12, fontWeight: 500,
-                      cursor: sendingId === s.id ? "not-allowed" : "pointer",
-                    }}>{sendingId === s.id ? "Versturen..." : "Welkomstmail"}</button>
-                  ) : s.status === "vertrokken" ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
+                  {s.status === "vertrokken" ? (
                     <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ Afgerond</span>
                   ) : (
                     <>
-                      <span style={{ fontSize: 11, color: "#2E7D32" }}>✓ Welkom</span>
-                      <button onClick={() => sendLateCheckout(s.id)} disabled={sendingId === s.id} style={{
-                        padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.gold}`,
-                        background: C.card, color: C.gold, fontSize: 12, fontWeight: 500,
+                      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                        <button onClick={() => sendWelcome(s.id)} disabled={sendingId === s.id} style={{
+                          padding: "6px 14px", borderRadius: 6, border: "none",
+                          background: C.green, color: "#fff", fontSize: 12, fontWeight: 500,
+                          cursor: sendingId === s.id ? "not-allowed" : "pointer",
+                        }}>{sendingId === s.id ? "Versturen..." : s.welcome_sent ? "Opnieuw versturen" : "Welkomstmail"}</button>
+                        <button onClick={() => copyStayLink(s.id)} style={{
+                          padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.gold}`,
+                          background: C.card, color: C.gold, fontSize: 12, fontWeight: 500, cursor: "pointer",
+                        }}>{copiedId === s.id ? "✓ Gekopieerd" : "Kopieer link"}</button>
+                        {s.welcome_sent && (
+                          <button onClick={() => sendLateCheckout(s.id)} disabled={sendingId === s.id} style={{
+                            padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
+                            background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
+                            cursor: sendingId === s.id ? "not-allowed" : "pointer",
+                          }}>{sendingId === s.id ? "Versturen..." : "Late check-out"}</button>
+                        )}
+                        {s.welcome_sent && (
+                          <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
+                            padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
+                            background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
+                            cursor: sendingId === s.id ? "not-allowed" : "pointer",
+                          }}>{sendingId === s.id ? "Versturen..." : "Bedankt-mail"}</button>
+                        )}
+                      </div>
+                      <button onClick={() => rotateStayToken(s.id)} disabled={sendingId === s.id} style={{
+                        padding: "2px 0", border: "none", background: "none",
+                        color: C.light, fontSize: 11, fontWeight: 400,
                         cursor: sendingId === s.id ? "not-allowed" : "pointer",
-                      }}>{sendingId === s.id ? "Versturen..." : "Late check-out"}</button>
-                      <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
-                        padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
-                        background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
-                        cursor: sendingId === s.id ? "not-allowed" : "pointer",
-                      }}>{sendingId === s.id ? "Versturen..." : "Bedankt-mail"}</button>
+                        textDecoration: "underline",
+                      }}>Roteer toegangstoken</button>
                     </>
                   )}
                 </div>
