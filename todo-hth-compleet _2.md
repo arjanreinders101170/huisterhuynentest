@@ -59,7 +59,7 @@
 | # | Item | Prioriteit | Wacht op |
 |---|------|-----------|----------|
 | 29 | OpenAI tegoed opladen | Hoog | Creditcard |
-| 30 | App herkent gast-token uit welkomst-link | Hoog | Niets |
+| 30 | App herkent gast-token uit welkomst-link ✅ | Hoog | — |
 | 31 | Late checkout timing (avond voor vertrek) | Middel | Niets |
 | 32 | Annuleringsmail template | Middel | Niets |
 | 33 | Schoonmaakstatus per lodge (boolean in stays) | Middel | Niets |
@@ -80,24 +80,30 @@
 | 43 | F-20: Mollie URL validatie | Laag |
 | 44 | F-21: Tests + CI opzetten | Laag |
 
+### Optioneel — Gast zelf-service
+
+| # | Item | Prioriteit | Toelichting |
+|---|------|-----------|-------------|
+| 45 | Route 2: Zelf-service welkomstmail resend op locked page | Laag | Gast vult e-mailadres in op `/concierge/locked` → nieuw `/api/stay/resend` endpoint checkt DB → stuurt welkomstmail als actief verblijf gevonden → altijd neutrale melding (anti-enumeratie) → rate-limit per IP + per email |
+
 ---
 
 ## FASE 2 — Home Assistant & hardware (wacht op NUC)
 
 | # | Item | Toelichting |
 |---|------|-------------|
-| 45 | NUC hardware aanschaffen | i3/N100, 8GB, 256GB SSD + UPS |
-| 46 | HA installeren + basis integraties | Hue, airco, laadpaal |
-| 47 | Cloudflare tunnel setup | ha.huisterhuynen.nl, zero trust |
-| 48 | Lodge control → echte HA API calls | Vervang demo-state |
-| 49 | HA integratie in backoffice | Lodge 1/2 → echte device controls |
-| 50 | Nuki auth (F-01) | Token-based, niet voor 15:00, admin override |
-| 51 | Nuki rollen | Gast / schoonmaak / beheerder |
-| 52 | Magic link auth (gast-sessies) | Token per verblijf, tijdsgebonden |
-| 53 | Automations (afwezig/comfort/nacht) | Modi koppelen aan HA scenes |
-| 54 | Lodge 2 devices koppelen | Naming conventie lodge_2_* |
-| 55 | Wifi/PIN rotatie per verblijf (F-16) | Automatisch bij check-out |
-| 56 | Load balancing (laadpaal vs airco) | Pas bij piekbelasting |
+| 46 | NUC hardware aanschaffen | i3/N100, 8GB, 256GB SSD + UPS |
+| 47 | HA installeren + basis integraties | Hue, airco, laadpaal |
+| 48 | Cloudflare tunnel setup | ha.huisterhuynen.nl, zero trust |
+| 49 | Lodge control → echte HA API calls | Vervang demo-state |
+| 50 | HA integratie in backoffice | Lodge 1/2 → echte device controls |
+| 51 | Nuki auth (F-01) | Token-based, niet voor 15:00, admin override |
+| 52 | Nuki rollen | Gast / schoonmaak / beheerder |
+| 53 | Magic link auth (gast-sessies) ✅ | Token per verblijf, tijdsgebonden — geïmplementeerd via HttpOnly cookie |
+| 54 | Automations (afwezig/comfort/nacht) | Modi koppelen aan HA scenes |
+| 55 | Lodge 2 devices koppelen | Naming conventie lodge_2_* |
+| 56 | Wifi/PIN rotatie per verblijf (F-16) | Automatisch bij check-out |
+| 57 | Load balancing (laadpaal vs airco) | Pas bij piekbelasting |
 
 ---
 
@@ -105,17 +111,17 @@
 
 | # | Item | Toelichting |
 |---|------|-------------|
-| 57 | Seizoensbrief (4x/jaar) | Email template + trigger in backoffice |
-| 58 | Dag-na-vertrek mail (automatisch) | Warmte, geen CTA |
-| 59 | Weer-gekoppelde fiets tip | Weather API + conditie op homepage |
-| 60 | Gastherkenning bij terugkeer | "Welkom terug" bij zelfde email |
-| 61 | "Onze tip" labels op top-items (gast-app) | Gastheer-aanbeveling per categorie-item |
-| 62 | Cookie consent banner | Transparantie |
-| 63 | Gast aanmaken + magic link via backoffice | Verblijf + token + email in één actie |
-| 64 | Multi-lodge overzicht in backoffice | Beide lodges naast elkaar |
-| 65 | Presets in backoffice: "Gereed voor gast" / "Afwezig" | Eén-klik lodge modes |
-| 66 | Energie dashboard (eigenaar) | Verbruik per lodge per dag |
-| 67 | Financieel overzicht | Boekingen, omzet, conversie |
+| 58 | Seizoensbrief (4x/jaar) | Email template + trigger in backoffice |
+| 59 | Dag-na-vertrek mail (automatisch) | Warmte, geen CTA |
+| 60 | Weer-gekoppelde fiets tip | Weather API + conditie op homepage |
+| 61 | Gastherkenning bij terugkeer | "Welkom terug" bij zelfde email |
+| 62 | "Onze tip" labels op top-items (gast-app) | Gastheer-aanbeveling per categorie-item |
+| 63 | Cookie consent banner | Transparantie |
+| 64 | Gast aanmaken + magic link via backoffice | Verblijf + token + email in één actie |
+| 65 | Multi-lodge overzicht in backoffice | Beide lodges naast elkaar |
+| 66 | Presets in backoffice: "Gereed voor gast" / "Afwezig" | Eén-klik lodge modes |
+| 67 | Energie dashboard (eigenaar) | Verbruik per lodge per dag |
+| 68 | Financieel overzicht | Boekingen, omzet, conversie |
 
 ---
 
@@ -125,16 +131,16 @@
 
 | # | Item | Toelichting |
 |---|------|-------------|
-| 68 | Modulaire applicatiestructuur | Opdelen in services: accommodations, bookings, access_control, email_templates, invoice_service, nuki_integration |
-| 69 | Database structureren voor meerdere locaties | `locations` tabel bovenop `lodges`, eigen domein per locatie |
-| 70 | Fallback & retry mechanisme | Automatische retries bij mislukte API-calls, noodtoegang bij Nuki offline |
-| 71 | Volledige audit trail | Logging van boekingen, toegang, emails, facturen, beheerder-wijzigingen |
-| 72 | Testomgeving (dedicated) | Aparte dev environment, testsloten, fake boekingen |
-| 73 | Meertaligheid (Engels) | Alle emails + app in NL + EN |
-| 74 | Schoonmaakmeldingen | Automatisch na check-out, status in backoffice |
-| 75 | Realtime dashboard | Live status van lodges, sloten, devices |
-| 76 | Rollenbeheer backoffice | Admin / schoonmaak / onderhoud accounts |
-| 77 | CI/CD pipeline | GitHub Actions: lint, typecheck, tests bij elke push |
+| 69 | Modulaire applicatiestructuur | Opdelen in services: accommodations, bookings, access_control, email_templates, invoice_service, nuki_integration |
+| 70 | Database structureren voor meerdere locaties | `locations` tabel bovenop `lodges`, eigen domein per locatie |
+| 71 | Fallback & retry mechanisme | Automatische retries bij mislukte API-calls, noodtoegang bij Nuki offline |
+| 72 | Volledige audit trail | Logging van boekingen, toegang, emails, facturen, beheerder-wijzigingen |
+| 73 | Testomgeving (dedicated) | Aparte dev environment, testsloten, fake boekingen |
+| 74 | Meertaligheid (Engels) | Alle emails + app in NL + EN |
+| 75 | Schoonmaakmeldingen | Automatisch na check-out, status in backoffice |
+| 76 | Realtime dashboard | Live status van lodges, sloten, devices |
+| 77 | Rollenbeheer backoffice | Admin / schoonmaak / onderhoud accounts |
+| 78 | CI/CD pipeline | GitHub Actions: lint, typecheck, tests bij elke push |
 
 ---
 
