@@ -127,6 +127,15 @@ export async function GET(request: NextRequest) {
         if (error) return NextResponse.json({ data: [], error: error.message });
         return NextResponse.json({ data: data || [] });
       }
+      case "fietsroutes": {
+        const { data, error } = await getSupabase()
+          .from("fietsroutes")
+          .select("*")
+          .order("volgorde", { ascending: true })
+          .order("created_at", { ascending: false });
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        return NextResponse.json({ data: data || [] });
+      }
       case "booking_requests": {
         const { data: raw, error } = await getSupabase()
           .from("booking_requests")
