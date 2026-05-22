@@ -66,14 +66,22 @@ export default function ConciergeLockedPage() {
             fontSize: 28, fontWeight: 700, color: "#2A2418",
             lineHeight: 1.2, margin: "0 0 12px",
           }}>
-            Alleen voor onze gasten
+            Jouw verblijf begint hier
           </h1>
           <p style={{
             fontSize: 15, color: "#8A7D6A", fontWeight: 300,
             lineHeight: 1.6, margin: "0 auto", maxWidth: 320,
           }}>
-            Deze concierge-app is gekoppeld aan een verblijf bij Huis ter Huynen.
-            Open de persoonlijke link uit je welkomstmail — daarmee staat alles voor je klaar.
+            De conciërge-app van Huis ter Huynen staat klaar voor onze gasten.
+            Open de persoonlijke link uit je welkomstmail en ontdek alles wat je
+            nodig hebt voor een ontspannen verblijf.
+          </p>
+          <p style={{
+            fontSize: 13, color: "#8A7D6A", fontWeight: 300,
+            lineHeight: 1.6, margin: "20px auto 0", maxWidth: 320,
+          }}>
+            Ben je gast en heb je geen toegang? Bel ons direct of stuur ons een
+            WhatsApp.
           </p>
         </div>
 
