@@ -53,6 +53,7 @@ async function lookupStay(token: string): Promise<StayInfo | null> {
       .eq("token", token)
       .single();
     if (!stay) return null;
+    if (stay.status === "vertrokken") return null;
     const checkOut = new Date(stay.check_out);
     checkOut.setHours(23, 59, 59);
     if (Date.now() > checkOut.getTime()) return null;

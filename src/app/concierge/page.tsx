@@ -100,25 +100,32 @@ function AppInner() {
     if (stay && stay.id) return; // already loaded
     setStayLoading(true);
     fetch(`/api/stay?token=${encodeURIComponent(tokenParam)}`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.stay) {
-          const session: StaySession = {
-            id: d.stay.id,
-            token: tokenParam,
-            lodge: d.stay.lodge,
-            lodgeNaam: d.stay.lodgeNaam,
-            check_in: d.stay.check_in,
-            check_out: d.stay.check_out,
-            door_code: d.stay.door_code,
-            naam: d.guest?.naam || "",
-            greeted: false,
-          };
-          setStay(session);
-          try { localStorage.setItem(STAY_STORAGE_KEY, JSON.stringify(session)); } catch {}
+      .then(async r => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok || !d?.stay) {
+          // Token invalid/expired — clear any stale local copy and lock out.
+          try { localStorage.removeItem(STAY_STORAGE_KEY); } catch {}
+          window.location.replace("/concierge/locked");
+          return;
         }
+        const session: StaySession = {
+          id: d.stay.id,
+          token: tokenParam,
+          lodge: d.stay.lodge,
+          lodgeNaam: d.stay.lodgeNaam,
+          check_in: d.stay.check_in,
+          check_out: d.stay.check_out,
+          door_code: d.stay.door_code,
+          naam: d.guest?.naam || "",
+          greeted: false,
+        };
+        setStay(session);
+        try { localStorage.setItem(STAY_STORAGE_KEY, JSON.stringify(session)); } catch {}
       })
-      .catch(() => {/* silent — fall through to default flow */})
+      .catch(() => {
+        // Network/parse failure — be conservative, lock out.
+        window.location.replace("/concierge/locked");
+      })
       .finally(() => setStayLoading(false));
   }, [tokenParam, stay, stayLoading]);
 

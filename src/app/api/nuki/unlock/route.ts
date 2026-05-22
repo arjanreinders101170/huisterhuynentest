@@ -19,12 +19,16 @@ export async function POST(request: NextRequest) {
 
   const { data: stay } = await getSupabase()
     .from("stays")
-    .select("check_out")
+    .select("check_out, status")
     .eq("token", token)
     .single();
 
   if (!stay) {
     return NextResponse.json({ error: "Onbekende sessie" }, { status: 403 });
+  }
+
+  if (stay.status === "vertrokken") {
+    return NextResponse.json({ error: "Verblijf afgesloten" }, { status: 403 });
   }
 
   const checkOut = new Date(stay.check_out);
@@ -69,7 +73,6 @@ export async function POST(request: NextRequest) {
         {
           success: false,
           message: "Kon deur niet openen",
-          fallbackCode: "4821",
           error,
         },
         { status: 500 }
@@ -80,7 +83,6 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         message: "Verbindingsfout",
-        fallbackCode: "4821",
       },
       { status: 500 }
     );

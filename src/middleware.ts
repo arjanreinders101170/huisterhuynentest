@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_COOKIE_NAME, parseSessionCookie } from "@/lib/admin-auth-edge";
+import { STAY_COOKIE_NAME, parseStayCookie } from "@/lib/stay-auth-edge";
 
 /* ═══ RATE LIMITER (in-memory, per serverless instance) ═══ */
 const hits = new Map<string, { count: number; reset: number }>();
@@ -41,6 +42,17 @@ async function hasValidAdminCookie(request: NextRequest): Promise<boolean> {
   return Boolean(parsed);
 }
 
+async function hasValidStaySession(request: NextRequest): Promise<boolean> {
+  const cookie = request.cookies.get(STAY_COOKIE_NAME);
+  if (!cookie) return false;
+  try {
+    const parsed = await parseStayCookie(cookie.value);
+    return Boolean(parsed);
+  } catch {
+    return false;
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hostname = request.headers.get("host") || "";
@@ -61,6 +73,19 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Gast-app afscherming. /app rewrite naar /concierge in next.config.ts, dus
+  // we moeten beide paden gaten — middleware draait vóór de rewrite.
+  const isConciergeRoute =
+    pathname === "/app" || pathname.startsWith("/app/") ||
+    pathname === "/concierge" || pathname.startsWith("/concierge/");
+
+  if (isConciergeRoute && pathname !== "/concierge/locked") {
+    const hasToken = Boolean(request.nextUrl.searchParams.get("s"));
+    if (!hasToken && !(await hasValidStaySession(request))) {
+      return NextResponse.rewrite(new URL("/concierge/locked", request.url));
+    }
+  }
+
   // Pagina's die een admin-sessie vereisen.
   const requiresAdmin =
     (pathname.startsWith("/admin") && pathname !== "/admin/login") ||
@@ -76,5 +101,15 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/app", "/admin/:path*", "/offerte/:path*", "/offerte", "/api/:path*"],
+  matcher: [
+    "/",
+    "/app",
+    "/app/:path*",
+    "/concierge",
+    "/concierge/:path*",
+    "/admin/:path*",
+    "/offerte/:path*",
+    "/offerte",
+    "/api/:path*",
+  ],
 };
