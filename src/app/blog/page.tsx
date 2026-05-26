@@ -7,11 +7,11 @@ export const metadata: Metadata = {
   title: "Blog & Verhalen — Drenthe, natuur en het leven op de heide",
   description:
     "Lees over de lodges, de omgeving van Zeijen en alles wat Drenthe te bieden heeft. Reistips, verhalen en seizoensnieuws van Huis ter Huynen.",
-  alternates: { canonical: "https://huisterhuynen.nl/blog" },
+  alternates: { canonical: "https://www.huisterhuynen.nl/blog" },
   openGraph: {
     title: "Blog & Verhalen — Huis ter Huynen",
     description: "Reistips, verhalen en nieuws vanuit de Drentse heide.",
-    url: "https://huisterhuynen.nl/blog",
+    url: "https://www.huisterhuynen.nl/blog",
     type: "website",
   },
 };

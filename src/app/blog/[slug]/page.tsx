@@ -149,9 +149,9 @@ export default async function ArtikelPagina(
     publisher: {
       "@type": "Organization",
       name: "Huis ter Huynen",
-      url: "https://huisterhuynen.nl",
+      url: "https://www.huisterhuynen.nl",
     },
-    mainEntityOfPage: `https://huisterhuynen.nl/blog/${post.slug}`,
+    mainEntityOfPage: `https://www.huisterhuynen.nl/blog/${post.slug}`,
     image: "https://www.huisterhuynen.nl/lodge-heide.jpg",
     inLanguage: "nl-NL",
   };

@@ -5,6 +5,7 @@
 
 import type { BaseEvent, Locale, TrackingEvent } from "./types";
 import { getConsentSnapshot } from "./consent";
+import { fireGa4Event } from "./ga4";
 
 const ANON_KEY = "hth-aid";
 const USER_CACHE_KEY = "hth-user-ctx";
@@ -180,6 +181,9 @@ export function pushEvent(payload: TrackingEvent): void {
 
   /* Fire browser pixel directly — no GTM tag required for deduplication. */
   firePixelEvent(payload);
+
+  /* Fire GA4 directly (opt-in via NEXT_PUBLIC_GA4_ID), consent-gated on statistics. */
+  fireGa4Event(payload);
 
   if (shouldMirrorToCapi(payload)) {
     fireCapi(payload);
