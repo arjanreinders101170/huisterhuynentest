@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, PRICE_FROM_LABEL } from "@/lib/site";
 import { LandingTemplate, landingSchemas, type LandingConfig } from "@/components/LandingTemplate";
 
 const config: LandingConfig = {
@@ -12,6 +12,7 @@ const config: LandingConfig = {
   heroImage: "/lodge-eik.jpg",
   heroImageAlt:
     "Luxe lodge De Eik onder de eiken bij Zeijen in Drenthe, met buitenkeuken en eigen terras",
+  priceFrom: PRICE_FROM_LABEL,
   intro:
     "Een luxe lodge in Drenthe draait niet om overdaad, maar om de juiste dingen perfect voor elkaar hebben: een goed bed, warme materialen, echte privacy en de natuur die direct buiten begint. Huis ter Huynen biedt twee zorgvuldig ingerichte lodges op de heide bij Zeijen — geen hotel, maar een eigen plek waar u zich meteen thuis voelt.",
   sections: [

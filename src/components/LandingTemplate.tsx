@@ -33,6 +33,7 @@ export interface LandingConfig {
   heroSub: string;
   heroImage: string;
   heroImageAlt: string;
+  priceFrom?: string;
   intro: string;
   sections: LandingSection[];
   faq: LandingFaq[];
@@ -119,6 +120,11 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               Schrijf je in voor de opening
             </Link>
           </div>
+          {config.priceFrom && (
+            <div style={{ marginTop: 18, fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,.85)", letterSpacing: ".3px" }}>
+              {config.priceFrom} · direct boekbaar, zonder tussenpersoon
+            </div>
+          )}
         </div>
       </section>
 

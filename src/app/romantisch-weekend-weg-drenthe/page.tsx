@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, PRICE_FROM_LABEL } from "@/lib/site";
 import { LandingTemplate, landingSchemas, type LandingConfig } from "@/components/LandingTemplate";
 
 const config: LandingConfig = {
@@ -12,6 +12,7 @@ const config: LandingConfig = {
   heroImage: "/heide1.jpg",
   heroImageAlt:
     "Paarse bloeiende heide bij zonsondergang in Drenthe, ideaal decor voor een romantisch weekend weg",
+  priceFrom: PRICE_FROM_LABEL,
   intro:
     "Een romantisch weekend weg draait om tijd voor elkaar, zonder afleiding. Drenthe is daar als geen ander op gemaakt: de stilste provincie van Nederland, met eindeloze natuur en weinig toeristen. Bij Huis ter Huynen verblijft u in een volledig privé lodge met eigen hottub — de ideale plek om samen volledig af te schakelen.",
   sections: [

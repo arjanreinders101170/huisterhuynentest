@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, PRICE_FROM_LABEL } from "@/lib/site";
 import { LandingTemplate, landingSchemas, type LandingConfig } from "@/components/LandingTemplate";
 
 const config: LandingConfig = {
@@ -12,6 +12,7 @@ const config: LandingConfig = {
   heroImage: "/lodge-heide.jpg",
   heroImageAlt:
     "Vakantiehuis met privé-hottub op het terras van Lodge De Heide, omgeven door de Drentse heide in Zeijen",
+  priceFrom: PRICE_FROM_LABEL,
   intro:
     "Een vakantiehuis met hottub in Drenthe is meer dan een extraatje — het is het moment waarop een weekend echt tot rust komt. Bij Huis ter Huynen heeft elke lodge een eigen privé-hottub, volledig afgeschermd en het hele jaar door op temperatuur. Geen gedeelde wellness, geen buren: alleen u, het bruisende water en het uitzicht over heide en bos.",
   sections: [
