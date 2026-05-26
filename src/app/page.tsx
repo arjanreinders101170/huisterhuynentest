@@ -804,7 +804,7 @@ export default function LandingPage() {
           {googleReviews.length === 0 ? (
             <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, textAlign: "center", maxWidth: 560, margin: "0 auto", lineHeight: 1.8 }}>
               Onze eerste gasten verblijven vanaf 1 januari 2027. Zodra zij Huis ter Huynen
-              hebben ervaren, verschijnen hun beoordelingen hier — rechtstreeks vanuit Google,
+              hebben ervaren, verschijnen hun beoordelingen hier, rechtstreeks vanuit Google,
               ongefilterd en echt.
             </p>
           ) : (
