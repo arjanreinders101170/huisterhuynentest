@@ -490,7 +490,11 @@ Legenda — **Intentie:** Info(rmationeel) / Commercieel onderzoekend / Transact
 - `contact` (whatsapp/phone/email) ← uit `Contact`
 - `outbound_ota` (booking.com-weglek, negatieve KPI) ← uit `BookingComRedirect`
 
-**Kernpunt:** er moet een **vertaallaag in GTM** komen die de Meta-genoemde dataLayer-events omzet naar snake_case GA4-events. Zonder die laag meet GA4 alleen de automatische events en mis je elke conversie-KPI.
+**Kernpunt:** er moet een **vertaallaag** zijn die de Meta-genoemde dataLayer-events omzet naar snake_case GA4-events. Zonder die laag meet GA4 alleen de automatische events en mis je elke conversie-KPI.
+
+> **✅ Geïmplementeerd (code):** `src/lib/tracking/ga4.ts` vuurt GA4 nu **rechtstreeks vanuit `pushEvent`** — exact hetzelfde patroon als de Meta Pixel al gebruikt. Mapping: `PageView→page_view`, `ViewContent→view_item`, `LodgeView→select_item`, `AvailabilityCheck→availability_check`, `InitiateCheckout→begin_checkout`, `Lead→generate_lead`, `Subscribe→newsletter_subscribe`, `Contact→contact`, `BookingComRedirect→outbound_ota`, `Purchase→purchase`. Consent-gated op de `statistics`-categorie (Consent Mode v2). **Opt-in** via `NEXT_PUBLIC_GA4_ID`; zonder dat env var verandert er niets.
+>
+> **Belangrijk — kies één route, geen dubbeltelling:** gebruik **óf** deze directe integratie (`NEXT_PUBLIC_GA4_ID` invullen, géén GA4-config-tag in GTM) **óf** GA4 volledig in de GTM-container (env var leeg laten). Beide tegelijk telt `page_view` dubbel. Aanbevolen voor snelheid: de directe integratie aanzetten. Nog handmatig in GA4: deze events als **sleutelgebeurtenis (conversie)** markeren — `generate_lead`, `begin_checkout`, `newsletter_subscribe`, `purchase`. GSC-koppeling en Looker Studio blijven externe stappen.
 
 ### 5.2 Google Search Console
 **Huidige situatie:** sitemap aanwezig en gelinkt; geen bewijs van property-verificatie of CTR-monitoring.
