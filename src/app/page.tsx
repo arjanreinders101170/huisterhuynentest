@@ -13,24 +13,6 @@ interface GoogleReview {
   time: number;
 }
 
-const FALLBACK_REVIEWS = [
-  {
-    text: "Een onvergetelijk weekend in De Heide. De hottub onder de sterren, het geluid van de vogels. Pure magie.",
-    author: "Sarah & Mark",
-    rating: 5,
-  },
-  {
-    text: "De Eik is het mooiste wat ik het afgelopen jaar heb gezien. Warm, authentiek, en hartelijk ontvangen.",
-    author: "Petra",
-    rating: 5,
-  },
-  {
-    text: "Perfect voor een EV-roadtrip. Laadpaal ter plekke en het uitzicht over de heide is fenomenaal.",
-    author: "Jan",
-    rating: 5,
-  },
-];
-
 const T = {
   bg: "#EAE3D2",
   card: "#FDFBF6",
@@ -143,10 +125,6 @@ export default function LandingPage() {
       .catch(() => {});
   }, []);
 
-  const displayReviews = googleReviews.length > 0
-    ? googleReviews.map(r => ({ text: r.text, author: r.author, rating: r.rating }))
-    : FALLBACK_REVIEWS;
-
   return (
     <main style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
       <LanguageSwitcher currentLang="nl" />
@@ -184,17 +162,23 @@ export default function LandingPage() {
             }}>
               Boutique Lodge · Zeijen · Drenthe
             </div>
-            <h1 style={{
+            <div style={{
               fontFamily: T.serif, fontSize: "clamp(38px, 6vw, 64px)",
               fontWeight: 700, margin: "0 0 6px", lineHeight: 1.05, color: "white",
             }}>
               Huis ter Huynen
-            </h1>
+            </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 8 }}>
               <span style={{ display: "block", width: 32, height: 1, background: T.gold, opacity: 0.8 }} />
               <span style={{ fontFamily: T.sans, fontSize: 12, color: T.gold, letterSpacing: "2px", textTransform: "uppercase" }}>Natuur · Privacy · Luxe</span>
               <span style={{ display: "block", width: 32, height: 1, background: T.gold, opacity: 0.8 }} />
             </div>
+            <h1 style={{
+              fontFamily: T.serif, fontSize: "clamp(17px, 2.6vw, 24px)",
+              fontWeight: 500, margin: "18px 0 0", lineHeight: 1.35, color: "rgba(255,255,255,.92)",
+            }}>
+              Luxe lodge met privé-hottub op de Drentse heide bij Assen
+            </h1>
           </div>
 
           <p style={{
@@ -450,7 +434,7 @@ export default function LandingPage() {
             fontFamily: T.sans, fontSize: 14, color: T.gold,
             letterSpacing: "3px", marginBottom: 18,
           }}>
-            ★ ★ ★ ★ ★
+            Wat u kunt verwachten
           </div>
           <p style={{
             fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 30px)",
@@ -464,7 +448,7 @@ export default function LandingPage() {
             fontFamily: T.sans, fontSize: 13, fontWeight: 600,
             color: T.gold, letterSpacing: "1.5px", textTransform: "uppercase",
           }}>
-            Sarah &amp; Mark · gasten van De Heide
+            Huis ter Huynen · Zeijen, Drenthe
           </div>
           <div style={{ marginTop: 28 }}>
             <a href="#reserveren" style={{
@@ -817,6 +801,14 @@ export default function LandingPage() {
             eyebrow="Ervaringen van gasten"
             title="Wat anderen zeggen"
           />
+          {googleReviews.length === 0 ? (
+            <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, textAlign: "center", maxWidth: 560, margin: "0 auto", lineHeight: 1.8 }}>
+              Onze eerste gasten verblijven vanaf 1 januari 2027. Zodra zij Huis ter Huynen
+              hebben ervaren, verschijnen hun beoordelingen hier — rechtstreeks vanuit Google,
+              ongefilterd en echt.
+            </p>
+          ) : (
+          <>
           {googleRating && googleCount && (
             <div style={{
               display: "flex", alignItems: "center", gap: 10,
@@ -838,7 +830,7 @@ export default function LandingPage() {
             gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: 24,
           }}>
-            {displayReviews.map((review, i) => (
+            {googleReviews.map((review, i) => (
               <div key={i} style={{
                 background: "white", padding: "32px 28px",
                 borderRadius: 14, position: "relative", overflow: "hidden",
@@ -889,6 +881,8 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+          </>
+          )}
         </div>
       </section>
 

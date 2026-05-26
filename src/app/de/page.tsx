@@ -21,24 +21,6 @@ interface GoogleReview {
   time: number;
 }
 
-const FALLBACK_REVIEWS = [
-  {
-    text: "Ein unvergessliches Wochenende in „De Heide“. Der Hot Tub unter den Sternen, das Zwitschern der Vögel — pure Magie.",
-    author: "Sarah & Mark",
-    rating: 5,
-  },
-  {
-    text: "„De Eik“ ist das Schönste, was ich im letzten Jahr gesehen habe. Warm, authentisch und herzlich empfangen.",
-    author: "Petra",
-    rating: 5,
-  },
-  {
-    text: "Perfekt für einen E-Auto-Roadtrip. Ladestation vor Ort und der Blick über die Heide ist einfach fantastisch.",
-    author: "Jan",
-    rating: 5,
-  },
-];
-
 const T = {
   bg: "#EAE3D2",
   card: "#FDFBF6",
@@ -153,10 +135,6 @@ export default function LandingPageDE() {
       })
       .catch(() => {});
   }, []);
-
-  const displayReviews = googleReviews.length > 0
-    ? googleReviews.map(r => ({ text: r.text, author: r.author, rating: r.rating }))
-    : FALLBACK_REVIEWS;
 
   return (
     <main style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
@@ -634,6 +612,13 @@ export default function LandingPageDE() {
             eyebrow="Stimmen unserer Gäste"
             title="Was Gäste über uns sagen"
           />
+          {googleReviews.length === 0 ? (
+            <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, textAlign: "center", maxWidth: 560, margin: "0 auto", lineHeight: 1.8 }}>
+              Unsere ersten Gäste übernachten ab dem 1. Januar 2027. Sobald sie Huis ter Huynen
+              erlebt haben, erscheinen ihre Bewertungen hier — direkt von Google, ungefiltert und echt.
+            </p>
+          ) : (
+          <>
           {googleRating && googleCount && (
             <div style={{
               display: "flex", alignItems: "center", gap: 10,
@@ -655,7 +640,7 @@ export default function LandingPageDE() {
             gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: 24,
           }}>
-            {displayReviews.map((review, i) => (
+            {googleReviews.map((review, i) => (
               <div key={i} style={{
                 background: "white", padding: "32px 28px",
                 borderRadius: 14, position: "relative", overflow: "hidden",
@@ -692,6 +677,8 @@ export default function LandingPageDE() {
               </div>
             ))}
           </div>
+          </>
+          )}
         </div>
       </section>
 

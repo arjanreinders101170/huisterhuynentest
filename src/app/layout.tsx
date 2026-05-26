@@ -120,7 +120,6 @@ const jsonLd = {
   },
   image: [OG_IMAGE],
   priceRange: "€€€",
-  starRating: { "@type": "Rating", ratingValue: "5" },
   amenityFeature: [
     { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },
     { "@type": "LocationFeatureSpecification", name: "Sauna", value: true },

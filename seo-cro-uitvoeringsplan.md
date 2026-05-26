@@ -7,6 +7,17 @@
 >
 > **Over zoekvolumes:** ik heb in deze omgeving geen live keyword-tool (Ahrefs/Semrush/Keyword Planner). Alle "geschat potentieel"-waarden zijn relatieve inschattingen op basis van markt­kennis en moeten vóór uitvoering met een keyword-tool worden gevalideerd. Waar ik een hard getal niet kan onderbouwen, staat een bandbreedte of een ✱-markering.
 
+> ## ✅ Implementatie-update (quick wins doorgevoerd)
+> **Correctie op de eerste audit:** `/omgeving` en `/faq` blijken **al** volledige eigen `metadata` (title/description/canonical/OG) én structured data te hebben in hun `layout.tsx` — `/faq` heeft `FAQPage`-schema, `/omgeving` heeft `FAQPage` + `BreadcrumbList` + `ItemList`. De oorspronkelijke audit las alleen de `page.tsx`-bestanden en miste dit. Quick wins Q3 en Q4 waren dus al gedaan.
+>
+> **Wel doorgevoerd in deze ronde (branch `claude/sharp-wozniak-VyXIP`):**
+> - **Q2** Homepage-`<h1>` is nu keyword-rijk: *"Luxe lodge met privé-hottub op de Drentse heide bij Assen"* (merknaam "Huis ter Huynen" blijft als visueel display + in title). Duitse `/de`-H1 was al keyword-rijk.
+> - **Q5** www/non-www-canonical geconsolideerd: `/blog` (canonical + OG) en blog-`jsonLd` (`publisher.url`, `mainEntityOfPage`) staan nu allemaal op `www.`.
+> - **Q7** Nep-reviews verwijderd: de gefabriceerde testimonials ("Sarah & Mark", "Petra", "Jan") op NL- én DE-homepage zijn weg; bij 0 echte Google-reviews toont de sectie nu een eerlijke pre-opening-boodschap. De verzonnen gast-quote ("Sarah & Mark · gasten van De Heide") is herschreven naar merk-copy. Zelf-toegekende `starRating: 5` verwijderd uit `LodgingBusiness` (NL + DE) — komt terug als echte `aggregateRating` zodra er reviews zijn.
+> - **Q9** Ongebruikt duplicaat `public/rent-a-bike.jpg` verwijderd.
+>
+> Gevalideerd met `tsc --noEmit` (groen). Nog te doen quick wins: **Q1/Q10** (GBP + directories, extern), **Q6** (GTM→GA4-laag), **Q8** (sticky mobiele CTA + vanaf-prijs — vereist prijsdata), **Q11** (eerste blogs).
+
 ---
 
 ## FASE 1 — SEO Audit
@@ -25,17 +36,17 @@ Per onderdeel: huidige situatie · risico's · verbeterpotentieel · prioriteit.
 | | |
 |---|---|
 | **Huidig** | Homepage-title sterk en keyword-rijk: *"Lodge Drenthe \| Vakantiewoning met Hottub bij Assen – Huis ter Huynen"*. Title-template `%s – Huis ter Huynen` actief. Blog-overzicht en blogposts hebben eigen titels. |
-| **Risico** | `/omgeving` en `/faq` hebben **geen eigen `metadata`-export** → ze erven de default homepage-title. Twee pagina's met (vrijwel) dezelfde title = interne titelconcurrentie. |
+| **Risico** | ~~`/omgeving` en `/faq` missen eigen title~~ → **gecorrigeerd: beide hebben eigen, geoptimaliseerde titles via `layout.tsx`.** Resterend risico: nieuwe landingspagina's moeten elk een unieke, exact-match title krijgen. |
 | **Potentieel** | Unieke title per pagina; landingspagina's krijgen titels rond exact-match keywords. |
-| **Prioriteit** | **Hoog** (snelle fix voor /omgeving en /faq) |
+| **Prioriteit** | **Midden** (bestaande pagina's op orde; geldt voor nieuwe pagina's) |
 
 ### 1.3 Meta descriptions
 | | |
 |---|---|
 | **Huidig** | Homepage-description goed geschreven, met USP's + CTA. Blogposts gebruiken `intro` als description. |
-| **Risico** | `/omgeving`, `/faq` missen eigen description → Google genereert zelf een snippet (lagere CTR-controle). |
-| **Potentieel** | CTR-winst van 5–15% met geoptimaliseerde, intentie-gerichte descriptions per pagina. |
-| **Prioriteit** | **Midden** |
+| **Risico** | ~~`/omgeving`, `/faq` missen description~~ → **gecorrigeerd: beide hebben eigen descriptions via `layout.tsx`.** Geldt nog voor nieuwe landingspagina's. |
+| **Potentieel** | CTR-winst van 5–15% met geoptimaliseerde, intentie-gerichte descriptions per (nieuwe) pagina. |
+| **Prioriteit** | **Laag/Midden** (bestaand op orde) |
 
 ### 1.4 Koppenstructuur (H1/H2/H3)
 | | |
@@ -57,9 +68,9 @@ Per onderdeel: huidige situatie · risico's · verbeterpotentieel · prioriteit.
 | | |
 |---|---|
 | **Huidig** | `LodgingBusiness` op homepage (adres, geo, telefoon, amenities, 2 `Accommodation`-objecten, check-in/out, prijsrange, starRating). Blogposts: `BlogPosting` + `BreadcrumbList`. Sterk fundament. |
-| **Risico** | (1) `/faq` en de FAQ-blokken op `/omgeving` hebben **geen `FAQPage`-schema** → je mist FAQ-rich-results. (2) Geen `aggregateRating`/`Review` in schema terwijl er échte Google-reviews via API binnenkomen. (3) `starRating: 5` is een **zelf-toegekende** rating — risicovol/niet-onderbouwd, kan als spam worden gezien. (4) Geen `BreadcrumbList` op `/omgeving` (wel visueel, niet als schema). |
-| **Potentieel** | FAQPage + (echte) aggregateRating = meer SERP-vastgoed en hogere CTR. `Product`/`Offer` schema op lodge-landingspagina's voor prijs-snippets. |
-| **Prioriteit** | **Hoog** (FAQPage = quick win) / **Midden** (rest) |
+| **Risico** | ~~(1) FAQPage ontbreekt; (4) geen BreadcrumbList op /omgeving~~ → **gecorrigeerd: `/faq` heeft `FAQPage`, `/omgeving` heeft `FAQPage` + `BreadcrumbList` + `ItemList`.** Resterend: (2) nog geen `aggregateRating`/`Review` in schema; (3) `starRating: 5` was zelf-toegekend → **inmiddels verwijderd** (NL + DE). |
+| **Potentieel** | (Echte) `aggregateRating` zodra er reviews zijn = sterren in SERP. `Product`/`Offer`-schema op lodge-landingspagina's voor prijs-snippets. |
+| **Prioriteit** | **Midden** |
 
 ### 1.7 Sitemap
 | | |
@@ -602,14 +613,14 @@ Gerangschikt en gescoord. **V** = impact op verkeer, **B** = impact op directe b
 | # | Actie | V | B | I | Prioriteit |
 |---|---|---|---|---|---|
 | Q1 | **Google Business Profile** aanmaken (openingsdatum, foto's, NAP) | 4 | 5 | 1 | **#1** |
-| Q2 | Homepage-**H1** keyword-rijk maken; merknaam naar eyebrow/title | 4 | 2 | 1 | Hoog |
-| Q3 | Eigen `metadata` (title+description) voor **/omgeving en /faq** | 3 | 1 | 1 | Hoog |
-| Q4 | **FAQPage-schema** toevoegen op /faq én /omgeving | 3 | 2 | 1 | Hoog |
-| Q5 | **www/non-www-canonical** consolideren (één `SITE_URL`) + GSC Domain-property | 3 | 1 | 1 | Hoog |
-| Q6 | **GTM→GA4-vertaallaag**: `generate_lead`, `booking_click`, `outbound_ota`, `newsletter_subscribe` als conversies | 2 | 4 | 2 | Hoog |
-| Q7 | **Nep-fallbackreviews** vervangen + `starRating` onderbouwen/verwijderen | 1 | 3 | 1 | Hoog |
-| Q8 | **Sticky mobiele CTA** + WhatsApp-knop + vanaf-prijs op lodgekaarten | 2 | 4 | 2 | Hoog |
-| Q9 | Bron-images comprimeren + duplicaat `rent-a-bike`/`rent_a_bike` verwijderen | 2 | 1 | 1 | Midden |
+| Q2 ✅ | Homepage-**H1** keyword-rijk gemaakt (NL); DE-H1 was al goed | 4 | 2 | 1 | **Gedaan** |
+| Q3 ✅ | Eigen `metadata` /omgeving + /faq | 3 | 1 | 1 | **Al aanwezig** |
+| Q4 ✅ | **FAQPage-schema** /faq + /omgeving | 3 | 2 | 1 | **Al aanwezig** |
+| Q5 ✅ | **www/non-www-canonical** geconsolideerd in blog-bestanden (GSC Domain-property nog extern) | 3 | 1 | 1 | **Code gedaan** |
+| Q6 ⏳ | **GTM→GA4-vertaallaag**: `generate_lead`, `booking_click`, `outbound_ota`, `newsletter_subscribe` als conversies | 2 | 4 | 2 | Hoog |
+| Q7 ✅ | **Nep-reviews** verwijderd (NL+DE) + `starRating` verwijderd | 1 | 3 | 1 | **Gedaan** |
+| Q8 ⏳ | **Sticky mobiele CTA** + WhatsApp-knop + vanaf-prijs op lodgekaarten (vereist prijsdata) | 2 | 4 | 2 | Hoog |
+| Q9 🟡 | Duplicaat-image verwijderd ✅; bron-images comprimeren nog te doen | 2 | 1 | 1 | Deels |
 | Q10 | Aanmelden VVV Drenthe, Visit Drenthe, Tripadvisor, ANWB (citaties/backlinks) | 3 | 3 | 2 | Hoog |
 | Q11 | **Eerste 8 blogs** publiceren (hottub/luxe/romantisch + heide-evergreen) | 4 | 2 | 3 | Hoog |
 
