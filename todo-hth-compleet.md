@@ -1,5 +1,5 @@
 # Huis ter Huynen — Complete To Do Lijst
-**Bijgewerkt: 5 mei 2026**
+**Bijgewerkt: 27 mei 2026**
 
 ---
 
@@ -113,7 +113,7 @@
 
 | # | Item | Wanneer | Toelichting |
 |---|------|---------|-------------|
-| 58 | Google Business Profile aanmaken | Nu | Openingsdatum instellen, foto's uploaden — grootste impact lokale vindbaarheid |
+| 58 | ✅ Google Business Profile aangemaakt | Gedaan | Openingsdatum + foto's; grootste impact lokale vindbaarheid |
 | 59 | VVV Drenthe aanmelden | Nu | Gratis plaatsing via `vvvdrenthe.nl/aanbieders` |
 | 60 | Visit Drenthe aanmelden | Nu | Officieel provinciaal toerisme — contact opnemen voor gratis vermelding |
 | 61 | Tripadvisor basisprofiel aanmaken | Nu | Gratis, reviews worden er al op gezocht |
@@ -124,7 +124,7 @@
 | 66 | Wandel-/fietswebsites benaderen voor vermelding | Voor opening | `wandelknooppunt.nl`, `fietsknooppunt.nl` — lodge als uitvalsbasis |
 | 67 | 1–2 reisbloggers uitnodigen (ruil: gratis nacht) | Na opening | Backlink + bereik via travel blogs — zoek op "Drenthe reisblog" |
 | 68 | Pinterest account aanmaken | Voor opening | Pinboards met Drenthe-foto's → verkeer naar blog |
-| 69 | Schema markup controleren op website | Voor opening | Article + LocalBusiness + FAQ — verhoogt klikken in Google |
+| 69 | ✅ Schema markup gecontroleerd & uitgebreid | Gedaan | FAQPage + BreadcrumbList + LodgingBusiness + BlogPosting + landing-schemas live |
 
 ---
 
@@ -147,3 +147,39 @@
 | # | Item | Prioriteit | Toelichting |
 |---|------|-----------|-------------|
 | 70 | e-Boekhouden relation error oplossen | Middel | Mollie webhook logt `e-Boekhouden relation error: Error: e-Boekhouden API...` (zichtbaar in Vercel logs, voor het eerst opgevangen tijdens Mollie test-purchase 18 mei). Niet blocking voor CAPI of bevestigingsmails — wél voor automatisch doorboeken van facturen. Check `EBOEKHOUDEN_API_TOKEN` env var, mogelijk verlopen of mist scope. |
+
+---
+
+## SEO, Content & CRO — sprint mei 2026
+
+### Afgerond ✅
+| # | Item | Status |
+|---|------|--------|
+| 71 | Volledige SEO/CRO-audit + 12-maanden uitvoeringsplan (`seo-cro-uitvoeringsplan.md`) | ✅ |
+| 72 | Quick wins: keyword-H1 homepage · nep-reviews verwijderd (eerlijke pre-opening tekst) · www-canonical geconsolideerd · self-assigned `starRating` verwijderd · duplicaat-afbeelding weg | ✅ |
+| 73 | 7 SEO-landingspagina's live: hottub · luxe lodge · romantisch weekend · wellness · Assen · Norg · Veenhuizen | ✅ |
+| 74 | Landingspagina's database-gedreven + beheerbaar in admin (tab "Landingspagina's", secties-repeater, FAQ, SEO-velden) | ✅ |
+| 75 | GA4 directe integratie (opt-in via `NEXT_PUBLIC_GA4_ID`, consent-gated, events → generate_lead/begin_checkout/newsletter_subscribe/purchase) | ✅ code |
+| 76 | Sticky mobiele CTA (Bekijk beschikbaarheid + WhatsApp) | ✅ PR #135 |
+| 77 | Interne links naar landingspagina's in footers (homepage + landingpagina's) | ✅ PR #135 |
+| 78 | Google Search Console: domein-property + sitemap ingediend + indexering aangevraagd | ✅ |
+
+### Open — met prioriteit
+| # | Item | Prioriteit | Toelichting |
+|---|------|-----------|-------------|
+| 79 | **Interieurfoto's lodges** (woonkamer, hottub, badkamer, slaapkamer) maken + op site verwerken | **Hoog** | Grootste resterende conversie-blokker voor de luxe-positionering. Optie A: JPG's aanleveren in `public/`, ik verwerk ze. Optie B: galerij-veld in de admin zodat je ze zelf toevoegt |
+| 80 | PR #135 mergen (sticky CTA + footer-links) | Hoog | Operationeel — daarna staan de interne links live |
+| 81 | GA4 activeren: `NEXT_PUBLIC_GA4_ID` in Vercel + events als sleutelgebeurtenis markeren | Hoog | Voorwaarde voor het dashboard |
+| 82 | Looker Studio managementdashboard (Fase 6) | Middel | Pas zinvol na enkele dagen GA4-data |
+| 83 | Resterende landingspagina's: `/lodge-de-heide` + `/lodge-de-eik` (Offer-schema €165) · natuur/activiteit (fietsen, wandelroutes, heide, zeijerstrubben, ballooerveld, dwingelderveld, hunebedden) · Duitse set | Middel | Nu eenvoudig via de admin toe te voegen |
+| 84 | Blogcontent: 2 per week (104-onderwerpenplan uit `content-strategie.md` + uitvoeringsplan) | Hoog | Volume + autoriteit; instroom op informatieve zoektermen |
+| 85 | Directory-listings: VVV Drenthe (#59), Visit Drenthe (#60), Tripadvisor (#61), ANWB (#65), wandel-/fietssites (#66) | Hoog | Backlinks + lokale autoriteit → versnelt indexering ("Gevonden – niet geïndexeerd") |
+| 86 | Reviewvliegwiel: automatische review-verzoeken + `aggregateRating` tonen zodra ≥5 echte reviews | Middel | Sterren in de zoekresultaten |
+| 87 | Bron-afbeeldingen comprimeren (<400 KB) voor Core Web Vitals | Laag | `lodge-eik.jpg`/`lodge-heide.jpg` originelen zijn ~3 MB |
+
+### Top-prioriteiten nu (volgorde)
+1. **Interieurfoto's** (#79) — directe conversiewinst.
+2. **GA4 activeren** (#81) → daarna **Looker dashboard** (#82).
+3. **Directory-listings** (#85) — versnelt de indexering die nu nog op "Gevonden – momenteel niet geïndexeerd" staat.
+4. **Blogcontent starten** (#84).
+5. **Resterende landingspagina's** (#83).
