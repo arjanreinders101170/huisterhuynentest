@@ -42,3 +42,11 @@
     opacity: 1 !important;
   }
 }
+
+/* Sticky mobile booking bar — only on small screens */
+.hth-sticky-cta { display: none; }
+.hth-sticky-cta-spacer { display: none; }
+@media (max-width: 768px) {
+  .hth-sticky-cta { display: flex; }
+  .hth-sticky-cta-spacer { display: block; height: 66px; }
+}
