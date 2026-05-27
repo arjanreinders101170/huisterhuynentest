@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getSupabase } from "@/lib/supabase";
+import { getServedLandingSlugs } from "@/lib/landing";
 
 const SITE_URL = "https://www.huisterhuynen.nl";
 
@@ -36,48 +37,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified,
       changeFrequency: "monthly",
       priority: 0.85,
-    },
-    {
-      url: `${SITE_URL}/vakantiehuis-met-hottub-drenthe`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/luxe-lodge-drenthe`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/romantisch-weekend-weg-drenthe`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/wellness-vakantie-drenthe`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.85,
-    },
-    {
-      url: `${SITE_URL}/vakantiehuis-assen`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.85,
-    },
-    {
-      url: `${SITE_URL}/vakantiehuis-norg`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.85,
-    },
-    {
-      url: `${SITE_URL}/overnachten-veenhuizen`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.8,
     },
     {
       url: `${SITE_URL}/blog`,
@@ -150,5 +109,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Static pages still served if Supabase is unavailable during build
   }
 
-  return [...staticPages, ...blogPosts];
+  // Landing pages: published DB rows + bundled seed pages (falls back to seed)
+  let landingPages: MetadataRoute.Sitemap = [];
+  try {
+    const slugs = await getServedLandingSlugs();
+    landingPages = slugs.map((slug) => ({
+      url: `${SITE_URL}/${slug}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
+    }));
+  } catch {
+    // ignore — sitemap still serves the rest
+  }
+
+  return [...staticPages, ...landingPages, ...blogPosts];
 }
