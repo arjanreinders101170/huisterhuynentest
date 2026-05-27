@@ -5,6 +5,7 @@ import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
+import { LANDING_NAV } from "@/lib/site";
 const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Agenda laden...</div> });
 
 interface GoogleReview {
@@ -931,6 +932,31 @@ export default function LandingPage() {
       ══════════════════════════════════════════ */}
       <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.55)", padding: "60px 40px 36px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {/* Vakanties & arrangementen — interne links naar de landingspagina's */}
+          <div style={{ paddingBottom: 40, marginBottom: 40, borderBottom: "1px solid rgba(255,255,255,.08)" }}>
+            <div style={{
+              fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+              color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 18,
+            }}>
+              Vakanties &amp; arrangementen in Drenthe
+            </div>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+              gap: "12px 32px",
+            }}>
+              {LANDING_NAV.map((l) => (
+                <a key={l.href} href={l.href} style={{
+                  fontFamily: T.sans, fontSize: 13, fontWeight: 300,
+                  color: "rgba(255,255,255,.8)", textDecoration: "none",
+                  padding: "4px 0", lineHeight: 1.5,
+                }}>
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
+
           {/* Top grid */}
           <div style={{
             display: "grid",

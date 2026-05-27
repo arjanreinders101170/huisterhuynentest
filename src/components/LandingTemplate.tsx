@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, LANDING_NAV } from "@/lib/site";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 
 /* ═══ Reusable SEO landing page ═══
@@ -238,24 +238,52 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         </div>
       </section>
 
-      {/* Slim footer */}
-      <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.6)", padding: "40px 40px 32px" }}>
-        <div style={{ maxWidth: 980, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <div style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 300, lineHeight: 1.6 }}>
-            Huis ter Huynen · Zuiderstraat 6, 9491 EC Zeijen, Drenthe
+      {/* Footer */}
+      <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.6)", padding: "44px 40px 32px" }}>
+        <div style={{ maxWidth: 980, margin: "0 auto" }}>
+          {/* Meer vakanties — interne links naar de andere landingspagina's */}
+          <div style={{ paddingBottom: 28, marginBottom: 24, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
+            <div style={{
+              fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+              color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
+            }}>
+              Meer vakanties in Drenthe
+            </div>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "10px 28px",
+            }}>
+              {LANDING_NAV.filter((l) => l.href !== `/${config.slug}`).map((l) => (
+                <Link key={l.href} href={l.href} style={{
+                  fontFamily: T.sans, fontSize: 13, fontWeight: 300,
+                  color: "rgba(255,255,255,.8)", textDecoration: "none",
+                  padding: "4px 0", lineHeight: 1.5,
+                }}>
+                  {l.label}
+                </Link>
+              ))}
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
-            {[
-              { label: "Home", href: "/" },
-              { label: "Omgeving", href: "/omgeving" },
-              { label: "Blog", href: "/blog" },
-              { label: "FAQ", href: "/faq" },
-              { label: "Reserveren", href: "/#reserveren" },
-            ].map((l, i) => (
-              <Link key={i} href={l.href} style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.75)", textDecoration: "none" }}>
-                {l.label}
-              </Link>
-            ))}
+
+          {/* Adres + snelle links */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+            <div style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 300, lineHeight: 1.6 }}>
+              Huis ter Huynen · Zuiderstraat 6, 9491 EC Zeijen, Drenthe
+            </div>
+            <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
+              {[
+                { label: "Home", href: "/" },
+                { label: "Omgeving", href: "/omgeving" },
+                { label: "Blog", href: "/blog" },
+                { label: "FAQ", href: "/faq" },
+                { label: "Reserveren", href: "/#reserveren" },
+              ].map((l, i) => (
+                <Link key={i} href={l.href} style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.75)", textDecoration: "none" }}>
+                  {l.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </footer>
