@@ -8,8 +8,38 @@ import {
 import { WIFI_SSID, WIFI_PASSWORD, APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { verifyAdminSession } from "@/lib/admin-auth";
 import { computeStayPrice } from "@/lib/pricing";
+import { SEED_LANDING_PAGES, type LandingSectionData } from "@/lib/landing-seed";
 
 export const runtime = "nodejs";
+
+// Bouwt een opslaanbaar landing_pages-record uit het admin-formulier.
+function buildLandingFields(body: Record<string, unknown>) {
+  const sectionsRaw = body.sections;
+  const sections: LandingSectionData[] = Array.isArray(sectionsRaw)
+    ? (sectionsRaw as LandingSectionData[])
+    : [];
+  const str = (v: unknown) => (typeof v === "string" ? v : "");
+  return {
+    slug: str(body.slug).toLowerCase().trim().replace(/\s+/g, "-"),
+    breadcrumb: str(body.breadcrumb),
+    eyebrow: str(body.eyebrow),
+    h1: str(body.h1),
+    hero_sub: str(body.hero_sub),
+    hero_image: str(body.hero_image) || "/lodge-heide.jpg",
+    hero_image_alt: str(body.hero_image_alt),
+    price_from: str(body.price_from),
+    intro: str(body.intro),
+    sections,
+    faq: str(body.faq),
+    related: str(body.related),
+    cta_title: str(body.cta_title),
+    cta_body: str(body.cta_body),
+    meta_title: str(body.meta_title),
+    meta_description: str(body.meta_description),
+    og_image: str(body.og_image),
+    sort_order: Number.isFinite(Number(body.sort_order)) ? Number(body.sort_order) : 0,
+  };
+}
 
 // Normaliseert een geplande publicatie-datum vanuit het admin formulier.
 // Geeft null voor lege waarde, een ISO-string voor geldige input, of
@@ -149,6 +179,14 @@ export async function GET(request: NextRequest) {
           .from("fee_templates")
           .select("*")
           .order("volgorde", { ascending: true });
+        if (error) return NextResponse.json({ data: [], error: error.message });
+        return NextResponse.json({ data: data || [] });
+      }
+      case "landing_pages": {
+        const { data, error } = await getSupabase()
+          .from("landing_pages")
+          .select("*")
+          .order("sort_order", { ascending: true });
         if (error) return NextResponse.json({ data: [], error: error.message });
         return NextResponse.json({ data: data || [] });
       }
@@ -671,6 +709,75 @@ export async function POST(request: NextRequest) {
         if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
         await getSupabase().from("blog_posts").delete().eq("id", body.id);
         return NextResponse.json({ success: true });
+      }
+      case "create_landing_page": {
+        const fields = buildLandingFields(body);
+        if (!fields.slug || !fields.h1) return NextResponse.json({ error: "Slug en H1 zijn verplicht" }, { status: 400 });
+        const { data, error } = await getSupabase().from("landing_pages").insert({
+          ...fields,
+          gepubliceerd: false,
+        }).select().single();
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true, data });
+      }
+      case "update_landing_page": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const fields = buildLandingFields(body);
+        if (!fields.slug || !fields.h1) return NextResponse.json({ error: "Slug en H1 zijn verplicht" }, { status: 400 });
+        const { error } = await getSupabase().from("landing_pages").update({
+          ...fields,
+          updated_at: new Date().toISOString(),
+        }).eq("id", body.id);
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true });
+      }
+      case "publish_landing_page": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        const gepubliceerd = body.gepubliceerd === true || body.gepubliceerd === "true";
+        const { error } = await getSupabase().from("landing_pages").update({
+          gepubliceerd,
+          updated_at: new Date().toISOString(),
+        }).eq("id", body.id);
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true });
+      }
+      case "delete_landing_page": {
+        if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+        await getSupabase().from("landing_pages").delete().eq("id", body.id);
+        return NextResponse.json({ success: true });
+      }
+      case "import_landing_seed": {
+        // Voegt de gebundelde standaardpagina's toe die nog niet in de DB staan.
+        const sb = getSupabase();
+        const { data: existing } = await sb.from("landing_pages").select("slug");
+        const have = new Set((existing || []).map((r: { slug: string }) => r.slug));
+        const toInsert = SEED_LANDING_PAGES
+          .filter((p) => !have.has(p.slug))
+          .map((p) => ({
+            slug: p.slug,
+            breadcrumb: p.breadcrumb,
+            eyebrow: p.eyebrow,
+            h1: p.h1,
+            hero_sub: p.hero_sub,
+            hero_image: p.hero_image,
+            hero_image_alt: p.hero_image_alt,
+            price_from: p.price_from,
+            intro: p.intro,
+            sections: p.sections,
+            faq: p.faq,
+            related: p.related,
+            cta_title: p.cta_title,
+            cta_body: p.cta_body,
+            meta_title: p.meta_title,
+            meta_description: p.meta_description,
+            og_image: p.og_image,
+            gepubliceerd: true,
+            sort_order: p.sort_order ?? 0,
+          }));
+        if (toInsert.length === 0) return NextResponse.json({ success: true, imported: 0 });
+        const { error } = await sb.from("landing_pages").insert(toInsert);
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ success: true, imported: toInsert.length });
       }
       case "prefill_offerte": {
         const { requestId } = body;
