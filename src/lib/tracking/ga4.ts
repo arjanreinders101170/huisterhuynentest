@@ -19,7 +19,6 @@ let loaded = false;
 
 /* Canonical event name → GA4 event name. Unmapped names pass through as-is. */
 const GA4_EVENT_MAP: Record<string, string> = {
-  PageView: "page_view",
   ViewContent: "view_item",
   LodgeView: "select_item",
   AvailabilityCheck: "availability_check",
@@ -49,10 +48,11 @@ function ensureGa4Loaded(): boolean {
   s.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
   document.head.appendChild(s);
 
-  /* send_page_view:false — route changes drive page_view via the PageView
-   * event below, so GA4 must not also auto-send one on config. */
+  /* Enhanced Measurement handles page_view (initial load via config, SPA
+   * navigations via history events). We deliberately do NOT also send a
+   * manual page_view (see fireGa4Event) to avoid double-counting. */
   window.gtag!("js", new Date());
-  window.gtag!("config", GA4_ID, { send_page_view: false });
+  window.gtag!("config", GA4_ID);
 
   loaded = true;
   return true;
@@ -62,6 +62,11 @@ export function fireGa4Event(payload: TrackingEvent): void {
   if (!GA4_ID) return;
   if (!payload.consent_snapshot.statistics) return;
   if (!ensureGa4Loaded()) return;
+
+  /* page_view is covered by the GA4 tag + Enhanced Measurement (initial via
+   * config, SPA navigations via history events), so skip the canonical
+   * PageView here to avoid double-counting. */
+  if (payload.event === "PageView") return;
 
   const name = GA4_EVENT_MAP[payload.event] ?? payload.event;
   const params: Record<string, unknown> = {
