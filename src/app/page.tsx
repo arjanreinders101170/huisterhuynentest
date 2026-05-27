@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Agenda laden...</div> });
 
 interface GoogleReview {
@@ -1065,6 +1066,8 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      <StickyMobileCTA bookingHref="#reserveren" />
     </main>
   );
 }
