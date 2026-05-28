@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   response.cookies.set(ADMIN_COOKIE_NAME, "", {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: 0,
   });

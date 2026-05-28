@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   response.cookies.set(ADMIN_COOKIE_NAME, cookieValue, {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     maxAge: Math.floor(ADMIN_SESSION_TTL_MS / 1000),
   });
