@@ -46,6 +46,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
+    // Fetch booking voor idempotency-check en bedragcontrole
+    const { data: bestaandeBoeking } = await getSupabase()
+      .from("bookings")
+      .select("id, status, prijs")
+      .eq("id", bookingId)
+      .single();
+
+    if (!bestaandeBoeking) {
+      console.warn(`Mollie webhook: bookingId ${bookingId} niet gevonden (payment ${paymentId})`);
+      return NextResponse.json({ received: true });
+    }
+
     // Map Mollie status to booking status
     let bookingStatus: string;
     switch (status) {
@@ -62,9 +74,28 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ received: true });
     }
 
+    // Idempotency: al verwerkt → stuur 200 zodat Mollie niet opnieuw probeert
+    if (bestaandeBoeking.status === bookingStatus) {
+      console.log(`Mollie webhook: ${paymentId} al verwerkt voor booking ${bookingId}, skip`);
+      return NextResponse.json({ received: true });
+    }
+
+    // Bedragcontrole: betaald bedrag moet overeenkomen met verwacht bedrag
+    if (bookingStatus === "betaald" && bestaandeBoeking.prijs) {
+      const betaaldBedrag = parseFloat(payment.amount?.value || "0");
+      if (betaaldBedrag < bestaandeBoeking.prijs - 0.01) {
+        console.error(
+          `Mollie webhook: bedragmismatch voor booking ${bookingId} — ` +
+          `verwacht €${bestaandeBoeking.prijs}, ontvangen €${betaaldBedrag} (payment ${paymentId})`
+        );
+        return NextResponse.json({ received: true });
+      }
+    }
+
     // Update booking status
     await getSupabase().from("bookings").update({
       status: bookingStatus,
+      mollie_payment_id: paymentId,
       updated_at: new Date().toISOString(),
     }).eq("id", bookingId);
 
@@ -73,7 +104,7 @@ export async function POST(request: NextRequest) {
       // Shared invoice variables
       const amountValue = parseFloat(payment.amount?.value || "0");
       const productId = meta.productId || "";
-      const factuurnummer = `HTH-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
+      const factuurnummer = `HTH-${new Date().getFullYear()}-${bookingId.slice(-8).toUpperCase()}`;
       const factuurdatum = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
       const product = payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling";
 
@@ -246,16 +277,24 @@ export async function POST(request: NextRequest) {
         const amountExcl = Math.round(prijsExcl * 100) / 100;
         const vatAmount = Math.round((amountValue - prijsExcl) * 100) / 100;
 
-        // Save invoice record
-        await getSupabase().from("invoices").insert({
+        // Save invoice record — unique constraint op booking_id vangt webhook-retries op
+        const { error: invoiceInsertError } = await getSupabase().from("invoices").insert({
           booking_id: bookingId,
           invoice_number: factuurnummer,
+          mollie_payment_id: paymentId,
           amount_excl: amountExcl,
           vat_amount: vatAmount,
           amount_total: amountValue,
           status: "created",
           pushed_to_accounting: false,
         });
+
+        // 23505 = unique_violation: factuur bestaat al, idempotency-check heeft dit gemist
+        if (invoiceInsertError?.code === "23505") {
+          console.log(`Mollie webhook: factuur voor booking ${bookingId} bestaat al, skip accounting push`);
+          return NextResponse.json({ received: true });
+        }
+        if (invoiceInsertError) throw invoiceInsertError;
 
         // Push to e-Boekhouden if configured
         if (process.env.EBOEKHOUDEN_API_TOKEN && meta.gastEmail) {
