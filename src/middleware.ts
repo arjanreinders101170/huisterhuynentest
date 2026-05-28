@@ -6,14 +6,17 @@ import { STAY_COOKIE_NAME, parseStayCookie } from "@/lib/stay-auth-edge";
 const hits = new Map<string, { count: number; reset: number }>();
 
 const LIMITS: Record<string, { max: number; window: number }> = {
-  "/api/chat":        { max: 10, window: 60000 },    // 10/min — strakker voor OpenAI kosten
-  "/api/booking":     { max: 5,  window: 3600000 },   // 5/hour
-  "/api/terugkomen":  { max: 5,  window: 3600000 },   // 5/hour
-  "/api/checkout":    { max: 10, window: 3600000 },    // 10/hour
-  "/api/reviews":     { max: 10, window: 60000 },      // 10/min
-  "/api/nuki/unlock": { max: 3,  window: 60000 },      // 3/min
-  "/api/bevestig":    { max: 10, window: 3600000 },    // 10/hour
-  "/api/stay":        { max: 30, window: 60000 },      // 30/min — token lookups
+  "/api/chat":                 { max: 10, window: 60000 },    // 10/min — OpenAI kosten
+  "/api/booking":              { max: 5,  window: 3600000 },  // 5/hour
+  "/api/terugkomen":           { max: 5,  window: 3600000 },  // 5/hour
+  "/api/checkout":             { max: 10, window: 3600000 },  // 10/hour
+  "/api/reviews":              { max: 10, window: 60000 },    // 10/min
+  "/api/nuki/unlock":          { max: 3,  window: 60000 },    // 3/min
+  "/api/bevestig":             { max: 10, window: 3600000 },  // 10/hour
+  "/api/stay":                 { max: 30, window: 60000 },    // 30/min — token lookups
+  "/api/admin/request-link":   { max: 5,  window: 3600000 },  // 5/hour — voorkomt e-mailspam per IP
+  "/api/admin/verify":         { max: 10, window: 3600000 },  // 10/hour — tokens zijn one-time-use
+  "/api/mollie/webhook":       { max: 30, window: 3600000 },  // 30/hour — elke call kost een Mollie API-request
 };
 
 function checkRateLimit(ip: string, path: string): boolean {
@@ -62,8 +65,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
-  // Rate limit API routes
-  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/admin/")) {
+  // Rate limit API routes.
+  // Routes die niet in LIMITS staan krijgen geen limiet — authenticated admin-routes
+  // (bijv. /api/admin/data) staan er bewust niet in en worden doorgelaten.
+  if (pathname.startsWith("/api/")) {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     if (!checkRateLimit(ip, pathname)) {
       return NextResponse.json(

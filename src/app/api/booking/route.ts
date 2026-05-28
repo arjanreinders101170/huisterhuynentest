@@ -68,7 +68,7 @@ function ownerEmailHtml(product: string, prijs: string, gastNaam: string, gastEm
       Nieuwe boeking
     </h1>
     <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;">
-      ${datum} &middot; via de conci&euml;rge app
+      ${esc(datum)} &middot; via de conci&euml;rge app
     </p>
 
     <!-- Product block -->
@@ -79,8 +79,8 @@ function ownerEmailHtml(product: string, prijs: string, gastNaam: string, gastEm
             <td style="font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;" colspan="2">Product</td>
           </tr>
           <tr>
-            <td style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2A2418;">${product}</td>
-            <td align="right" style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2F4F3E;">${prijs}</td>
+            <td style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2A2418;">${esc(product)}</td>
+            <td align="right" style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2F4F3E;">${esc(prijs)}</td>
           </tr>
         </table>
       </td></tr>
@@ -90,15 +90,15 @@ function ownerEmailHtml(product: string, prijs: string, gastNaam: string, gastEm
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;">
       <tr>
         <td style="padding:12px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;width:110px;">Gastnaam</td>
-        <td style="padding:12px 0;color:#2A2418;font-weight:bold;border-bottom:1px solid #E0D8C8;">${gastNaam}</td>
+        <td style="padding:12px 0;color:#2A2418;font-weight:bold;border-bottom:1px solid #E0D8C8;">${esc(gastNaam)}</td>
       </tr>
       <tr>
         <td style="padding:12px 0;color:#8A7D6A;border-bottom:1px solid #E0D8C8;">E-mail</td>
-        <td style="padding:12px 0;border-bottom:1px solid #E0D8C8;"><a href="mailto:${gastEmail}" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">${gastEmail}</a></td>
+        <td style="padding:12px 0;border-bottom:1px solid #E0D8C8;"><a href="mailto:${esc(gastEmail)}" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">${esc(gastEmail)}</a></td>
       </tr>
       <tr>
         <td style="padding:12px 0;color:#8A7D6A;">Datum</td>
-        <td style="padding:12px 0;color:#2A2418;">${datum}</td>
+        <td style="padding:12px 0;color:#2A2418;">${esc(datum)}</td>
       </tr>
     </table>
 
@@ -114,7 +114,7 @@ function ownerEmailHtml(product: string, prijs: string, gastNaam: string, gastEm
     <!-- CTA button -->
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
       <tr><td align="center">
-        <a href="mailto:${gastEmail}?subject=Bevestiging%20${encodeURIComponent(product)}%20-%20${LODGE_NAME}&body=Hoi%20${encodeURIComponent(gastNaam)}%2C%0A%0ABedankt%20voor%20je%20boeking!%20We%20bevestigen%20hierbij%20je%20aanvraag%20voor%20${encodeURIComponent(product)}.%0A%0AMet%20vriendelijke%20groet%2C%0AHuis%20ter%20Huynen"
+        <a href="mailto:${esc(gastEmail)}?subject=Bevestiging%20${encodeURIComponent(product)}%20-%20${LODGE_NAME}&body=Hoi%20${encodeURIComponent(gastNaam)}%2C%0A%0ABedankt%20voor%20je%20boeking!%20We%20bevestigen%20hierbij%20je%20aanvraag%20voor%20${encodeURIComponent(product)}.%0A%0AMet%20vriendelijke%20groet%2C%0AHuis%20ter%20Huynen"
           style="display:inline-block;padding:14px 32px;background-color:#2F4F3E;color:#ffffff;text-decoration:none;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
           Beantwoord gast &rarr;
         </a>
@@ -133,7 +133,7 @@ function guestEmailHtml(product: string, prijs: string, gastNaam: string): strin
     </table>
 
     <h1 style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;color:#2A2418;text-align:center;">
-      Bedankt, ${gastNaam}
+      Bedankt, ${esc(gastNaam)}
     </h1>
     <p style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:15px;color:#8A7D6A;line-height:1.6;text-align:center;">
       We hebben je aanvraag ontvangen en gaan er direct mee aan de slag.
@@ -147,8 +147,8 @@ function guestEmailHtml(product: string, prijs: string, gastNaam: string): strin
             <td style="font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;" colspan="2">Je aanvraag</td>
           </tr>
           <tr>
-            <td style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2A2418;">${product}</td>
-            <td align="right" style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2F4F3E;">${prijs}</td>
+            <td style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2A2418;">${esc(product)}</td>
+            <td align="right" style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;color:#2F4F3E;">${esc(prijs)}</td>
           </tr>
         </table>
       </td></tr>

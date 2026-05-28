@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { verifyAdminSession } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
-
-function isAuthed(request: NextRequest): boolean {
-  const session = request.cookies.get("hth-admin-session");
-  return session?.value === process.env.ADMIN_SECRET;
-}
 
 function toDateStr(d: string): string {
   return d.substring(0, 10);
@@ -134,7 +130,7 @@ function generateWeekendPeriods(year: number, lodge_id: string, base_price: numb
 }
 
 export async function POST(request: NextRequest) {
-  if (!isAuthed(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: "Niet ingelogd" }, { status: 401 });
   }
 
