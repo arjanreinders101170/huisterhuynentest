@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { buildHostKnowledge, PROFILE_HINTS_NL, PROFILE_HINTS_DE } from "@/data/host-knowledge";
-import { lodgeName } from "@/data/lodge";
+import { lodgeName, WIFI_SSID, WIFI_PASSWORD } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -139,7 +139,7 @@ const FALLBACKS_NL: Record<string, string> = {
   uitje: "Kano op de Hunze (2-3 uur), Museumdorp Orvelte of een dagje WILDLANDS. 🛶",
   stil: "Zeijerstrubben (3 min) is het stilste bos hier in de buurt. 🤫",
   deur: "Open de deur via 'Verblijf' in de app — je persoonlijke toegangscode staat daar.",
-  wifi: "Wifi: HuynenGast · wachtwoord: HuynenGast2024.",
+  wifi: `Wifi: ${WIFI_SSID} · wachtwoord: ${WIFI_PASSWORD}.`,
   late: "Late check-out tot 15:00 (€25) — vraag aan via 'Extra's' in de app.",
   default: "Probeer iets specifieker — wandelen, eten, kinderen, wellness, fietsen? Of WhatsApp de gastheer op +31 6 42568603.",
 };
@@ -155,7 +155,7 @@ const FALLBACKS_DE: Record<string, string> = {
   uitje: "Kanu auf der Hunze (2-3 Std.), Museumsdorf Orvelte oder ein Tag bei WILDLANDS. 🛶",
   stil: "Zeijerstrubben (3 Min.) ist der ruhigste Wald in der Nähe. 🤫",
   deur: "Tür öffnen über 'Aufenthalt' in der App — Dein persönlicher Code steht dort.",
-  wifi: "WLAN: HuynenGast · Passwort: HuynenGast2024.",
+  wifi: `WLAN: ${WIFI_SSID} · Passwort: ${WIFI_PASSWORD}.`,
   late: "Late Check-out bis 15:00 (€25) — über 'Extras' in der App buchen.",
   default: "Etwas konkreter? Wandern, Essen, Kinder, Wellness, Rad? Oder WhatsApp den Gastgeber: +31 6 42568603.",
 };

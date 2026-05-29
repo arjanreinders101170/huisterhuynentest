@@ -3,7 +3,7 @@
  * Door codes and stay tokens DO rotate — see stays table.
  */
 export const WIFI_SSID = "HuynenGast";
-export const WIFI_PASSWORD = "HuynenGast2024";
+export const WIFI_PASSWORD = process.env.NEXT_PUBLIC_WIFI_PASSWORD ?? "HuynenGast2024";
 
 export const ADDRESS_STREET = "Zuiderstraat 6";
 export const ADDRESS_CITY = "Zeijen";

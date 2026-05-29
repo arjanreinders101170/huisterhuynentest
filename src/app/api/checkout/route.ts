@@ -4,7 +4,7 @@ import { getProduct, calcFietsTotal } from "@/lib/products";
 import { checkoutSchema } from "@/lib/schemas";
 import { esc } from "@/lib/email";
 
-const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
 
 async function sendFallbackNotification(productName: string, amount: number, gastNaam: string, gastEmail: string) {
