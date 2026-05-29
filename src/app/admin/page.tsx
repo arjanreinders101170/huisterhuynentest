@@ -1901,6 +1901,7 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [lcSentIds, setLcSentIds] = useState<Set<string>>(new Set());
 
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
 
@@ -1964,11 +1965,13 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
   const sendLateCheckout = async (stayId: string) => {
     setSendingId(stayId);
     try {
-      await fetch("/api/admin/data", {
+      const r = await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "send_late_checkout", id: stayId }),
       });
+      const d = await r.json();
+      if (d.success) setLcSentIds(prev => new Set(prev).add(stayId));
     } catch {}
     setSendingId(null);
   };
@@ -2133,11 +2136,13 @@ function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s: Stay[
                           background: C.card, color: C.gold, fontSize: 12, fontWeight: 500, cursor: "pointer",
                         }}>{copiedId === s.id ? "✓ Gekopieerd" : "Kopieer link"}</button>
                         {s.welcome_sent && (
-                          <button onClick={() => sendLateCheckout(s.id)} disabled={sendingId === s.id} style={{
+                          <button onClick={() => sendLateCheckout(s.id)} disabled={sendingId === s.id || lcSentIds.has(s.id)} style={{
                             padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
-                            background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
-                            cursor: sendingId === s.id ? "not-allowed" : "pointer",
-                          }}>{sendingId === s.id ? "Versturen..." : "Late check-out"}</button>
+                            background: lcSentIds.has(s.id) ? "#F0FFF4" : C.card,
+                            color: lcSentIds.has(s.id) ? "#2E7D32" : C.muted,
+                            fontSize: 12, fontWeight: 500,
+                            cursor: sendingId === s.id || lcSentIds.has(s.id) ? "not-allowed" : "pointer",
+                          }}>{sendingId === s.id ? "Versturen..." : lcSentIds.has(s.id) ? "✓ Verstuurd" : "Late check-out"}</button>
                         )}
                         {s.welcome_sent && (
                           <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
