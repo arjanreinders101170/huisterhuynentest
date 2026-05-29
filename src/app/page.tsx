@@ -897,7 +897,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           NIEUWSBRIEF
       ══════════════════════════════════════════ */}
-      <section style={{
+      <section id="nieuwsbrief" style={{
         background: T.green,
         padding: "72px 40px",
         textAlign: "center",
