@@ -5,7 +5,7 @@ import { bookingSchema } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
-const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
 
 /* ═══ SHARED EMAIL WRAPPER ═══ */
@@ -260,7 +260,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(`[BOOKING] ${product} | ${gastNaam} | ${gastEmail} | ${bookingPrijs}`);
+    console.log(`[BOOKING] ${product} | ${gastNaam} | ***@${gastEmail.split("@")[1] ?? "?"} | ${bookingPrijs}`);
     return NextResponse.json({ success: true, emailSent: false });
   } catch {
     return NextResponse.json({ error: "Kon boeking niet verwerken" }, { status: 500 });

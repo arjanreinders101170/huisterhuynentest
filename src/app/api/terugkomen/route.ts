@@ -9,7 +9,7 @@ import { APP_URL_FALLBACK } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
-const OWNER_EMAIL = "arjan@vvrvastgoedbv.nl";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
 
 export async function POST(request: NextRequest) {

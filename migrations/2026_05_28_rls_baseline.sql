@@ -32,6 +32,7 @@ ALTER TABLE landing_pages           ENABLE ROW LEVEL SECURITY;
 -- ── Reviews: enige tabel die de anon-client (getPublicSupabase) gebruikt ────
 ALTER TABLE reviews                 ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "anon_read_visible_reviews" ON reviews;
 CREATE POLICY "anon_read_visible_reviews"
   ON reviews
   FOR SELECT

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Route, ChatMsg, DoorStatus, GuestProfile, Weather } from "@/data/tokens";
+import { WIFI_PASSWORD } from "@/data/lodge";
 import { T } from "@/data/tokens";
 import { DATA, CATEGORY_KEYS, UPSELLS } from "@/data/categories";
 import { DATA_DE, UPSELLS_DE } from "@/i18n/categories-de";
@@ -287,7 +288,7 @@ function AppInner() {
 
   /* ═══ WIFI ═══ */
   const copyWifi = () => {
-    navigator.clipboard?.writeText("HuynenGast2024");
+    navigator.clipboard?.writeText(WIFI_PASSWORD);
     setWifiCopied(true);
     setTimeout(() => setWifiCopied(false), 2000);
   };

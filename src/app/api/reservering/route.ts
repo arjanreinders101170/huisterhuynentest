@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
 
   const resendKey = process.env.RESEND_API_KEY;
   if (!resendKey) {
-    console.log(`[RESERVERING] ${lodgeLabel} | ${checkIn} – ${checkOut} | ${naam} | ${email}`);
+    console.log(`[RESERVERING] ${lodgeLabel} | ${checkIn} – ${checkOut} | ${naam} | ***@${email.split("@")[1] ?? "?"}`);
     return NextResponse.json({ success: true, emailSent: false });
   }
 

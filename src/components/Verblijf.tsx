@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { T, cardStyle, iconBox, type Route, type DoorStatus } from "@/data/tokens";
+import { WIFI_SSID, WIFI_PASSWORD } from "@/data/lodge";
 import { IcLock, IcUnlock, IcKey, IcCopy, IcCheck, IcCar, IcInfo, IcClock, IcHeart, IcSquare, IcCheckSquare, IcWifi, IcPlug } from "./icons";
 import { useLanguage } from "@/i18n";
 
@@ -122,7 +123,7 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate, d
         <div>
           <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 3 }}>{t.verblijf.network}</div>
           <div style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: T.text }}>HuynenGast</div>
-          <div style={{ fontFamily: T.sans, fontSize: 13, color: T.muted, fontWeight: 300, marginTop: 2 }}>HuynenGast2024</div>
+          <div style={{ fontFamily: T.sans, fontSize: 13, color: T.muted, fontWeight: 300, marginTop: 2 }}>{WIFI_PASSWORD}</div>
         </div>
         <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
           <button onClick={() => setShowWifiQR(true)} style={{
@@ -163,7 +164,7 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate, d
             </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent("WIFI:T:WPA;S:HuynenGast;P:HuynenGast2024;;")}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(`WIFI:T:WPA;S:${WIFI_SSID};P:${WIFI_PASSWORD};;`)}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`}
               alt="Wifi QR code"
               width={180} height={180}
               style={{ borderRadius: 14, border: `1px solid ${T.border}`, margin: "0 auto 20px", display: "block" }}
@@ -175,10 +176,10 @@ export function Verblijf({ door, onUnlock, wifiCopied, onCopyWifi, onNavigate, d
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, textTransform: "uppercase", letterSpacing: ".04em" }}>{t.verblijf.password}</span>
-                <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>HuynenGast2024</span>
+                <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text, fontWeight: 500 }}>{WIFI_PASSWORD}</span>
               </div>
             </div>
-            <button onClick={() => { navigator.clipboard?.writeText("HuynenGast2024"); setShowWifiQR(false); }} style={{
+            <button onClick={() => { navigator.clipboard?.writeText(WIFI_PASSWORD); setShowWifiQR(false); }} style={{
               marginTop: 16, width: "100%", padding: 14, borderRadius: 14,
               border: "none", background: T.green, color: "#fff",
               fontFamily: T.sans, fontSize: 15, fontWeight: 500, cursor: "pointer",
