@@ -82,6 +82,25 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
 
   const save = async (publishAfter = false) => {
     if (!form.slug || !form.h1) { setMsg("Slug en H1 zijn verplicht"); return; }
+
+    // Warn if FAQ lines exist without "::" separator — they won't render.
+    const faqLines = form.faq.split("\n").map(l => l.trim()).filter(Boolean);
+    const faqBad = faqLines.filter(l => !l.includes("::"));
+    if (faqBad.length > 0) {
+      setMsg(`⚠️ ${faqBad.length} FAQ-regel(s) missen "::" — die worden niet getoond. Formaat: Vraag :: Antwoord`);
+      setSaving(false);
+      return;
+    }
+
+    // Warn if related lines exist without "::" separator.
+    const relLines = form.related.split("\n").map(l => l.trim()).filter(Boolean);
+    const relBad = relLines.filter(l => !l.includes("::"));
+    if (relBad.length > 0) {
+      setMsg(`⚠️ ${relBad.length} interne link(s) missen "::" — die worden niet getoond. Formaat: Label :: /pad`);
+      setSaving(false);
+      return;
+    }
+
     setSaving(true); setMsg("");
     const action = creating ? "create_landing_page" : "update_landing_page";
     const res = await fetch("/api/admin/data", {
@@ -328,8 +347,13 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
                     placeholder="Kop van de sectie" style={inp} />
                 </div>
                 <textarea value={s.bodyText} onChange={e => updateSection(i, "bodyText", e.target.value)}
-                  placeholder="Tekst. Laat een lege regel tussen alinea's." rows={4}
-                  style={{ ...inp, resize: "vertical", marginBottom: 8 }} />
+                  placeholder={"Eerste alinea.\n\nTweede alinea (lege regel ertussen = nieuwe alinea op de pagina)."}
+                  rows={4} style={{ ...inp, resize: "vertical", marginBottom: 8 }} />
+                {s.bodyText.trim() && !s.bodyText.includes("\n\n") && (
+                  <div style={{ fontSize: 11, color: "#E67E22", marginBottom: 8 }}>
+                    Tip: gebruik een lege regel tussen alinea&apos;s (dubbele Enter). Zonder lege regel wordt alles één alinea.
+                  </div>
+                )}
                 <textarea value={s.bulletsText} onChange={e => updateSection(i, "bulletsText", e.target.value)}
                   placeholder={"Opsomming (optioneel) — één punt per regel"} rows={3}
                   style={{ ...inp, resize: "vertical" }} />
@@ -340,17 +364,43 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
 
         {/* FAQ */}
         <div>
-          <label style={lab}>FAQ — één vraag per regel, formaat: <strong>Vraag :: Antwoord</strong></label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <label style={{ ...lab, marginBottom: 0 }}>FAQ — één vraag per regel, formaat: <strong>Vraag :: Antwoord</strong></label>
+            {(() => {
+              const lines = form.faq.split("\n").map(l => l.trim()).filter(Boolean);
+              const ok = lines.filter(l => l.includes("::")).length;
+              const bad = lines.length - ok;
+              if (lines.length === 0) return null;
+              return (
+                <span style={{ fontSize: 11, color: bad > 0 ? "#C62828" : "#2E7D32", fontWeight: 600 }}>
+                  {bad > 0 ? `⚠️ ${bad} regel(s) zonder "::"` : `✓ ${ok} vraag/antwoord-paar${ok !== 1 ? "s" : ""}`}
+                </span>
+              );
+            })()}
+          </div>
           <textarea value={form.faq} onChange={e => setForm(f => ({ ...f, faq: e.target.value }))}
-            placeholder={"Heeft elke lodge een hottub? :: Ja, beide lodges hebben een eigen privé-hottub."}
+            placeholder={"Heeft elke lodge een hottub? :: Ja, beide lodges hebben een eigen privé-hottub.\nKan ik direct boeken? :: Ja, zonder tussenpersoon via de website."}
             rows={5} style={{ ...inp, resize: "vertical", fontFamily: "monospace", fontSize: 12 }} />
         </div>
 
         {/* Related */}
         <div>
-          <label style={lab}>Interne links onderaan — één per regel, formaat: <strong>Label :: /pad</strong></label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <label style={{ ...lab, marginBottom: 0 }}>Interne links onderaan — één per regel, formaat: <strong>Label :: /pad</strong></label>
+            {(() => {
+              const lines = form.related.split("\n").map(l => l.trim()).filter(Boolean);
+              const ok = lines.filter(l => l.includes("::")).length;
+              const bad = lines.length - ok;
+              if (lines.length === 0) return null;
+              return (
+                <span style={{ fontSize: 11, color: bad > 0 ? "#C62828" : "#2E7D32", fontWeight: 600 }}>
+                  {bad > 0 ? `⚠️ ${bad} regel(s) zonder "::"` : `✓ ${ok} link${ok !== 1 ? "s" : ""}`}
+                </span>
+              );
+            })()}
+          </div>
           <textarea value={form.related} onChange={e => setForm(f => ({ ...f, related: e.target.value }))}
-            placeholder={"Luxe lodge in Drenthe :: /luxe-lodge-drenthe"}
+            placeholder={"Luxe lodge in Drenthe :: /luxe-lodge-drenthe\nVakantiehuis bij Assen :: /vakantiehuis-assen"}
             rows={3} style={{ ...inp, resize: "vertical", fontFamily: "monospace", fontSize: 12 }} />
         </div>
 
