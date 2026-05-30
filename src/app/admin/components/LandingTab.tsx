@@ -83,24 +83,6 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
   const save = async (publishAfter = false) => {
     if (!form.slug || !form.h1) { setMsg("Slug en H1 zijn verplicht"); return; }
 
-    // Warn if FAQ lines exist without "::" separator — they won't render.
-    const faqLines = form.faq.split("\n").map(l => l.trim()).filter(Boolean);
-    const faqBad = faqLines.filter(l => !l.includes("::"));
-    if (faqBad.length > 0) {
-      setMsg(`⚠️ ${faqBad.length} FAQ-regel(s) missen "::" — die worden niet getoond. Formaat: Vraag :: Antwoord`);
-      setSaving(false);
-      return;
-    }
-
-    // Warn if related lines exist without "::" separator.
-    const relLines = form.related.split("\n").map(l => l.trim()).filter(Boolean);
-    const relBad = relLines.filter(l => !l.includes("::"));
-    if (relBad.length > 0) {
-      setMsg(`⚠️ ${relBad.length} interne link(s) missen "::" — die worden niet getoond. Formaat: Label :: /pad`);
-      setSaving(false);
-      return;
-    }
-
     setSaving(true); setMsg("");
     const action = creating ? "create_landing_page" : "update_landing_page";
     const res = await fetch("/api/admin/data", {
