@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SITE_URL, LANDING_NAV } from "@/lib/site";
-import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 
 /* ═══ Reusable SEO landing page ═══
  * Server component (no hydration). One config object drives content +
@@ -288,7 +287,6 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         </div>
       </footer>
 
-      <StickyMobileCTA />
     </div>
   );
 }

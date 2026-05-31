@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { ConsentBanner } from "@/components/tracking/ConsentBanner";
 import { GTM, GTMNoscript } from "@/components/tracking/GTM";
 import { MetaPixel } from "@/components/tracking/MetaPixel";
@@ -209,6 +210,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <RouteChangePixel />
         <TrackingListeners />
         {children}
+        <StickyMobileCTA />
         <ConsentBanner />
       </body>
     </html>
