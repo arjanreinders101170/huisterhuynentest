@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, type LandingSectionData } from "@/lib/landing-seed";
 
@@ -118,6 +119,7 @@ export async function handleContentPost(action: string, body: Record<string, unk
         gepubliceerd: false,
       }).select().single();
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      revalidatePath(`/${fields.slug}`);
       return NextResponse.json({ success: true, data });
     }
     case "update_landing_page": {
@@ -129,16 +131,19 @@ export async function handleContentPost(action: string, body: Record<string, unk
         updated_at: new Date().toISOString(),
       }).eq("id", body.id);
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      revalidatePath(`/${fields.slug}`);
       return NextResponse.json({ success: true });
     }
     case "publish_landing_page": {
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
       const gepubliceerd = body.gepubliceerd === true || body.gepubliceerd === "true";
+      const { data: existing } = await getSupabase().from("landing_pages").select("slug").eq("id", body.id).single();
       const { error } = await getSupabase().from("landing_pages").update({
         gepubliceerd,
         updated_at: new Date().toISOString(),
       }).eq("id", body.id);
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      if (existing?.slug) revalidatePath(`/${existing.slug}`);
       return NextResponse.json({ success: true });
     }
     case "delete_landing_page": {
