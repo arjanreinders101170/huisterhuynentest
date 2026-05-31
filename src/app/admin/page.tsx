@@ -14,6 +14,7 @@ import { BlogTab } from "./components/BlogTab";
 import { LandingTab } from "./components/LandingTab";
 import { AanvragenV2Tab } from "./components/AanvragenV2Tab";
 import { ToeslagenTab } from "./components/ToeslagenTab";
+import { MarketingTab } from "./components/MarketingTab";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -21,7 +22,7 @@ const C = {
   green: "#2F4F3E", gold: "#B49A5E",
 };
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen";
+type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard";
 
 type NavItem = { id: Tab; label: string };
 type NavGroup = { groupLabel: string; sub: NavItem[] };
@@ -153,6 +154,7 @@ export default function AdminDashboard() {
       { id: "financieel", label: "Financieel" },
     ]},
     { id: "marketing", icon: "🎯", label: "Marketing", short: "Marketing", items: [
+      { id: "marketing_dashboard", label: "Marketing Dashboard" },
       { id: "acties", label: "Promotiecodes" },
       { id: "blog", label: "Blog beheer" },
       { id: "landingspaginas", label: "Landingspagina's" },
@@ -503,6 +505,8 @@ export default function AdminDashboard() {
             {tab === "landingspaginas" && (
               <LandingTab pages={landingPages} setPages={setLandingPages} />
             )}
+
+            {tab === "marketing_dashboard" && <MarketingTab />}
 
             {(tab === "lodge_1" || tab === "lodge_2") && (
               <LodgeView lodgeId={tab} />
