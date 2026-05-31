@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>European Reset Club — Workation &amp; Wellness in Europa</title>
+<meta name="description" content="Vind de perfecte workation of wellness retreat in Europa. AI-matching voor ondernemers en professionals. Schrijf je in voor vroege toegang en gratis locatieadvies.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS — warm, zon, ontspanning
+═══════════════════════════════════════════ */
+:root {
+  --cream:    #FDF8F0;
+  --cream2:   #FFF4E6;
+  --sand:     #F5ECD7;
+  --white:    #FFFFFF;
+
+  --terra:    #D9714E;   /* terracotta — warm, zon */
+  --terra-l:  #F0A07A;   /* licht terracotta */
+  --terra-bg: #FEF0E8;   /* zachte terracotta bg */
+
+  --teal:     #4A9E8E;   /* zeegroen — digital detox / natuur */
+  --teal-l:   #7EC8BB;
+  --teal-bg:  #E8F6F4;
+
+  --gold:     #F0B429;   /* goudgeel — zon */
+  --gold-l:   #FFD87A;
+  --gold-bg:  #FFF8E0;
+
+  --ink:      #2D2417;   /* warm donkerbruin */
+  --ink-soft: #6B5744;
+  --gray:     #9E8E80;
+  --border:   #EAE0D0;
+
+  --r-xl: 24px;
+  --r-lg: 18px;
+  --r-md: 12px;
+  --r-full: 100px;
+
+  --ease: cubic-bezier(.16,1,.3,1);
+  --shadow: 0 8px 32px rgba(45,36,23,.08);
+  --shadow-lg: 0 20px 60px rgba(45,36,23,.13);
+  --maxw: 1160px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.65;
+  font-size: 17px;
+  overflow-x: hidden;
+}
+
+h1,h2,h3,h4 {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+
+/* ═══ UTILITY ═══ */
+.tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 8px 16px; border-radius: var(--r-full);
+}
+.tag-terra { background: var(--terra-bg); color: var(--terra); }
+.tag-teal  { background: var(--teal-bg);  color: var(--teal); }
+.tag-gold  { background: var(--gold-bg);  color: #9A6D00; }
+.tag .dot  { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 16px;
+  padding: 16px 32px; border-radius: var(--r-full); border: none; cursor: pointer;
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+  text-decoration: none; line-height: 1;
+}
+.btn-terra {
+  background: var(--terra); color: var(--white);
+  box-shadow: 0 8px 28px rgba(217,113,78,.30);
+}
+.btn-terra:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(217,113,78,.40); }
+.btn-outline {
+  background: transparent; color: var(--terra);
+  border: 2px solid var(--terra);
+}
+.btn-outline:hover { background: var(--terra); color: white; }
+.btn-white { background: white; color: var(--ink); box-shadow: var(--shadow); }
+.btn-white:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.btn-lg { padding: 20px 40px; font-size: 17px; }
+.btn-block { width: 100%; }
+
+.sec { padding: clamp(72px, 10vw, 128px) 0; }
+
+/* ═══ WAVE DIVIDERS ═══ */
+.wave { display: block; width: 100%; overflow: hidden; line-height: 0; }
+.wave svg { display: block; width: 100%; }
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 20px 0; transition: all .4s var(--ease);
+}
+.nav.scrolled {
+  background: rgba(253,248,240,.92);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--border);
+  padding: 13px 0;
+}
+.nav-in { display: flex; align-items: center; justify-content: space-between; }
+.logo {
+  font-family: 'Lora', serif; font-size: 20px; font-style: italic;
+  color: white; transition: color .4s;
+}
+.nav.scrolled .logo { color: var(--ink); }
+.nav .btn { padding: 12px 26px; font-size: 15px; }
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  background: var(--teal);
+  display: flex; align-items: center;
+  padding: 140px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* abstracte zonsfeer — lagen van licht */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 0%, rgba(240,180,41,.5) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 10% 100%, rgba(74,158,142,.6) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 40% at 50% 110%, rgba(217,113,78,.4) 0%, transparent 50%);
+}
+
+/* grote abstracte cirkel als "zon" */
+.hero-sun {
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 480px; height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240,180,41,.55) 0%, rgba(240,180,41,.0) 70%);
+  animation: sunPulse 6s ease-in-out infinite;
+}
+@keyframes sunPulse {
+  0%,100% { transform: scale(1); opacity: .8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* drijvende blobs */
+.blob {
+  position: absolute; border-radius: 50%;
+  animation: float 8s ease-in-out infinite;
+}
+.blob-1 { width:180px; height:180px; top:15%; left:5%; background:rgba(255,255,255,.08); animation-delay:0s; }
+.blob-2 { width:100px; height:100px; top:60%; left:72%; background:rgba(240,180,41,.2); animation-delay:-3s; }
+.blob-3 { width:60px;  height:60px;  top:30%; right:22%; background:rgba(255,255,255,.12); animation-delay:-5s; }
+@keyframes float {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  33%  { transform: translateY(-16px) rotate(4deg); }
+  66%  { transform: translateY(8px) rotate(-3deg); }
+}
+
+.hero-inner { position: relative; z-index: 1; padding-bottom: 80px; }
+
+.hero-tag { margin-bottom: 28px; }
+.hero-tag span {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.2); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.3);
+  color: white; padding: 8px 18px; border-radius: var(--r-full);
+  font-size: 14px; font-weight: 500;
+}
+.hero-tag .live { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: livePulse 1.8s ease-in-out infinite; }
+@keyframes livePulse { 0%,100%{box-shadow:0 0 0 0 rgba(240,180,41,.6);} 50%{box-shadow:0 0 0 6px rgba(240,180,41,0);} }
+
+.hero h1 {
+  font-size: clamp(42px, 7vw, 80px);
+  color: white;
+  max-width: 700px;
+  margin-bottom: 22px;
+  line-height: 1.08;
+}
+.hero h1 em { color: var(--gold-l); }
+
+.hero-sub {
+  font-size: clamp(18px, 2.2vw, 22px);
+  color: rgba(255,255,255,.85);
+  max-width: 560px;
+  margin-bottom: 40px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.hero-btns { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 48px; }
+
+.hero-proof {
+  display: flex; flex-wrap: wrap; gap: 28px;
+  font-size: 15px; color: rgba(255,255,255,.8);
+}
+.hero-proof span { display: flex; align-items: center; gap: 8px; }
+.hero-proof .ck { color: var(--gold-l); font-size: 18px; }
+
+/* wave onderkant hero */
+.hero-wave { position: relative; z-index: 2; margin-top: -1px; }
+.hero-wave path { fill: var(--cream); }
+
+/* ═══════════════════════════════════════════
+   TRUST BAR
+═══════════════════════════════════════════ */
+.trust {
+  background: var(--white);
+  padding: 36px 0;
+  border-bottom: 1px solid var(--border);
+}
+.trust-in {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center; gap: 14px 48px;
+}
+.trust-label { font-size: 13px; text-transform: uppercase; letter-spacing: .12em; color: var(--gray); font-weight: 500; }
+.trust-logos { display: flex; flex-wrap: wrap; gap: 36px; align-items: center; }
+.trust-logos span { font-family: 'Lora', serif; font-size: 18px; color: #cdc0b2; font-style: italic; }
+.trust-count { width: 100%; text-align: center; margin-top: 4px; font-size: 15.5px; color: var(--ink-soft); }
+.trust-count strong { color: var(--terra); }
+
+/* ═══════════════════════════════════════════
+   PIJN — HERKENNING
+═══════════════════════════════════════════ */
+.pain { background: var(--cream2); }
+
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 52px;
+}
+.pain-card {
+  background: white;
+  border-radius: var(--r-xl);
+  padding: 30px 26px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.pain-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+.pain-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--terra-l), var(--gold-l));
+  border-radius: 4px 4px 0 0;
+  opacity: 0; transition: opacity .3s;
+}
+.pain-card:hover::after { opacity: 1; }
+.pain-card .emoji { font-size: 28px; margin-bottom: 14px; display: block; }
+.pain-card p { font-size: 16.5px; color: var(--ink); line-height: 1.55; }
+
+.pain-pullquote {
+  margin-top: 56px;
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(135deg, var(--terra-bg), var(--gold-bg));
+  border-radius: var(--r-xl);
+  border: 1px solid rgba(217,113,78,.15);
+}
+.pain-pullquote q {
+  font-family: 'Lora', serif;
+  font-size: clamp(20px, 3vw, 28px);
+  font-style: italic;
+  color: var(--terra);
+  line-height: 1.45;
+  display: block;
+  margin-bottom: 12px;
+}
+.pain-pullquote cite { font-size: 14px; color: var(--ink-soft); }
+
+/* ═══════════════════════════════════════════
+   OPLOSSING
+═══════════════════════════════════════════ */
+.sol-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 52px;
+}
+.sol-card {
+  border-radius: var(--r-xl);
+  padding: 34px;
+  display: flex; gap: 20px;
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+  cursor: default;
+}
+.sol-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.sol-card.c1 { background: var(--terra-bg); border: 1px solid rgba(217,113,78,.2); }
+.sol-card.c2 { background: var(--teal-bg);  border: 1px solid rgba(74,158,142,.2); }
+.sol-card.c3 { background: var(--gold-bg);  border: 1px solid rgba(240,180,41,.2); }
+.sol-card.c4 { background: var(--sand);     border: 1px solid var(--border); }
+
+.sol-icon {
+  flex-shrink: 0;
+  width: 52px; height: 52px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.c1 .sol-icon { background: rgba(217,113,78,.18); }
+.c2 .sol-icon { background: rgba(74,158,142,.18); }
+.c3 .sol-icon { background: rgba(240,180,41,.18); }
+.c4 .sol-icon { background: rgba(45,36,23,.08); }
+
+.sol-card h3 { font-size: 20px; margin-bottom: 7px; }
+.sol-card p  { font-size: 15.5px; color: var(--ink-soft); line-height: 1.6; }
+.sol-card .punch { font-weight: 600; color: var(--terra); }
+
+/* ═══════════════════════════════════════════
+   HOE WERKT HET — zonnig blok
+═══════════════════════════════════════════ */
+.how {
+  background: linear-gradient(135deg, #FFF8E8 0%, #E8F6F4 100%);
+  position: relative;
+}
+
+.steps-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin: 52px 0 48px;
+  position: relative;
+}
+/* verbindingslijn */
+.steps-row::before {
+  content: '';
+  position: absolute;
+  top: 36px; left: calc(50%/3 + 18px); right: calc(50%/3 + 18px);
+  height: 2px;
+  background: linear-gradient(90deg, var(--terra-l), var(--gold-l), var(--teal-l));
+  border-radius: 2px;
+  z-index: 0;
+}
+.step {
+  text-align: center;
+  position: relative; z-index: 1;
+}
+.step-num {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Lora', serif; font-size: 26px; font-weight: 500;
+  box-shadow: var(--shadow);
+}
+.step:nth-child(1) .step-num { background: var(--terra);  color: white; }
+.step:nth-child(2) .step-num { background: var(--gold);   color: var(--ink); }
+.step:nth-child(3) .step-num { background: var(--teal);   color: white; }
+.step h3 { font-size: 21px; margin-bottom: 10px; }
+.step p  { font-size: 15.5px; color: var(--ink-soft); max-width: 240px; margin: 0 auto; }
+.step .mini { display:inline-block; margin-top:10px; font-size:13.5px; font-weight:600; color: var(--terra); }
+
+/* ═══════════════════════════════════════════
+   VOOR WIE
+═══════════════════════════════════════════ */
+.who { background: var(--white); }
+
+.who-cols {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 32px;
+  margin-top: 52px;
+  align-items: start;
+}
+
+.who-card {
+  border-radius: var(--r-xl);
+  padding: 38px;
+}
+.who-card.yes {
+  background: var(--cream);
+  border: 2px solid var(--border);
+}
+.who-card.yes h3::before { content: '✓ '; color: var(--teal); }
+.who-card.no {
+  background: var(--sand);
+  border: 1px solid var(--border);
+}
+.who-card.no h3 { color: var(--ink-soft); }
+.who-card h3 { font-size: 21px; margin-bottom: 22px; }
+
+.who-list { list-style: none; }
+.who-list li {
+  display: flex; gap: 13px; align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 16px; color: var(--ink);
+  line-height: 1.5;
+}
+.who-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.who-list .ic {
+  flex-shrink: 0; font-size: 18px; margin-top: 1px;
+}
+.who-foot { margin-top: 20px; font-size: 14px; color: var(--gray); font-style: italic; }
+
+/* ═══════════════════════════════════════════
+   BESTEMMINGEN
+═══════════════════════════════════════════ */
+.dest { background: var(--cream2); }
+
+.dest-scroll {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 52px;
+}
+
+.dest-card {
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  position: relative;
+  min-height: 280px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 24px;
+  color: white;
+  isolation: isolate;
+  transition: transform .45s var(--ease);
+}
+.dest-card:hover { transform: translateY(-8px); }
+.dest-card::before {
+  content: '';
+  position: absolute; inset: 0; z-index: -2;
+  transition: transform .6s var(--ease);
+}
+.dest-card:hover::before { transform: scale(1.06); }
+.dest-card::after {
+  content: '';
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(to top, rgba(45,36,23,.75) 0%, rgba(45,36,23,.1) 55%, transparent);
+}
+/* sfeer per bestemming via warme gradients */
+.d1::before { background: linear-gradient(160deg, #E8845A 0%, #C06030 50%, #7A4A20 100%); }
+.d2::before { background: linear-gradient(160deg, #4A9E8E 0%, #2E7A6E 50%, #1A5048 100%); }
+.d3::before { background: linear-gradient(160deg, #F0B429 0%, #D08020 50%, #A06010 100%); }
+.d4::before { background: linear-gradient(160deg, #D9714E 0%, #B05030 50%, #8A3820 100%); }
+.d5::before { background: linear-gradient(160deg, #6BBFA3 0%, #4A9E88 50%, #2A7060 100%); }
+.d6::before { background: linear-gradient(160deg, #F5C842 0%, #D8A020 50%, #A87810 100%); }
+
+.dest-badge {
+  align-self: flex-start;
+  background: rgba(255,255,255,.22); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.3);
+  color: white; font-size: 12px; font-weight: 600;
+  padding: 5px 13px; border-radius: var(--r-full);
+  margin-bottom: 12px;
+  letter-spacing: .04em;
+}
+.dest-card h3 { color: white; font-size: 22px; margin-bottom: 5px; }
+.dest-card p  { font-size: 14px; color: rgba(255,255,255,.9); line-height: 1.4; }
+
+.dest-cta { text-align: center; margin-top: 46px; }
+
+/* ═══════════════════════════════════════════
+   TESTIMONIALS
+═══════════════════════════════════════════ */
+.testi { background: var(--white); }
+
+.testi-notice {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--sand); border: 1px dashed var(--border);
+  border-radius: var(--r-full); padding: 8px 18px;
+  font-size: 13.5px; color: var(--ink-soft); margin-bottom: 40px;
+}
+
+.testi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.testi-card {
+  background: var(--cream);
+  border-radius: var(--r-xl);
+  padding: 30px;
+  border: 1px solid var(--border);
+  position: relative;
+}
+.testi-card::before {
+  content: '"';
+  position: absolute; top: 20px; right: 24px;
+  font-family: 'Lora', serif; font-size: 72px; color: var(--border);
+  line-height: 1; pointer-events: none;
+}
+.testi-stars { color: var(--gold); font-size: 15px; letter-spacing: 3px; margin-bottom: 14px; }
+.testi-card blockquote {
+  font-size: 16px; line-height: 1.65; color: var(--ink);
+  margin-bottom: 22px; position: relative;
+}
+.testi-who { display: flex; align-items: center; gap: 12px; }
+.testi-av {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Lora', serif; font-weight: 500; font-size: 18px; color: white;
+}
+.av1 { background: linear-gradient(135deg, var(--terra), #B85030); }
+.av2 { background: linear-gradient(135deg, var(--teal), #2E7060); }
+.av3 { background: linear-gradient(135deg, var(--gold), #C08010); color: var(--ink); }
+.testi-name { font-weight: 600; font-size: 15px; color: var(--ink); }
+.testi-role { font-size: 13px; color: var(--gray); }
+
+/* ═══════════════════════════════════════════
+   FAQ
+═══════════════════════════════════════════ */
+.faq { background: var(--cream2); }
+
+.faq-list {
+  max-width: 800px;
+  margin: 52px auto 0;
+}
+
+.faq-item {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: box-shadow .3s;
+}
+.faq-item[open] { box-shadow: var(--shadow); }
+
+.faq-item summary {
+  list-style: none; cursor: pointer;
+  padding: 22px 26px;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  font-weight: 600; font-size: 17px; color: var(--ink);
+  user-select: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-plus {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%; background: var(--terra-bg);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--terra); font-size: 20px; font-weight: 300;
+  transition: transform .35s var(--ease), background .3s;
+}
+.faq-item[open] .faq-plus { transform: rotate(45deg); background: var(--terra); color: white; }
+
+.faq-body {
+  padding: 0 26px 24px;
+  font-size: 15.5px; color: var(--ink-soft); line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════════
+   LEADFORMULIER
+═══════════════════════════════════════════ */
+.lead {
+  background: var(--teal);
+  position: relative; overflow: hidden;
+}
+.lead::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 100% 0%, rgba(240,180,41,.35), transparent 55%),
+    radial-gradient(ellipse 40% 60% at 0% 100%, rgba(74,158,142,.6), transparent 50%);
+}
+.lead-wave path { fill: var(--cream2); }
+.lead-wave-b path { fill: var(--cream); }
+
+.lead-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative; z-index: 1;
+  padding: clamp(56px, 8vw, 100px) 0;
+}
+
+.lead-copy .tag { margin-bottom: 20px; }
+.lead-copy h2 { color: white; font-size: clamp(30px, 4.5vw, 46px); margin-bottom: 22px; }
+.lead-copy .intro { font-size: 18px; color: rgba(255,255,255,.82); margin-bottom: 30px; font-weight: 300; }
+
+.benefits { list-style: none; }
+.benefits li {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.15);
+  font-size: 16.5px; color: rgba(255,255,255,.9);
+}
+.benefits li:last-child { border-bottom: none; }
+.benefits .ck {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(255,255,255,.2); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; margin-top: 1px;
+}
+.benefits .val { color: var(--gold-l); font-weight: 600; }
+
+/* formulier kaart */
+.lead-form {
+  background: white;
+  border-radius: var(--r-xl);
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+}
+.lead-form h3 { font-size: 24px; margin-bottom: 6px; }
+.form-sub { font-size: 14.5px; color: var(--gray); margin-bottom: 26px; }
+
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
+.field input[type=text],
+.field input[type=email] {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; color: var(--ink);
+  background: var(--cream);
+  transition: border-color .25s, box-shadow .25s, background .25s;
+}
+.field input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 4px rgba(74,158,142,.12); background: white; }
+.field input::placeholder { color: var(--gray); }
+
+.radio-field label.top { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+.radio-opts { display: grid; gap: 10px; }
+.radio-opt {
+  display: flex; align-items: center; gap: 13px;
+  padding: 14px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer; transition: all .2s;
+  font-size: 14.5px; background: var(--cream);
+  line-height: 1.4;
+}
+.radio-opt:hover { border-color: var(--teal); background: var(--teal-bg); }
+.radio-opt input { accent-color: var(--teal); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+.radio-opt:has(input:checked) { border-color: var(--teal); background: var(--teal-bg); font-weight: 500; }
+.radio-opt .opt-emoji { font-size: 18px; }
+
+.form-foot {
+  margin-top: 14px;
+  font-size: 13px; color: var(--gray);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  text-align: center;
+}
+
+/* succes state */
+.form-success { display: none; text-align: center; padding: 30px 10px; }
+.form-success.show { display: block; }
+.form-success .big { font-size: 56px; margin-bottom: 14px; }
+.form-success h3 { color: var(--teal); font-size: 24px; margin-bottom: 8px; }
+.form-success p { color: var(--ink-soft); font-size: 16px; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+.footer {
+  background: var(--ink);
+  color: rgba(255,255,255,.6);
+  padding: 56px 0 32px;
+}
+.footer-top {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 32px;
+  padding-bottom: 36px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.footer-logo { font-family: 'Lora', serif; font-size: 22px; font-style: italic; color: white; margin-bottom: 10px; }
+.footer p { font-size: 14.5px; max-width: 280px; }
+.footer-social { display: flex; gap: 10px; margin-top: 14px; }
+.footer-social a {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.6); transition: all .25s;
+}
+.footer-social a:hover { background: var(--terra); border-color: var(--terra); color: white; }
+.footer-bottom {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+  padding-top: 26px; font-size: 13px;
+}
+.footer-bottom a { color: rgba(255,255,255,.5); text-decoration: none; }
+.footer-bottom a:hover { color: var(--terra-l); }
+
+/* ═══════════════════════════════════════════
+   EXIT INTENT
+═══════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(45,36,23,.55); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white; border-radius: var(--r-xl); max-width: 460px; width: 100%;
+  padding: 44px; text-align: center; position: relative;
+  box-shadow: var(--shadow-lg);
+  animation: popIn .4s var(--ease);
+}
+@keyframes popIn { from { transform: scale(.92) translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 26px; color: var(--gray); cursor: pointer; }
+.modal-illo { font-size: 52px; margin-bottom: 14px; }
+.modal h3 { font-size: 24px; margin-bottom: 8px; }
+.modal .guide { font-style: italic; color: var(--terra); font-size: 15.5px; margin-bottom: 22px; line-height: 1.4; }
+.modal input { width:100%; padding:14px 18px; border:1.5px solid var(--border); border-radius:var(--r-md); font-size:16px; margin-bottom:12px; font-family:inherit; }
+.modal input:focus { outline:none; border-color:var(--teal); }
+.modal .no { display:inline-block; margin-top:14px; font-size:13.5px; color:var(--gray); text-decoration:underline; cursor:pointer; }
+
+/* ═══════════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════════ */
+.r { opacity: 0; transform: translateY(30px); transition: opacity .75s var(--ease), transform .75s var(--ease); }
+.r.in { opacity: 1; transform: none; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 1020px) {
+  .lead-grid { grid-template-columns: 1fr; gap: 36px; }
+  .who-cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 780px) {
+  .pain-grid, .sol-grid, .steps-row, .dest-scroll, .testi-grid { grid-template-columns: 1fr; }
+  .steps-row::before { display: none; }
+  .hero h1 { font-size: clamp(36px, 10vw, 56px); }
+  .hero-btns .btn { flex: 1 1 100%; }
+  .lead-form { padding: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  .r { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ NAV ════════ -->
+<nav class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="logo">European Reset Club</a>
+    <a href="#aanmelden" class="btn btn-white">Schrijf je in →</a>
+  </div>
+</nav>
+
+<!-- ════════ HERO ════════ -->
+<header class="hero" id="top">
+  <div class="hero-sun"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-tag">
+      <span><span class="live"></span> 847 professionals gingen je voor</span>
+    </div>
+    <h1>Jij verdient <em>écht</em><br>een reset.</h1>
+    <p class="hero-sub">Ontdek als eerste ons platform dat ondernemers, consultants en remote workers helpt de perfecte workation, wellness retreat of digital detox in Europa te vinden.</p>
+    <div class="hero-btns">
+      <a href="#aanmelden" class="btn btn-terra btn-lg">Claim jouw plek gratis →</a>
+      <a href="#hoe" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,.5);color:white;">Hoe werkt het?</a>
+    </div>
+    <div class="hero-proof">
+      <span><span class="ck">✓</span> Geen spam ooit</span>
+      <span><span class="ck">✓</span> Uitschrijven met één klik</span>
+      <span><span class="ck">✓</span> 100% gratis in de validatiefase</span>
+    </div>
+  </div>
+  <div class="hero-wave wave">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ════════ TRUST BAR ════════ -->
+<section class="trust">
+  <div class="wrap trust-in">
+    <span class="trust-label">Als gezien in</span>
+    <div class="trust-logos">
+      <span>Sprout</span><span>NRC Ondernemer</span><span>FD</span><span>MT/Sprout</span>
+    </div>
+    <p class="trust-count"><strong>847 Nederlandse en Belgische professionals</strong> staan al op de wachtlijst</p>
+  </div>
+</section>
+
+<!-- ════════ PIJNSECTIE ════════ -->
+<section class="sec pain">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:640px; margin:0 auto;">
+      <span class="tag tag-terra"><span class="dot"></span>Herken je dit?</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">Wanneer had jij voor het<br>laatste een <em>écht</em> vrije dag?</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Niet een dag zonder vergaderingen. Een dag zonder schuldgevoel.</p>
+    </div>
+    <div class="pain-grid" style="margin-top:52px;">
+      <div class="pain-card r"><span class="emoji">😮‍💨</span><p>Je wilt écht uitrusten, maar je hoofd staat nooit stil.</p></div>
+      <div class="pain-card r"><span class="emoji">🔍</span><p>Je zoekt uren op Booking.com maar weet niet wat écht bij jou past.</p></div>
+      <div class="pain-card r"><span class="emoji">😓</span><p>Je boekt een hotel en voelt je er achteraf schuldig over.</p></div>
+      <div class="pain-card r"><span class="emoji">💻</span><p>Je wilt ook goed kunnen doorwerken — maar tóch rust houden.</p></div>
+      <div class="pain-card r"><span class="emoji">📉</span><p>Je merkt dat je achterloopt op jezelf. Al een tijdje.</p></div>
+      <div class="pain-card r"><span class="emoji">🌍</span><p>Je zoekt naar een plek waar werk, rust en sfeer gewoon kloppen.</p></div>
+    </div>
+    <div class="pain-pullquote r">
+      <q>De meeste professionals plannen hun werk tot op de minuut.<br>Hun herstel plannen ze nooit.</q>
+      <cite>— Inzicht uit 47 gesprekken met ondernemers</cite>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:var(--cream2);">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,30 C480,60 960,0 1440,30 L1440,60 L0,60 Z" fill="#FFFFFF"/>
+  </svg>
+</div>
+
+<!-- ════════ OPLOSSING ════════ -->
+<section class="sec" style="background:white;">
+  <div class="wrap">
+    <div class="r" style="max-width:680px;">
+      <span class="tag tag-teal"><span class="dot"></span>De oplossing</span>
+      <h2 style="margin:18px 0 14px; font-size:clamp(28px,4.5vw,44px);">European Reset Club</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Geen zoekmachine met 800 resultaten. Geen generiek reisadvies. Een intelligent platform dat jouw situatie begrijpt en exact de juiste plek vindt — of je nu 3 dagen stoom wil afblazen of 6 weken slow wil travelen.</p>
+    </div>
+    <div class="sol-grid">
+      <div class="sol-card c1 r">
+        <div class="sol-icon">🎯</div>
+        <div>
+          <h3>AI Matching</h3>
+          <p>Op basis van jouw werkstijl en herstelbehoeften krijg je <span class="punch">3 perfecte matches — niet 300.</span></p>
+        </div>
+      </div>
+      <div class="sol-card c2 r">
+        <div class="sol-icon">🌿</div>
+        <div>
+          <h3>Gecureerde plekken</h3>
+          <p>Alleen locaties die door onze community zijn gevalideerd op wifi, rust, comfort en sfeer.</p>
+        </div>
+      </div>
+      <div class="sol-card c3 r">
+        <div class="sol-icon">☀️</div>
+        <div>
+          <h3>Members Only deals</h3>
+          <p>Tarieven en ervaringen die je nergens anders vindt — <span class="punch">exclusief voor leden.</span></p>
+        </div>
+      </div>
+      <div class="sol-card c4 r">
+        <div class="sol-icon">👥</div>
+        <div>
+          <h3>Community</h3>
+          <p>Professionals die begrijpen waarom je soms gewoon weg moet. Geen uitleg nodig.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:white;">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C360,60 1080,0 1440,60 L1440,60 L0,60 Z" fill="#FFF8E8"/>
+  </svg>
+</div>
+
+<!-- ════════ HOE WERKT HET ════════ -->
+<section class="sec how" id="hoe">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:600px; margin:0 auto;">
+      <span class="tag tag-gold"><span class="dot"></span>In 3 stappen</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">Zo werkt het</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Van drukke agenda naar de perfecte reset — zonder urenlang zoeken.</p>
+    </div>
+    <div class="steps-row">
+      <div class="step r">
+        <div class="step-num">1</div>
+        <h3>Vertel ons wie je bent</h3>
+        <p>5 korte vragen over je werkritme, herstelbehoeften en reisvoorkeuren.</p>
+        <span class="mini">⏱ Duurt 2 minuten</span>
+      </div>
+      <div class="step r">
+        <div class="step-num">2</div>
+        <h3>Onze AI analyseert</h3>
+        <p>En matcht je aan plekken die echt bij jou passen — geen gesponsorde resultaten.</p>
+      </div>
+      <div class="step r">
+        <div class="step-num">3</div>
+        <h3>Jij kiest, wij helpen</h3>
+        <p>Van persoonlijk advies tot complete ontzorging. Jij bepaalt hoeveel hulp je wilt.</p>
+      </div>
+    </div>
+    <div style="text-align:center;" class="r">
+      <a href="#aanmelden" class="btn btn-terra btn-lg">Meld je gratis aan →</a>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:linear-gradient(135deg,#FFF8E8,#E8F6F4);">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,60 C480,0 960,60 1440,0 L1440,60 L0,60 Z" fill="white"/>
+  </svg>
+</div>
+
+<!-- ════════ VOOR WIE ════════ -->
+<section class="sec who">
+  <div class="wrap">
+    <div class="r" style="max-width:600px;">
+      <span class="tag tag-terra"><span class="dot"></span>Is dit iets voor jou?</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">We bouwen dit voor mensen die hun herstel serieus nemen</h2>
+    </div>
+    <div class="who-cols">
+      <div class="who-card yes r">
+        <h3>European Reset Club</h3>
+        <ul class="who-list">
+          <li><span class="ic">🙋</span> Ondernemer, consultant of remote worker</li>
+          <li><span class="ic">🎂</span> Tussen 35 en 65 jaar</li>
+          <li><span class="ic">💎</span> Kwaliteit boven prijs</li>
+          <li><span class="ic">🧭</span> Liever geholpen worden dan zelf zoeken</li>
+          <li><span class="ic">🌍</span> Europa ontdekken zonder toeristische drukte</li>
+          <li><span class="ic">⚖️</span> Werk en herstel willen combineren</li>
+        </ul>
+      </div>
+      <div class="who-card no r">
+        <h3 style="color:var(--ink-soft); font-size:19px;">Minder geschikt als je…</h3>
+        <ul class="who-list">
+          <li><span class="ic" style="opacity:.5;">💸</span> Altijd op zoek bent naar de goedkoopste deal</li>
+          <li><span class="ic" style="opacity:.5;">🤖</span> Wilt dat AI al je beslissingen neemt</li>
+          <li><span class="ic" style="opacity:.5;">🚫</span> Niet bereid bent te investeren in jouw herstel</li>
+        </ul>
+        <p class="who-foot">Liever 100 mensen die dit écht nodig hebben dan 1.000 die maar rondkijken.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ BESTEMMINGEN ════════ -->
+<section class="sec dest">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:640px; margin:0 auto;">
+      <span class="tag tag-gold"><span class="dot"></span>Bestemmingen</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">Waar brengen members hun reset door?</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Een greep uit de gecureerde plekken — allemaal gevalideerd door de community.</p>
+    </div>
+    <div class="dest-scroll">
+      <article class="dest-card d1 r">
+        <span class="dest-badge">Workation + Natuur</span>
+        <h3>Alentejo, Portugal</h3>
+        <p>Deep work tussen de olijfgaarden, gouden uur inbegrepen.</p>
+      </article>
+      <article class="dest-card d2 r">
+        <span class="dest-badge">Digital Detox</span>
+        <h3>Madeira</h3>
+        <p>Oceaan, bergen en precies genoeg wifi om je e-mail te checken.</p>
+      </article>
+      <article class="dest-card d3 r">
+        <span class="dest-badge">Slow Living</span>
+        <h3>Puglia, Italië</h3>
+        <p>Witte huisjes, olijfolie en het ritme van het zuiden.</p>
+      </article>
+      <article class="dest-card d4 r">
+        <span class="dest-badge">Adults Only</span>
+        <h3>Granada, Spanje</h3>
+        <p>Rust aan de voet van de Sierra Nevada. Geen kinderbad in zicht.</p>
+      </article>
+      <article class="dest-card d5 r">
+        <span class="dest-badge">Nature Reset</span>
+        <h3>De Azoren</h3>
+        <p>Ongerepte natuur voor wie echt wil nulstellen.</p>
+      </article>
+      <article class="dest-card d6 r">
+        <span class="dest-badge">Retreat Centrum</span>
+        <h3>Kroatische Eilanden</h3>
+        <p>Gestructureerde retreats voor focus, lichaam en rust.</p>
+      </article>
+    </div>
+    <div class="dest-cta r">
+      <a href="#aanmelden" class="btn btn-terra btn-lg">Ontdek welke plek bij jou past →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ TESTIMONIALS ════════ -->
+<section class="sec testi" style="background:white;">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:640px; margin:0 auto;">
+      <span class="tag tag-teal"><span class="dot"></span>Uit onze validatiefase</span>
+      <h2 style="margin:18px 0 14px; font-size:clamp(28px,4.5vw,44px);">Wat professionals zeggen</h2>
+      <span class="testi-notice">📋 Eerlijk label: quotes uit gesprekken die we voerden tijdens onze validatiefase</span>
+    </div>
+    <div class="testi-grid r">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <blockquote>"Ik zoek elk jaar uren op Booking.com voor een werkplek in Zuid-Europa. Een platform dat dit voor me doet? Waar schrijf ik me in?"</blockquote>
+        <div class="testi-who">
+          <div class="testi-av av1">M</div>
+          <div><div class="testi-name">Marieke V.</div><div class="testi-role">42 · Marketing Consultant</div></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <blockquote>"Ik voel me altijd schuldig als ik er even tussenuit ga. Een club van mensen die dit normaal vinden — dat spreekt me enorm aan."</blockquote>
+        <div class="testi-who">
+          <div class="testi-av av2">T</div>
+          <div><div class="testi-name">Thomas R.</div><div class="testi-role">51 · Zelfstandig Consultant</div></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <blockquote>"Wij willen langere periodes weg, comfortabel, maar niet tussen de massatoeristen. Precies zoiets zochten we al jaren."</blockquote>
+        <div class="testi-who">
+          <div class="testi-av av3">A</div>
+          <div><div class="testi-name">Anneke &amp; Paul</div><div class="testi-role">58 &amp; 61 · Slow travellers</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FAQ ════════ -->
+<section class="sec faq">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:600px; margin:0 auto;">
+      <span class="tag tag-terra"><span class="dot"></span>Vragen</span>
+      <h2 style="margin:18px 0 0; font-size:clamp(28px,4.5vw,44px);">Goeie vraag.</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item r">
+        <summary>Is dit al een bestaand platform? <span class="faq-plus">+</span></summary>
+        <div class="faq-body">Nog niet. We zijn in de validatiefase. Door je in te schrijven help je ons bepalen wat het platform moet kunnen. Early members krijgen gratis lifetime toegang én directe invloed op de ontwikkeling.</div>
+      </details>
+      <details class="faq-item r">
+        <summary>Wat kost een membership straks? <span class="faq-plus">+</span></summary>
+        <div class="faq-body">We testen verschillende modellen. Verwacht een jaarlijks membership tussen €199 en €499. Early members krijgen een introductieprijs die nooit meer stijgt.</div>
+      </details>
+      <details class="faq-item r">
+        <summary>Alleen Nederland en België? <span class="faq-plus">+</span></summary>
+        <div class="faq-body">Nee. We richten ons op alle Europese professionals. De bestemmingen liggen verspreid door heel Europa.</div>
+      </details>
+      <details class="faq-item r">
+        <summary>Ik werk niet remote. Past dit bij mij? <span class="faq-plus">+</span></summary>
+        <div class="faq-body">Absoluut. Veel members gebruiken het platform voor wellness weekenden, jaarlijkse retreats of langere vakanties. Je hoeft niet remote te werken om behoefte te hebben aan een goede reset.</div>
+      </details>
+      <details class="faq-item r">
+        <summary>Hoe werkt de AI matching? <span class="faq-plus">+</span></summary>
+        <div class="faq-body">Je beantwoordt 5 vragen over werkstijl en voorkeuren. Op basis daarvan selecteert ons systeem bestemmingen die aansluiten op jóuw behoeften — niet op betaalde advertenties.</div>
+      </details>
+      <details class="faq-item r">
+        <summary>Wat doen jullie met mijn gegevens? <span class="faq-plus">+</span></summary>
+        <div class="faq-body">We sturen maximaal 2× per maand een relevante nieuwsbrief. Geen spam, geen doorverkoop. Uitschrijven kan altijd met één klik.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ LEADFORMULIER ════════ -->
+<div class="wave lead-wave" style="background:var(--cream2);">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,70 C360,0 1080,70 1440,0 L1440,70 L0,70 Z" fill="#4A9E8E"/>
+  </svg>
+</div>
+
+<section class="lead" id="aanmelden">
+  <div class="wrap lead-grid">
+    <div class="lead-copy r">
+      <span class="tag" style="background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.25);">
+        <span class="dot" style="background:var(--gold-l)"></span> Beperkte plekken beschikbaar
+      </span>
+      <h2>Claim jouw plek als founding member</h2>
+      <p class="intro">We openen de deuren voor een kleine groep early members. Schrijf je in en ontvang:</p>
+      <ul class="benefits">
+        <li><span class="ck">✓</span> Gratis persoonlijk locatieadvies <span class="val">(waarde €97)</span></li>
+        <li><span class="ck">✓</span> Founding member status + lifetime korting</li>
+        <li><span class="ck">✓</span> Directe invloed op de platformontwikkeling</li>
+        <li><span class="ck">✓</span> Eerste toegang bij de lancering</li>
+      </ul>
+    </div>
+    <div class="lead-form r">
+      <form id="leadForm" novalidate>
+        <h3>Schrijf je gratis in</h3>
+        <p class="form-sub">Nog maar een beperkt aantal founding plekken beschikbaar.</p>
+        <div class="field">
+          <label for="naam">Voornaam</label>
+          <input type="text" id="naam" placeholder="Bijv. Marieke" required autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="email">E-mailadres</label>
+          <input type="email" id="email" placeholder="jij@voorbeeld.nl" required autocomplete="email">
+        </div>
+        <div class="radio-field field">
+          <label class="top">Wat is jouw grootste uitdaging?</label>
+          <div class="radio-opts">
+            <label class="radio-opt"><input type="radio" name="uitd" value="plek"><span class="opt-emoji">🔍</span> De juiste plek vinden is tijdrovend</label>
+            <label class="radio-opt"><input type="radio" name="uitd" value="balans"><span class="opt-emoji">⚖️</span> Rust en werk balanceren</label>
+            <label class="radio-opt"><input type="radio" name="uitd" value="offline"><span class="opt-emoji">📵</span> Ik wil offline maar durf niet</label>
+            <label class="radio-opt"><input type="radio" name="uitd" value="community"><span class="opt-emoji">🤝</span> Ik mis gelijkgestemden</label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-terra btn-block btn-lg" style="margin-top:6px;">
+          Claim mijn founding plek →
+        </button>
+        <p class="form-foot">🔒 100% gratis · Geen creditcard · Uitschrijven altijd mogelijk</p>
+      </form>
+      <div class="form-success" id="formSuccess">
+        <div class="big">🎉</div>
+        <h3>Welkom bij de club!</h3>
+        <p>Check je inbox — je gratis locatieadvies en de volgende stappen liggen klaar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wave lead-wave-b" style="background:#4A9E8E;">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C480,60 960,0 1440,60 L1440,60 L0,60 Z" fill="#2D2417"/>
+  </svg>
+</div>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">European Reset Club</div>
+        <p>Het AI wellness & workation platform voor Europese professionals. Nu in validatiefase.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm6 0h3.8v1.7h.05c.53-1 1.83-2.05 3.76-2.05C20.4 8.65 21 11 21 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21H9V9Z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <p style="margin-bottom:6px;">📍 Nederland</p>
+        <p>✉️ hallo@europeanresetclub.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 European Reset Club</span>
+      <span>
+        <a href="#">Privacybeleid</a> ·
+        <a href="#">AVG Conform</a> ·
+        <a href="#">Uitschrijven</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════ EXIT INTENT MODAL ════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" id="mClose" aria-label="Sluiten">×</button>
+    <div class="modal-illo">☀️</div>
+    <h3>Neem dit eerst mee</h3>
+    <p class="guide">"De 7 mooiste workation &amp; wellness plekken van Europa 2024 — gecureerd voor professionals"</p>
+    <form id="modalForm">
+      <input type="email" placeholder="Je e-mailadres" required aria-label="E-mailadres">
+      <button type="submit" class="btn btn-terra btn-block">Stuur mij de gratis gids</button>
+    </form>
+    <span class="no" id="mNo">Nee bedankt, ik zoek zelf wel</span>
+  </div>
+</div>
+
+<script>
+/* ── Sticky nav ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 50), { passive: true });
+
+/* ── Scroll reveal ── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.r').forEach((el, i) => {
+  el.style.transitionDelay = (i % 4 * 0.07) + 's';
+  io.observe(el);
+});
+
+/* ── Lead form ── */
+document.getElementById('leadForm').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!e.target.checkValidity()) { e.target.reportValidity(); return; }
+  e.target.style.display = 'none';
+  document.getElementById('formSuccess').classList.add('show');
+});
+
+/* ── Exit intent ── */
+const modal = document.getElementById('modal');
+const shown = () => sessionStorage.getItem('ei');
+const show  = () => { if (!shown()) { modal.classList.add('open'); sessionStorage.setItem('ei','1'); } };
+const hide  = () => modal.classList.remove('open');
+document.addEventListener('mouseout', e => { if (e.clientY <= 0 && !e.relatedTarget) show(); });
+let t; const reset = () => { clearTimeout(t); t = setTimeout(show, 30000); };
+['mousemove','keydown','scroll','touchstart'].forEach(ev => addEventListener(ev, reset, { passive: true }));
+reset();
+document.getElementById('mClose').onclick = hide;
+document.getElementById('mNo').onclick = hide;
+modal.onclick = e => { if (e.target === modal) hide(); };
+document.getElementById('modalForm').addEventListener('submit', e => {
+  e.preventDefault();
+  modal.querySelector('.modal').innerHTML = '<div style="padding:20px;text-align:center"><div style="font-size:52px">📬</div><h3 style="color:var(--teal);margin:14px 0 8px">Onderweg!</h3><p style="color:var(--ink-soft)">Check je inbox — de gids ligt klaar.</p></div>';
+  setTimeout(hide, 2500);
+});
+</script>
+</body>
+</html>
