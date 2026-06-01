@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>European Reset Club — Begrijp je lichaam. Vind je plek.</title>
+<meta name="description" content="Een persoonlijke gezondheidscheck door een geaccrediteerd therapeut, gevolgd door de Europese herstelbestemming die echt bij jou past. Voor ZZP'ers en consultants.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ════════════════════════════════════════
+   TOKENS — licht, zomers, gezond
+════════════════════════════════════════ */
+:root {
+  /* lichte basis */
+  --paper:    #FEFCF7;   /* bijna-wit, warm */
+  --cream:    #FAF6EE;
+  --linen:    #F3EDE0;
+  --white:    #FFFFFF;
+
+  /* salie / natuur — zacht */
+  --sage:     #8BA888;
+  --sage-d:   #5E7A5C;
+  --sage-l:   #C5D6C0;
+  --sage-bg:  #EDF3EA;
+
+  /* perzik / koraal — zon, warmte */
+  --peach:    #E89B7B;
+  --peach-d:  #D17B57;
+  --peach-l:  #F8C9B0;
+  --peach-bg: #FCEDE4;
+
+  /* zacht zonnegeel */
+  --sun:      #F2C45A;
+  --sun-l:    #F9DD9C;
+  --sun-bg:   #FDF4DC;
+
+  /* zacht hemelsblauw — fris */
+  --sky:      #8FB8C9;
+  --sky-bg:   #EAF2F5;
+
+  --ink:      #3A3329;   /* warm donkerbruin, zacht */
+  --ink-soft: #6E6354;
+  --gray:     #A89C8A;
+  --border:   #ECE3D4;
+
+  --r-xl: 32px;
+  --r-lg: 22px;
+  --r-md: 14px;
+  --r-pill: 100px;
+
+  --ease: cubic-bezier(.16,1,.3,1);
+  --shadow:    0 8px 30px rgba(58,51,41,.06);
+  --shadow-lg: 0 24px 60px rgba(58,51,41,.12);
+  --maxw: 1140px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+
+body {
+  font-family:'Figtree', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.65;
+  font-size: 17px;
+  overflow-x: hidden;
+}
+
+h1,h2,h3,h4 { font-family:'Fraunces', Georgia, serif; font-weight:500; line-height:1.15; color:var(--ink); letter-spacing:-.01em; }
+img { max-width:100%; display:block; }
+a { color:inherit; text-decoration:none; }
+
+.wrap { width:100%; max-width:var(--maxw); margin:0 auto; padding:0 28px; }
+.sec  { padding: clamp(70px,9vw,118px) 0; }
+
+/* chips */
+.chip {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'Figtree',sans-serif; font-size:13px; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase;
+  padding:8px 18px; border-radius:var(--r-pill);
+}
+.chip-sage  { background:var(--sage-bg);  color:var(--sage-d); }
+.chip-peach { background:var(--peach-bg); color:var(--peach-d); }
+.chip-sun   { background:var(--sun-bg);   color:#9A7012; }
+.chip-sky   { background:var(--sky-bg);   color:#4E7C8E; }
+.chip-white { background:rgba(255,255,255,.25); color:#fff; border:1px solid rgba(255,255,255,.4); backdrop-filter:blur(6px); }
+.chip .dot  { width:7px; height:7px; border-radius:50%; background:currentColor; opacity:.65; }
+
+/* buttons */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  font-family:'Figtree',sans-serif; font-weight:600; font-size:16px;
+  padding:16px 32px; border-radius:var(--r-pill); border:none; cursor:pointer;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .25s; line-height:1;
+}
+.btn-peach  { background:var(--peach); color:#fff; box-shadow:0 8px 26px rgba(209,123,87,.3); }
+.btn-peach:hover { transform:translateY(-3px); box-shadow:0 16px 38px rgba(209,123,87,.4); background:var(--peach-d); }
+.btn-peach .arr { transition:transform .3s var(--ease); }
+.btn-peach:hover .arr { transform:translateX(4px); }
+.btn-sage   { background:var(--sage-d); color:#fff; box-shadow:0 8px 26px rgba(94,122,92,.28); }
+.btn-sage:hover { transform:translateY(-3px); box-shadow:0 16px 38px rgba(94,122,92,.38); }
+.btn-white  { background:#fff; color:var(--ink); box-shadow:var(--shadow); }
+.btn-white:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.btn-ghost-w { background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.5); }
+.btn-ghost-w:hover { background:rgba(255,255,255,.14); border-color:#fff; }
+.btn-outline { background:transparent; color:var(--peach-d); border:1.5px solid var(--peach); }
+.btn-outline:hover { background:var(--peach); color:#fff; }
+.btn-lg { padding:20px 40px; font-size:17px; }
+.btn-blk { width:100%; }
+
+/* waves */
+.wv { display:block; overflow:hidden; line-height:0; }
+.wv svg { display:block; width:100%; }
+
+/* reveal */
+.r { opacity:0; transform:translateY(28px); transition:opacity .75s var(--ease), transform .75s var(--ease); }
+.r.in { opacity:1; transform:none; }
+.r.d1 { transition-delay:.08s; } .r.d2 { transition-delay:.16s; } .r.d3 { transition-delay:.24s; }
+
+
+/* ════════════════════════════════════════ NAV ════════════════════════════════════════ */
+.nav { position:fixed; inset:0 0 auto; z-index:100; padding:20px 0; transition:all .45s var(--ease); }
+.nav.on { background:rgba(254,252,247,.92); backdrop-filter:blur(18px); box-shadow:0 1px 0 var(--border); padding:13px 0; }
+.nav-i { display:flex; align-items:center; justify-content:space-between; }
+.brand { font-family:'Fraunces',serif; font-size:21px; color:#fff; transition:color .4s; display:flex; align-items:center; gap:9px; }
+.brand .leaf { width:26px; height:26px; }
+.nav.on .brand { color:var(--ink); }
+.nav-cta { padding:11px 24px; font-size:15px; }
+
+
+/* ════════════════════════════════════════ HERO ════════════════════════════════════════ */
+.hero {
+  min-height:100vh; display:flex; flex-direction:column;
+  padding:150px 0 0; position:relative; overflow:hidden;
+  background: linear-gradient(165deg, #B9D2C4 0%, #9DBFB0 45%, #8FB8C9 100%);
+}
+/* lichte zon en sfeer */
+.hero::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(circle 420px at 82% 12%, rgba(249,221,156,.75) 0%, transparent 62%),
+    radial-gradient(ellipse 60% 50% at 12% 95%, rgba(197,214,192,.6) 0%, transparent 55%);
+}
+.leafshape { position:absolute; opacity:.5; pointer-events:none; animation:sway 9s ease-in-out infinite; }
+.lf1 { top:14%; left:3%;  width:120px; animation-delay:0s; }
+.lf2 { top:62%; right:6%; width:90px;  animation-delay:-4s; }
+.lf3 { top:30%; right:24%; width:60px; animation-delay:-6s; opacity:.35; }
+@keyframes sway { 0%,100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-16px) rotate(6deg);} }
+
+.hero-i { position:relative; z-index:1; padding-bottom:90px; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:9px;
+  background:rgba(255,255,255,.28); backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.45); color:#fff;
+  padding:9px 20px; border-radius:var(--r-pill); font-size:14px; font-weight:600; margin-bottom:28px;
+}
+.hero-badge .pin { width:8px; height:8px; border-radius:50%; background:var(--sun); animation:ping 2s ease-in-out infinite; }
+@keyframes ping { 0%,100%{box-shadow:0 0 0 0 rgba(242,196,90,.6);} 50%{box-shadow:0 0 0 7px rgba(242,196,90,0);} }
+
+.hero h1 { color:#fff; font-size:clamp(42px,6.8vw,78px); max-width:760px; margin-bottom:20px; font-weight:500; line-height:1.08; }
+.hero h1 .em { font-style:italic; color:var(--sun-l); }
+.hero-sub { font-size:clamp(18px,2.2vw,22px); color:rgba(255,255,255,.92); max-width:560px; margin-bottom:38px; font-weight:300; line-height:1.6; }
+.hero-btns { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:42px; }
+.hero-meta { display:flex; flex-wrap:wrap; gap:26px; font-size:15px; color:rgba(255,255,255,.92); }
+.hero-meta span { display:flex; align-items:center; gap:8px; }
+.hero-meta .ck { color:var(--sun-l); font-size:18px; }
+
+.hero > .wv { position:relative; z-index:2; margin-top:-1px; }
+
+
+/* ════════════════════════════════════════ HOE — 3 stappen lint ════════════════════════════════════════ */
+.flow { background:var(--white); padding:42px 0; border-bottom:1px solid var(--border); }
+.flow-i { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:14px 8px; }
+.flow-step { display:flex; align-items:center; gap:12px; }
+.flow-num { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; flex-shrink:0; }
+.flow-step:nth-child(1) .flow-num { background:var(--peach-bg); color:var(--peach-d); }
+.flow-step:nth-child(3) .flow-num { background:var(--sage-bg);  color:var(--sage-d); }
+.flow-step:nth-child(5) .flow-num { background:var(--sun-bg);   color:#9A7012; }
+.flow-txt b { display:block; font-size:15px; color:var(--ink); font-weight:600; }
+.flow-txt span { font-size:13px; color:var(--gray); }
+.flow-arrow { color:var(--border); font-size:22px; margin:0 6px; }
+
+
+/* ════════════════════════════════════════ INZICHT ════════════════════════════════════════ */
+.inzicht { background:var(--cream); }
+.split { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+.split-tekst h2 { font-size:clamp(30px,4.4vw,46px); margin:18px 0 18px; }
+.split-tekst h2 em { font-style:italic; color:var(--peach-d); }
+.split-tekst p { font-size:18px; color:var(--ink-soft); line-height:1.7; margin-bottom:16px; }
+.split-tekst p strong { color:var(--ink); font-weight:600; }
+
+.kaartjes { display:flex; flex-direction:column; gap:14px; }
+.kj { background:#fff; border-radius:var(--r-lg); padding:22px 24px; border:1px solid var(--border); display:flex; gap:16px; align-items:flex-start; transition:transform .35s var(--ease), box-shadow .35s var(--ease); }
+.kj:hover { transform:translateX(6px); box-shadow:var(--shadow); }
+.kj .ic { width:46px; height:46px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:22px; }
+.kj:nth-child(1) .ic { background:var(--peach-bg); }
+.kj:nth-child(2) .ic { background:var(--sage-bg); }
+.kj:nth-child(3) .ic { background:var(--sun-bg); }
+.kj:nth-child(4) .ic { background:var(--sky-bg); }
+.kj h4 { font-family:'Figtree',sans-serif; font-size:16.5px; font-weight:600; color:var(--ink); margin-bottom:3px; }
+.kj p { font-size:14.5px; color:var(--ink-soft); line-height:1.5; margin:0; }
+
+
+/* ════════════════════════════════════════ DE AANPAK — 5 stappen ════════════════════════════════════════ */
+.aanpak { background:var(--white); }
+.aanpak-kop { text-align:center; max-width:640px; margin:0 auto 60px; }
+
+.stappen { display:flex; flex-direction:column; gap:22px; max-width:880px; margin:0 auto; }
+.stap {
+  display:grid; grid-template-columns:auto 1fr; gap:26px; align-items:start;
+  background:var(--cream); border-radius:var(--r-xl); padding:32px 36px;
+  border:1px solid var(--border); position:relative;
+  transition:transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.stap:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+.stap.hart { background:linear-gradient(135deg, var(--peach-bg) 0%, var(--sun-bg) 100%); border-color:var(--peach-l); }
+.stap-num {
+  width:60px; height:60px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fraunces',serif; font-size:24px; color:#fff;
+}
+.stap:nth-child(1) .stap-num { background:var(--sky); }
+.stap.hart .stap-num { background:var(--peach); box-shadow:0 8px 20px rgba(209,123,87,.35); }
+.stap:nth-child(3) .stap-num { background:var(--sage-d); }
+.stap:nth-child(4) .stap-num { background:var(--sun); color:var(--ink); }
+.stap:nth-child(5) .stap-num { background:var(--sky); }
+.stap-body h3 { font-size:22px; margin-bottom:6px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.stap-body .label-hart { font-family:'Figtree',sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:var(--peach); color:#fff; padding:4px 11px; border-radius:var(--r-pill); }
+.stap-body p { font-size:15.5px; color:var(--ink-soft); line-height:1.6; margin-bottom:8px; }
+.stap-body p:last-child { margin-bottom:0; }
+.stap-body .wie { font-size:13.5px; color:var(--gray); font-style:italic; }
+.stap-body .vergoeding { display:inline-block; margin-top:8px; font-size:13.5px; font-weight:600; color:var(--sage-d); background:var(--sage-bg); padding:6px 14px; border-radius:var(--r-pill); }
+
+
+/* ════════════════════════════════════════ OPRICHTERS ════════════════════════════════════════ */
+.founders { background:var(--linen); }
+.founders-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:52px; }
+.founder { background:#fff; border-radius:var(--r-xl); padding:36px; border:1px solid var(--border); }
+.founder-top { display:flex; align-items:center; gap:18px; margin-bottom:20px; }
+.founder-av { width:72px; height:72px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:30px; color:#fff; }
+.av-a { background:linear-gradient(135deg, var(--sky), #5E8EA0); }
+.av-k { background:linear-gradient(135deg, var(--peach), var(--peach-d)); }
+.founder-naam { font-family:'Fraunces',serif; font-size:22px; color:var(--ink); }
+.founder-rol  { font-size:14px; color:var(--gray); }
+.founder p { font-size:15.5px; color:var(--ink-soft); line-height:1.65; }
+.founders-quote { text-align:center; max-width:720px; margin:52px auto 0; font-family:'Fraunces',serif; font-style:italic; font-size:clamp(20px,2.8vw,26px); color:var(--ink); line-height:1.4; }
+.founders-quote em { color:var(--peach-d); font-style:normal; }
+
+
+/* ════════════════════════════════════════ VOOR WIE ════════════════════════════════════════ */
+.wie { background:var(--white); }
+.wie-grid { display:grid; grid-template-columns:1.2fr .9fr; gap:26px; margin-top:52px; align-items:start; }
+.wie-ja { background:linear-gradient(135deg, var(--sage-bg) 0%, var(--cream) 100%); border-radius:var(--r-xl); padding:38px; border:1px solid var(--sage-l); }
+.wie-ja h3 { font-size:22px; margin-bottom:22px; }
+.wie-lijst { list-style:none; }
+.wie-lijst li { display:flex; gap:14px; align-items:flex-start; padding:13px 0; border-bottom:1px dashed var(--border); font-size:16px; line-height:1.5; }
+.wie-lijst li:last-child { border-bottom:none; padding-bottom:0; }
+.wie-lijst .ic { flex-shrink:0; font-size:19px; margin-top:1px; }
+.wie-lijst .sub { display:block; font-size:13.5px; color:var(--gray); margin-top:2px; }
+.wie-nee { background:var(--linen); border-radius:var(--r-xl); padding:30px; border:1px solid var(--border); }
+.wie-nee h3 { font-size:18px; color:var(--gray); margin-bottom:18px; }
+.wie-nee ul { list-style:none; }
+.wie-nee ul li { display:flex; gap:12px; padding:9px 0; border-bottom:1px dashed var(--border); font-size:15.5px; color:var(--ink-soft); }
+.wie-nee ul li:last-child { border-bottom:none; }
+.wie-nee .x { color:var(--peach-d); font-weight:700; }
+.wie-noot { margin-top:18px; font-size:14px; color:var(--gray); font-style:italic; }
+
+
+/* ════════════════════════════════════════ BESTEMMINGEN ════════════════════════════════════════ */
+.dest { background:var(--cream); }
+.dest-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:52px; }
+.dest-card { border-radius:var(--r-xl); overflow:hidden; position:relative; min-height:300px; display:flex; flex-direction:column; justify-content:flex-end; padding:26px; color:#fff; isolation:isolate; transition:transform .45s var(--ease); }
+.dest-card:hover { transform:translateY(-8px); }
+.dest-card::before { content:''; position:absolute; inset:0; z-index:-2; transition:transform .6s var(--ease); }
+.dest-card:hover::before { transform:scale(1.07); }
+.dest-card::after { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(to top, rgba(58,51,41,.7) 0%, rgba(58,51,41,.08) 55%, transparent); }
+.d1::before { background:linear-gradient(155deg,#E8B07B,#C77B45); }
+.d2::before { background:linear-gradient(155deg,#8FB8C9,#5E8EA0); }
+.d3::before { background:linear-gradient(155deg,#A9C49A,#6E9166); }
+.d4::before { background:linear-gradient(155deg,#E89B7B,#C16040); }
+.d5::before { background:linear-gradient(155deg,#9CC7BC,#5E9486); }
+.d6::before { background:linear-gradient(155deg,#F2C45A,#D19A28); }
+.dest-badge { align-self:flex-start; background:rgba(255,255,255,.28); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.4); color:#fff; font-size:12px; font-weight:600; padding:5px 13px; border-radius:var(--r-pill); margin-bottom:12px; }
+.dest-card h3 { color:#fff; font-size:22px; margin-bottom:5px; }
+.dest-card p { font-size:14.5px; color:rgba(255,255,255,.92); line-height:1.45; }
+.dest-note { text-align:center; max-width:560px; margin:36px auto 0; font-size:15px; color:var(--ink-soft); font-style:italic; }
+
+
+/* ════════════════════════════════════════ PAKKET / PRICING ════════════════════════════════════════ */
+.pakket { background:var(--white); }
+.pakket-kaart {
+  max-width:560px; margin:52px auto 0;
+  background:linear-gradient(150deg, var(--sage-bg) 0%, var(--sun-bg) 100%);
+  border-radius:var(--r-xl); padding:48px; text-align:center; border:1px solid var(--sage-l);
+  position:relative; overflow:hidden;
+}
+.pakket-tag { display:inline-block; background:var(--peach); color:#fff; font-size:13px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:7px 18px; border-radius:var(--r-pill); margin-bottom:18px; }
+.pakket-kaart h3 { font-size:28px; margin-bottom:8px; }
+.pakket-prijs { font-family:'Fraunces',serif; font-size:54px; color:var(--ink); margin:8px 0; }
+.pakket-prijs small { font-size:18px; color:var(--gray); font-family:'Figtree',sans-serif; }
+.pakket-vergoeding { font-size:14.5px; color:var(--sage-d); font-weight:600; margin-bottom:24px; }
+.pakket-lijst { list-style:none; text-align:left; max-width:380px; margin:0 auto 28px; }
+.pakket-lijst li { display:flex; gap:12px; align-items:flex-start; padding:10px 0; font-size:15.5px; color:var(--ink); }
+.pakket-lijst .ck { flex-shrink:0; width:24px; height:24px; border-radius:50%; background:var(--sage-d); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; margin-top:1px; }
+.pakket-klein { margin-top:16px; font-size:13px; color:var(--gray); }
+
+
+/* ════════════════════════════════════════ TESTIMONIALS ════════════════════════════════════════ */
+.testi { background:var(--cream); }
+.testi-kop { text-align:center; max-width:640px; margin:0 auto 44px; }
+.testi-label { display:inline-flex; align-items:center; gap:8px; background:var(--white); border:1px dashed var(--border); border-radius:var(--r-pill); padding:8px 18px; font-size:13.5px; color:var(--ink-soft); margin-bottom:38px; }
+.testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.t-card { background:#fff; border-radius:var(--r-xl); padding:30px; border:1px solid var(--border); position:relative; }
+.t-stars { color:var(--sun); font-size:15px; letter-spacing:3px; margin-bottom:14px; }
+.t-card blockquote { font-size:16px; line-height:1.65; color:var(--ink); margin-bottom:22px; }
+.t-who { display:flex; align-items:center; gap:12px; }
+.t-av { width:44px; height:44px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:18px; }
+.av1 { background:linear-gradient(135deg,var(--peach),var(--peach-d)); }
+.av2 { background:linear-gradient(135deg,var(--sage),var(--sage-d)); }
+.av3 { background:linear-gradient(135deg,var(--sky),#5E8EA0); }
+.t-naam { font-weight:600; font-size:15px; color:var(--ink); }
+.t-rol { font-size:13px; color:var(--gray); }
+
+
+/* ════════════════════════════════════════ FAQ ════════════════════════════════════════ */
+.faq { background:var(--white); }
+.faq-kop { text-align:center; max-width:580px; margin:0 auto 48px; }
+.faq-lijst { max-width:800px; margin:0 auto; }
+.faq-item { background:var(--cream); border:1px solid var(--border); border-radius:var(--r-lg); margin-bottom:14px; overflow:hidden; transition:box-shadow .3s; }
+.faq-item[open] { box-shadow:var(--shadow); background:#fff; }
+.faq-item summary { list-style:none; cursor:pointer; padding:22px 26px; display:flex; justify-content:space-between; align-items:center; gap:16px; font-weight:600; font-size:17px; color:var(--ink); }
+.faq-item summary::-webkit-details-marker { display:none; }
+.faq-plus { flex-shrink:0; width:32px; height:32px; border-radius:50%; background:var(--peach-bg); display:flex; align-items:center; justify-content:center; color:var(--peach-d); font-size:22px; font-weight:300; line-height:1; transition:transform .35s var(--ease), background .3s; }
+.faq-item[open] .faq-plus { transform:rotate(45deg); background:var(--peach); color:#fff; }
+.faq-body { padding:0 26px 24px; font-size:15.5px; color:var(--ink-soft); line-height:1.7; }
+
+
+/* ════════════════════════════════════════ AANMELDEN ════════════════════════════════════════ */
+.lead { position:relative; overflow:hidden; background:linear-gradient(160deg, #9DBFB0 0%, #8FB8C9 100%); }
+.lead::before { content:''; position:absolute; inset:0; background:radial-gradient(circle 380px at 100% 0%, rgba(249,221,156,.6), transparent 60%); }
+.lead-i { display:grid; grid-template-columns:1fr 1.1fr; gap:60px; align-items:center; padding:clamp(56px,8vw,100px) 0; position:relative; z-index:1; }
+.lead-copy h2 { color:#fff; font-size:clamp(30px,4.5vw,46px); margin:18px 0 22px; }
+.lead-copy .lead-sub { font-size:18px; color:rgba(255,255,255,.92); font-weight:300; margin-bottom:30px; }
+.voordelen { list-style:none; }
+.voordelen li { display:flex; gap:14px; align-items:flex-start; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.2); font-size:16.5px; color:#fff; }
+.voordelen li:last-child { border-bottom:none; }
+.voordelen .ck { flex-shrink:0; width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.25); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; margin-top:1px; }
+.voordelen .val { color:var(--sun-l); font-weight:600; }
+
+.form-kaart { background:#fff; border-radius:var(--r-xl); padding:40px; box-shadow:var(--shadow-lg); }
+.form-kaart h3 { font-size:24px; margin-bottom:6px; }
+.form-sub { font-size:14.5px; color:var(--gray); margin-bottom:26px; }
+.veld { margin-bottom:18px; }
+.veld label { display:block; font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:7px; }
+.veld input { width:100%; padding:15px 18px; border:1.5px solid var(--border); border-radius:var(--r-md); font-family:'Figtree',sans-serif; font-size:16px; color:var(--ink); background:var(--cream); transition:border-color .25s, box-shadow .25s, background .25s; }
+.veld input:focus { outline:none; border-color:var(--sage); box-shadow:0 0 0 4px rgba(139,168,136,.18); background:#fff; }
+.veld input::placeholder { color:var(--gray); }
+.radio-lbl { display:block; font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:10px; }
+.radio-opts { display:grid; gap:10px; }
+.radio-opt { display:flex; align-items:center; gap:13px; padding:14px 18px; border:1.5px solid var(--border); border-radius:var(--r-md); cursor:pointer; background:var(--cream); font-size:14.5px; transition:all .2s; line-height:1.4; }
+.radio-opt:hover { border-color:var(--sage); background:var(--sage-bg); }
+.radio-opt input { accent-color:var(--sage-d); width:18px; height:18px; flex-shrink:0; cursor:pointer; }
+.radio-opt:has(input:checked) { border-color:var(--sage); background:var(--sage-bg); font-weight:500; }
+.radio-opt .emo { font-size:18px; }
+.form-voet { margin-top:14px; font-size:13px; color:var(--gray); display:flex; align-items:center; justify-content:center; gap:6px; text-align:center; }
+.form-ok { display:none; text-align:center; padding:28px 10px; }
+.form-ok.toon { display:block; }
+.form-ok .groot { font-size:52px; margin-bottom:14px; }
+.form-ok h3 { color:var(--sage-d); font-size:24px; margin-bottom:8px; }
+.form-ok p { color:var(--ink-soft); font-size:16px; }
+
+
+/* ════════════════════════════════════════ FOOTER ════════════════════════════════════════ */
+.footer { background:var(--ink); color:rgba(255,255,255,.6); padding:56px 0 32px; }
+.footer-top { display:flex; flex-wrap:wrap; justify-content:space-between; gap:32px; padding-bottom:36px; border-bottom:1px solid rgba(255,255,255,.1); }
+.footer-logo { font-family:'Fraunces',serif; font-size:22px; color:#fff; margin-bottom:10px; }
+.footer p { font-size:14.5px; max-width:300px; }
+.footer-soc { display:flex; gap:10px; margin-top:14px; }
+.footer-soc a { width:40px; height:40px; border-radius:50%; border:1px solid rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.6); transition:all .25s; }
+.footer-soc a:hover { background:var(--peach); border-color:var(--peach); color:#fff; }
+.footer-bot { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; padding-top:26px; font-size:13px; }
+.footer-bot a { color:rgba(255,255,255,.5); }
+.footer-bot a:hover { color:var(--peach-l); }
+
+
+/* ════════════════════════════════════════ EXIT ════════════════════════════════════════ */
+.overlay { position:fixed; inset:0; z-index:200; background:rgba(58,51,41,.5); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; padding:24px; }
+.overlay.open { display:flex; }
+.modal { background:#fff; border-radius:var(--r-xl); max-width:460px; width:100%; padding:44px; text-align:center; position:relative; box-shadow:var(--shadow-lg); animation:pop .4s var(--ease); }
+@keyframes pop { from{transform:scale(.92) translateY(20px); opacity:0;} to{transform:none; opacity:1;} }
+.modal-x { position:absolute; top:16px; right:18px; background:none; border:none; font-size:26px; color:var(--gray); cursor:pointer; }
+.modal-illo { font-size:52px; margin-bottom:14px; }
+.modal h3 { font-size:24px; margin-bottom:8px; }
+.modal .gids { font-style:italic; color:var(--peach-d); font-size:15.5px; margin-bottom:22px; line-height:1.4; }
+.modal input { width:100%; padding:14px 18px; border:1.5px solid var(--border); border-radius:var(--r-md); font-size:16px; margin-bottom:12px; font-family:inherit; }
+.modal input:focus { outline:none; border-color:var(--sage); }
+.modal .nee { display:inline-block; margin-top:14px; font-size:13.5px; color:var(--gray); text-decoration:underline; cursor:pointer; }
+
+
+/* ════════════════════════════════════════ RESPONSIVE ════════════════════════════════════════ */
+@media (max-width:1020px) {
+  .lead-i { grid-template-columns:1fr; gap:36px; }
+  .wie-grid, .split, .founders-grid { grid-template-columns:1fr; gap:40px; }
+}
+@media (max-width:780px) {
+  body { font-size:16px; }
+  .dest-grid, .testi-grid { grid-template-columns:1fr; }
+  .hero h1 { font-size:clamp(38px,11vw,56px); }
+  .hero-btns .btn { flex:1 1 100%; }
+  .stap { grid-template-columns:1fr; gap:16px; text-align:left; padding:26px; }
+  .flow-arrow { display:none; }
+  .flow-i { flex-direction:column; align-items:flex-start; }
+  .form-kaart { padding:28px; }
+}
+@media (prefers-reduced-motion:reduce) { *{animation:none!important; transition:none!important;} .r{opacity:1; transform:none;} }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap nav-i">
+    <a href="#top" class="brand">
+      <svg class="leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C9 7 5 8 5 13a7 7 0 0 0 14 0c0-5-4-6-7-11Z"/><path d="M12 22V9"/></svg>
+      European Reset Club
+    </a>
+    <a href="#aanmelden" class="btn btn-white nav-cta">Start jouw check →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <svg class="leafshape lf1" viewBox="0 0 100 100" fill="rgba(255,255,255,.4)"><path d="M50 5C30 30 10 35 10 60a40 40 0 0 0 80 0c0-25-20-30-40-55Z"/></svg>
+  <svg class="leafshape lf2" viewBox="0 0 100 100" fill="rgba(249,221,156,.5)"><path d="M50 5C30 30 10 35 10 60a40 40 0 0 0 80 0c0-25-20-30-40-55Z"/></svg>
+  <svg class="leafshape lf3" viewBox="0 0 100 100" fill="rgba(255,255,255,.4)"><circle cx="50" cy="50" r="45"/></svg>
+
+  <div class="wrap hero-i">
+    <div class="hero-badge r"><span class="pin"></span>847 professionals gingen je voor</div>
+    <h1 class="r d1">Begrijp eerst je lichaam.<br><span class="em">Vind dán je plek.</span></h1>
+    <p class="hero-sub r d2">European Reset Club start met een persoonlijke gezondheidscheck door een geaccrediteerd therapeut — en brengt je vervolgens naar de Europese herstelbestemming die écht bij jou past.</p>
+    <div class="hero-btns r d3">
+      <a href="#aanmelden" class="btn btn-peach btn-lg">Start jouw Reset <span class="arr">→</span></a>
+      <a href="#aanpak" class="btn btn-ghost-w btn-lg">Hoe werkt het?</a>
+    </div>
+    <div class="hero-meta r d3">
+      <span><span class="ck">✓</span> Persoonlijk consult, geen scherm</span>
+      <span><span class="ck">✓</span> Mogelijk deels vergoed</span>
+      <span><span class="ck">✓</span> Voor ZZP'ers &amp; consultants</span>
+    </div>
+  </div>
+
+  <div class="wv">
+    <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,45 C360,90 1080,5 1440,45 L1440,90 L0,90 Z" fill="#FEFCF7"/>
+    </svg>
+  </div>
+</header>
+
+<!-- FLOW LINT -->
+<section class="flow">
+  <div class="wrap flow-i">
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-txt"><b>Gezondheidscheck</b><span>Bij Karlienka, persoonlijk</span></div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-txt"><b>Persoonlijk advies</b><span>Supplementen + bestemming</span></div></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-txt"><b>Jouw reset-reis</b><span>De plek die bij je past</span></div></div>
+  </div>
+</section>
+
+<!-- INZICHT -->
+<section class="sec inzicht">
+  <div class="wrap split">
+    <div class="split-tekst r">
+      <span class="chip chip-peach"><span class="dot"></span>De kern van het probleem</span>
+      <h2>Je weet hoe je <em>presteert</em>.<br>Je weet niet hoe je herstelt.</h2>
+      <p>Als ZZP'er of consultant heb je alles geoptimaliseerd — je workflow, je klanten, je inkomen. <strong>Maar je herstel?</strong> Dat liet je over aan toeval, schuldgevoel en Booking.com.</p>
+      <p>Het probleem is alleen: je weet niet eens wat je lichaam nodig heeft. Je voelt dat het minder gaat, maar je hebt geen idee waar je moet beginnen.</p>
+      <a href="#aanmelden" class="btn btn-outline" style="margin-top:8px;">Dit herken ik</a>
+    </div>
+    <div class="kaartjes r d1">
+      <div class="kj"><span class="ic">😮‍💨</span><div><h4>Je kunt niet stoppen</h4><p>Zelfs op vakantie check je je mail "even".</p></div></div>
+      <div class="kj"><span class="ic">🩺</span><div><h4>Je negeert de signalen</h4><p>Moeheid, slecht slapen, korter lontje — je schuift het vooruit.</p></div></div>
+      <div class="kj"><span class="ic">🔍</span><div><h4>Je weet niet wat past</h4><p>Welke plek, welk soort rust — geen idee waar te beginnen.</p></div></div>
+      <div class="kj"><span class="ic">😓</span><div><h4>Het schuldgevoel wint</h4><p>Weggaan voelt als verlies, terwijl rust je beste investering is.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wv" style="background:var(--cream);"><svg viewBox="0 0 1440 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,28 C480,56 960,0 1440,28 L1440,56 L0,56 Z" fill="#FFFFFF"/></svg></div>
+
+<!-- DE AANPAK — 5 STAPPEN -->
+<section class="sec aanpak" id="aanpak">
+  <div class="wrap">
+    <div class="aanpak-kop r">
+      <span class="chip chip-sage"><span class="dot"></span>De aanpak</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">Van inzicht naar herstel — in vijf stappen</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Het begint niet met een bestemming. Het begint met begrijpen wat jíj nodig hebt.</p>
+    </div>
+    <div class="stappen">
+      <div class="stap r">
+        <div class="stap-num">1</div>
+        <div class="stap-body">
+          <h3>Online intake</h3>
+          <p>Een korte vragenlijst van 10 minuten over je werkdruk, slaap, energie en stresspatronen. Zo bereiden we je gezondheidscheck voor.</p>
+          <span class="wie">Volledig online · 10 minuten</span>
+        </div>
+      </div>
+      <div class="stap hart r">
+        <div class="stap-num">2</div>
+        <div class="stap-body">
+          <h3>Persoonlijke gezondheidscheck <span class="label-hart">Het hart</span></h3>
+          <p>Een consult van 45–60 minuten bij Karlienka — geaccrediteerd manueel therapeute. Live bloedanalyse en iriscopie laten zien wat je lichaam nodig heeft, vóórdat je het zelf voelt.</p>
+          <p><strong>Altijd persoonlijk. Nooit een scherm.</strong></p>
+          <span class="vergoeding">💚 Mogelijk deels vergoed via je aanvullende verzekering</span>
+        </div>
+      </div>
+      <div class="stap r">
+        <div class="stap-num">3</div>
+        <div class="stap-body">
+          <h3>Jouw persoonlijke advies</h3>
+          <p>Binnen 48 uur ontvang je een helder rapport: een supplementenadvies op maat én welk type herstelbestemming bij jouw lichaam en werkstijl past.</p>
+          <span class="wie">Karlienka's analyse, ondersteund door AI</span>
+        </div>
+      </div>
+      <div class="stap r">
+        <div class="stap-num">4</div>
+        <div class="stap-body">
+          <h3>De juiste plek, op basis van jouw check</h3>
+          <p>Drie gecureerde bestemmingen die passen bij jouw profiel — gevalideerd op werkcomfort, rust, kwaliteit en bereikbaarheid vanuit NL/BE. Jij kiest, wij helpen boeken.</p>
+          <span class="wie">Geen druk, geen verplichting</span>
+        </div>
+      </div>
+      <div class="stap r">
+        <div class="stap-num">5</div>
+        <div class="stap-body">
+          <h3>Follow-up</h3>
+          <p>Optioneel vervolgconsult 4–6 weken na terugkomst. Wat heeft het gedaan? We passen je protocol aan en plannen je volgende reset.</p>
+          <span class="wie">Voor wie dit wil — niet verplicht</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OPRICHTERS -->
+<section class="sec founders">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:600px; margin:0 auto;">
+      <span class="chip chip-sky"><span class="dot"></span>De oprichters</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">Wij kennen het probleem van binnenuit</h2>
+    </div>
+    <div class="founders-grid">
+      <div class="founder r">
+        <div class="founder-top">
+          <div class="founder-av av-a">A</div>
+          <div><div class="founder-naam">Arjan</div><div class="founder-rol">Senior Projectmanager · 55</div></div>
+        </div>
+        <p>"Ik beheer al 30 jaar complexe projecten. En toch checkte ik mijn mail op Ameland, terwijl mijn vrouw en dochter naast me zaten. Niet omdat het moest — omdat ik niet wist hoe ik stop. Ik ben precies de persoon voor wie we dit bouwen."</p>
+      </div>
+      <div class="founder r d1">
+        <div class="founder-top">
+          <div class="founder-av av-k">K</div>
+          <div><div class="founder-naam">Karlienka</div><div class="founder-rol">Manueel Therapeute · Geaccrediteerd</div></div>
+        </div>
+        <p>"In mijn praktijk zie ik elke dag wat chronische stress doet met het lichaam van professionals. In hun bloed zie ik het vaak vóórdat ze het zelf voelen. Rust is geen luxe — het is een noodzaak. Daarom bouw ik dit mee."</p>
+      </div>
+    </div>
+    <p class="founders-quote r">Een projectmanager die niet kon stoppen. En een therapeute die ziet wat dat doet met het lichaam. Samen bouwen we het platform dat we <em>zelf hadden willen hebben</em>.</p>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wv" style="background:var(--linen);"><svg viewBox="0 0 1440 56" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,28 C480,0 960,56 1440,28 L1440,56 L0,56 Z" fill="#FFFFFF"/></svg></div>
+
+<!-- VOOR WIE -->
+<section class="sec wie">
+  <div class="wrap">
+    <div class="r" style="max-width:640px;">
+      <span class="chip chip-peach"><span class="dot"></span>Is dit voor jou?</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">We bouwen dit voor één specifieke persoon</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Liever radicaal goed voor 500 mensen dan vaag aanwezig voor 50.000.</p>
+    </div>
+    <div class="wie-grid">
+      <div class="wie-ja r">
+        <h3>European Reset Club is voor jou als je…</h3>
+        <ul class="wie-lijst">
+          <li><span class="ic">🇳🇱🇧🇪</span><span>ZZP'er of consultant bent in Nederland of België<span class="sub">Freelancer, interim manager, coach, adviseur</span></span></li>
+          <li><span class="ic">📅</span><span>Tussen de 38 en 58 jaar bent<span class="sub">Ervaren genoeg om je waarde te kennen, jong genoeg om te willen veranderen</span></span></li>
+          <li><span class="ic">🩺</span><span>Voelt dat je lichaam signalen geeft<span class="sub">Vermoeidheid, slecht slapen, minder energie dan vroeger</span></span></li>
+          <li><span class="ic">💎</span><span>Kwaliteit boven prijs stelt<span class="sub">Bereid te investeren in je gezondheid en herstel</span></span></li>
+          <li><span class="ic">🌍</span><span>In Europa wilt reizen, dicht bij huis<span class="sub">Echte afstand van je routine, zonder lange vluchten</span></span></li>
+        </ul>
+      </div>
+      <div class="wie-nee r d1">
+        <h3>Minder geschikt als je…</h3>
+        <ul>
+          <li><span class="x">✗</span> Zoekt naar de goedkoopste optie</li>
+          <li><span class="x">✗</span> Een gezondheidscheck overbodig vindt</li>
+          <li><span class="x">✗</span> Rust niet ziet als investering</li>
+          <li><span class="x">✗</span> Liever alles zelf uitzoekt</li>
+        </ul>
+        <p class="wie-noot">We bouwen geen platform voor iedereen. We bouwen het beste platform voor jou — als je jezelf hierboven herkent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BESTEMMINGEN -->
+<section class="sec dest">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:640px; margin:0 auto;">
+      <span class="chip chip-sun"><span class="dot"></span>Bestemmingen</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">Plekken die passen bij wat jouw lichaam nodig heeft</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Gecureerd op werkcomfort, rust, sfeer en bereikbaarheid. Pas voorgesteld ná jouw check.</p>
+    </div>
+    <div class="dest-grid">
+      <article class="dest-card d1 r"><span class="dest-badge">Workation + Natuur</span><h3>Alentejo, Portugal</h3><p>Ochtenden focussen, middagen wandelen. Gouden uur standaard.</p></article>
+      <article class="dest-card d2 r d1"><span class="dest-badge">Digital Detox</span><h3>Madeira</h3><p>Oceaan en bergen. Precies genoeg wifi voor wie dat wil.</p></article>
+      <article class="dest-card d3 r d2"><span class="dest-badge">Slow Living</span><h3>Puglia, Italië</h3><p>Wit, zon en het ritme van het zuiden.</p></article>
+      <article class="dest-card d4 r"><span class="dest-badge">Adults Only</span><h3>Granada, Spanje</h3><p>Rust en cultuur aan de voet van de Sierra Nevada.</p></article>
+      <article class="dest-card d5 r d1"><span class="dest-badge">Nature Reset</span><h3>De Azoren</h3><p>Ongerepte natuur voor wie echt wil nulstellen.</p></article>
+      <article class="dest-card d6 r d2"><span class="dest-badge">Actief Herstel</span><h3>Kroatische eilanden</h3><p>Beweging, zee en zon voor wie energie wil opbouwen.</p></article>
+    </div>
+    <p class="dest-note r">Welke van deze bij jou past? Dat bepalen we niet op gevoel — maar op basis van jouw persoonlijke gezondheidscheck.</p>
+  </div>
+</section>
+
+<!-- PAKKET -->
+<section class="sec pakket">
+  <div class="wrap">
+    <div class="r" style="text-align:center; max-width:600px; margin:0 auto;">
+      <span class="chip chip-sage"><span class="dot"></span>Founding aanbod</span>
+      <h2 style="margin:18px 0 12px; font-size:clamp(28px,4.5vw,44px);">Het Reset Startpakket</h2>
+      <p style="color:var(--ink-soft); font-size:18px;">Begin met de check. De rest volgt vanzelf.</p>
+    </div>
+    <div class="pakket-kaart r">
+      <span class="pakket-tag">Founding prijs</span>
+      <h3>Reset Startpakket</h3>
+      <div class="pakket-prijs">€247</div>
+      <p class="pakket-vergoeding">💚 Mogelijk deels vergoed via je aanvullende verzekering</p>
+      <ul class="pakket-lijst">
+        <li><span class="ck">✓</span> Online intake + voorbereiding</li>
+        <li><span class="ck">✓</span> Persoonlijke gezondheidscheck bij Karlienka (bloedanalyse + iriscopie)</li>
+        <li><span class="ck">✓</span> Persoonlijk advies: supplementen op maat</li>
+        <li><span class="ck">✓</span> Drie bestemmingssuggesties op basis van jouw check</li>
+        <li><span class="ck">✓</span> 3 maanden toegang tot de community</li>
+      </ul>
+      <a href="#aanmelden" class="btn btn-peach btn-lg btn-blk">Claim mijn founding plek →</a>
+      <p class="pakket-klein">Beperkt aantal plekken · Karlienka neemt bewust maar enkele mensen per week aan</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="sec testi">
+  <div class="wrap">
+    <div class="testi-kop r">
+      <span class="chip chip-sky"><span class="dot"></span>Uit onze validatiefase</span>
+      <h2 style="margin:18px 0 14px; font-size:clamp(28px,4.5vw,44px);">Wat professionals zeggen</h2>
+      <span class="testi-label">📋 Eerlijk label — quotes uit gesprekken tijdens onze validatiefase</span>
+    </div>
+    <div class="testi-grid">
+      <div class="t-card r"><div class="t-stars">★★★★★</div><blockquote>"Eindelijk iemand die eerst kijkt wat ík nodig heb, in plaats van me een willekeurige plek aan te smeren. Dat de check ook nog vergoed kan worden maakt het een no-brainer."</blockquote><div class="t-who"><div class="t-av av1">M</div><div><div class="t-naam">Marieke V.</div><div class="t-rol">42 · Marketing Consultant</div></div></div></div>
+      <div class="t-card r d1"><div class="t-stars">★★★★★</div><blockquote>"De bloedanalyse liet me zien wat ik al maanden negeerde. Het advies was concreet, geen zweverig verhaal. En de plek die eruit kwam paste precies."</blockquote><div class="t-who"><div class="t-av av2">T</div><div><div class="t-naam">Thomas R.</div><div class="t-rol">51 · Interim Manager</div></div></div></div>
+      <div class="t-card r d2"><div class="t-stars">★★★★★</div><blockquote>"Dat het door een echte therapeut gebeurt, met persoonlijk contact, maakt het verschil. Geen app die doet alsof. Echte aandacht."</blockquote><div class="t-who"><div class="t-av av3">S</div><div><div class="t-naam">Sanne K.</div><div class="t-rol">46 · Zelfstandig Adviseur</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec faq">
+  <div class="wrap">
+    <div class="faq-kop r">
+      <span class="chip chip-peach"><span class="dot"></span>Vragen</span>
+      <h2 style="margin:18px 0 0; font-size:clamp(28px,4.5vw,44px);">Goeie vraag.</h2>
+    </div>
+    <div class="faq-lijst">
+      <details class="faq-item r"><summary>Wat houdt de gezondheidscheck precies in? <span class="faq-plus">+</span></summary><div class="faq-body">Een persoonlijk consult van 45–60 minuten bij Karlienka, geaccrediteerd manueel therapeute. Ze doet een live bloedanalyse en iriscopie en bespreekt je intake. Je krijgt inzicht in wat je lichaam nodig heeft — altijd persoonlijk, nooit via een scherm.</div></details>
+      <details class="faq-item r"><summary>Wordt de check vergoed? <span class="faq-plus">+</span></summary><div class="faq-body">Karlienka is geaccrediteerd voor het ziekenfonds. Afhankelijk van je aanvullende verzekering of mutualiteit wordt (een deel van) de consultatie vergoed. We raden je aan dit bij je eigen verzekeraar te controleren — we communiceren alleen wat aantoonbaar klopt.</div></details>
+      <details class="faq-item r"><summary>Is dit al een bestaand platform? <span class="faq-plus">+</span></summary><div class="faq-body">We zijn in de validatiefase. De gezondheidschecks en adviezen zijn al echt — Karlienka doet ze in haar praktijk. Het volledige digitale platform bouwen we als de vraag bewezen is. Founding members krijgen een permanente introductieprijs.</div></details>
+      <details class="faq-item r"><summary>Moet ik per se een reis boeken? <span class="faq-plus">+</span></summary><div class="faq-body">Nee. De check en het advies zijn waardevol op zichzelf. Veel mensen starten met het supplementenadvies en boeken later pas een bestemming. Jij bepaalt het tempo.</div></details>
+      <details class="faq-item r"><summary>Waarom eerst een check en niet meteen boeken? <span class="faq-plus">+</span></summary><div class="faq-body">Omdat een willekeurige mooie plek je niet herstelt. Iemand die uitgeput is heeft iets anders nodig dan iemand die vooral wil ontprikkelen. De check zorgt dat je naar de juiste plek gaat — niet naar de eerste de beste.</div></details>
+      <details class="faq-item r"><summary>Wat gebeurt er met mijn gezondheidsgegevens? <span class="faq-plus">+</span></summary><div class="faq-body">Je gegevens worden vertrouwelijk behandeld volgens de geldende privacy- en beroepsregels voor therapeuten. Ze worden nooit gedeeld of doorverkocht. Punt.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wv" style="background:var(--white);"><svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,70 C360,0 1080,70 1440,0 L1440,70 L0,70 Z" fill="#9DBFB0"/></svg></div>
+
+<!-- AANMELDEN -->
+<section class="lead" id="aanmelden">
+  <div class="wrap lead-i">
+    <div class="lead-copy r">
+      <span class="chip chip-white"><span class="dot"></span>Beperkt aantal plekken</span>
+      <h2>Start jouw Reset</h2>
+      <p class="lead-sub">Schrijf je in voor het Reset Startpakket. We nemen contact op om je gezondheidscheck in te plannen.</p>
+      <ul class="voordelen">
+        <li><span class="ck">✓</span> Persoonlijke gezondheidscheck door geaccrediteerd therapeut</li>
+        <li><span class="ck">✓</span> Advies op maat — supplementen <span class="val">+ bestemming</span></li>
+        <li><span class="ck">✓</span> Mogelijk deels vergoed via je verzekering</li>
+        <li><span class="ck">✓</span> Founding prijs die permanent blijft gelden</li>
+      </ul>
+    </div>
+    <div class="form-kaart r d1">
+      <form id="leadForm" novalidate>
+        <h3>Schrijf je in</h3>
+        <p class="form-sub">We nemen binnen 2 werkdagen contact op om je check in te plannen.</p>
+        <div class="veld"><label for="naam">Voornaam</label><input type="text" id="naam" placeholder="Bijv. Marieke" required autocomplete="given-name"></div>
+        <div class="veld"><label for="email">E-mailadres</label><input type="email" id="email" placeholder="jij@voorbeeld.nl" required autocomplete="email"></div>
+        <div class="veld">
+          <label class="radio-lbl">Wat herken je het meest?</label>
+          <div class="radio-opts">
+            <label class="radio-opt"><input type="radio" name="pijn" value="stop"><span class="emo">🛑</span> Ik kan niet stoppen, ook op vakantie</label>
+            <label class="radio-opt"><input type="radio" name="pijn" value="signalen"><span class="emo">🩺</span> Mijn lichaam geeft signalen die ik negeer</label>
+            <label class="radio-opt"><input type="radio" name="pijn" value="plek"><span class="emo">🔍</span> Ik weet niet welke plek bij mij past</label>
+            <label class="radio-opt"><input type="radio" name="pijn" value="balans"><span class="emo">⚖️</span> Werk en rust combineren lukt niet</label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-peach btn-blk btn-lg" style="margin-top:8px;">Claim mijn founding plek →</button>
+        <p class="form-voet">🔒 Vrijblijvend inschrijven · Geen betaling vooraf · Privacy gegarandeerd</p>
+      </form>
+      <div class="form-ok" id="formOk">
+        <div class="groot">🌿</div>
+        <h3>Welkom!</h3>
+        <p>We nemen binnen 2 werkdagen contact op om je gezondheidscheck in te plannen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wv" style="background:#8FB8C9;"><svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,0 C480,60 960,0 1440,60 L1440,60 L0,60 Z" fill="#3A3329"/></svg></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">European Reset Club</div>
+        <p>Begrijp je lichaam. Vind je plek. Het herstelplatform voor Nederlandse en Belgische ZZP'ers en consultants. Nu in validatiefase.</p>
+        <div class="footer-soc">
+          <a href="#" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm6 0h3.8v1.7h.05c.53-1 1.83-2.05 3.76-2.05C20.4 8.65 21 11 21 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2 0-2.3 1.57-2.3 3.2V21H9V9Z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <p style="margin-bottom:6px;">📍 Nederland</p>
+        <p>✉️ hallo@europeanresetclub.com</p>
+      </div>
+    </div>
+    <div class="footer-bot">
+      <span>© 2024 European Reset Club</span>
+      <span><a href="#">Privacybeleid</a> · <a href="#">AVG Conform</a> · <a href="#">Uitschrijven</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- EXIT -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="modal-x" id="mX" aria-label="Sluiten">×</button>
+    <div class="modal-illo">🌿</div>
+    <h3>Neem dit eerst mee</h3>
+    <p class="gids">"5 signalen dat je lichaam toe is aan een reset — herkend door een therapeut"</p>
+    <form id="mForm">
+      <input type="email" placeholder="Je e-mailadres" required aria-label="E-mailadres">
+      <button type="submit" class="btn btn-peach btn-blk">Stuur mij de gratis gids</button>
+    </form>
+    <span class="nee" id="mNee">Nee bedankt</span>
+  </div>
+</div>
+
+<script>
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('on',scrollY>50),{passive:true});
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.r').forEach(el=>io.observe(el));
+document.getElementById('leadForm').addEventListener('submit',e=>{e.preventDefault();if(!e.target.checkValidity()){e.target.reportValidity();return;}e.target.style.display='none';document.getElementById('formOk').classList.add('toon');});
+const ov=document.getElementById('overlay');
+const toon=()=>{if(!sessionStorage.getItem('ei')){ov.classList.add('open');sessionStorage.setItem('ei','1');}};
+const verb=()=>ov.classList.remove('open');
+addEventListener('mouseout',e=>{if(e.clientY<=0&&!e.relatedTarget)toon();});
+let t;const rs=()=>{clearTimeout(t);t=setTimeout(toon,30000);};
+['mousemove','keydown','scroll','touchstart'].forEach(ev=>addEventListener(ev,rs,{passive:true}));rs();
+document.getElementById('mX').onclick=verb;document.getElementById('mNee').onclick=verb;
+ov.onclick=e=>{if(e.target===ov)verb();};
+document.getElementById('mForm').addEventListener('submit',e=>{e.preventDefault();ov.querySelector('.modal').innerHTML='<div style="padding:20px;text-align:center"><div style="font-size:52px">📬</div><h3 style="color:var(--sage-d);margin:14px 0 8px;font-family:Fraunces,serif">Onderweg!</h3><p style="color:var(--ink-soft)">Check je inbox — de gids ligt klaar.</p></div>';setTimeout(verb,2500);});
+</script>
+</body>
+</html>
