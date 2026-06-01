@@ -40,6 +40,7 @@ export interface LandingConfig {
   related: RelatedLink[];
   ctaTitle: string;
   ctaBody: string;
+  locale?: "nl" | "de";
 }
 
 const T = {
@@ -78,7 +79,35 @@ export function landingSchemas(config: LandingConfig): object[] {
   ];
 }
 
+const I18N = {
+  nl: {
+    home: "Huis ter Huynen",
+    heroCta: "Bekijk beschikbaarheid →",
+    heroSub: "Schrijf je in voor de opening",
+    priceLabel: "direct boekbaar, zonder tussenpersoon",
+    relatedLabel: "Ontdek ook",
+    faqTitle: "Veelgestelde vragen",
+    ctaAvail: "Bekijk beschikbaarheid",
+    ctaWa: "Stel je vraag via WhatsApp",
+    opening: "Opening 1 januari 2027 · al boekbaar",
+    footerMore: "Meer vakanties in Drenthe",
+  },
+  de: {
+    home: "Huis ter Huynen",
+    heroCta: "Verfügbarkeit prüfen →",
+    heroSub: "Für die Eröffnung anmelden",
+    priceLabel: "direkt buchbar, ohne Vermittler",
+    relatedLabel: "Entdecken Sie auch",
+    faqTitle: "Häufig gestellte Fragen",
+    ctaAvail: "Verfügbarkeit prüfen",
+    ctaWa: "Frage via WhatsApp stellen",
+    opening: "Eröffnung 1. Januar 2027 · bereits buchbar",
+    footerMore: "Weitere Unterkünfte in Drenthe",
+  },
+};
+
 export function LandingTemplate({ config }: { config: LandingConfig }) {
+  const t = I18N[config.locale ?? "nl"];
   return (
     <div style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
       {/* Breadcrumb */}
@@ -88,7 +117,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
             <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <li>
                 <Link href="/" style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>
-                  Huis ter Huynen
+                  {t.home}
                 </Link>
               </li>
               <li style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>›</li>
@@ -114,15 +143,15 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/#reserveren" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "15px 32px", borderRadius: 10, textDecoration: "none", boxShadow: "0 6px 24px rgba(180,154,94,.45)" }}>
-              Bekijk beschikbaarheid →
+              {t.heroCta}
             </Link>
             <Link href="/#nieuwsbrief" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: "white", border: "1px solid rgba(255,255,255,.4)", padding: "15px 28px", borderRadius: 10, textDecoration: "none" }}>
-              Schrijf je in voor de opening
+              {t.heroSub}
             </Link>
           </div>
           {config.priceFrom && (
             <div style={{ marginTop: 18, fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,.85)", letterSpacing: ".3px" }}>
-              {config.priceFrom} · direct boekbaar, zonder tussenpersoon
+              {config.priceFrom} · {t.priceLabel}
             </div>
           )}
         </div>
@@ -175,7 +204,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         <section style={{ background: T.bg, padding: "56px 40px" }}>
           <div style={{ maxWidth: 980, margin: "0 auto" }}>
             <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.green, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20 }}>
-              Ontdek ook
+              {t.relatedLabel}
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               {config.related.map((r, i) => (
@@ -194,7 +223,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <div style={{ maxWidth: 780, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 40 }}>
               <h2 style={{ fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 32px)", color: T.text, margin: 0, fontWeight: 700 }}>
-                Veelgestelde vragen
+                {t.faqTitle}
               </h2>
               <div style={{ height: 2, width: 40, background: T.gold, margin: "14px auto 0" }} />
             </div>
@@ -218,7 +247,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       <section style={{ background: T.green, padding: "72px 40px", textAlign: "center" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
           <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
-            Opening 1 januari 2027 · al boekbaar
+            {t.opening}
           </div>
           <h2 style={{ fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)", color: "white", margin: "0 0 14px", fontWeight: 700, lineHeight: 1.2 }}>
             {config.ctaTitle}
@@ -228,10 +257,10 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/#reserveren" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "14px 30px", borderRadius: 10, textDecoration: "none" }}>
-              Bekijk beschikbaarheid
+              {t.ctaAvail}
             </Link>
             <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: "white", border: "1px solid rgba(255,255,255,.35)", padding: "14px 28px", borderRadius: 10, textDecoration: "none" }}>
-              Stel je vraag via WhatsApp
+              {t.ctaWa}
             </a>
           </div>
         </div>
@@ -246,7 +275,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               fontFamily: T.sans, fontSize: 11, fontWeight: 600,
               color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
             }}>
-              Meer vakanties in Drenthe
+              {t.footerMore}
             </div>
             <div style={{
               display: "grid",

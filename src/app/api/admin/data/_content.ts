@@ -153,35 +153,31 @@ export async function handleContentPost(action: string, body: Record<string, unk
     }
     case "import_landing_seed": {
       const sb = getSupabase();
-      const { data: existing } = await sb.from("landing_pages").select("slug");
-      const have = new Set((existing || []).map((r: { slug: string }) => r.slug));
-      const toInsert = SEED_LANDING_PAGES
-        .filter((p) => !have.has(p.slug))
-        .map((p) => ({
-          slug: p.slug,
-          breadcrumb: p.breadcrumb,
-          eyebrow: p.eyebrow,
-          h1: p.h1,
-          hero_sub: p.hero_sub,
-          hero_image: p.hero_image,
-          hero_image_alt: p.hero_image_alt,
-          price_from: p.price_from,
-          intro: p.intro,
-          sections: p.sections,
-          faq: p.faq,
-          related: p.related,
-          cta_title: p.cta_title,
-          cta_body: p.cta_body,
-          meta_title: p.meta_title,
-          meta_description: p.meta_description,
-          og_image: p.og_image,
-          gepubliceerd: true,
-          sort_order: p.sort_order ?? 0,
-        }));
-      if (toInsert.length === 0) return NextResponse.json({ success: true, imported: 0 });
-      const { error } = await sb.from("landing_pages").insert(toInsert);
+      const toUpsert = SEED_LANDING_PAGES.map((p) => ({
+        slug: p.slug,
+        breadcrumb: p.breadcrumb,
+        eyebrow: p.eyebrow,
+        h1: p.h1,
+        hero_sub: p.hero_sub,
+        hero_image: p.hero_image,
+        hero_image_alt: p.hero_image_alt,
+        price_from: p.price_from,
+        intro: p.intro,
+        sections: p.sections,
+        faq: p.faq,
+        related: p.related,
+        cta_title: p.cta_title,
+        cta_body: p.cta_body,
+        meta_title: p.meta_title,
+        meta_description: p.meta_description,
+        og_image: p.og_image,
+        gepubliceerd: true,
+        sort_order: p.sort_order ?? 0,
+      }));
+      const { error } = await sb.from("landing_pages").upsert(toUpsert, { onConflict: "slug" });
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-      return NextResponse.json({ success: true, imported: toInsert.length });
+      revalidatePath("/", "layout");
+      return NextResponse.json({ success: true, imported: toUpsert.length });
     }
     default:
       return null;

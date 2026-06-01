@@ -46,7 +46,7 @@ export function parseRelated(text: string | null | undefined): RelatedLink[] {
 }
 
 /** Database row / seed record → renderable LandingConfig. */
-export function recordToConfig(rec: LandingPageRecord): LandingConfig {
+export function recordToConfig(rec: LandingPageRecord, locale?: "nl" | "de"): LandingConfig {
   return {
     slug: rec.slug,
     breadcrumb: rec.breadcrumb,
@@ -62,6 +62,7 @@ export function recordToConfig(rec: LandingPageRecord): LandingConfig {
     related: parseRelated(rec.related),
     ctaTitle: rec.cta_title,
     ctaBody: rec.cta_body,
+    locale: locale ?? (rec.slug.startsWith("de/") ? "de" : "nl"),
   };
 }
 

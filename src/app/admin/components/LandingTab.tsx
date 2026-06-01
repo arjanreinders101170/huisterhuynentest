@@ -119,7 +119,7 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
   };
 
   const importSeed = async () => {
-    if (!confirm("Alle standaard-landingspagina's importeren in de database? Bestaande pagina's blijven ongemoeid.")) return;
+    if (!confirm("Alle standaard-landingspagina's importeren en herstellen? Bestaande pagina's met dezelfde slug worden bijgewerkt met de standaard-inhoud. Uw handmatige aanpassingen aan seed-pagina's worden overschreven.")) return;
     setImporting(true);
     const res = await fetch("/api/admin/data", {
       method: "POST", headers: { "Content-Type": "application/json" },
