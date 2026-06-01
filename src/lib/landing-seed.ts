@@ -465,6 +465,290 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     sort_order: 6,
   },
   {
+    slug: "bijzonder-overnachten-drenthe",
+    breadcrumb: "Bijzonder overnachten Drenthe",
+    eyebrow: "Uniek verblijf · Zeijen · Drenthe",
+    h1: "Bijzonder overnachten in Drenthe",
+    hero_sub:
+      "Niet zomaar een vakantiehuisje, maar een verblijf dat bijblijft. Twee boutique lodges op de Drentse heide — met privé-hottub, sauna en een omgeving die u nergens anders vindt.",
+    hero_image: "/heide2.jpg",
+    hero_image_alt:
+      "Bijzonder overnachten in Drenthe: Lodge De Heide van Huis ter Huynen, omringd door de Drentse natuur bij Zeijen",
+    price_from: PRICE,
+    intro:
+      "Bijzonder overnachten in Drenthe begint met een plek die echt anders is. Huis ter Huynen biedt geen standaard vakantiehuis, maar twee zorgvuldig ingerichte boutique lodges midden in de natuur bij Zeijen. Elk met een eigen privé-hottub, volledig afgeschermd van de buitenwereld — voor een verblijf dat meer is dan een nacht weg.",
+    sections: [
+      {
+        eyebrow: "Wat bijzonder maakt",
+        heading: "Meer dan een overnachting",
+        body: [
+          "Een bijzonder verblijf onderscheidt zich niet door wat er allemaal in zit, maar door hoe het aanvoelt. Bij Huis ter Huynen begint dat gevoel zodra u de oprijlaan op rijdt: geen parkeerplaats vol auto's, geen receptiebalie, geen genummerde deuren. Alleen uw eigen lodge, een terras met hottub en de stilte van de Drentse heide.",
+          "De lodges zijn ontworpen met oog voor authenticiteit en comfort tegelijk. Warme materialen, kwalitatieve bedden, een volledig uitgeruste keuken — en buiten begint de natuur. Dat samenspel van luxe en natuur is wat een verblijf hier echt bijzonder maakt.",
+        ],
+      },
+      {
+        eyebrow: "De accommodaties",
+        heading: "Twee lodges, elk met eigen karakter",
+        body: [
+          "Beide lodges zijn volledig privé en geschikt voor maximaal vier personen. Ze delen dezelfde zorg voor detail, maar elk heeft zijn eigen sfeer.",
+        ],
+        bullets: [
+          "Lodge De Heide — sauna, privé-hottub en panoramisch uitzicht over het bos.",
+          "Lodge De Eik — hoge plafonds, buitenkeuken met BBQ en eigen hottub onder de eiken.",
+          "Beide lodges: volledig uitgeruste keuken, comfortabele bedden en een eigen afgeschermd terras.",
+          "EV-laadpaal op het terrein, gratis WiFi en persoonlijk contact met de gastheer.",
+        ],
+      },
+      {
+        eyebrow: "Voor wie",
+        heading: "Bijzondere momenten verdienen een bijzondere plek",
+        body: [
+          "Een verjaardag, jubileum of gewoon een weekend dat er écht uitspringt — soms wil je de alledaagse setting achter je laten. Huis ter Huynen is de plek voor wie iets wil vieren zonder de anonimiteit van een hotel, of die natuur en comfort wil combineren zonder in te leveren op privacy.",
+          "Meldt u bij de boeking gerust uw bijzondere gelegenheid — we zorgen waar mogelijk voor een persoonlijk welkom.",
+        ],
+      },
+      {
+        eyebrow: "De omgeving",
+        heading: "Heide, bos en esdorpen voor de deur",
+        body: [
+          "Zeijen is een van de fraaiste brinkdorpen van Drenthe. Het Nationaal Park Drentsche Aa ligt op een kwartier, de Zeijerstrubben beginnen direct achter de lodges en er lopen meer dan 1.000 km fietspaden door de regio. Drenthe is de stilste provincie van Nederland — en juist die stilte maakt overnachten hier zo bijzonder.",
+        ],
+      },
+    ],
+    faq: [
+      "Wat maakt dit overnachten 'bijzonder'? :: De combinatie van volledige privacy, een eigen hottub en sauna, een authentiek ingerichte lodge midden in de natuur en persoonlijke service. Geen massatoerisme, geen gedeelde ruimtes — een verblijf dat voelt als uw eigen plek.",
+      "Kan ik een bijzondere gelegenheid vieren? :: Ja. Geef het bij de boeking aan — voor jubilea, verjaardagen of andere speciale momenten zorgen we waar mogelijk voor een persoonlijk welkom.",
+      "Voor hoeveel personen zijn de lodges geschikt? :: Elke lodge biedt comfortabel plek aan maximaal vier personen. Twee aparte, volledig privé lodges zijn beschikbaar.",
+      "Hoe ver is het van de bewoonde wereld? :: Dichtbij genoeg voor een restaurantbezoek of museum (Assen op 20 min), ver genoeg voor echte rust. Zeijen zelf is een rustiek brinkdorp met weinig doorgaand verkeer.",
+    ].join("\n"),
+    related: [
+      "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
+      "Romantisch weekend weg Drenthe :: /romantisch-weekend-weg-drenthe",
+      "Wellness vakantie Drenthe :: /wellness-vakantie-drenthe",
+    ].join("\n"),
+    cta_title: "Boek uw bijzonder verblijf in Drenthe",
+    cta_body:
+      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Bijzonder Overnachten in Drenthe | Boutique Lodge bij Zeijen",
+    meta_description:
+      "Bijzonder overnachten in Drenthe: twee boutique lodges met privé-hottub en sauna op de heide bij Zeijen. Volledig privé, 20 min van Assen. Vanaf €165 per nacht.",
+    og_image: "/heide2.jpg",
+    sort_order: 8,
+  },
+  {
+    slug: "vakantiehuis-drenthe-met-hond",
+    breadcrumb: "Vakantiehuis Drenthe met hond",
+    eyebrow: "Honden welkom · Zeijen · Drenthe",
+    h1: "Vakantiehuis in Drenthe met hond",
+    hero_sub:
+      "Heide, bos en beekdal voor de deur — en uw hond mag gewoon mee. Bij Huis ter Huynen zijn honden in overleg welkom in onze lodges bij Zeijen.",
+    hero_image: "/wandel_drenthe.jpg",
+    hero_image_alt:
+      "Wandelpad door de Drentse heide, perfect voor een vakantie met hond bij Zeijen",
+    price_from: PRICE,
+    intro:
+      "Een vakantie met uw hond in Drenthe is bijna vanzelfsprekend: nergens zo veel ruimte, natuur en vrije wandelgebieden als hier. Bij Huis ter Huynen zijn honden in overleg welkom — zodat ook uw viervoeter volop kan genieten van de heide, de Zeijerstrubben en het beekdal van de Drentsche Aa.",
+    sections: [
+      {
+        eyebrow: "Honden welkom",
+        heading: "Uw hond verdient ook een vakantie",
+        body: [
+          "Een vakantiehuis zoeken waar uw hond echt welkom is — niet gedoogd, maar welkom — is soms een uitdaging. Bij Huis ter Huynen is de natuur zo de voordeur in dat het voor honden een paradijs is: uitgestrekte heidevelden, bospaadjes en waterrijke gebieden op loopafstand van de lodge.",
+          "Honden zijn in overleg welkom. Neem gerust contact op bij uw boeking, dan stemmen we de details af. Zo kunt u met een gerust hart uw vakantie plannen.",
+        ],
+      },
+      {
+        eyebrow: "Wandelen",
+        heading: "Drenthe: hondenvriendelijk paradijs",
+        body: [
+          "Drenthe heeft de beste wandelinfrastructuur voor honden van Nederland. Uitgestrekte gebieden zonder losloopverbod, brede onverharde paden en nauwelijks files of drukte. Vanuit de lodge bij Zeijen loopt u direct het Zeijerwiek en de Zeijerstrubben in — ruige natuur die echte vrijheid biedt.",
+        ],
+        bullets: [
+          "Zeijerstrubben — strubbenbos op loopafstand, vrij toegankelijk.",
+          "Nationaal Park Drentsche Aa — op 15 minuten, met aangelijnd-beleid op de meeste paden.",
+          "Ballooërveld — heideveld met schaapskudde, op 12 minuten rijden.",
+          "1.000+ km fietspaden in de regio, ook prima geschikt voor hondenwandelingen.",
+        ],
+      },
+      {
+        eyebrow: "De accommodatie",
+        heading: "Een lodge met ruimte voor de hele familie",
+        body: [
+          "Beide lodges beschikken over een eigen afgeschermd terras en een ruime buitenruimte. Lodge De Eik heeft een volledig omheinde omgeving rondom het terras, ideaal voor kleine of actieve honden. Lodge De Heide heeft een open terras met uitzicht over het bos.",
+          "Beide lodges zijn voor maximaal vier personen en ingericht met comfortabele bedden, een volledig uitgeruste keuken en een privé-hottub op het terras.",
+        ],
+      },
+      {
+        eyebrow: "Praktisch",
+        heading: "Wat u moet weten over meegenomen honden",
+        body: [
+          "Honden zijn in overleg welkom — neem bij uw boeking contact op en geef aan hoeveel honden u meeneemt en van welk ras. We stemmen dan samen af welke lodge het beste past en welke afspraken gelden. Een kleine toeslag voor schoonmaak kan van toepassing zijn.",
+        ],
+      },
+    ],
+    faq: [
+      "Zijn honden welkom in de lodge? :: Ja, honden zijn in overleg welkom. Geef bij uw boeking aan hoeveel honden u meeneemt, dan stemmen we de details af.",
+      "Is de omgeving geschikt voor wandelen met een hond? :: Absoluut. Zeijen ligt midden in een van de hondvriendelijkste gebieden van Drenthe: strubbenbossen, heide en beekdalen op loopafstand. Op de meeste paden in het Nationaal Park Drentsche Aa gelden aangelijnd-regels.",
+      "Is er een omheinde buitenruimte? :: Lodge De Eik heeft een omheinde buitenruimte rondom het terras. Wilt u dit specifiek, vermeld het dan bij uw boeking.",
+      "Geldt er een toeslag voor honden? :: Een kleine schoonmaaktoeslag kan van toepassing zijn. Dit bespreken we bij de boeking.",
+    ].join("\n"),
+    related: [
+      "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
+      "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Omgeving & activiteiten :: /omgeving",
+    ].join("\n"),
+    cta_title: "Boek uw vakantiehuis in Drenthe met hond",
+    cta_body:
+      "De lodges zijn al boekbaar voor 2027. Geef bij uw boeking aan dat u uw hond meeneemt — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Vakantiehuis Drenthe met Hond | Lodge met Hottub bij Zeijen",
+    meta_description:
+      "Vakantiehuis in Drenthe met hond? Twee lodges op de heide bij Zeijen, honden welkom in overleg. Wandelen vanuit de deur, privé-hottub. Vanaf €165 per nacht.",
+    og_image: "/wandel_drenthe.jpg",
+    sort_order: 9,
+  },
+  {
+    slug: "hunebedden-drenthe",
+    breadcrumb: "Hunebedden Drenthe",
+    eyebrow: "Prehistorie & natuur · Zeijen · Drenthe",
+    h1: "Hunebedden in Drenthe: logeren in het hart van de prehistorie",
+    hero_sub:
+      "Drenthe telt 54 hunebedden — meer dan de helft van alle Nederlandse megalietgraven. Overnacht in een luxe lodge bij Zeijen en ontdek de oudste monumenten van Nederland vanuit uw eigen uitvalsbasis.",
+    hero_image: "/museum_drenthe.jpg",
+    hero_image_alt:
+      "Hunebed in het Drentse landschap, omgeven door hei en bos, nabij de Hunebed Highway N34",
+    price_from: PRICE,
+    intro:
+      "Nergens in Nederland liggen zoveel hunebedden als in Drenthe. De 54 megalietgraven, gebouwd door de Trechterbekercultuur zo'n 5.000 jaar geleden, liggen verspreid over de provincie — langs de Hunebed Highway, in de bossen bij Emmen en rondom de stille esdorpen van Noord-Drenthe. Huis ter Huynen in Zeijen is dé uitvalsbasis om dit unieke erfgoed te verkennen.",
+    sections: [
+      {
+        eyebrow: "Het erfgoed",
+        heading: "5.000 jaar geschiedenis op loopafstand",
+        body: [
+          "Hunebedden zijn de oudste bovengrondse monumenten van Nederland. Ze werden gebouwd door de Trechterbekercultuur als collectieve graven — enorme keien, sommige van tientallen tonnen, nauwkeurig geplaatst zonder enig modern gereedschap. Hoe dat mogelijk was, is tot op de dag van vandaag een mysterie.",
+          "Drenthe telt 54 van de 54 Nederlandse hunebedden. Ze liggen verspreid over de provincie, van Emmen in het zuiden tot Anloo en Balloo in het noorden. Vanuit de lodge bij Zeijen bereikt u de dichtstbijzijnde hunebedden in minder dan tien minuten.",
+        ],
+      },
+      {
+        eyebrow: "Hunebed Highway",
+        heading: "De N34: een route door de prehistorie",
+        body: [
+          "De Hunebed Highway volgt de N34 dwars door Drenthe en verbindt tientallen hunebedden, musea en prehistorische vindplaatsen. Een rijkere route voor liefhebbers van geschiedenis bestaat er nauwelijks in Nederland.",
+        ],
+        bullets: [
+          "Hunebedden D9 t/m D14 bij Anloo en Eext — op 10 tot 15 minuten van Zeijen.",
+          "Drents Museum in Assen — het Meisje van Yde en andere vondsten uit de hunebedtijd.",
+          "Hunebedcentrum Borger — het grootste hunebed van Nederland en een volledig museum.",
+          "Nationaal Park Drentsche Aa — prehistorisch landschap met celtic fields en urnenvelden.",
+        ],
+      },
+      {
+        eyebrow: "De accommodatie",
+        heading: "Luxe overnachten tussen de prehistorie",
+        body: [
+          "Na een dag langs de hunebedden keert u terug naar Huis ter Huynen: twee volledig privé boutique lodges met privé-hottub op het terras. Lodge De Heide heeft bovendien een eigen sauna; Lodge De Eik een buitenkeuken met BBQ. Beide zijn ingericht op comfort, privacy en de rust van de Drentse natuur.",
+          "U boekt rechtstreeks bij Huis ter Huynen — persoonlijk, zonder tussenpersoon, en met directe communicatie met de gastheer.",
+        ],
+      },
+      {
+        eyebrow: "De omgeving",
+        heading: "Meer dan alleen hunebedden",
+        body: [
+          "Zeijen is een van de mooiste brinkdorpen van Drenthe en ligt op een kwartier van het Nationaal Park Drentsche Aa. De heide van het Ballooërveld, de Zeijerstrubben en ruim 1.000 km aan fietspaden maken de omgeving rijker dan alleen prehistorie — ook voor wie niet elke dag op pad wil voor cultuur.",
+        ],
+      },
+    ],
+    faq: [
+      "Hoe ver liggen de dichtstbijzijnde hunebedden? :: Vanuit de lodge in Zeijen rijdt u in minder dan tien minuten naar de hunebedden bij Anloo (D9–D14). Het Hunebedcentrum in Borger ligt op circa 30 minuten.",
+      "Wat is de Hunebed Highway? :: De Hunebed Highway volgt de N34 door Drenthe en verbindt tientallen hunebedden, musea en prehistorische vindplaatsen. Een mooie dagtocht voor liefhebbers van geschiedenis.",
+      "Is het Drents Museum een aanrader bij het bezoek aan hunebedden? :: Zeker. Het Drents Museum in Assen (20 min) geeft context aan de hunebedtijd, met o.a. het beroemde Meisje van Yde en vondsten uit de prehistorische nederzettingen van Drenthe.",
+      "Kan ik ook met de fiets de hunebedden bereiken? :: Ja. Er zijn diverse fietsroutes vanuit Zeijen die langs hunebedden lopen. De regio beschikt over meer dan 1.000 km fietspaden, veel langs prehistorische bezienswaardigheden.",
+    ].join("\n"),
+    related: [
+      "Bijzonder overnachten Drenthe :: /bijzonder-overnachten-drenthe",
+      "Overnachten bij Veenhuizen :: /overnachten-veenhuizen",
+      "Omgeving & activiteiten :: /omgeving",
+    ].join("\n"),
+    cta_title: "Boek uw verblijf bij de hunebedden van Drenthe",
+    cta_body:
+      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Hunebedden Drenthe | Overnachten bij de Prehistorie in Zeijen",
+    meta_description:
+      "Hunebedden Drenthe ontdekken? Overnacht in een luxe lodge met hottub in Zeijen, op 10 min van de hunebedden bij Anloo. Hunebed Highway en Drents Museum dichtbij.",
+    og_image: "/museum_drenthe.jpg",
+    sort_order: 10,
+  },
+  {
+    slug: "de/ferienhaus-mit-whirlpool-drenthe",
+    breadcrumb: "Ferienhaus mit Whirlpool Drenthe",
+    eyebrow: "Boutique Lodge · Zeijen · Drenthe",
+    h1: "Ferienhaus mit Whirlpool in Drenthe",
+    hero_sub:
+      "Zwei exklusive Boutique Lodges inmitten der Drentse Heide — jede mit eigenem privatem Whirlpool auf der Terrasse. Ruhe, Natur und Luxus in den Niederlanden.",
+    hero_image: "/lodge-heide.jpg",
+    hero_image_alt:
+      "Boutique Lodge De Heide von Huis ter Huynen mit privatem Whirlpool auf der Terrasse, umgeben von Heide und Wald in Zeijen, Drenthe",
+    price_from: PRICE,
+    intro:
+      "Ein Ferienhaus mit Whirlpool in Drenthe verbindet das Beste aus zwei Welten: die absolute Stille der Niederlande' ruhigsten Provinz und den Komfort eines privaten Whirlpools direkt auf Ihrer Terrasse. Bei Huis ter Huynen in Zeijen genießen Sie beides — vollständig privat, ohne geteilte Einrichtungen, das ganze Jahr über.",
+    sections: [
+      {
+        eyebrow: "Das Erlebnis",
+        heading: "Ihr privater Whirlpool unter dem Drentse Sternenhimmel",
+        body: [
+          "Stellen Sie sich vor: nach einem langen Wandertag durch die Zeijerstrubben oder einer Radtour entlang der Drentsche Aa sinken Sie in Ihren eigenen 38 °C warmen Whirlpool. Der Himmel über Drenthe zeigt mehr Sterne als fast jede andere Region der Niederlande — Lichtverschmutzung ist hier kaum ein Thema.",
+          "Beide Lodges verfügen über einen eigenen, vollständig abgeschirmten Whirlpool auf der Terrasse. Ob morgens zur Entspannung, abends bei einem Glas Wein oder mitten im Winter im Schnee — der Whirlpool ist 24 Stunden am Tag, 365 Tage im Jahr für Sie da.",
+        ],
+      },
+      {
+        eyebrow: "Die Unterkünfte",
+        heading: "Zwei Lodges mit eigenem Charakter",
+        body: [
+          "Beide Lodges bieten Platz für maximal vier Personen und sind mit der gleichen Sorgfalt eingerichtet — jede hat jedoch ihre eigene Atmosphäre.",
+        ],
+        bullets: [
+          "Lodge De Heide — private Sauna, Whirlpool und Panoramablick über den Wald.",
+          "Lodge De Eik — hohe Decken, authentisches Ambiente, Außenküche mit Grill und eigenem Whirlpool.",
+          "Beide: voll ausgestattete Küche, komfortable Betten und private Terrasse.",
+          "Kostenloses WLAN, E-Ladepunkt auf dem Gelände und persönlicher Kontakt mit dem Gastgeber.",
+        ],
+      },
+      {
+        eyebrow: "Für wen",
+        heading: "Perfekt für Paare und kleine Gruppen",
+        body: [
+          "Ein Ferienhaus mit privatem Whirlpool in Drenthe ist ideal für Paare, die einen romantischen Kurzurlaub suchen, für kleine Familien, die die Natur erkunden möchten, oder für alle, die einfach einmal vollständig abschalten wollen — ohne die Anonymität eines Hotels.",
+          "Die Kombination aus privatem Whirlpool, eigener Sauna (Lodge De Heide) und der natürlichen Umgebung schafft ein Wellness-Erlebnis, das keine öffentliche Spaanlage bieten kann.",
+        ],
+      },
+      {
+        eyebrow: "Die Lage",
+        heading: "Mitten im schönsten Teil von Drenthe",
+        body: [
+          "Zeijen ist eines der schönsten Angerdörfer Drenthes. Der Nationalpark Drentsche Aa liegt 15 Minuten entfernt, die lila Heide des Ballooërveld ist in 12 Minuten erreichbar und Assen — mit Restaurants, Museen und Wellnesszentren — in 20 Minuten. Abgelegen genug für echte Ruhe, nah genug für ein abwechslungsreiches Urlaubsprogramm.",
+        ],
+      },
+    ],
+    faq: [
+      "Hat jede Lodge einen eigenen privaten Whirlpool? :: Ja. Sowohl Lodge De Heide als auch Lodge De Eik verfügen über einen eigenen, abgeschirmten Whirlpool auf der Terrasse. Sie teilen ihn mit niemandem außer Ihrer eigenen Gruppe.",
+      "Ist der Whirlpool das ganze Jahr verfügbar? :: Ja, der Whirlpool ist 24/7 verfügbar und standardmäßig auf 38 °C eingestellt — auch im Winter, wenn ein Whirlpool im verschneiten Drenthe am schönsten ist.",
+      "Für wie viele Personen ist das Ferienhaus geeignet? :: Jede Lodge bietet Platz für maximal vier Personen. Ideal für Paare, eine kleine Familie oder zwei befreundete Paare.",
+      "Wie weit ist es von der deutschen Grenze? :: Huis ter Huynen liegt in Zeijen, Drenthe, etwa 1,5 Stunden von der deutschen Grenze bei Nordhorn/Bentheim entfernt. Ein bequem erreichbares Reiseziel für einen Kurzurlaub aus Deutschland.",
+    ].join("\n"),
+    related: [
+      "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
+      "Wellness vakantie Drenthe :: /wellness-vakantie-drenthe",
+      "Omgeving & activiteiten :: /omgeving",
+    ].join("\n"),
+    cta_title: "Jetzt Ihr Ferienhaus mit Whirlpool in Drenthe buchen",
+    cta_body:
+      "Die Lodges sind bereits für 2027 buchbar. Prüfen Sie die Verfügbarkeit oder stellen Sie Ihre Frage — wir antworten persönlich innerhalb von 24 Stunden.",
+    meta_title: "Ferienhaus mit Whirlpool in Drenthe | Private Lodge bei Zeijen",
+    meta_description:
+      "Ferienhaus mit privatem Whirlpool in Drenthe (NL). Zwei Boutique Lodges auf der Heide bei Zeijen, mit Whirlpool & Sauna. Ruhe, Natur und Luxus. Ab €165 pro Nacht.",
+    og_image: "/lodge-heide.jpg",
+    sort_order: 11,
+  },
+  {
     slug: "overnachten-veenhuizen",
     breadcrumb: "Overnachten bij Veenhuizen",
     eyebrow: "Lodge in Zeijen · vlak bij Veenhuizen",
