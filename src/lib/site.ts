@@ -15,4 +15,7 @@ export const LANDING_NAV: { label: string; href: string }[] = [
   { label: "Vakantiehuis bij Assen", href: "/vakantiehuis-assen" },
   { label: "Vakantiehuis bij Norg", href: "/vakantiehuis-norg" },
   { label: "Overnachten bij Veenhuizen", href: "/overnachten-veenhuizen" },
+  { label: "Bijzonder overnachten", href: "/bijzonder-overnachten-drenthe" },
+  { label: "Vakantiehuis met hond", href: "/vakantiehuis-drenthe-met-hond" },
+  { label: "Hunebedden Drenthe", href: "/hunebedden-drenthe" },
 ];
