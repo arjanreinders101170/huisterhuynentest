@@ -119,7 +119,7 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
   };
 
   const importSeed = async () => {
-    if (!confirm("De 7 standaard-landingspagina's importeren in de database? Bestaande pagina's blijven ongemoeid.")) return;
+    if (!confirm("Alle standaard-landingspagina's importeren in de database? Bestaande pagina's blijven ongemoeid.")) return;
     setImporting(true);
     const res = await fetch("/api/admin/data", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -156,14 +156,12 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
           </p>
         </div>
         <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-          {pages.length === 0 && (
-            <button onClick={importSeed} disabled={importing} style={{
-              padding: "10px 18px", borderRadius: 8, border: `1px solid ${C.border}`,
-              background: "#fff", color: C.green, fontSize: 13, fontWeight: 600, cursor: "pointer",
-            }}>
-              {importing ? "Importeren..." : "Importeer standaardpagina's"}
-            </button>
-          )}
+          <button onClick={importSeed} disabled={importing} style={{
+            padding: "10px 18px", borderRadius: 8, border: `1px solid ${C.border}`,
+            background: "#fff", color: C.green, fontSize: 13, fontWeight: 600, cursor: "pointer",
+          }}>
+            {importing ? "Importeren..." : "Importeer standaardpagina's"}
+          </button>
           <button onClick={startNew} style={{
             padding: "10px 20px", borderRadius: 8, border: "none",
             background: C.green, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer",
