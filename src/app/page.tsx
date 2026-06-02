@@ -324,7 +324,7 @@ export default function LandingPage() {
             gap: "40px 32px",
           }}>
             {[
-              { label: "Volledige privacy", desc: "Alleen ú en uw gezelschap, geen andere gasten, geen omringende buren. Uw eigen stuk Drenthe." },
+              { label: "Eigen lodge, eigen plek", desc: "Eigen ingang, eigen terras, eigen hottub. U deelt niets met andere gasten, uw lodge is volledig voor uw gezelschap alleen." },
               { label: "Privé Hottub", desc: "Genieten onder de sterren, op elk moment van de dag. In elke lodge, op het eigen terras." },
               { label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek. Wandelen vanuit de deur." },
               { label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf. Altijd een persoonlijk antwoord." },
