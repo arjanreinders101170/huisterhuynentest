@@ -23,7 +23,7 @@ export type EmailBlock = string;
 /** Grijze info-kaart, bijv. voor verblijf-overzicht. */
 export function infoBlock(label: string, mainLine: string, subLine?: string): EmailBlock {
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:10px;margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F1E8;border-radius:12px;margin-bottom:20px;">
       <tr><td style="padding:18px 20px;" align="center">
         <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>
         <p style="margin:0${subLine ? " 0 6px" : ""};font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${mainLine}</p>
@@ -43,14 +43,14 @@ export function calloutBlock(
   const ctaHtml = cta
     ? `
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:14px;">
-          <tr><td align="center" bgcolor="#2F4F3E" style="background-color:#2F4F3E;border-radius:8px;padding:14px 28px;">
+          <tr><td align="center" bgcolor="#2F4F3E" style="background-color:#2F4F3E;border-radius:10px;padding:14px 28px;">
             <a href="${cta.href}" style="display:block;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-align:center;line-height:1.2;">${cta.text}</a>
           </td></tr>
         </table>`
     : "";
   const padding = cta ? "20px" : "18px 20px";
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};border-radius:10px;margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};border-radius:12px;margin-bottom:20px;">
       <tr><td style="padding:${padding};">
         <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:bold;color:#2A2418;">${title}</p>
         <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">${body}</p>
@@ -71,7 +71,7 @@ export function checklist(items: string[]): EmailBlock {
 export function teaserBlock(emoji: string, title: string, body: string): EmailBlock {
   return `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-      <tr><td style="padding:14px 18px;background:#FDFBF6;border:1px solid #E0D8C8;border-radius:10px;">
+      <tr><td style="padding:14px 18px;background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
           <td style="vertical-align:middle;font-family:Arial,sans-serif;font-size:24px;width:42px;">${emoji}</td>
           <td style="vertical-align:middle;">
@@ -105,7 +105,7 @@ export function detailsBlock(label: string, rows: DetailRow[], opts?: { backgrou
     return `<tr><td style="padding:${rowPadding};color:#8A7D6A;">${r.label}</td><td ${align}>${v}</td></tr>`;
   }).join("");
   return `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};${border !== "transparent" ? `border:1px solid ${border};` : ""}border-radius:10px;margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};${border !== "transparent" ? `border:1px solid ${border};` : ""}border-radius:12px;margin-bottom:20px;">
       <tr><td style="padding:16px 20px;">
         ${label ? `<p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">${label}</p>` : ""}
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:${opts?.compact ? "13" : "14"}px;">${tr}</table>
@@ -122,7 +122,7 @@ export function smallNote(html: string): EmailBlock {
 export function ctaButton(href: string, text: string, opts?: { prominent?: boolean; marginBottom?: number }): EmailBlock {
   const prominent = opts?.prominent === true;
   const padding = prominent ? "18px 24px" : "14px 28px";
-  const radius = prominent ? "14px" : "10px";
+  const radius = prominent ? "16px" : "12px";
   const fontSize = prominent ? "17px" : "15px";
   const innerWidth = prominent ? ' style="width:100%;"' : "";
   const mb = opts?.marginBottom ?? 20;
@@ -402,7 +402,7 @@ export function buildOfferteHtmlV2(
       Exclusief &middot; Beste prijs garantie
     </p>
 
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:8px;margin-bottom:24px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F1E8;border-radius:12px;margin-bottom:24px;">
       <tr><td style="padding:18px 20px;" align="center">
         <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Je verblijf</p>
         <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#2A2418;font-weight:bold;">${van} t/m ${tot}</p>
@@ -423,7 +423,7 @@ export function buildOfferteHtmlV2(
 
     ${bericht ? `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-      <tr><td style="padding:18px 20px;background-color:#F9F4E8;border-radius:8px;">
+      <tr><td style="padding:18px 20px;background-color:#F9F4E8;border-radius:12px;">
         <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:10px;color:#8A7D6A;text-transform:uppercase;letter-spacing:1px;">Persoonlijk bericht</p>
         <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#2A2418;line-height:1.6;">${esc(bericht)}</p>
       </td></tr>
