@@ -13,8 +13,8 @@ export const runtime = "nodejs";
 const OWNER_EMAIL = "lodge@huisterhuynen.nl";
 const LODGE_NAME = "Huis ter Huynen";
 const LODGE_LABELS: Record<string, string> = {
-  lodge_1: "Lodge De Heide",
-  lodge_2: "Lodge De Eik",
+  lodge_1: "De Heide",
+  lodge_2: "De Eik",
 };
 
 type DiscountCode = {
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
       to: [OWNER_EMAIL],
       replyTo: email,
-      subject: `Reserveringsaanvraag: ${esc(lodgeLabel)} — ${esc(naam)}`,
+      subject: `Reserveringsaanvraag: Lodge ${esc(lodgeLabel)} — ${esc(naam)}`,
       html: lodgeEmail({
         photoUrl, photoAlt: `Lodge ${esc(lodgeLabel)}`,
         title: "Nieuwe reserveringsaanvraag",
@@ -187,6 +187,7 @@ export async function POST(request: NextRequest) {
           priceKnown
             ? calloutBlock("Geschatte prijs", `&euro; ${totalNum.toFixed(2)}${promoInfo ? ` <span style="color:#2E7D32;">(promo ${esc(promoInfo.label)} &minus; &euro; ${promoInfo.discount.toFixed(2)})</span>` : ""}<br/><span style="font-size:11px;color:#8A7D6A;">Definitief bedrag volgt in onze persoonlijke offerte.</span>`)
             : calloutBlock("Persoonlijk aanbod", `We stellen een aanbod op maat voor je samen en sturen het binnen 24 uur. Zo krijg je altijd de beste prijs voor jouw data.`),
+          ...(bericht ? [calloutBlock("Jouw bericht aan ons", esc(bericht), { background: "muted" })] : []),
           checklist([
             "Persoonlijke bevestiging binnen 24 uur",
             "Geen vooruitbetaling vereist voor de aanvraag",
