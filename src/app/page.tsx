@@ -85,30 +85,30 @@ function BookingSection() {
 
   return (
     <section id="reserveren" style={{
-      background: "white",
+      background: T.card,
       padding: "80px 40px",
       borderTop: `3px solid ${T.green}`,
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {daysLeft !== null && (
-          <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <div style={{
-              display: "inline-flex", flexDirection: "column", alignItems: "center",
-              background: "rgba(47,79,62,.05)", border: `1px solid rgba(47,79,62,.12)`,
-              borderRadius: 16, padding: "20px 40px", gap: 4,
-            }}>
-              <div style={{
-                fontFamily: T.serif, fontSize: "clamp(40px, 5vw, 56px)",
-                fontWeight: 700, color: T.green, lineHeight: 1,
-              }}>
-                {daysLeft}
+          <div style={{ textAlign: "center", marginBottom: 52 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 20 }}>
+              <div style={{ width: 40, height: 1, background: T.gold, opacity: 0.6 }} />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                <div style={{
+                  fontFamily: T.serif, fontSize: "clamp(44px, 5vw, 60px)",
+                  fontWeight: 700, color: T.green, lineHeight: 1,
+                }}>
+                  {daysLeft}
+                </div>
+                <div style={{
+                  fontFamily: T.sans, fontSize: 10, fontWeight: 600,
+                  color: T.gold, letterSpacing: "3px", textTransform: "uppercase",
+                }}>
+                  dagen tot opening
+                </div>
               </div>
-              <div style={{
-                fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-                color: T.muted, letterSpacing: "2.5px", textTransform: "uppercase",
-              }}>
-                dagen tot opening
-              </div>
+              <div style={{ width: 40, height: 1, background: T.gold, opacity: 0.6 }} />
             </div>
           </div>
         )}
@@ -265,8 +265,8 @@ export default function LandingPage() {
             </a>
           </div>
           <p style={{
-            fontFamily: T.sans, fontSize: 11, fontWeight: 300,
-            color: "rgba(255,255,255,.42)", marginTop: 24, letterSpacing: "0.3px",
+            fontFamily: T.sans, fontSize: 12, fontWeight: 400,
+            color: "rgba(255,255,255,.55)", marginTop: 24, letterSpacing: "0.3px",
           }}>
             Opening 1 januari 2027 · Claim nu uw datum als Eerste Gast
           </p>
@@ -286,7 +286,7 @@ export default function LandingPage() {
             { n: "0 min", label: "Wandelen vanuit de deur" },
             { n: "15 min", label: "Nationaal Park Drentsche Aa" },
             { n: "52", label: "Hunebedden in Drenthe" },
-            { n: "2", label: "Privé lodges · nergens anders zo in Drenthe" },
+            { n: "2", label: "Unieke privé lodges · exclusief in Drenthe" },
           ].map((s, i, arr) => (
             <div key={i} style={{
               padding: "14px 20px",
@@ -360,7 +360,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           LODGES
       ══════════════════════════════════════════ */}
-      <section style={{ background: "white", padding: "80px 40px" }}>
+      <section style={{ background: T.bg, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Onze accommodaties"
@@ -772,7 +772,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           WAT TE DOEN — 4 categorieën
       ══════════════════════════════════════════ */}
-      <section style={{ background: "white", padding: "80px 40px" }}>
+      <section style={{ background: T.card, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Activiteiten in de omgeving"
@@ -887,7 +887,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           EERSTE GASTEN — populaire momenten
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.card, padding: "80px 40px", borderTop: `1px solid ${T.border}` }}>
+      <section style={{ background: T.bg, padding: "80px 40px", borderTop: `1px solid ${T.border}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Openingsjaar 2027"
@@ -938,10 +938,12 @@ export default function LandingPage() {
               },
             ].map((m, i) => (
               <div key={i} style={{
-                background: "white", borderRadius: 14,
-                border: `1px solid ${T.border}`,
+                background: i === 0 ? "rgba(180,154,94,.08)" : T.card,
+                borderRadius: 14,
+                border: i === 0 ? `1px solid rgba(180,154,94,.4)` : `1px solid ${T.border}`,
+                borderTop: i === 0 ? `3px solid ${T.gold}` : `1px solid ${T.border}`,
                 padding: "24px 20px",
-                boxShadow: "0 2px 12px rgba(47,79,62,.05)",
+                boxShadow: i === 0 ? "0 4px 20px rgba(180,154,94,.12)" : "0 2px 12px rgba(47,79,62,.05)",
                 display: "flex", flexDirection: "column", gap: 10,
               }}>
                 <div style={{
@@ -981,9 +983,10 @@ export default function LandingPage() {
             <a href="#reserveren" style={{
               display: "inline-block",
               fontFamily: T.sans, fontSize: 14, fontWeight: 700,
-              color: "white", background: T.green,
+              color: "#1A2E24", background: T.gold,
               padding: "14px 36px", borderRadius: 10,
               textDecoration: "none", letterSpacing: "0.3px",
+              boxShadow: "0 4px 20px rgba(180,154,94,.35)",
             }}>
               Claim uw datum nu →
             </a>
