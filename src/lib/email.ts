@@ -170,7 +170,7 @@ const DEFAULT_FOOTER = `Vragen? WhatsApp ons op <a href="tel:+31642568603" style
 /** Hoofd-template. Alle uitgaande mails moeten hier doorheen. */
 export function lodgeEmail(opts: LodgeEmailOpts): string {
   const photo = opts.photoUrl
-    ? `<tr><td style="padding:0;font-size:0;line-height:0;"><img src="${opts.photoUrl}" alt="${opts.photoAlt || "Huis ter Huynen"}" width="480" style="display:block;width:100%;height:auto;" /></td></tr>`
+    ? `<tr><td style="padding:0;font-size:0;line-height:0;"><img src="${opts.photoUrl}" alt="${opts.photoAlt || "Huis ter Huynen"}" width="600" style="display:block;width:100%;max-width:600px;height:auto;" /></td></tr>`
     : "";
   const intro = opts.intro ? paragraph(opts.intro) : "";
   const footer = opts.footer ?? DEFAULT_FOOTER;
