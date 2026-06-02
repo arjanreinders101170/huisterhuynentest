@@ -117,7 +117,7 @@ function BookingSection() {
           <SectionTitle>Claim uw datum</SectionTitle>
           <GoldRule />
           <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
-            Kies uw datum — wij reserveren hem persoonlijk voor u. Geen verplichtingen, reactie binnen 24 uur.
+            Kies uw datum, wij reserveren hem persoonlijk voor u. Geen verplichtingen, reactie binnen 24 uur.
           </p>
         </div>
         <BookingCalendar />
@@ -133,7 +133,7 @@ function BookingSection() {
               display: "inline-block", width: 6, height: 6, borderRadius: "50%",
               background: T.gold,
             }} />
-            Vroegboekers ontvangen als eersten de beschikbare data · Populaire weekenden gaan snel
+            Vroegboekers ontvangen als eersten de beschikbare data, populaire weekenden gaan snel
           </div>
         </div>
       </div>
@@ -251,7 +251,7 @@ export default function LandingPage() {
                 display: "inline-block", width: 6, height: 6, borderRadius: "50%",
                 background: T.gold, boxShadow: `0 0 0 4px rgba(180,154,94,.18)`,
               }} />
-              Twee privé lodges · privé-hottub · direct vanuit de deur de heide op
+              Twee privé lodges, privé-hottub, direct vanuit de deur de heide op
             </div>
 
             {/* Secondary text link */}
@@ -286,7 +286,7 @@ export default function LandingPage() {
             { n: "0 min", label: "Wandelen vanuit de deur" },
             { n: "15 min", label: "Nationaal Park Drentsche Aa" },
             { n: "52", label: "Hunebedden in Drenthe" },
-            { n: "2", label: "Unieke privé lodges · exclusief in Drenthe" },
+            { n: "2", label: "Unieke privé lodges, exclusief in Drenthe" },
           ].map((s, i, arr) => (
             <div key={i} style={{
               padding: "14px 20px",
@@ -324,7 +324,7 @@ export default function LandingPage() {
             gap: "40px 32px",
           }}>
             {[
-              { label: "Volledige privacy", desc: "Alleen ú en uw gezelschap — geen andere gasten, geen omringende buren. Uw eigen stuk Drenthe." },
+              { label: "Volledige privacy", desc: "Alleen ú en uw gezelschap, geen andere gasten, geen omringende buren. Uw eigen stuk Drenthe." },
               { label: "Privé Hottub", desc: "Genieten onder de sterren, op elk moment van de dag. In elke lodge, op het eigen terras." },
               { label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek. Wandelen vanuit de deur." },
               { label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf. Altijd een persoonlijk antwoord." },
@@ -352,7 +352,7 @@ export default function LandingPage() {
             textAlign: "center", margin: "40px auto 0", maxWidth: 560, lineHeight: 1.7,
             fontStyle: "italic",
           }}>
-            Dit type verblijf bestaat op slechts twee plekken in Drenthe — beide hier.
+            Dit type verblijf bestaat op slechts twee plekken in Drenthe, beide hier.
           </p>
         </div>
       </section>
@@ -747,7 +747,7 @@ export default function LandingPage() {
                 fontFamily: T.serif, fontSize: 17, color: "white",
                 fontWeight: 700, margin: "0 0 6px", lineHeight: 1.3,
               }}>
-                De heide kleurt paars — de meest gevraagde periode
+                De heide kleurt paars, de meest gevraagde periode
               </p>
               <p style={{
                 fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.65)",
@@ -892,7 +892,7 @@ export default function LandingPage() {
           <SectionHeader
             eyebrow="Openingsjaar 2027"
             title="De populairste momenten gaan als eerste"
-            sub="Huis ter Huynen opent op 1 januari 2027. Vroegboekers claimen nu al hun voorkeursdatum — vóór de officiële opening."
+            sub="Huis ter Huynen opent op 1 januari 2027. Vroegboekers claimen nu al hun voorkeursdatum, vóór de officiële opening."
           />
           <div style={{
             display: "grid",
@@ -913,7 +913,7 @@ export default function LandingPage() {
                 datum: "13 – 16 feb 2027",
                 badge: "Populair",
                 badgeKleur: T.green,
-                desc: "Romantisch en stil — de hottub op zijn best in de Drentse winter.",
+                desc: "Romantisch en stil, de hottub op zijn best in de Drentse winter.",
               },
               {
                 periode: "Pasen",
@@ -927,7 +927,7 @@ export default function LandingPage() {
                 datum: "aug – sep 2027",
                 badge: "Meest gevraagd",
                 badgeKleur: T.gold,
-                desc: "De heide kleurt paars. Dit is het hoogtepunt van het jaar — de weekenden gaan snel.",
+                desc: "De heide kleurt paars. Dit is het hoogtepunt van het jaar, de weekenden gaan snel.",
               },
               {
                 periode: "Kerst & Oud & Nieuw",
@@ -1007,7 +1007,7 @@ export default function LandingPage() {
             <div style={{ textAlign: "center", maxWidth: 560, margin: "0 auto" }}>
               <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.8, marginBottom: 8 }}>
                 Huis ter Huynen opent op 1 januari 2027. De eerste beoordelingen verschijnen
-                hier zodra onze Eerste Gasten hebben verbleven — rechtstreeks vanuit Google,
+                hier zodra onze Eerste Gasten hebben verbleven, rechtstreeks vanuit Google,
                 ongefilterd en echt.
               </p>
               <p style={{ fontFamily: T.serif, fontSize: 16, color: T.green, fontWeight: 700, margin: "0 0 24px", fontStyle: "italic" }}>
@@ -1139,7 +1139,7 @@ export default function LandingPage() {
             fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.4)",
             fontWeight: 300, margin: "0 0 28px", letterSpacing: "0.2px",
           }}>
-            Geen spam — wél voorrang.
+            Geen spam, wél voorrang.
           </p>
           <NewsletterForm />
         </div>
