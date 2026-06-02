@@ -142,9 +142,12 @@ export async function POST(request: NextRequest) {
     const appUrlRv = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
     const baseUrlRv = new URL(appUrlRv).origin;
     const { url: photoUrl } = lodgePhoto(baseUrlRv, lodge);
+    const priceKnown = totalNum > 0;
     const periodLine = `${esc(checkInFmt)} t/m ${esc(checkOutFmt)}`;
     const subLine = `Lodge ${esc(lodgeLabel)} &middot; ${nightsNum} ${nightsNum === 1 ? "nacht" : "nachten"} &middot; ${esc(aantalPersonen || "—")} ${aantalPersonen === "1" ? "persoon" : "personen"}${huisdieren === "ja" ? " &middot; 🐾" : ""}`;
-    const prijsLine = `Geschatte prijs: <strong>&euro; ${totalNum.toFixed(2)}</strong>${promoInfo ? ` <span style="color:#2E7D32;">(promo ${esc(promoInfo.label)} &minus; &euro; ${promoInfo.discount.toFixed(2)})</span>` : ""}`;
+    const prijsLine = priceKnown
+      ? `Geschatte prijs: <strong>&euro; ${totalNum.toFixed(2)}</strong>${promoInfo ? ` <span style="color:#2E7D32;">(promo ${esc(promoInfo.label)} &minus; &euro; ${promoInfo.discount.toFixed(2)})</span>` : ""}`
+      : `Prijs nog te bepalen &mdash; bouw een persoonlijk aanbod op in admin.`;
 
     // E-mail naar eigenaar
     await resend.emails.send({
@@ -181,7 +184,9 @@ export async function POST(request: NextRequest) {
         intro: "We hebben je aanvraag ontvangen en nemen binnen 24 uur contact met je op met een persoonlijk aanbod.",
         blocks: [
           infoBlock("Jouw aanvraag", periodLine, subLine),
-          calloutBlock("Geschatte prijs", `&euro; ${totalNum.toFixed(2)}${promoInfo ? ` <span style="color:#2E7D32;">(promo ${esc(promoInfo.label)} &minus; &euro; ${promoInfo.discount.toFixed(2)})</span>` : ""}<br/><span style="font-size:11px;color:#8A7D6A;">Definitief bedrag volgt in onze persoonlijke offerte.</span>`),
+          priceKnown
+            ? calloutBlock("Geschatte prijs", `&euro; ${totalNum.toFixed(2)}${promoInfo ? ` <span style="color:#2E7D32;">(promo ${esc(promoInfo.label)} &minus; &euro; ${promoInfo.discount.toFixed(2)})</span>` : ""}<br/><span style="font-size:11px;color:#8A7D6A;">Definitief bedrag volgt in onze persoonlijke offerte.</span>`)
+            : calloutBlock("Persoonlijk aanbod", `We stellen een aanbod op maat voor je samen en sturen het binnen 24 uur. Zo krijg je altijd de beste prijs voor jouw data.`),
           checklist([
             "Persoonlijke bevestiging binnen 24 uur",
             "Geen vooruitbetaling vereist voor de aanvraag",
