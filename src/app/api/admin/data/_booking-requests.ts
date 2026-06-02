@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, buildOfferteHtmlV2, type OfferteRegel } from "@/lib/email";
-import { APP_URL_FALLBACK } from "@/data/lodge";
+import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, type OfferteRegel } from "@/lib/email";
+import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
+
+const DEPOSIT_PCT = 0.30;
 
 export async function handleBookingRequestsGet(table: string): Promise<NextResponse | null> {
   if (table !== "booking_requests") return null;
@@ -178,6 +180,139 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       }
 
       return NextResponse.json({ success: true, totaal, emailSent: true });
+    }
+    case "send_payment_link": {
+      const { requestId, fase } = body;
+      if (!requestId) return NextResponse.json({ error: "requestId verplicht" }, { status: 400 });
+      const phase: "aanbetaling" | "restbetaling" = fase === "restbetaling" ? "restbetaling" : "aanbetaling";
+
+      const sb = getSupabase();
+      const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", requestId).single();
+      if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+      if (!req.gast_email) return NextResponse.json({ error: "Aanvraag heeft geen e-mailadres" }, { status: 400 });
+
+      const totaal = Number(req.totaal) || 0;
+      if (totaal <= 0) return NextResponse.json({ error: "Stuur eerst een offerte — totaalbedrag ontbreekt" }, { status: 400 });
+
+      const deposit = Math.round(totaal * DEPOSIT_PCT * 100) / 100;
+      const rest = Math.round((totaal - deposit) * 100) / 100;
+      const amount = phase === "aanbetaling" ? deposit : rest;
+      const pctLabel = phase === "aanbetaling" ? "30%" : "70%";
+      if (amount <= 0) return NextResponse.json({ error: "Bedrag is nul" }, { status: 400 });
+
+      const mollieKey = process.env.MOLLIE_API_KEY;
+      if (!mollieKey) return NextResponse.json({ error: "Mollie niet geconfigureerd" }, { status: 500 });
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+      const origin = new URL(appUrl).origin;
+      const lodgeNaam = lodgeName(req.lodge || "lodge_1");
+      const fmtNl = (iso: string | null) => iso
+        ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })
+        : "";
+      const van = req.check_in ? fmtNl(req.check_in) : (req.periode_tekst?.split("—")[0]?.trim() || "");
+      const tot = req.check_out ? fmtNl(req.check_out) : (req.periode_tekst?.split("—")[1]?.trim() || "");
+      const periodeLabel = van && tot ? `${van} t/m ${tot}` : (req.periode_tekst || "");
+      const faseLabel = phase === "aanbetaling" ? "Aanbetaling" : "Restbetaling";
+      const productLabel = `${faseLabel} (${pctLabel}) — Lodge ${lodgeNaam}${periodeLabel ? ` · ${periodeLabel}` : ""}`;
+
+      // Maak een bookings-rij: dit is de bron-van-waarheid voor de Mollie-webhook
+      const { data: booking } = await sb.from("bookings").insert({
+        guest_id: req.guest_id,
+        product: productLabel,
+        prijs: amount,
+        status: "nieuw",
+        metadata: { bookingRequestId: requestId, betaalfase: phase, gastNaam: req.gast_naam, gastEmail: req.gast_email },
+      }).select("id").single();
+      const bookingId = booking?.id;
+
+      // Mollie-betaling aanmaken
+      let checkoutUrl: string | null = null;
+      try {
+        const mollieRes = await fetch("https://api.mollie.com/v2/payments", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${mollieKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: { currency: "EUR", value: amount.toFixed(2) },
+            description: `Huis ter Huynen — ${productLabel}`,
+            redirectUrl: `${origin}/betaald?booking=${bookingId || ""}`,
+            webhookUrl: `${origin}/api/mollie/webhook`,
+            metadata: {
+              bookingId: bookingId || "",
+              betaalfase: phase,
+              bookingRequestId: requestId,
+              gastNaam: req.gast_naam,
+              gastEmail: req.gast_email,
+            },
+          }),
+        });
+        if (!mollieRes.ok) {
+          const err = await mollieRes.json().catch(() => ({}));
+          console.error("Mollie payment-link error:", err);
+          return NextResponse.json({ error: "Mollie-betaling kon niet worden aangemaakt" }, { status: 500 });
+        }
+        const payment = await mollieRes.json();
+        checkoutUrl = payment._links?.checkout?.href || null;
+        if (bookingId && payment.id) {
+          await sb.from("bookings").update({ mollie_payment_id: payment.id }).eq("id", bookingId);
+        }
+      } catch (e) {
+        console.error("Mollie payment-link request failed:", e);
+        return NextResponse.json({ error: "Mollie niet bereikbaar" }, { status: 500 });
+      }
+
+      // Betaalmail naar de gast
+      const resendKey = process.env.RESEND_API_KEY;
+      if (resendKey && checkoutUrl) {
+        const { url: photoUrl } = lodgePhoto(origin, req.lodge);
+        const firstName = esc((req.gast_naam || "").split(" ")[0] || "");
+        try {
+          const { Resend } = await import("resend");
+          const resend = new Resend(resendKey);
+          await resend.emails.send({
+            from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+            to: [req.gast_email],
+            subject: `${faseLabel} voor je verblijf — Huis ter Huynen`,
+            html: lodgeEmail({
+              photoUrl, photoAlt: `Lodge ${esc(lodgeNaam)}`,
+              title: phase === "aanbetaling"
+                ? `Bevestig je verblijf${firstName ? `, ${firstName}` : ""}`
+                : `Laatste stap${firstName ? `, ${firstName}` : ""}`,
+              intro: phase === "aanbetaling"
+                ? `Je reservering voor Lodge ${esc(lodgeNaam)} staat klaar. Met de aanbetaling van 30% leg je je data definitief vast.`
+                : `Bijna klaar! Voldoe de restbetaling en je verblijf in Lodge ${esc(lodgeNaam)} is volledig geregeld.`,
+              blocks: [
+                infoBlock("Je verblijf", esc(periodeLabel || "—"), `Lodge ${esc(lodgeNaam)}`),
+                calloutBlock(
+                  `${faseLabel} (${pctLabel})`,
+                  `Te voldoen: <strong>&euro; ${amount.toFixed(2)}</strong> van het totaalbedrag van &euro; ${totaal.toFixed(2)}.`,
+                ),
+                ctaButton(checkoutUrl, `Betaal &euro; ${amount.toFixed(2)} via iDEAL`, { prominent: true }),
+                checklist(
+                  phase === "aanbetaling"
+                    ? [
+                        "Veilig betalen via iDEAL",
+                        "Je data zijn vastgelegd zodra de aanbetaling binnen is",
+                        "De restbetaling volgt later, ruim voor aankomst",
+                      ]
+                    : [
+                        "Veilig betalen via iDEAL",
+                        "Hierna is je verblijf volledig betaald",
+                        "Je gast-app volgt enkele dagen voor aankomst",
+                      ],
+                ),
+              ],
+            }),
+          });
+        } catch (e) {
+          console.error("Payment-link email failed:", e);
+        }
+      }
+
+      await sb.from("booking_requests").update({
+        status: phase === "aanbetaling" ? "aanbetaling_verstuurd" : "restbetaling_verstuurd",
+      }).eq("id", requestId);
+
+      return NextResponse.json({ success: true, checkoutUrl, amount, totaal, fase: phase });
     }
     case "reject_booking_request": {
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });

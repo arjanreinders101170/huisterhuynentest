@@ -99,6 +99,17 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     }).eq("id", bookingId);
 
+    // Sync de gekoppelde aanvraag bij aanbetaling/restbetaling-links uit de admin
+    if (bookingStatus === "betaald" && meta.bookingRequestId && meta.betaalfase) {
+      try {
+        await getSupabase().from("booking_requests").update({
+          status: meta.betaalfase === "aanbetaling" ? "aanbetaling_betaald" : "volledig_betaald",
+        }).eq("id", meta.bookingRequestId);
+      } catch (e) {
+        console.error("booking_request betaalfase-sync mislukt:", e);
+      }
+    }
+
     // Send confirmation emails only when paid
     if (bookingStatus === "betaald" && meta.gastEmail) {
       // Shared invoice variables
@@ -227,7 +238,9 @@ export async function POST(request: NextRequest) {
       // ═══ META CAPI — server-of-record Purchase event ═══
       // Fires once per paid booking. Same event_id as the browser
       // InitiateCheckout is used so Meta dedups the funnel correctly.
-      try {
+      // Bij een aanbetaling (30%) slaan we Purchase over om dubbeltelling te
+      // voorkomen; de restbetaling (laatste fase) telt als de echte conversie.
+      if (meta.betaalfase !== "aanbetaling") try {
         const { data: bookingRow } = await getSupabase()
           .from("bookings")
           .select("metadata")

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { LANDING_NAV } from "@/lib/site";
-const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Agenda laden...</div> });
+const RequestForm = dynamic(() => import("@/components/RequestForm"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Formulier laden...</div> });
 
 interface GoogleReview {
   author: string;
@@ -112,15 +112,15 @@ function BookingSection() {
             </div>
           </div>
         )}
-        <div style={{ textAlign: "center", marginBottom: 52 }}>
+        <div style={{ textAlign: "center", marginBottom: 44 }}>
           <Eyebrow>Reserveren · Openingsjaar 2027</Eyebrow>
-          <SectionTitle>Claim uw datum</SectionTitle>
+          <SectionTitle>Vraag uw datum aan</SectionTitle>
           <GoldRule />
           <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
-            Kies uw datum, wij reserveren hem persoonlijk voor u. Geen verplichtingen, reactie binnen 24 uur.
+            Geef uw gewenste data door, dan reserveren wij die persoonlijk voor u. U ontvangt binnen 24 uur een aanbod op maat. Geen verplichtingen.
           </p>
         </div>
-        <BookingCalendar />
+        <RequestForm />
         <div style={{ textAlign: "center", marginTop: 32 }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -133,7 +133,7 @@ function BookingSection() {
               display: "inline-block", width: 6, height: 6, borderRadius: "50%",
               background: T.gold,
             }} />
-            Vroegboekers ontvangen als eersten de beschikbare data, populaire weekenden gaan snel
+            Als vroegboeker heeft u de eerste keuze, populaire weekenden gaan snel
           </div>
         </div>
       </div>
@@ -1132,8 +1132,7 @@ export default function LandingPage() {
             fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.65)",
             fontWeight: 300, margin: "0 0 12px", lineHeight: 1.7,
           }}>
-            Vroegboekers ontvangen als eersten de beschikbare data voor het openingsjaar 2027,
-            plus een persoonlijk vroegboeker-voordeel dat scherper ligt dan op boekingssites.
+            Als vroegboeker krijg je als eerste toegang tot de beschikbare verblijfsdata voor 2027 én profiteer je van exclusieve voordelen die niet beschikbaar zijn via boekingssites.
           </p>
           <p style={{
             fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.4)",

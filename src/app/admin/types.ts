@@ -27,7 +27,8 @@ export type BookingRequest = {
   prijs_verblijf: number | null; schoonmaak: number | null; toeristenbelasting: number | null;
   extra_regels: { label: string; bedrag: number; soort: string }[];
   totaal: number | null;
-  status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen";
+  status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen"
+    | "aanbetaling_verstuurd" | "aanbetaling_betaald" | "restbetaling_verstuurd" | "volledig_betaald";
   legacy_terugkeer_id: string | null;
   guest?: { naam: string; email: string } | null;
 };
@@ -47,4 +48,8 @@ export const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   offerte_verstuurd: { bg: "#E3F2FD", text: "#1565C0" },
   geboekt: { bg: "#E8F5E9", text: "#2E7D32" },
   verlopen: { bg: "#F5F5F5", text: "#9E9E9E" },
+  aanbetaling_verstuurd: { bg: "#FFF8E1", text: "#F9A825" },
+  aanbetaling_betaald: { bg: "#E8F5E9", text: "#2E7D32" },
+  restbetaling_verstuurd: { bg: "#FFF8E1", text: "#F9A825" },
+  volledig_betaald: { bg: "#E8F5E9", text: "#1B5E20" },
 };

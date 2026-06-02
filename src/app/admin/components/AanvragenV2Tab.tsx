@@ -40,6 +40,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
   const [result, setResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<unknown>(null);
+  const [payLoading, setPayLoading] = useState<string | null>(null);
 
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "9px 12px", borderRadius: 8,
@@ -60,12 +61,13 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     setDiagnosing(false);
   };
 
-  const openEditor = async (req: BookingRequest) => {
+  const openEditor = async (req: BookingRequest, editable = true) => {
     if (expandedId === req.id) {
       setExpandedId(null);
       return;
     }
     setExpandedId(req.id);
+    if (!editable) return;       // betaalpaneel heeft geen prefill nodig
     if (forms[req.id]) return; // al geladen
 
     setLoadingPrefill(req.id);
@@ -190,6 +192,35 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
       body: JSON.stringify({ action: "mark_booking_in_behandeling", id }),
     });
     setRequests(requests.map(x => x.id === id ? { ...x, status: "in_behandeling" } : x));
+  };
+
+  const sendPaymentLink = async (req: BookingRequest, fase: "aanbetaling" | "restbetaling") => {
+    if (!req.totaal || Number(req.totaal) <= 0) {
+      setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "Stuur eerst een offerte" } }));
+      return;
+    }
+    const faseLabel = fase === "aanbetaling" ? "Aanbetaling" : "Restbetaling";
+    if (!confirm(`${faseLabel} (${fase === "aanbetaling" ? "30%" : "70%"}) als iDEAL-betaallink naar ${req.gast_email || "de gast"} sturen?`)) return;
+    setPayLoading(`${req.id}:${fase}`);
+    setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "" } }));
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "send_payment_link", requestId: req.id, fase }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        const newStatus = fase === "aanbetaling" ? "aanbetaling_verstuurd" : "restbetaling_verstuurd";
+        setRequests(requests.map(x => x.id === req.id ? { ...x, status: newStatus } : x));
+        setResult(prev => ({ ...prev, [req.id]: { ok: true, msg: `${faseLabel} € ${Number(d.amount).toFixed(2)} verstuurd` } }));
+      } else {
+        setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: d.error || "Kon betaallink niet versturen" } }));
+      }
+    } catch {
+      setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "Verbindingsfout" } }));
+    }
+    setPayLoading(null);
   };
 
   const filtered = requests.filter(r =>
@@ -318,6 +349,82 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     );
   };
 
+  const renderPayment = (req: BookingRequest) => {
+    const totaal = Number(req.totaal) || 0;
+    const deposit = Math.round(totaal * 0.30 * 100) / 100;
+    const rest = Math.round((totaal - deposit) * 100) / 100;
+    const res = result[req.id];
+
+    const depositSent = ["aanbetaling_verstuurd", "aanbetaling_betaald", "restbetaling_verstuurd", "volledig_betaald"].includes(req.status);
+    const depositPaid = ["aanbetaling_betaald", "restbetaling_verstuurd", "volledig_betaald"].includes(req.status);
+    const finalSent = ["restbetaling_verstuurd", "volledig_betaald"].includes(req.status);
+    const finalPaid = req.status === "volledig_betaald";
+
+    const row = (
+      label: string, pct: string, amount: number,
+      fase: "aanbetaling" | "restbetaling",
+      sent: boolean, paid: boolean, enabled: boolean,
+    ) => {
+      const busy = payLoading === `${req.id}:${fase}`;
+      return (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.card }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: C.text }}>{label} <span style={{ color: C.muted, fontWeight: 400 }}>({pct})</span></div>
+            <div style={{ fontSize: 16, fontWeight: 500, color: C.green }}>€ {amount.toFixed(2)}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {paid
+              ? <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 600 }}>✓ betaald</span>
+              : sent
+                ? <span style={{ fontSize: 12, color: "#F9A825", fontWeight: 600 }}>● link verstuurd</span>
+                : null}
+            <button
+              onClick={() => sendPaymentLink(req, fase)}
+              disabled={!enabled || busy || paid}
+              style={{
+                padding: "8px 16px", borderRadius: 8, border: "none",
+                background: (enabled && !paid) ? C.green : C.border,
+                fontSize: 12, fontWeight: 500, color: "#fff",
+                cursor: (enabled && !busy && !paid) ? "pointer" : "not-allowed",
+              }}
+            >
+              {busy ? "Versturen..." : sent ? "Opnieuw sturen" : "Stuur betaallink"}
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div style={{ padding: "20px 24px", background: "#FAFAF7", borderTop: `1px solid ${C.border}` }}>
+        <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, marginBottom: 12, fontWeight: 500 }}>
+          Betaling in termijnen
+        </div>
+        {totaal <= 0 ? (
+          <div style={{ fontSize: 13, color: "#E24B4A" }}>Geen totaalbedrag bekend — stuur eerst een offerte.</div>
+        ) : (
+          <>
+            <div style={{ fontSize: 13, color: C.muted, marginBottom: 12 }}>
+              Totaal bevestigd: <strong style={{ color: C.text }}>€ {totaal.toFixed(2)}</strong>
+            </div>
+            <div style={{ display: "grid", gap: 10 }}>
+              {row("Aanbetaling", "30%", deposit, "aanbetaling", depositSent, depositPaid, true)}
+              {row("Restbetaling", "70%", rest, "restbetaling", finalSent, finalPaid, depositPaid || finalSent)}
+            </div>
+            {!depositPaid && (
+              <div style={{ fontSize: 11, color: C.light, marginTop: 10 }}>
+                De restbetaling wordt actief zodra de aanbetaling is voldaan.
+              </div>
+            )}
+            {res && !res.ok && res.msg && (
+              <div style={{ fontSize: 12, color: "#E24B4A", marginTop: 10 }}>{res.msg}</div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Aanvragen</div>
@@ -363,16 +470,18 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
             const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
             const isExpanded = expandedId === r.id;
             const isEditable = r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd";
+            const isPayable = r.status === "bevestigd" || r.status === "aanbetaling_verstuurd" || r.status === "aanbetaling_betaald" || r.status === "restbetaling_verstuurd" || r.status === "volledig_betaald";
+            const isExpandable = isEditable || isPayable;
             const res = result[r.id];
 
             return (
               <div key={r.id} style={{ borderTop: `1px solid ${C.border}` }}>
                 <div
-                  onClick={() => isEditable && openEditor(r)}
+                  onClick={() => isExpandable && openEditor(r, isEditable)}
                   style={{
                     display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px",
                     padding: "14px 16px", fontSize: 13, color: C.text, alignItems: "center",
-                    cursor: isEditable ? "pointer" : "default",
+                    cursor: isExpandable ? "pointer" : "default",
                     background: isExpanded ? "#FAFAF7" : "transparent",
                   }}
                 >
@@ -399,10 +508,10 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
                   </div>
                   <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>
                     {timeAgo(r.created_at)}
-                    {isEditable && <div style={{ fontSize: 10, color: C.gold, marginTop: 2 }}>{isExpanded ? "▲" : "▼"}</div>}
+                    {isExpandable && <div style={{ fontSize: 10, color: C.gold, marginTop: 2 }}>{isExpanded ? "▲" : "▼"}</div>}
                   </div>
                 </div>
-                {isExpanded && isEditable && renderEditor(r)}
+                {isExpanded && (isEditable ? renderEditor(r) : renderPayment(r))}
               </div>
             );
           })}
