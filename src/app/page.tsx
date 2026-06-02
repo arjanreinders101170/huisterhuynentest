@@ -1132,8 +1132,7 @@ export default function LandingPage() {
             fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.65)",
             fontWeight: 300, margin: "0 0 12px", lineHeight: 1.7,
           }}>
-            Vroegboekers ontvangen als eersten de beschikbare data voor het openingsjaar 2027,
-            plus een persoonlijk vroegboeker-voordeel dat scherper ligt dan op boekingssites.
+            Als vroegboeker krijg je als eerste toegang tot de beschikbare verblijfsdata voor 2027 én profiteer je van exclusieve voordelen die niet beschikbaar zijn via boekingssites.
           </p>
           <p style={{
             fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.4)",
