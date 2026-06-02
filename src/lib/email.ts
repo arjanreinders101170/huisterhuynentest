@@ -43,8 +43,8 @@ export function calloutBlock(
   const ctaHtml = cta
     ? `
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:14px;">
-          <tr><td align="center" style="background:#2F4F3E;border-radius:8px;">
-            <a href="${cta.href}" style="display:block;padding:12px 28px;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-align:center;">${cta.text}</a>
+          <tr><td align="center" bgcolor="#2F4F3E" style="background-color:#2F4F3E;border-radius:8px;padding:14px 28px;">
+            <a href="${cta.href}" style="display:block;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-align:center;line-height:1.2;">${cta.text}</a>
           </td></tr>
         </table>`
     : "";
@@ -130,8 +130,8 @@ export function ctaButton(href: string, text: string, opts?: { prominent?: boole
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:${mb}px;">
       <tr><td align="center">
         <table role="presentation" cellpadding="0" cellspacing="0"${innerWidth}><tr>
-          <td align="center" style="background:#2F4F3E;border-radius:${radius};">
-            <a href="${href}" style="display:block;padding:${padding};color:#fff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:${fontSize};font-weight:bold;border-radius:${radius};">${text}</a>
+          <td align="center" bgcolor="#2F4F3E" style="background-color:#2F4F3E;border-radius:${radius};padding:${padding};">
+            <a href="${href}" style="display:block;color:#fff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:${fontSize};font-weight:bold;text-align:center;line-height:1.2;">${text}</a>
           </td>
         </tr></table>
       </td></tr>
@@ -436,18 +436,24 @@ export function buildOfferteHtmlV2(
       <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Geen verplichting &mdash; neem rustig de tijd</td></tr>
     </table>
 
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
       <tr><td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:420px;">
           <tr>
-            <td align="center" style="background-color:#2F4F3E;border-radius:10px;">
+            <td align="center" bgcolor="#2F4F3E" style="background-color:#2F4F3E;border-radius:12px;padding:22px 40px;">
               <a href="${appUrl}/bevestig?id=${aanvraagId}&t=${confirmToken}"
-                style="display:block;padding:18px 48px;color:#ffffff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;border-radius:10px;">
+                style="display:block;color:#ffffff;text-decoration:none;font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;text-align:center;line-height:1.2;letter-spacing:.3px;">
                 Bevestig reservering &#8594;
               </a>
             </td>
           </tr>
         </table>
+      </td></tr>
+    </table>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      <tr><td align="center" style="font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">
+        Veilig bevestigen in &eacute;&eacute;n klik &middot; geen vooruitbetaling nodig
       </td></tr>
     </table>
 
