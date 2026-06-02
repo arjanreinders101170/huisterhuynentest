@@ -5,11 +5,11 @@ import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
-const BookingCalendar = dynamic(() => import("@/components/BookingCalendar"), {
+const RequestFormDE = dynamic(() => import("@/components/RequestFormDE"), {
   ssr: false,
   loading: () => (
     <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>
-      Kalender wird geladen…
+      Formular wird geladen…
     </div>
   ),
 });
@@ -83,17 +83,17 @@ function SectionHeader({ eyebrow, title, sub, as = "h2" }: { eyebrow: string; ti
 function BookingSection() {
   return (
     <section id="verfugbarkeit" style={{
-      background: "white",
+      background: T.card,
       padding: "80px 40px",
       borderTop: `3px solid ${T.green}`,
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 52 }}>
-          <Eyebrow>Verfügbarkeit</Eyebrow>
-          <SectionTitle as="h2">Ihren Aufenthalt buchen</SectionTitle>
+          <Eyebrow>Anfrage senden</Eyebrow>
+          <SectionTitle as="h2">Ihren Aufenthalt anfragen</SectionTitle>
           <GoldRule />
           <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
-            Wählen Sie Ihre Reisedaten und senden Sie eine Anfrage. Wir bestätigen persönlich innerhalb von 24 Stunden.
+            Teilen Sie uns Ihre Wunschdaten mit. Wir prüfen persönlich und senden Ihnen innerhalb von 24 Stunden ein maßgeschneidertes Angebot.
           </p>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -108,11 +108,8 @@ function BookingSection() {
             }} />
             Frühbucher erhalten Vorrang auf die Sommerwochenenden 2027
           </div>
-          <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 300, margin: "12px 0 0" }}>
-            Buchungs-Kalender derzeit auf Niederländisch — Datumsauswahl und Preise sind selbsterklärend.
-          </p>
         </div>
-        <BookingCalendar />
+        <RequestFormDE />
       </div>
     </section>
   );
@@ -204,7 +201,7 @@ export default function LandingPageDE() {
               letterSpacing: "0.3px",
               boxShadow: "0 6px 28px rgba(180,154,94,.55)",
             }}>
-              Verfügbarkeit prüfen
+              Aufenthalt anfragen
               <span aria-hidden style={{ fontSize: 18, lineHeight: 1 }}>→</span>
             </a>
 
@@ -444,7 +441,7 @@ export default function LandingPageDE() {
                     fontSize: 14, fontWeight: 600, textDecoration: "none",
                     letterSpacing: "0.3px",
                   }}>
-                    {lodge.name} buchen
+                    {lodge.name} anfragen
                   </a>
                 </div>
               </div>
@@ -743,7 +740,7 @@ export default function LandingPageDE() {
               letterSpacing: "0.3px",
               boxShadow: "0 6px 24px rgba(180,154,94,.45)",
             }}>
-              Verfügbarkeit prüfen
+              Aufenthalt anfragen
             </a>
             <a href="#umgebung" style={{
               padding: "15px 38px",
@@ -869,7 +866,7 @@ export default function LandingPageDE() {
                 {[
                   { label: "Unsere Lodges", href: "#" },
                   { label: "Drenthe entdecken", href: "#umgebung" },
-                  { label: "Verfügbarkeit", href: "#verfugbarkeit" },
+                  { label: "Anfrage senden", href: "#verfugbarkeit" },
                   { label: "Datenschutz", href: "/datenschutz" },
                   { label: "Impressum", href: "/impressum" },
                   { label: "AGB", href: "/agb" },
