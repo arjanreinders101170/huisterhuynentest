@@ -23,7 +23,7 @@ export function StickyMobileCTA({ bookingHref = "/#reserveren" }: { bookingHref?
             textDecoration: "none", fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
           }}
         >
-          Bekijk beschikbaarheid
+          Claim uw datum →
         </Link>
       </div>
     </>

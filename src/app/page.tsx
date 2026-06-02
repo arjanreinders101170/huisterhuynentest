@@ -74,6 +74,15 @@ function SectionHeader({ eyebrow, title, sub }: { eyebrow: string; title: string
 }
 
 function BookingSection() {
+  const [daysLeft, setDaysLeft] = useState<number | null>(null);
+  useEffect(() => {
+    const opening = new Date("2027-01-01T00:00:00");
+    const calc = () => setDaysLeft(Math.max(0, Math.ceil((opening.getTime() - Date.now()) / 86400000)));
+    calc();
+    const id = setInterval(calc, 60000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <section id="reserveren" style={{
       background: "white",
@@ -81,28 +90,52 @@ function BookingSection() {
       borderTop: `3px solid ${T.green}`,
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        {daysLeft !== null && (
+          <div style={{ textAlign: "center", marginBottom: 44 }}>
+            <div style={{
+              display: "inline-flex", flexDirection: "column", alignItems: "center",
+              background: "rgba(47,79,62,.05)", border: `1px solid rgba(47,79,62,.12)`,
+              borderRadius: 16, padding: "20px 40px", gap: 4,
+            }}>
+              <div style={{
+                fontFamily: T.serif, fontSize: "clamp(40px, 5vw, 56px)",
+                fontWeight: 700, color: T.green, lineHeight: 1,
+              }}>
+                {daysLeft}
+              </div>
+              <div style={{
+                fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+                color: T.muted, letterSpacing: "2.5px", textTransform: "uppercase",
+              }}>
+                dagen tot opening
+              </div>
+            </div>
+          </div>
+        )}
         <div style={{ textAlign: "center", marginBottom: 52 }}>
-          <Eyebrow>Reserveren</Eyebrow>
-          <SectionTitle>Boek uw verblijf</SectionTitle>
+          <Eyebrow>Reserveren · Openingsjaar 2027</Eyebrow>
+          <SectionTitle>Claim uw datum</SectionTitle>
           <GoldRule />
           <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
-            Kies uw reisdata en stuur een aanvraag. Wij bevestigen binnen 24 uur persoonlijk.
+            Kies uw datum — wij reserveren hem persoonlijk voor u. Geen verplichtingen, reactie binnen 24 uur.
           </p>
+        </div>
+        <BookingCalendar />
+        <div style={{ textAlign: "center", marginTop: 32 }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             fontFamily: T.sans, fontSize: 12, fontWeight: 500,
             color: T.green, letterSpacing: "0.4px",
-            background: "rgba(47,79,62,.07)", padding: "6px 14px",
-            borderRadius: 999, marginTop: 16,
+            background: "rgba(47,79,62,.07)", padding: "8px 18px",
+            borderRadius: 999,
           }}>
             <span style={{
               display: "inline-block", width: 6, height: 6, borderRadius: "50%",
               background: T.gold,
             }} />
-            Vroege boekers krijgen voorrang op de zomerweekenden 2027
+            Vroegboekers ontvangen als eersten de beschikbare data · Populaire weekenden gaan snel
           </div>
         </div>
-        <BookingCalendar />
       </div>
     </section>
   );
@@ -218,7 +251,7 @@ export default function LandingPage() {
                 display: "inline-block", width: 6, height: 6, borderRadius: "50%",
                 background: T.gold, boxShadow: `0 0 0 4px rgba(180,154,94,.18)`,
               }} />
-              Slechts 2 lodges · vroege boekers krijgen voorrang op favoriete data
+              Twee privé lodges · privé-hottub · direct vanuit de deur de heide op
             </div>
 
             {/* Secondary text link */}
@@ -235,7 +268,7 @@ export default function LandingPage() {
             fontFamily: T.sans, fontSize: 11, fontWeight: 300,
             color: "rgba(255,255,255,.42)", marginTop: 24, letterSpacing: "0.3px",
           }}>
-            Opening 1 januari 2027 · al boekbaar
+            Opening 1 januari 2027 · Claim nu uw datum als Eerste Gast
           </p>
         </div>
       </section>
@@ -253,7 +286,7 @@ export default function LandingPage() {
             { n: "0 min", label: "Wandelen vanuit de deur" },
             { n: "15 min", label: "Nationaal Park Drentsche Aa" },
             { n: "52", label: "Hunebedden in Drenthe" },
-            { n: "1.000+", label: "km fietsroutes rondom" },
+            { n: "2", label: "Privé lodges · nergens anders zo in Drenthe" },
           ].map((s, i, arr) => (
             <div key={i} style={{
               padding: "14px 20px",
@@ -291,12 +324,12 @@ export default function LandingPage() {
             gap: "40px 32px",
           }}>
             {[
-              { label: "Privé Hottub", desc: "Genieten onder de sterren, op elk moment van de dag." },
-              { label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek." },
-              { label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein." },
-              { label: "Volledige privacy", desc: "Alleen ú en uw gezelschap, geen omringende buren." },
-              { label: "Uniek design", desc: "De Heide én De Eik, elk met eigen karakter en sfeer." },
-              { label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf." },
+              { label: "Volledige privacy", desc: "Alleen ú en uw gezelschap — geen andere gasten, geen omringende buren. Uw eigen stuk Drenthe." },
+              { label: "Privé Hottub", desc: "Genieten onder de sterren, op elk moment van de dag. In elke lodge, op het eigen terras." },
+              { label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek. Wandelen vanuit de deur." },
+              { label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf. Altijd een persoonlijk antwoord." },
+              { label: "Uniek design", desc: "De Heide én De Eik, elk met eigen karakter en sfeer. Ontworpen voor maximaal comfort in de natuur." },
+              { label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein. Laad op terwijl u geniet." },
             ].map((usp, i) => (
               <div key={i} style={{ borderTop: `2px solid ${T.gold}`, paddingTop: 20 }}>
                 <h3 style={{
@@ -314,6 +347,13 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+          <p style={{
+            fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300,
+            textAlign: "center", margin: "40px auto 0", maxWidth: 560, lineHeight: 1.7,
+            fontStyle: "italic",
+          }}>
+            Dit type verblijf bestaat op slechts twee plekken in Drenthe — beide hier.
+          </p>
         </div>
       </section>
 
@@ -403,6 +443,12 @@ export default function LandingPage() {
                       </span>
                     ))}
                   </div>
+                  <div style={{
+                    fontFamily: T.sans, fontSize: 11, color: T.muted,
+                    fontWeight: 400, marginBottom: 16, letterSpacing: "0.2px",
+                  }}>
+                    Beschikbaar vanaf 1 januari 2027 · Openingsseizoen
+                  </div>
                   <a href="#reserveren" style={{
                     display: "block", textAlign: "center",
                     width: "100%", padding: "13px 0",
@@ -411,7 +457,7 @@ export default function LandingPage() {
                     fontSize: 14, fontWeight: 600, textDecoration: "none",
                     letterSpacing: "0.3px",
                   }}>
-                    Bekijk {lodge.name}
+                    Claim datum voor {lodge.name}
                   </a>
                 </div>
               </div>
@@ -451,15 +497,21 @@ export default function LandingPage() {
           }}>
             Huis ter Huynen · Zeijen, Drenthe
           </div>
-          <div style={{ marginTop: 28 }}>
+          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
             <a href="#reserveren" style={{
-              fontFamily: T.sans, fontSize: 13, fontWeight: 600,
-              color: "white", textDecoration: "underline", textUnderlineOffset: 5,
-              textDecorationColor: "rgba(180,154,94,.7)",
+              fontFamily: T.sans, fontSize: 14, fontWeight: 700,
+              color: "#1A2E24", background: T.gold,
+              textDecoration: "none", padding: "14px 36px", borderRadius: 10,
+              letterSpacing: "0.3px", display: "inline-block",
+            }}>
+              Claim uw weekend als Eerste Gast →
+            </a>
+            <div style={{
+              fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.45)",
               letterSpacing: "0.3px",
             }}>
-              Reserveer uw eigen weekend →
-            </a>
+              Openingsjaar 2027 · beperkte plaatsen
+            </div>
           </div>
         </div>
       </section>
@@ -639,6 +691,7 @@ export default function LandingPage() {
           <div style={{
             background: "rgba(180,154,94,.1)", borderRadius: 14,
             border: `1px solid rgba(180,154,94,.25)`, padding: "28px 32px",
+            marginBottom: 32,
           }}>
             <div style={{
               fontFamily: T.sans, fontSize: 11, fontWeight: 600,
@@ -674,6 +727,44 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Seizoensurgentie haak — midden in de inspiratiereis */}
+          <div style={{
+            background: T.green, borderRadius: 14, padding: "28px 32px",
+            display: "flex", flexWrap: "wrap",
+            justifyContent: "space-between", alignItems: "center", gap: 20,
+          }}>
+            <div>
+              <div style={{
+                fontFamily: T.sans, fontSize: 11, fontWeight: 600,
+                color: T.gold, letterSpacing: "2px", textTransform: "uppercase",
+                marginBottom: 8,
+              }}>
+                Heideseizoen · augustus – september 2027
+              </div>
+              <p style={{
+                fontFamily: T.serif, fontSize: 17, color: "white",
+                fontWeight: 700, margin: "0 0 6px", lineHeight: 1.3,
+              }}>
+                De heide kleurt paars — de meest gevraagde periode
+              </p>
+              <p style={{
+                fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.65)",
+                fontWeight: 300, margin: 0, lineHeight: 1.6,
+              }}>
+                Weekenden in augustus en september zijn als eerste volgeboekt. Claim uw datum nu.
+              </p>
+            </div>
+            <a href="#reserveren" style={{
+              display: "inline-block", flexShrink: 0,
+              fontFamily: T.sans, fontSize: 13, fontWeight: 700,
+              color: "#1A2E24", background: T.gold,
+              padding: "12px 28px", borderRadius: 10,
+              textDecoration: "none", letterSpacing: "0.3px", whiteSpace: "nowrap",
+            }}>
+              Controleer beschikbaarheid →
+            </a>
           </div>
         </div>
       </section>
@@ -794,6 +885,113 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════════════
+          EERSTE GASTEN — populaire momenten
+      ══════════════════════════════════════════ */}
+      <section style={{ background: T.card, padding: "80px 40px", borderTop: `1px solid ${T.border}` }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <SectionHeader
+            eyebrow="Openingsjaar 2027"
+            title="De populairste momenten gaan als eerste"
+            sub="Huis ter Huynen opent op 1 januari 2027. Vroegboekers claimen nu al hun voorkeursdatum — vóór de officiële opening."
+          />
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+            gap: 20,
+            marginBottom: 44,
+          }}>
+            {[
+              {
+                periode: "Opening",
+                datum: "1 – 3 jan 2027",
+                badge: "Historisch weekend",
+                badgeKleur: T.gold,
+                desc: "De allereerste gasten van Huis ter Huynen. Een moment dat slechts één keer bestaat.",
+              },
+              {
+                periode: "Valentijn",
+                datum: "13 – 16 feb 2027",
+                badge: "Populair",
+                badgeKleur: T.green,
+                desc: "Romantisch en stil — de hottub op zijn best in de Drentse winter.",
+              },
+              {
+                periode: "Pasen",
+                datum: "18 – 21 apr 2027",
+                badge: "Langweekend",
+                badgeKleur: T.green,
+                desc: "Lente in Drenthe, jonge dieren en bloeiende bossen. Vier dagen vrij.",
+              },
+              {
+                periode: "Heideseizoen",
+                datum: "aug – sep 2027",
+                badge: "Meest gevraagd",
+                badgeKleur: T.gold,
+                desc: "De heide kleurt paars. Dit is het hoogtepunt van het jaar — de weekenden gaan snel.",
+              },
+              {
+                periode: "Kerst & Oud & Nieuw",
+                datum: "25 dec – 1 jan",
+                badge: "Verwacht vol",
+                badgeKleur: T.green,
+                desc: "Hottub, vuur en stilte. De winter op zijn allermooist.",
+              },
+            ].map((m, i) => (
+              <div key={i} style={{
+                background: "white", borderRadius: 14,
+                border: `1px solid ${T.border}`,
+                padding: "24px 20px",
+                boxShadow: "0 2px 12px rgba(47,79,62,.05)",
+                display: "flex", flexDirection: "column", gap: 10,
+              }}>
+                <div style={{
+                  display: "inline-flex", alignItems: "center",
+                  background: m.badgeKleur === T.gold ? "rgba(180,154,94,.12)" : "rgba(47,79,62,.08)",
+                  color: m.badgeKleur,
+                  fontFamily: T.sans, fontSize: 10, fontWeight: 700,
+                  letterSpacing: "1.5px", textTransform: "uppercase",
+                  padding: "3px 10px", borderRadius: 6, alignSelf: "flex-start",
+                }}>
+                  {m.badge}
+                </div>
+                <div>
+                  <div style={{
+                    fontFamily: T.serif, fontSize: 16, fontWeight: 700,
+                    color: T.text, marginBottom: 2,
+                  }}>
+                    {m.periode}
+                  </div>
+                  <div style={{
+                    fontFamily: T.sans, fontSize: 11, color: T.gold,
+                    fontWeight: 600, letterSpacing: "0.5px",
+                  }}>
+                    {m.datum}
+                  </div>
+                </div>
+                <p style={{
+                  fontFamily: T.sans, fontSize: 13, color: T.muted,
+                  margin: 0, lineHeight: 1.6, fontWeight: 300,
+                }}>
+                  {m.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <a href="#reserveren" style={{
+              display: "inline-block",
+              fontFamily: T.sans, fontSize: 14, fontWeight: 700,
+              color: "white", background: T.green,
+              padding: "14px 36px", borderRadius: 10,
+              textDecoration: "none", letterSpacing: "0.3px",
+            }}>
+              Claim uw datum nu →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
           REVIEWS
       ══════════════════════════════════════════ */}
       <section style={{ background: T.bg, padding: "80px 40px" }}>
@@ -803,11 +1001,23 @@ export default function LandingPage() {
             title="Wat anderen zeggen"
           />
           {googleReviews.length === 0 ? (
-            <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, textAlign: "center", maxWidth: 560, margin: "0 auto", lineHeight: 1.8 }}>
-              Onze eerste gasten verblijven vanaf 1 januari 2027. Zodra zij Huis ter Huynen
-              hebben ervaren, verschijnen hun beoordelingen hier, rechtstreeks vanuit Google,
-              ongefilterd en echt.
-            </p>
+            <div style={{ textAlign: "center", maxWidth: 560, margin: "0 auto" }}>
+              <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.8, marginBottom: 8 }}>
+                Huis ter Huynen opent op 1 januari 2027. De eerste beoordelingen verschijnen
+                hier zodra onze Eerste Gasten hebben verbleven — rechtstreeks vanuit Google,
+                ongefilterd en echt.
+              </p>
+              <p style={{ fontFamily: T.serif, fontSize: 16, color: T.green, fontWeight: 700, margin: "0 0 24px", fontStyle: "italic" }}>
+                Wilt u een van de eersten zijn?
+              </p>
+              <a href="#reserveren" style={{
+                display: "inline-block", fontFamily: T.sans, fontSize: 14, fontWeight: 700,
+                color: "white", background: T.green, padding: "13px 32px",
+                borderRadius: 10, textDecoration: "none", letterSpacing: "0.3px",
+              }}>
+                Claim uw datum als Eerste Gast →
+              </a>
+            </div>
           ) : (
           <>
           {googleRating && googleCount && (
@@ -904,23 +1114,29 @@ export default function LandingPage() {
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
           <div style={{
             fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-            color: "rgba(255,255,255,.9)", letterSpacing: "2.5px", textTransform: "uppercase",
+            color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase",
             marginBottom: 14,
           }}>
-            Opening 1 januari 2027
+            Eerste Gasten · Vroegboeker-voordeel
           </div>
           <h2 style={{
             fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)",
             color: "white", margin: "0 0 12px", fontWeight: 700, lineHeight: 1.2,
           }}>
-            Wees er als eerste bij
+            Word een Eerste Gast
           </h2>
           <p style={{
             fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.65)",
-            fontWeight: 300, margin: "0 0 32px", lineHeight: 1.7,
+            fontWeight: 300, margin: "0 0 12px", lineHeight: 1.7,
           }}>
-            Schrijf je in voor de nieuwsbrief en ontvang vroegboekvoordeel,
-            seizoenstips en het eerste bericht zodra de lodges opengaan.
+            Vroegboekers ontvangen als eersten de beschikbare data voor het openingsjaar 2027,
+            plus een persoonlijk vroegboeker-voordeel dat scherper ligt dan op boekingssites.
+          </p>
+          <p style={{
+            fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.4)",
+            fontWeight: 300, margin: "0 0 28px", letterSpacing: "0.2px",
+          }}>
+            Geen spam — wél voorrang.
           </p>
           <NewsletterForm />
         </div>
