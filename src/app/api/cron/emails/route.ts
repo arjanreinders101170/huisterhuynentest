@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { esc, welcomeEmail, lateCheckoutEmail, thankYouEmail, followUpEmail, lodgePhoto } from "@/lib/email";
+import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
 
 export const runtime = "nodejs";
 
@@ -100,7 +101,7 @@ export async function GET(request: NextRequest) {
             from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
             to: [guest.email],
             subject: "Bedankt voor je bezoek — Huis ter Huynen",
-            html: thankYouEmail({ firstName, photoUrl: thankPhoto, reviewLink: appUrl }),
+            html: thankYouEmail({ firstName, photoUrl: thankPhoto, reviewLink: GOOGLE_REVIEW_URL }),
           });
           await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stay.id);
           thankYouSent++;
@@ -141,7 +142,7 @@ export async function GET(request: NextRequest) {
             from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
             to: [fg.email],
             subject: "Hoe was je verblijf? — Huis ter Huynen",
-            html: followUpEmail({ firstName: followFirstName, photoUrl: followPhoto, reviewLink: appUrl, bookLink: appUrl }),
+            html: followUpEmail({ firstName: followFirstName, photoUrl: followPhoto, reviewLink: GOOGLE_REVIEW_URL, bookLink: `${baseUrl}/#reserveren` }),
           });
           await getSupabase().from("bookings").insert({
             guest_id: fg.id, product: "follow-up-email", prijs: 0, status: "betaald",
