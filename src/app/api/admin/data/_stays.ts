@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc, lodgePhoto, welcomeEmail, thankYouEmail, lateCheckoutEmail } from "@/lib/email";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
+import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
 
 export async function handleStaysGet(table: string): Promise<NextResponse | null> {
   if (table !== "stays") return null;
@@ -203,7 +204,7 @@ export async function handleStaysPost(action: string, body: Record<string, unkno
         from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
         to: [guest.email],
         subject: "Bedankt voor je bezoek — Huis ter Huynen",
-        html: thankYouEmail({ firstName, photoUrl: photoUrlTy, reviewLink: appUrlTy }),
+        html: thankYouEmail({ firstName, photoUrl: photoUrlTy, reviewLink: GOOGLE_REVIEW_URL }),
       });
 
       await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stayId);

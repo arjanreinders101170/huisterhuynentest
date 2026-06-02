@@ -2,20 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
 import { verifyAdminSession } from "@/lib/admin-auth";
-import { APP_URL_FALLBACK } from "@/data/lodge";
+import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
+
+const BOOK_URL = "https://huisterhuynen.nl/#reserveren";
 
 export const runtime = "nodejs";
 
 const LODGE_NAME = "Huis ter Huynen";
 
-function followUpEmailHtml(naam: string, appUrl: string): string {
+function followUpEmailHtml(naam: string): string {
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
 <body style="margin:0;padding:0;background-color:#EAE3D2;font-family:Georgia,'Times New Roman',serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#EAE3D2;">
     <tr><td align="center" style="padding:32px 16px;">
-      <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <!-- Header -->
         <tr><td align="center" style="padding:0 0 24px;">
           <table role="presentation" cellpadding="0" cellspacing="0">
@@ -51,9 +53,9 @@ function followUpEmailHtml(naam: string, appUrl: string): string {
                   <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
                     Jouw ervaring helpt andere gasten en helpt ons om het nóg beter te maken.
                   </p>
-                  <table role="presentation" cellpadding="0" cellspacing="0">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                     <tr><td align="center" style="background-color:#2F4F3E;border-radius:8px;">
-                      <a href="${appUrl}" style="display:block;padding:12px 28px;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
+                      <a href="${GOOGLE_REVIEW_URL}" style="display:block;padding:12px 28px;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-align:center;">
                         Review achterlaten
                       </a>
                     </td></tr>
@@ -63,14 +65,14 @@ function followUpEmailHtml(naam: string, appUrl: string): string {
 
               <!-- Terugkomen CTA -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-                <tr><td style="padding:20px;background-color:#F9F4E8;border-radius:8px;text-align:center;">
+                <tr><td style="padding:20px;background-color:#F9F4E8;border-radius:8px;">
                   <p style="margin:0 0 4px;font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:bold;color:#2A2418;">Kom nog eens terug</p>
                   <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:13px;color:#8A7D6A;line-height:1.5;">
                     Als terugkerende gast ontvang je altijd een persoonlijk aanbod — scherper dan op boekingssites.
                   </p>
-                  <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-                    <tr><td align="center" style="border:2px solid #2F4F3E;border-radius:8px;">
-                      <a href="${appUrl}" style="display:block;padding:12px 28px;color:#2F4F3E;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                    <tr><td align="center" style="background-color:#2F4F3E;border-radius:8px;">
+                      <a href="${BOOK_URL}" style="display:block;padding:12px 28px;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-align:center;">
                         Bekijk beschikbaarheid
                       </a>
                     </td></tr>
@@ -107,7 +109,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
     const resendKey = process.env.RESEND_API_KEY;
     if (!resendKey) {
       return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
@@ -152,7 +153,7 @@ export async function POST(request: NextRequest) {
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [guest.email],
           subject: `Hoe was je verblijf? — ${LODGE_NAME}`,
-          html: followUpEmailHtml(esc(guest.naam || ""), appUrl),
+          html: followUpEmailHtml(esc(guest.naam || "")),
         });
 
         // Mark as sent

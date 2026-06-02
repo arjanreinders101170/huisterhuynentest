@@ -41,19 +41,12 @@ export function calloutBlock(
   const bg = opts?.background === "muted" ? "#F5F1E8" : "#F9F4E8";
   const cta = opts?.cta;
   const ctaHtml = cta
-    ? (() => {
-        const isSecondary = cta.style === "secondary";
-        const tdStyle = isSecondary
-          ? "border:2px solid #2F4F3E;border-radius:8px;"
-          : "background:#2F4F3E;border-radius:8px;";
-        const linkColor = isSecondary ? "#2F4F3E" : "#fff";
-        return `
-        <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:14px;">
-          <tr><td align="center" style="${tdStyle}">
-            <a href="${cta.href}" style="display:block;padding:12px 28px;color:${linkColor};text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">${cta.text}</a>
+    ? `
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:14px;">
+          <tr><td align="center" style="background:#2F4F3E;border-radius:8px;">
+            <a href="${cta.href}" style="display:block;padding:12px 28px;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;text-align:center;">${cta.text}</a>
           </td></tr>
-        </table>`;
-      })()
+        </table>`
     : "";
   const padding = cta ? "20px" : "18px 20px";
   return `
@@ -186,7 +179,7 @@ export function lodgeEmail(opts: LodgeEmailOpts): string {
 <body style="margin:0;padding:0;background:#EAE3D2;font-family:Georgia,'Times New Roman',serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EAE3D2;">
 <tr><td align="center" style="padding:32px 16px;">
-<table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
   <tr><td align="center" style="padding:0 0 24px;">
     <table role="presentation" cellpadding="0" cellspacing="0"><tr>
@@ -227,7 +220,7 @@ export function emailWrap(content: string): string {
 <body style="margin:0;padding:0;background-color:#EAE3D2;font-family:Georgia,'Times New Roman',serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#EAE3D2;">
     <tr><td align="center" style="padding:32px 16px;">
-      <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr><td align="center" style="padding:0 0 24px;">
           <table role="presentation" cellpadding="0" cellspacing="0">
             <tr><td align="center" style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:bold;color:#52502E;letter-spacing:2px;">HUIS TER HUYNEN</td></tr>
