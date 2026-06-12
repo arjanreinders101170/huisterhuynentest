@@ -433,27 +433,33 @@ export default function LandingPage() {
                   }}>
                     {lodge.tag}
                   </div>
+                  {lodgePrices[lodge.id] && (
+                    <div style={{
+                      position: "absolute", top: 14, right: 14,
+                      background: "rgba(26,46,36,.78)", backdropFilter: "blur(6px)",
+                      color: "#fff", borderRadius: 10,
+                      padding: "8px 14px", zIndex: 1, textAlign: "right",
+                    }}>
+                      <div style={{
+                        fontFamily: T.sans, fontSize: 10, color: "rgba(255,255,255,.7)",
+                        textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: 2,
+                      }}>
+                        Vanaf
+                      </div>
+                      <div style={{ fontFamily: T.serif, fontSize: 21, fontWeight: 700, lineHeight: 1, whiteSpace: "nowrap" }}>
+                        €{lodgePrices[lodge.id]}
+                        <span style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 400, color: "rgba(255,255,255,.7)" }}> /nacht</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div style={{ padding: 28 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 10 }}>
-                    <h3 style={{
-                      fontFamily: T.serif, fontSize: 22, color: T.green,
-                      margin: 0, fontWeight: 700,
-                    }}>
-                      {lodge.name}
-                    </h3>
-                    {lodgePrices[lodge.id] && (
-                      <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 400, letterSpacing: "0.3px" }}>
-                          Vanaf
-                        </div>
-                        <div style={{ fontFamily: T.serif, fontSize: 20, color: T.green, fontWeight: 700, lineHeight: 1.2 }}>
-                          €{lodgePrices[lodge.id]}
-                          <span style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 400 }}> / nacht</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <h3 style={{
+                    fontFamily: T.serif, fontSize: 22, color: T.green,
+                    margin: "0 0 10px", fontWeight: 700,
+                  }}>
+                    {lodge.name}
+                  </h3>
                   <p style={{
                     fontFamily: T.sans, fontSize: 14, color: T.muted,
                     margin: "0 0 20px", lineHeight: 1.7, fontWeight: 300,
