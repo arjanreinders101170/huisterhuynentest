@@ -145,6 +145,7 @@ export default function LandingPage() {
   const [googleReviews, setGoogleReviews] = useState<GoogleReview[]>([]);
   const [googleRating, setGoogleRating] = useState<number | null>(null);
   const [googleCount, setGoogleCount] = useState<number | null>(null);
+  const [lodgePrices, setLodgePrices] = useState<Record<string, number>>({});
 
   useEffect(() => {
     fetch("/api/google-reviews")
@@ -157,6 +158,22 @@ export default function LandingPage() {
         }
       })
       .catch(() => {});
+
+    ["lodge_1", "lodge_2"].forEach((lodge) => {
+      fetch(`/api/pricing?lodge=${lodge}`)
+        .then(r => r.json())
+        .then(data => {
+          const prices: number[] = [];
+          if (data.base_price > 0) prices.push(data.base_price);
+          (data.periods || []).forEach((p: { price_per_night: number }) => {
+            if (p.price_per_night > 0) prices.push(p.price_per_night);
+          });
+          if (prices.length) {
+            setLodgePrices(prev => ({ ...prev, [lodge]: Math.min(...prices) }));
+          }
+        })
+        .catch(() => {});
+    });
   }, []);
 
   return (
@@ -418,12 +435,25 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div style={{ padding: 28 }}>
-                  <h3 style={{
-                    fontFamily: T.serif, fontSize: 22, color: T.green,
-                    margin: "0 0 10px", fontWeight: 700,
-                  }}>
-                    {lodge.name}
-                  </h3>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 10 }}>
+                    <h3 style={{
+                      fontFamily: T.serif, fontSize: 22, color: T.green,
+                      margin: 0, fontWeight: 700,
+                    }}>
+                      {lodge.name}
+                    </h3>
+                    {lodgePrices[lodge.id] && (
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <div style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, fontWeight: 400, letterSpacing: "0.3px" }}>
+                          Vanaf
+                        </div>
+                        <div style={{ fontFamily: T.serif, fontSize: 20, color: T.green, fontWeight: 700, lineHeight: 1.2 }}>
+                          €{lodgePrices[lodge.id]}
+                          <span style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, fontWeight: 400 }}> / nacht</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <p style={{
                     fontFamily: T.sans, fontSize: 14, color: T.muted,
                     margin: "0 0 20px", lineHeight: 1.7, fontWeight: 300,
