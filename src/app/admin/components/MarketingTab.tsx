@@ -34,6 +34,11 @@ const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; bg: stri
   laag:    { label: "Laag",    color: "#374151", bg: "#F3F4F6", dot: "#9CA3AF" },
 };
 
+/** Koppelt taken aan een live e-mailtemplate-preview (admin → /api/admin/email-preview). */
+const EMAIL_PREVIEWS: Record<string, { template: string; label: string }> = {
+  j18: { template: "newsletter-welcome", label: "Welkomstmail nieuwsbrief" },
+};
+
 const CAT_CONFIG: Record<Category, { label: string; color: string; bg: string }> = {
   LP:        { label: "Landingspagina", color: "#5B21B6", bg: "#EDE9FE" },
   Blog:      { label: "Blog",           color: "#065F46", bg: "#D1FAE5" },
@@ -336,6 +341,7 @@ export function MarketingTab() {
   const [filterCat, setFilterCat] = useState<Category | "alle">("alle");
   const [filterPrio, setFilterPrio] = useState<Priority | "alle">("alle");
   const [showOnlyOpen, setShowOnlyOpen] = useState(false);
+  const [previewTask, setPreviewTask] = useState<string | null>(null);
 
   useEffect(() => {
     setDone(loadDone());
@@ -596,6 +602,37 @@ export function MarketingTab() {
                           borderLeft: `2px solid ${C.border}`, lineHeight: 1.4,
                         }}>
                           {task.note}
+                        </div>
+                      )}
+                      {/* E-mailtemplate preview */}
+                      {EMAIL_PREVIEWS[task.id] && (
+                        <div style={{ marginTop: 8 }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewTask(prev => prev === task.id ? null : task.id);
+                            }}
+                            style={{
+                              fontSize: 11, fontWeight: 600, color: C.green,
+                              background: "#fff", border: `1px solid ${C.border}`,
+                              borderRadius: 6, padding: "4px 10px", cursor: "pointer",
+                              fontFamily: "inherit",
+                            }}
+                          >
+                            {previewTask === task.id ? "Verberg template" : `Bekijk template: ${EMAIL_PREVIEWS[task.id].label}`}
+                          </button>
+                          {previewTask === task.id && (
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              style={{ marginTop: 10, border: `1px solid ${C.border}`, borderRadius: 10, overflow: "hidden", background: "#EAE3D2" }}
+                            >
+                              <iframe
+                                src={`/api/admin/email-preview?template=${EMAIL_PREVIEWS[task.id].template}`}
+                                title={EMAIL_PREVIEWS[task.id].label}
+                                style={{ width: "100%", height: 640, border: "none", display: "block" }}
+                              />
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
