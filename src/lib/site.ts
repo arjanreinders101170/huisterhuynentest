@@ -25,4 +25,5 @@ export const LANDING_NAV: { label: string; href: string }[] = [
   { label: "Bijzonder overnachten", href: "/bijzonder-overnachten-drenthe" },
   { label: "Vakantiehuis met hond", href: "/vakantiehuis-drenthe-met-hond" },
   { label: "Hunebedden Drenthe", href: "/hunebedden-drenthe" },
+  { label: "Paarse heide Drenthe", href: "/heide-drenthe" },
 ];

@@ -99,6 +99,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
       "Romantisch weekend weg Drenthe :: /romantisch-weekend-weg-drenthe",
       "Fietsen & wandelen in de omgeving :: /omgeving",
+      "Paarse heide Drenthe :: /heide-drenthe",
     ].join("\n"),
     cta_title: "Boek uw vakantiehuis met hottub in Drenthe",
     cta_body:
@@ -525,6 +526,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
       "Romantisch weekend weg Drenthe :: /romantisch-weekend-weg-drenthe",
       "Wellness vakantie Drenthe :: /wellness-vakantie-drenthe",
+      "Paarse heide Drenthe :: /heide-drenthe",
     ].join("\n"),
     cta_title: "Boek uw bijzonder verblijf in Drenthe",
     cta_body:
@@ -816,6 +818,85 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Overnachten bij Veenhuizen? Bezoek het UNESCO-dorp en Gevangenismuseum en verblijf in een luxe lodge met hottub in Zeijen. Boek direct, vanaf €165 per nacht.",
     og_image: "/heide3.jpg",
     sort_order: 7,
+  },
+  {
+    slug: "heide-drenthe",
+    breadcrumb: "Paarse heide Drenthe",
+    eyebrow: "Heideseizoen · Zeijen · Drenthe",
+    h1: "De paarse heide in Drenthe: wanneer, waar en hoe",
+    hero_sub:
+      "Een paar weken per jaar kleurt Drenthe diep paars-roze. Lees wanneer de heide bloeit, waar u de mooiste velden vindt rond Zeijen — en overnacht middenin het seizoen in een luxe lodge met privé-hottub.",
+    hero_image: "/heide1.jpg",
+    hero_image_alt:
+      "Bloeiende paarse heide in Drenthe, op loopafstand van Huis ter Huynen in Zeijen",
+    price_from: PRICE,
+    intro:
+      "Een paar weken per jaar verandert Drenthe van kleur. Vanaf half augustus tot in september kleurt de heide rond Zeijen diep paars-roze — een schouwspel waarvoor mensen uit het hele land naar het noorden trekken. Wie het wil zien, doet er goed aan het seizoen even te plannen: de bloei is kort, het mooist vroeg in de ochtend of laat op de avond, en de fraaiste velden liggen verspreid over de Zeijerstrubben, het Ballooërveld en het Dwingelderveld. Dit is uw gids voor de paarse heide in Drenthe — inclusief de plek waar u na een dag heide kijken neerstrijkt: Huis ter Huynen in Zeijen.",
+    sections: [
+      {
+        eyebrow: "Het seizoen",
+        heading: "Wanneer bloeit de heide in Drenthe?",
+        body: [
+          "De bloei van de heide volgt een vast ritme, maar het exacte moment verschilt elk jaar een beetje met het weer. Eerst bloeit de dopheide, die in de vochtige laagtes al in juli een zachtroze waas geeft. Daarna volgt de struikheide — de plant die Drenthe in augustus en september haar bekende paarse tapijt geeft.",
+          "De piek ligt doorgaans tussen half augustus en begin september, met de laatste week van augustus vaak als absolute hoogtepunt. Daarna verschiet de kleur geleidelijk naar bruin en is het seizoen voorbij. Plant u een bezoek, dan is de tweede helft van augustus de veiligste keuze.",
+        ],
+        bullets: [
+          "Juli: eerste dopheide bloeit in de vochtige laagtes.",
+          "Half augustus – begin september: piek van de struikheide, het bekende paarse tapijt.",
+          "Eind september: bloei neemt af, kleur verschiet naar bruin.",
+          "Vroege ochtend of late namiddag: het mooiste licht, ook voor foto's.",
+        ],
+      },
+      {
+        eyebrow: "De beste plekken",
+        heading: "Waar u de paarse heide rond Zeijen het mooiste ziet",
+        body: [
+          "Drenthe heeft op meerdere plekken uitgestrekte heidevelden, maar rond Zeijen liggen er een paar die u zo vanuit de lodge kunt bereiken — sommige zelfs lopend.",
+        ],
+        bullets: [
+          "Zeijerstrubben — heide- en stuifzandgebied direct achter de lodges, klein maar authentiek en zelden druk.",
+          "Ballooërveld — groot heideveld met een rondtrekkende schaapskudde, op ongeveer 12 minuten rijden.",
+          "Dwingelderveld — de grootste natte heide van West-Europa, op circa 30 minuten, met uitgestrekte paarse vlakten.",
+          "Drentsche Aa — beekdal met kleinschalige heide- en hooilandjes, op 15 minuten, mooi te combineren met een wandeling langs het water.",
+        ],
+      },
+      {
+        eyebrow: "Praktisch",
+        heading: "Zo maakt u er het meeste van",
+        body: [
+          "Ga vroeg op pad: in de ochtend is het licht zachter, de paden zijn rustiger en de geur van de heide — een mengeling van honing en aarde — is op zijn sterkst. Op een doordeweekse dag heeft u de grotere velden vaak vrijwel voor uzelf.",
+          "Stevige wandelschoenen zijn geen overbodige luxe; de paden zijn vaak onverhard en kunnen vochtig zijn. Neem water mee, en houd er rekening mee dat bloeiende heide veel bijen aantrekt — voor wie daar gevoelig voor is, is dat goed om te weten. Honden zijn op de meeste heidevelden welkom, vaak aangelijnd in verband met broedende vogels en grazende schapen.",
+          "Een korte wandeling is al voldoende voor een indrukwekkend uitzicht, maar wie de tijd heeft, combineert een ochtend op de heide met een lange lunch en een rustige middag — precies het ritme waarvoor mensen naar Drenthe komen.",
+        ],
+      },
+      {
+        eyebrow: "Overnachten",
+        heading: "Middenin het heideseizoen overnachten in Zeijen",
+        body: [
+          "Na een dag tussen de paarse heide is er weinig dat zo goed voelt als terugkeren naar een eigen, rustige plek. Huis ter Huynen ligt in Zeijen, met de Zeijerstrubben praktisch om de hoek en het Ballooërveld en Dwingelderveld op korte rijafstand. Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken.",
+          "'s Avonds, met stoffige wandelschoenen bij de deur en een glas wijn in de hand, stapt u in het warme water van de hottub terwijl de laatste kleur uit de lucht trekt boven de heide. Dat contrast — een dag in de uitgestrekte natuur, een avond in volledige privacy — is precies waarom gasten hier graag terugkomen.",
+        ],
+      },
+    ],
+    faq: [
+      "Wanneer is de heide in Drenthe het mooist? :: Doorgaans tussen half augustus en begin september, met de laatste week van augustus vaak als hoogtepunt. Het exacte moment verschilt iets per jaar, afhankelijk van het weer.",
+      "Waar is de heide het dichtst bij Huis ter Huynen? :: De Zeijerstrubben liggen direct achter de lodges en zijn een klein maar mooi heide- en stuifzandgebied. Voor grotere velden zijn het Ballooërveld (12 min) en het Dwingelderveld (30 min) een aanrader.",
+      "Hoe lang duurt het heideseizoen? :: De volle bloei van de struikheide duurt meestal twee tot drie weken, van half augustus tot begin september. Daarvoor en daarna is er nog kleur te zien, maar minder uitgesproken.",
+      "Is een bezoek aan de heide goed te combineren met een verblijf bij Huis ter Huynen? :: Zeker. De lodges liggen middenin het gebied waar de mooiste heidevelden van Noord-Drenthe te vinden zijn, en na een dag wandelen is de privé-hottub er om bij te komen.",
+    ].join("\n"),
+    related: [
+      "Bijzonder overnachten in Drenthe :: /bijzonder-overnachten-drenthe",
+      "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Omgeving & activiteiten :: /omgeving",
+    ].join("\n"),
+    cta_title: "Boek uw verblijf tijdens het heideseizoen",
+    cta_body:
+      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Paarse Heide in Drenthe | Wanneer & Waar Bloeit de Heide",
+    meta_description:
+      "Wanneer bloeit de heide in Drenthe? Ontdek de mooiste plekken voor de paarse heide rond Zeijen en overnacht in een luxe lodge met privé-hottub. Vanaf €165 per nacht.",
+    og_image: "/heide1.jpg",
+    sort_order: 12,
   },
 ];
 
