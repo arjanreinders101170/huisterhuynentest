@@ -40,6 +40,7 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
   const [view, setView] = useState<"list" | "edit">("list");
   const [form, setForm] = useState(EMPTY_POST);
   const [saving, setSaving] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [msg, setMsg] = useState("");
   const [preview, setPreview] = useState(false);
 
@@ -49,6 +50,20 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
     const res = await fetch("/api/admin/data?table=blog_posts");
     const data = await res.json();
     setPosts(data.data || []);
+  };
+
+  const importSeed = async () => {
+    setImporting(true);
+    setMsg("");
+    const res = await fetch("/api/admin/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "import_blog_seed" }),
+    });
+    const data = await res.json();
+    await reload();
+    setImporting(false);
+    setMsg(data.error ? data.error : `${data.imported ?? 0} conceptartikel(en) geïmporteerd.`);
   };
 
   const startNew = () => { setForm(EMPTY_POST); setMsg(""); setPreview(false); setView("edit"); };
@@ -140,13 +155,23 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
             <a href="/blog" target="_blank" rel="noopener" style={{ color: C.green }}>huisterhuynen.nl/blog</a>
           </p>
         </div>
-        <button onClick={startNew} style={{
-          padding: "10px 20px", borderRadius: 8, border: "none",
-          background: C.green, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", flexShrink: 0,
-        }}>
-          + Nieuw artikel
-        </button>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+          <button onClick={importSeed} disabled={importing} style={{
+            padding: "10px 18px", borderRadius: 8, border: `1px solid ${C.border}`,
+            background: "#fff", color: C.green, fontSize: 13, fontWeight: 600, cursor: "pointer",
+          }}>
+            {importing ? "Importeren..." : "Importeer conceptartikelen"}
+          </button>
+          <button onClick={startNew} style={{
+            padding: "10px 20px", borderRadius: 8, border: "none",
+            background: C.green, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", flexShrink: 0,
+          }}>
+            + Nieuw artikel
+          </button>
+        </div>
       </div>
+
+      {msg && <p style={{ fontSize: 12, color: C.green, margin: "0 0 16px" }}>{msg}</p>}
 
       {posts.length === 0 ? (
         <p style={{ fontSize: 13, color: C.muted }}>Nog geen artikelen. Klik op &quot;Nieuw artikel&quot; om te beginnen.</p>
