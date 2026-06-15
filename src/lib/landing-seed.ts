@@ -260,9 +260,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     h1: "Wellness vakantie in Drenthe",
     hero_sub:
       "Een privé-hottub op het terras, een eigen sauna en de stilste natuur van Nederland om u heen. Bij Huis ter Huynen is wellness geen afdeling, maar de hele ervaring.",
-    hero_image: "/welness_drenthe.jpg",
+    hero_image: "/lodge-eik.jpg",
     hero_image_alt:
-      "Buitensauna en wellness in een bosrijke omgeving in Drenthe, bij Huis ter Huynen in Zeijen",
+      "Lodge De Eik met privé-hottub op het terras, omringd door bos bij Zeijen — onderdeel van een wellness vakantie in Drenthe",
     price_from: PRICE,
     intro:
       "Een wellness vakantie in Drenthe gaat verder dan een uurtje sauna. Hier is de natuur zelf de bron van rust: stilteregio's, eindeloze heide en bossen waar u niemand tegenkomt. Bij Huis ter Huynen combineert u die rust met echte luxe — een privé-hottub, een eigen sauna in Lodge De Heide en alle comfort om volledig tot uzelf te komen.",
@@ -322,7 +322,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Wellness Vakantie in Drenthe | Lodge met Hottub & Sauna",
     meta_description:
       "Wellness vakantie in Drenthe: privé lodge met eigen hottub en sauna op de heide bij Zeijen. Stilte, natuur en comfort, 20 min van Assen. Vanaf €165 per nacht.",
-    og_image: "/welness_drenthe.jpg",
+    og_image: "/lodge-eik.jpg",
     sort_order: 4,
   },
   {
