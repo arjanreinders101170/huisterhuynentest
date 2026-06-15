@@ -167,7 +167,8 @@ export async function handleContentPost(action: string, body: Record<string, unk
         leestijd: p.leestijd,
         auteur: p.auteur,
         og_image: p.og_image,
-        gepubliceerd: false,
+        gepubliceerd: !!p.publish,
+        gepubliceerd_op: p.publish ? new Date().toISOString() : null,
       }));
       if (toInsert.length === 0) return NextResponse.json({ success: true, imported: 0 });
       const { error } = await sb.from("blog_posts").insert(toInsert);
