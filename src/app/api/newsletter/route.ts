@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSupabase } from "@/lib/supabase";
+import { newsletterWelcomeEmail } from "@/lib/email";
+import { SITE_URL } from "@/lib/site";
+
+const LODGE_NAME = "Huis ter Huynen";
 
 const schema = z.object({
   naam: z.string().min(1).max(100),
@@ -28,8 +32,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  let isNewSubscriber = false;
   try {
     const supabase = getSupabase();
+
+    const { data: existing } = await supabase
+      .from("newsletter_subscribers")
+      .select("email")
+      .eq("email", email)
+      .maybeSingle();
+    isNewSubscriber = !existing;
 
     // Silently ignore duplicate emails
     const { error } = await supabase
@@ -45,6 +57,27 @@ export async function POST(req: Request) {
       { error: "Er ging iets mis aan onze kant. Probeer het later opnieuw." },
       { status: 500 }
     );
+  }
+
+  // Welkomstmail — alleen bij een nieuwe aanmelding, en alleen als Resend is geconfigureerd
+  const resendKey = process.env.RESEND_API_KEY;
+  if (isNewSubscriber && resendKey) {
+    try {
+      const { Resend } = await import("resend");
+      const resend = new Resend(resendKey);
+      await resend.emails.send({
+        from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
+        to: [email],
+        subject: `Welkom bij ${LODGE_NAME}`,
+        html: newsletterWelcomeEmail({
+          firstName: naam,
+          photoUrl: `${SITE_URL}/lodge-heide.jpg`,
+          siteUrl: SITE_URL,
+        }),
+      });
+    } catch (e) {
+      console.error("[newsletter] welcome email error:", e);
+    }
   }
 
   return NextResponse.json({ ok: true });
