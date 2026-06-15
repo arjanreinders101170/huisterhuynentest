@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { BlogPost } from "../types";
+import { PUBLIC_IMAGES } from "@/lib/site";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -8,7 +9,7 @@ const C = {
   green: "#2F4F3E", gold: "#B49A5E",
 };
 
-const EMPTY_POST = { id: "", slug: "", titel: "", intro: "", inhoud: "", categorie: "Verhaal", leestijd: "4 minuten", auteur: "Arjan Reinders", geplande_publicatie: "" };
+const EMPTY_POST = { id: "", slug: "", titel: "", intro: "", inhoud: "", categorie: "Verhaal", leestijd: "4 minuten", auteur: "Arjan Reinders", og_image: "", geplande_publicatie: "" };
 
 export function slugify(s: string): string {
   return s.toLowerCase().trim()
@@ -55,6 +56,7 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
     setForm({
       id: p.id, slug: p.slug, titel: p.titel, intro: p.intro, inhoud: p.inhoud,
       categorie: p.categorie, leestijd: p.leestijd, auteur: p.auteur,
+      og_image: p.og_image || "",
       geplande_publicatie: isoToLocalInput(p.geplande_publicatie),
     });
     setMsg(""); setPreview(false); setView("edit");
@@ -266,6 +268,16 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
               <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Auteur</label>
               <input value={form.auteur} onChange={e => setForm(f => ({ ...f, auteur: e.target.value }))} style={inp} />
             </div>
+          </div>
+
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>
+              Social/OG-afbeelding <span style={{ color: C.light, fontWeight: 300 }}>— gebruikt bij delen op social media; standaard lodge-heide.jpg</span>
+            </label>
+            <select value={form.og_image} onChange={e => setForm(f => ({ ...f, og_image: e.target.value }))} style={inp}>
+              <option value="">Standaard (lodge-heide.jpg)</option>
+              {PUBLIC_IMAGES.map(img => <option key={img} value={img}>{img}</option>)}
+            </select>
           </div>
 
           <div>

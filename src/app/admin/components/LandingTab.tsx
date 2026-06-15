@@ -2,12 +2,7 @@
 import { useState } from "react";
 import { LandingPageRow, LandingSection } from "../types";
 import { slugify } from "./BlogTab";
-
-const PUBLIC_IMAGES = [
-  "/lodge-heide.jpg", "/lodge-eik.jpg", "/heide1.jpg", "/heide2.jpg", "/heide3.jpg",
-  "/wandel_drenthe.jpg", "/welness_drenthe.jpg", "/museum_drenthe.jpg", "/rent_a_bike.jpg",
-  "/borrel1.jpg", "/late_check_out.jpg",
-];
+import { PUBLIC_IMAGES } from "@/lib/site";
 
 type LandingSectionForm = { eyebrow: string; heading: string; bodyText: string; bulletsText: string };
 type LandingForm = {
