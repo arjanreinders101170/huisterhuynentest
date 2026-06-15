@@ -36,6 +36,7 @@ export interface LandingPageRecord {
 }
 
 const PRICE = "Vanaf €165 per nacht";
+const PRICE_DE = "Ab €165 pro Nacht";
 
 export const SEED_LANDING_PAGES: LandingPageRecord[] = [
   {
@@ -689,7 +690,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     hero_image: "/lodge-heide.jpg",
     hero_image_alt:
       "Boutique Lodge De Heide von Huis ter Huynen mit privatem Whirlpool auf der Terrasse, umgeben von Heide und Wald in Zeijen, Drenthe",
-    price_from: PRICE,
+    price_from: PRICE_DE,
     intro:
       "Ein Ferienhaus mit Whirlpool in Drenthe verbindet das Beste aus zwei Welten: die absolute Stille der Niederlande' ruhigsten Provinz und den Komfort eines privaten Whirlpools direkt auf Ihrer Terrasse. Bei Huis ter Huynen in Zeijen genießen Sie beides — vollständig privat, ohne geteilte Einrichtungen, das ganze Jahr über.",
     sections: [
@@ -737,9 +738,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Wie weit ist es von der deutschen Grenze? :: Huis ter Huynen liegt in Zeijen, Drenthe, etwa 1,5 Stunden von der deutschen Grenze bei Nordhorn/Bentheim entfernt. Ein bequem erreichbares Reiseziel für einen Kurzurlaub aus Deutschland.",
     ].join("\n"),
     related: [
-      "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
-      "Wellness vakantie Drenthe :: /wellness-vakantie-drenthe",
-      "Omgeving & activiteiten :: /omgeving",
+      "Luxus Lodge Drenthe :: /de/luxus-lodge-drenthe",
+      "Wellness Urlaub Drenthe :: /de/wellness-urlaub-drenthe",
+      "Romantisches Wochenende Drenthe :: /de/romantisches-wochenende-drenthe",
     ].join("\n"),
     cta_title: "Jetzt Ihr Ferienhaus mit Whirlpool in Drenthe buchen",
     cta_body:
@@ -897,6 +898,221 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Wanneer bloeit de heide in Drenthe? Ontdek de mooiste plekken voor de paarse heide rond Zeijen en overnacht in een luxe lodge met privé-hottub. Vanaf €165 per nacht.",
     og_image: "/heide1.jpg",
     sort_order: 12,
+  },
+  {
+    slug: "de/luxus-lodge-drenthe",
+    breadcrumb: "Luxus Lodge Drenthe",
+    eyebrow: "Boutique Lodge · Zeijen · Drenthe",
+    h1: "Luxus Lodge in Drenthe",
+    hero_sub:
+      "Zwei Boutique Lodges inmitten der Drentse Natur. Stilvoll eingerichtet, vollständig privat und mit Sauna, Whirlpool und allem Komfort für einen Aufenthalt, der bis ins Detail stimmt.",
+    hero_image: "/lodge-eik.jpg",
+    hero_image_alt:
+      "Luxus Lodge De Eik unter den Eichen bei Zeijen in Drenthe, mit Außenküche und eigener Terrasse",
+    price_from: PRICE_DE,
+    intro:
+      "Eine Luxus Lodge in Drenthe bedeutet nicht Überfluss, sondern die richtigen Dinge perfekt aufeinander abgestimmt: ein gutes Bett, warme Materialien, echte Privatsphäre und Natur, die direkt vor der Tür beginnt. Huis ter Huynen bietet zwei sorgfältig eingerichtete Lodges auf der Heide bei Zeijen — kein Hotel, sondern ein eigener Ort, an dem Sie sich sofort zu Hause fühlen.",
+    sections: [
+      {
+        eyebrow: "Positionierung",
+        heading: "Luxus bedeutet Ruhe, Raum und Privatsphäre",
+        body: [
+          "Echter Luxus zeigt sich nicht daran, wie viel da ist, sondern daran, was fehlt: keine Nachbarn, kein Lärm, keine Eile. Unsere Lodges stehen frei in der Landschaft, jede mit eigener Terrasse und Blick auf Heide oder Wald. Sie teilen sich nichts mit anderen Gästen. Genau dieses Gefühl — ein Ort ganz für sich allein — unterscheidet einen Aufenthalt hier von einem durchschnittlichen Ferienhaus oder Hotel.",
+          "Gleichzeitig fehlt es an nichts. Ein privater Whirlpool auf der Terrasse, eine voll ausgestattete Küche, schnelles WLAN und ein E-Ladepunkt auf dem Gelände — alles ist organisiert, damit Sie sich auf das konzentrieren können, wofür Sie gekommen sind: nichts.",
+        ],
+      },
+      {
+        eyebrow: "Die Unterkünfte",
+        heading: "Zwei Lodges mit eigenem Charakter",
+        body: [
+          "Beide Lodges bieten Platz für vier Personen und sind mit der gleichen Sorgfalt eingerichtet — doch jede hat ihre eigene Atmosphäre.",
+        ],
+        bullets: [
+          "Lodge De Heide — eigene Sauna, privater Whirlpool und Panoramablick über den Wald.",
+          "Lodge De Eik — hohe Decken, authentisches Ambiente, Außenküche mit Grill und eigenem Whirlpool.",
+          "Voll ausgestattete Küche, hochwertige Betten und private Terrasse in beiden Lodges.",
+          "Kostenloses WLAN, E-Ladepunkt und persönlicher Kontakt mit dem Gastgeber vor und während Ihres Aufenthalts.",
+        ],
+      },
+      {
+        eyebrow: "Für wen",
+        heading: "Für alle, die Qualität statt Quantität suchen",
+        body: [
+          "Eine Luxus Lodge in Drenthe ist ideal für Paare, die einmal ganz raus wollen, für kleine Familien, die die Natur entdecken möchten, oder für alle, die einen besonderen Anlass feiern wollen — ohne den Trubel eines Resorts. Die Größe ist bewusst klein gehalten: zwei Lodges, persönliche Aufmerksamkeit, keine anonyme Rezeption.",
+          "Wer Luxus vor allem als Erlebnis versteht — eine warme Sauna nach einer Wanderung, Kochen mit regionalen Produkten, ein Abend am Feuer — fühlt sich hier sofort zu Hause. Der Komfort ist da, aber Natur und Ruhe stehen im Vordergrund.",
+        ],
+      },
+      {
+        eyebrow: "Die Lage",
+        heading: "Mitten im schönsten Teil von Drenthe",
+        body: [
+          "Zeijen ist eines der schönsten Angerdörfer Drenthes. Der Nationalpark Drentsche Aa liegt eine Viertelstunde entfernt, die lila Heide des Ballooërveld ist ganz in der Nähe, und Assen erreichen Sie in zwanzig Minuten. Sie sind also abgelegen genug für vollständige Ruhe, aber nah genug an Kultur, Restaurants und Wellness für einen abwechslungsreichen Aufenthalt.",
+        ],
+      },
+    ],
+    faq: [
+      "Was macht diese Lodges zu 'Luxus'? :: Die Kombination aus vollständiger Privatsphäre, einem eigenen Whirlpool (und Sauna in De Heide), hochwertiger Einrichtung, einer voll ausgestatteten Küche und persönlichem Service. Keine geteilten Einrichtungen, kein Massentourismus.",
+      "Wie viele Lodges gibt es und wie groß sind sie? :: Es gibt zwei freistehende Lodges, De Heide und De Eik, jede für maximal vier Personen geeignet. Beide sind vollständig privat.",
+      "Kann ich die Lodge das ganze Jahr über buchen? :: Ja, Huis ter Huynen ist ganzjährig buchbar. Jede Jahreszeit hat ihren eigenen Reiz, von blühender Heide im Sommer bis zu stillen, verschneiten Wäldern im Winter.",
+      "Wie weit ist es von der deutschen Grenze? :: Huis ter Huynen liegt in Zeijen, Drenthe, etwa 1,5 Stunden von der deutschen Grenze bei Nordhorn/Bentheim entfernt — ein bequem erreichbares Ziel für einen Kurzurlaub.",
+    ].join("\n"),
+    related: [
+      "Ferienhaus mit Whirlpool Drenthe :: /de/ferienhaus-mit-whirlpool-drenthe",
+      "Wellness Urlaub Drenthe :: /de/wellness-urlaub-drenthe",
+      "Romantisches Wochenende Drenthe :: /de/romantisches-wochenende-drenthe",
+    ].join("\n"),
+    cta_title: "Erleben Sie eine Luxus Lodge in Drenthe",
+    cta_body:
+      "Die Lodges sind bereits für 2027 buchbar. Prüfen Sie die Verfügbarkeit oder stellen Sie Ihre Frage — wir antworten persönlich innerhalb von 24 Stunden.",
+    meta_title: "Luxus Lodge in Drenthe | Boutique Aufenthalt mit Whirlpool bei Zeijen",
+    meta_description:
+      "Luxus Boutique Lodge in Drenthe, auf der Heide bei Zeijen. Zwei vollständig private Lodges mit Whirlpool und Sauna, 20 Min. von Assen. Ruhe, Raum und Komfort. Jetzt direkt buchen.",
+    og_image: "/lodge-eik.jpg",
+    sort_order: 13,
+  },
+  {
+    slug: "de/wellness-urlaub-drenthe",
+    breadcrumb: "Wellness Urlaub Drenthe",
+    eyebrow: "Wellness & Ruhe · Zeijen · Drenthe",
+    h1: "Wellness Urlaub in Drenthe",
+    hero_sub:
+      "Ein privater Whirlpool auf der Terrasse, eine eigene Sauna und die stillste Natur der Niederlande um Sie herum. Bei Huis ter Huynen ist Wellness keine Abteilung, sondern das gesamte Erlebnis.",
+    hero_image: "/lodge-heide.jpg",
+    hero_image_alt:
+      "Lodge De Heide mit privatem Whirlpool und eigener Sauna, umgeben von Heide und Wald bei Zeijen in Drenthe",
+    price_from: PRICE_DE,
+    intro:
+      "Ein Wellness Urlaub in Drenthe geht über eine Stunde Sauna hinaus. Hier ist die Natur selbst die Quelle der Ruhe: Stilleregionen, endlose Heide und Wälder, in denen Sie niemandem begegnen. Bei Huis ter Huynen verbinden Sie diese Ruhe mit echtem Luxus — einem privaten Whirlpool, einer eigenen Sauna in Lodge De Heide und allem Komfort, um vollständig zu sich selbst zu finden.",
+    sections: [
+      {
+        eyebrow: "Die Idee",
+        heading: "Natur als Medizin, Komfort als Basis",
+        body: [
+          "Studien zeigen immer wieder, dass Zeit in einer stillen, grünen Umgebung Stress messbar reduziert. Drenthe ist dafür der ideale Ort: offiziell die stillste Provinz der Niederlande, mit geschützten Stilleregionen und kaum Lichtverschmutzung. Ein Spaziergang durch die Zeijerstrubben oder entlang der Drentsche Aa wirkt mehr als jede Behandlung.",
+          "Bei Huis ter Huynen kommt der Komfort hinzu, der einen Wellness Urlaub vollständig macht: warmes, sprudelndes Wasser in Ihrem privaten Whirlpool, eine Sauna, die nur Ihnen gehört, und eine Lodge, in der Sie sich sofort entspannen. Keine geteilten Räume, kein Trubel — Wellness in Ihrem eigenen Tempo.",
+        ],
+      },
+      {
+        eyebrow: "Was Sie bekommen",
+        heading: "Privates Wellness in Ihrer eigenen Lodge",
+        body: [
+          "Sie müssen für Ihr Wellness-Erlebnis nicht einmal das Haus verlassen. Beide Lodges verfügen über einen eigenen Whirlpool; Lodge De Heide zusätzlich über eine private Sauna.",
+        ],
+        bullets: [
+          "Privater Whirlpool auf der Terrasse, 24/7 verfügbar bei 38 °C.",
+          "Eigene Sauna in Lodge De Heide — keine Reservierung, keine Mitgäste.",
+          "Vollständige Privatsphäre: Ihre Terrasse blickt auf Natur, nicht auf Nachbarn.",
+          "Wander- und Radwege direkt vor der Tür für 'Waldbaden' und Bewegung.",
+          "Wellnesszentren und Spas in der Region (Assen, Hof van Saksen) für einen zusätzlichen Verwöhntag.",
+        ],
+      },
+      {
+        eyebrow: "Ein Tag",
+        heading: "So sieht ein Wellnesstag aus",
+        body: [
+          "Beginnen Sie den Tag mit einem stillen Morgenspaziergang über die Heide, solange der Tau noch liegt. Zurück in der Lodge ein ausgiebiges Frühstück auf der Terrasse, danach in die Sauna. Nachmittags eine Radtour durch die Esdörfer oder ein Besuch in einem nahegelegenen Wellnesszentrum. Und wenn der Abend kommt: hinein in den Whirlpool, mit Blick auf einen Sternenhimmel, den Sie in der Stadt nie sehen.",
+          "Dieser Rhythmus — bewegen, aufwärmen, abkühlen, nichts müssen — ist genau das, wofür ein Wellness Urlaub gedacht ist. In Drenthe stellt er sich von selbst ein.",
+        ],
+      },
+      {
+        eyebrow: "Die Umgebung",
+        heading: "Stille, Heide und Wasser in Reichweite",
+        body: [
+          "Der Nationalpark Drentsche Aa liegt eine Viertelstunde entfernt, das Ballooërveld mit seiner lila Heide ganz in der Nähe, und Assen — mit Wellnesszentren, Restaurants und dem Drents Museum — in zwanzig Minuten. Sie entscheiden selbst, wie viel Sie unternehmen und wie viel Sie einfach nur sitzen bleiben.",
+        ],
+      },
+    ],
+    faq: [
+      "Hat die Lodge eine eigene Sauna? :: Lodge De Heide verfügt über eine eigene private Sauna. Beide Lodges haben einen privaten Whirlpool auf der Terrasse, 24/7 verfügbar.",
+      "Ist das für ein Wellness-Wochenende zu zweit geeignet? :: Auf jeden Fall. Die Lodges sind vollständig privat und ideal für Paare, die Ruhe und Verwöhnung suchen, ohne den Trubel eines großen Wellnessresorts.",
+      "Gibt es auch Wellnesszentren in der Umgebung? :: Ja. In Assen (20 Min.) und der weiteren Region finden Sie verschiedene Wellnesszentren und Spas, etwa Spa Hof van Saksen, für einen zusätzlichen Verwöhntag.",
+      "Was ist die beste Zeit für einen Wellness Urlaub in Drenthe? :: Jede Jahreszeit funktioniert: die lila Heide im Spätsommer, die Herbstfarben, oder gerade der Winter, wenn der Whirlpool in der verschneiten Stille am schönsten ist.",
+    ].join("\n"),
+    related: [
+      "Ferienhaus mit Whirlpool Drenthe :: /de/ferienhaus-mit-whirlpool-drenthe",
+      "Luxus Lodge Drenthe :: /de/luxus-lodge-drenthe",
+      "Romantisches Wochenende Drenthe :: /de/romantisches-wochenende-drenthe",
+    ].join("\n"),
+    cta_title: "Buchen Sie Ihren Wellness Urlaub in Drenthe",
+    cta_body:
+      "Die Lodges sind bereits für 2027 buchbar. Prüfen Sie die Verfügbarkeit oder stellen Sie Ihre Frage — wir antworten persönlich innerhalb von 24 Stunden.",
+    meta_title: "Wellness Urlaub in Drenthe | Lodge mit Whirlpool & Sauna",
+    meta_description:
+      "Wellness Urlaub in Drenthe: private Lodge mit eigenem Whirlpool und Sauna auf der Heide bei Zeijen. Stille, Natur und Komfort, 20 Min. von Assen. Ab €165 pro Nacht.",
+    og_image: "/lodge-heide.jpg",
+    sort_order: 14,
+  },
+  {
+    slug: "de/romantisches-wochenende-drenthe",
+    breadcrumb: "Romantisches Wochenende Drenthe",
+    eyebrow: "Für Paare · Zeijen · Drenthe",
+    h1: "Romantisches Wochenende in Drenthe",
+    hero_sub:
+      "Kein Programm, kein Trubel — nur Sie beide, die Heide vor der Tür und ein privater Whirlpool unter den Sternen. Ein romantisches Wochenende in Drenthe in seiner schönsten Form.",
+    hero_image: "/heide3.jpg",
+    hero_image_alt:
+      "Abendstimmung über der blühenden Heide in Drenthe, die perfekte Kulisse für ein romantisches Wochenende",
+    price_from: PRICE_DE,
+    intro:
+      "Ein romantisches Wochenende dreht sich um Zeit für sich, ohne Ablenkung. Drenthe ist wie geschaffen dafür: die stillste Provinz der Niederlande, mit endloser Natur und kaum Touristen. Bei Huis ter Huynen wohnen Sie in einer vollständig privaten Lodge mit eigenem Whirlpool — der ideale Ort, um gemeinsam ganz abzuschalten.",
+    sections: [
+      {
+        eyebrow: "Warum Drenthe",
+        heading: "Die Ruhe, die ein romantisches Wochenende braucht",
+        body: [
+          "Romantik braucht Raum und Ruhe. Drenthe bietet beides im Überfluss: keine Staus, keine Massen, dafür weite Heide, alte Strubbenwälder und das gewundene Bachtal der Drentsche Aa. Hier hören Sie morgens nur Vögel und abends nichts als den Wind. Genau diese Stille macht ein Wochenende zu zweit so besonders.",
+          "Und doch müssen Sie auf nichts verzichten: ein gutes Restaurant, ein Wellnesstag oder ein kultureller Ausflug nach Assen sind alle in Reichweite. Sie entscheiden selbst, ob Sie die Lodge kaum verlassen oder doch hinausziehen.",
+        ],
+      },
+      {
+        eyebrow: "Ideen",
+        heading: "So wird das Wochenende unvergesslich",
+        body: [
+          "Ein romantisches Wochenende in Drenthe wird durch Sie selbst gestaltet. Ein paar Ideen, die den Aufenthalt vollkommen machen:",
+        ],
+        bullets: [
+          "Sonnenuntergang über der Heide, gefolgt vom Whirlpool unter dem Sternenhimmel.",
+          "Ein Kerzenlicht-Dinner auf Ihrer eigenen Terrasse, mit regionalen Produkten.",
+          "Gemeinsam Rad fahren durch die Esdörfer in Richtung Norg und der Drentsche Aa.",
+          "Ein Wellnesstag in der Umgebung und danach Entspannung in Ihrer eigenen Sauna (Lodge De Heide).",
+          "Ein Nichtstun-Tag: Morgenkaffee im Bad, ein Buch und keine Verpflichtungen.",
+        ],
+      },
+      {
+        eyebrow: "Die Unterkunft",
+        heading: "Eine private Lodge mit Whirlpool für zwei",
+        body: [
+          "Beide Lodges sind vollständig privat und perfekt für ein Paar: eine eigene Terrasse, ein privater Whirlpool bei 38 °C und ein stimmungsvolles Interieur, in dem Sie sich sofort wohlfühlen. Keine Rezeption, keine Mitgäste — nur Sie beide.",
+          "Feiern Sie ein Jubiläum, einen Geburtstag oder einfach sich selbst? Teilen Sie es uns bei der Buchung mit — wir sorgen, wo möglich, für einen persönlichen Empfang.",
+        ],
+      },
+      {
+        eyebrow: "Praktisch",
+        heading: "Ideal kombinierbar mit dem Rest von Drenthe",
+        body: [
+          "Huis ter Huynen liegt in Zeijen, zwanzig Minuten von Assen und eine Viertelstunde vom Nationalpark Drentsche Aa entfernt. So verbinden Sie Ruhe mit Erreichbarkeit: ein romantisches Dinner, ein Museumsbesuch oder ein Wellness-Nachmittag sind schnell organisiert — und danach kehren Sie zurück an Ihren eigenen stillen Ort auf der Heide.",
+        ],
+      },
+    ],
+    faq: [
+      "Ist die Lodge für ein romantisches Wochenende zu zweit geeignet? :: Auf jeden Fall. Beide Lodges sind vollständig privat, mit eigenem Whirlpool auf der Terrasse und stimmungsvollem Interieur — ideal für Paare, die Ruhe und Privatsphäre suchen.",
+      "Wann ist die schönste Zeit für ein romantisches Wochenende in Drenthe? :: Jede Jahreszeit hat ihren Reiz: die lila Heide im August und September, die Herbstfarben im Oktober, oder der stille, verschneite Winter, in dem der Whirlpool am schönsten ist.",
+      "Können wir einen besonderen Anlass feiern? :: Ja, geben Sie es bei der Buchung an. Wo möglich sorgen wir für einen persönlichen Empfang, um Ihren Geburtstag, Ihr Jubiläum oder Ihre Überraschung besonders zu machen.",
+      "Wie weit ist es von der deutschen Grenze entfernt? :: Huis ter Huynen liegt in Zeijen, Drenthe, etwa 1,5 Stunden von der deutschen Grenze bei Nordhorn/Bentheim — ideal für ein Wochenende ohne lange Anfahrt.",
+    ].join("\n"),
+    related: [
+      "Ferienhaus mit Whirlpool Drenthe :: /de/ferienhaus-mit-whirlpool-drenthe",
+      "Luxus Lodge Drenthe :: /de/luxus-lodge-drenthe",
+      "Wellness Urlaub Drenthe :: /de/wellness-urlaub-drenthe",
+    ].join("\n"),
+    cta_title: "Planen Sie Ihr romantisches Wochenende in Drenthe",
+    cta_body:
+      "Die Lodges sind bereits für 2027 buchbar. Prüfen Sie die Verfügbarkeit oder stellen Sie Ihre Frage — wir antworten persönlich innerhalb von 24 Stunden.",
+    meta_title: "Romantisches Wochenende in Drenthe | Private Lodge mit Whirlpool",
+    meta_description:
+      "Romantisches Wochenende in Drenthe? Übernachten Sie in einer privaten Lodge mit Whirlpool auf der Heide bei Zeijen. Ruhe, Natur und Privatsphäre für Paare. Jetzt buchen.",
+    og_image: "/heide3.jpg",
+    sort_order: 15,
   },
 ];
 

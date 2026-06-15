@@ -139,6 +139,7 @@ const MONTHS: Month[] = [
       { id: "se13", title: "Review-automatisering bouwen (email 14d na vertrek + Google Review link)", category: "Email", priority: "hoog", note: "Klaar voor dag 1 na opening" },
       { id: "se14", title: "Email 4 (nieuwsbrief): herfst-teaser + 'opening nadert'", category: "Email", priority: "hoog" },
       { id: "se15", title: "Eerste maandelijkse SEO-check: GSC posities + GA4 top-pagina's", category: "Analytics", priority: "hoog" },
+      { id: "se16", title: "Resterende NL LP's vertalen naar DE (/vakantiehuis-assen, /vakantiehuis-norg, /overnachten-veenhuizen, /vakantiehuis-drenthe-met-hond, /bijzonder-overnachten-drenthe, /hunebedden-drenthe)", category: "LP", priority: "midden", note: "Eerst evalueren of de eerste 4 DE-pagina's (whirlpool, luxus lodge, wellness, romantisches wochenende) verkeer opleveren; /heide-drenthe (lila Heide) heeft prioriteit boven deze 6" },
     ],
   },
   {
