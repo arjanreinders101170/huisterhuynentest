@@ -4,7 +4,7 @@ export type Review = { id: string; naam: string; sterren: number; tekst: string;
 export type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number; grootboek_code: string };
 export type Stay = { id: string; guest_id: string; lodge: string; check_in: string; check_out: string; token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean; guests?: { naam: string; email: string } };
 export type DiscountCode = { id: string; code: string; omschrijving: string | null; type: "percentage" | "fixed"; waarde: number; geldig_van: string | null; geldig_tot: string | null; max_gebruik: number | null; gebruik_count: number; min_nachten: number | null; actief: boolean; created_at: string };
-export type BlogPost = { id: string; slug: string; titel: string; intro: string; inhoud: string; categorie: string; leestijd: string; auteur: string; gepubliceerd: boolean; gepubliceerd_op: string | null; geplande_publicatie: string | null; created_at: string };
+export type BlogPost = { id: string; slug: string; titel: string; intro: string; inhoud: string; categorie: string; leestijd: string; auteur: string; og_image: string | null; gepubliceerd: boolean; gepubliceerd_op: string | null; geplande_publicatie: string | null; created_at: string };
 export type LandingSection = { eyebrow?: string; heading: string; body: string[]; bullets?: string[] };
 export type LandingPageRow = {
   id: string; slug: string; breadcrumb: string; eyebrow: string; h1: string;

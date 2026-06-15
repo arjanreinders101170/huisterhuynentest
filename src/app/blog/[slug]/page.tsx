@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
+import { SITE_URL } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -14,6 +15,7 @@ type BlogPost = {
   categorie: string;
   leestijd: string;
   auteur: string;
+  og_image: string | null;
   gepubliceerd_op: string | null;
 };
 
@@ -37,24 +39,25 @@ export async function generateMetadata(
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) return { title: "Niet gevonden" };
+  const ogImage = `${SITE_URL}${post.og_image || "/lodge-heide.jpg"}`;
   return {
     title: post.titel,
     description: post.intro,
-    alternates: { canonical: `https://www.huisterhuynen.nl/blog/${post.slug}` },
+    alternates: { canonical: `${SITE_URL}/blog/${post.slug}` },
     openGraph: {
       title: post.titel,
       description: post.intro,
-      url: `https://www.huisterhuynen.nl/blog/${post.slug}`,
+      url: `${SITE_URL}/blog/${post.slug}`,
       type: "article",
       publishedTime: post.gepubliceerd_op || undefined,
       modifiedTime: post.gepubliceerd_op || undefined,
       authors: [post.auteur],
       images: [
         {
-          url: "https://www.huisterhuynen.nl/lodge-heide.jpg",
+          url: ogImage,
           width: 1200,
           height: 630,
-          alt: "Huis ter Huynen – Boutique Lodge Drenthe",
+          alt: post.titel,
         },
       ],
     },
@@ -62,7 +65,7 @@ export async function generateMetadata(
       card: "summary_large_image",
       title: post.titel,
       description: post.intro,
-      images: ["https://www.huisterhuynen.nl/lodge-heide.jpg"],
+      images: [ogImage],
     },
   };
 }

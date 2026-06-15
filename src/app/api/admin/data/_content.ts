@@ -65,7 +65,7 @@ export async function handleContentGet(table: string): Promise<NextResponse | nu
 export async function handleContentPost(action: string, body: Record<string, unknown>, _request: NextRequest): Promise<NextResponse | null> {
   switch (action) {
     case "create_blog_post": {
-      const { slug, titel, intro, inhoud, categorie, leestijd, auteur, geplande_publicatie } = body;
+      const { slug, titel, intro, inhoud, categorie, leestijd, auteur, og_image, geplande_publicatie } = body;
       if (!slug || !titel || !inhoud) return NextResponse.json({ error: "Slug, titel en inhoud zijn verplicht" }, { status: 400 });
       const planned = parsePlannedDate(geplande_publicatie);
       if (planned === "invalid") return NextResponse.json({ error: "Ongeldige plan-datum" }, { status: 400 });
@@ -75,6 +75,7 @@ export async function handleContentPost(action: string, body: Record<string, unk
         categorie: categorie || "Verhaal",
         leestijd: leestijd || "4 minuten",
         auteur: auteur || "Arjan Reinders",
+        og_image: og_image || null,
         gepubliceerd: false,
         geplande_publicatie: planned,
       }).select().single();
@@ -82,13 +83,14 @@ export async function handleContentPost(action: string, body: Record<string, unk
       return NextResponse.json({ success: true, data });
     }
     case "update_blog_post": {
-      const { id, slug, titel, intro, inhoud, categorie, leestijd, auteur, geplande_publicatie } = body;
+      const { id, slug, titel, intro, inhoud, categorie, leestijd, auteur, og_image, geplande_publicatie } = body;
       if (!id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
       const planned = parsePlannedDate(geplande_publicatie);
       if (planned === "invalid") return NextResponse.json({ error: "Ongeldige plan-datum" }, { status: 400 });
       const { error } = await getSupabase().from("blog_posts").update({
         slug: String(slug).toLowerCase().trim().replace(/\s+/g, "-"),
         titel, intro, inhoud, categorie, leestijd, auteur,
+        og_image: og_image || null,
         geplande_publicatie: planned,
         updated_at: new Date().toISOString(),
       }).eq("id", id);
