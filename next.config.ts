@@ -50,6 +50,11 @@ const nextConfig: NextConfig = {
         destination: "/",
         permanent: true,
       },
+      {
+        source: "/wellness-vakantie-drenthe-ontspannen-in-een-luxe-vakantiehuis-met-hottub",
+        destination: "/wellness-vakantie-drenthe",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {
