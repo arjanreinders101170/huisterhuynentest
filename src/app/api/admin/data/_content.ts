@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, type LandingSectionData } from "@/lib/landing-seed";
+import { SEED_BLOG_POSTS } from "@/lib/blog-seed";
 
 function buildLandingFields(body: Record<string, unknown>) {
   const sectionsRaw = body.sections;
@@ -152,6 +153,26 @@ export async function handleContentPost(action: string, body: Record<string, unk
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
       await getSupabase().from("landing_pages").delete().eq("id", body.id);
       return NextResponse.json({ success: true });
+    }
+    case "import_blog_seed": {
+      const sb = getSupabase();
+      const existing = await sb.from("blog_posts").select("slug").in("slug", SEED_BLOG_POSTS.map((p) => p.slug));
+      const existingSlugs = new Set((existing.data || []).map((r) => r.slug));
+      const toInsert = SEED_BLOG_POSTS.filter((p) => !existingSlugs.has(p.slug)).map((p) => ({
+        slug: p.slug,
+        titel: p.titel,
+        intro: p.intro,
+        inhoud: p.inhoud,
+        categorie: p.categorie,
+        leestijd: p.leestijd,
+        auteur: p.auteur,
+        og_image: p.og_image,
+        gepubliceerd: false,
+      }));
+      if (toInsert.length === 0) return NextResponse.json({ success: true, imported: 0 });
+      const { error } = await sb.from("blog_posts").insert(toInsert);
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ success: true, imported: toInsert.length });
     }
     case "import_landing_seed": {
       const sb = getSupabase();
