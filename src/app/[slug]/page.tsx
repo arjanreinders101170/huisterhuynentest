@@ -8,7 +8,9 @@ export const revalidate = 60;
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const slugs = await getServedLandingSlugs();
-  return slugs.map((slug) => ({ slug }));
+  return slugs
+    .filter((s) => !s.startsWith("de/"))
+    .map((slug) => ({ slug }));
 }
 
 export async function generateMetadata(

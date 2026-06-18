@@ -110,15 +110,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Landing pages: published DB rows + bundled seed pages (falls back to seed)
+  // Pair NL↔DE landing pages so each entry carries hreflang alternates.
+  const NL_DE_PAIRS: Record<string, string> = {
+    "vakantiehuis-met-hottub-drenthe": "de/ferienhaus-mit-whirlpool-drenthe",
+    "luxe-lodge-drenthe": "de/luxus-lodge-drenthe",
+    "wellness-vakantie-drenthe": "de/wellness-urlaub-drenthe",
+    "romantisch-weekend-weg-drenthe": "de/romantisches-wochenende-drenthe",
+  };
+  const DE_NL_PAIRS = Object.fromEntries(
+    Object.entries(NL_DE_PAIRS).map(([nl, de]) => [de, nl]),
+  );
+
   let landingPages: MetadataRoute.Sitemap = [];
   try {
     const slugs = await getServedLandingSlugs();
-    landingPages = slugs.map((slug) => ({
-      url: `${SITE_URL}/${slug}`,
-      lastModified,
-      changeFrequency: "monthly" as const,
-      priority: 0.9,
-    }));
+    const slugSet = new Set(slugs);
+    landingPages = slugs.map((slug) => {
+      const entry: MetadataRoute.Sitemap[number] = {
+        url: `${SITE_URL}/${slug}`,
+        lastModified,
+        changeFrequency: "monthly" as const,
+        priority: slug.startsWith("de/") ? 0.85 : 0.9,
+      };
+      const nlPair = DE_NL_PAIRS[slug];
+      const dePair = NL_DE_PAIRS[slug];
+      if (nlPair && slugSet.has(nlPair)) {
+        entry.alternates = {
+          languages: { de: `${SITE_URL}/${slug}`, nl: `${SITE_URL}/${nlPair}` },
+        };
+      } else if (dePair && slugSet.has(dePair)) {
+        entry.alternates = {
+          languages: { nl: `${SITE_URL}/${slug}`, de: `${SITE_URL}/${dePair}` },
+        };
+      }
+      return entry;
+    });
   } catch {
     // ignore — sitemap still serves the rest
   }
