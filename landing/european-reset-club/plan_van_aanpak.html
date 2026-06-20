@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>European Reset Club — Plan van Aanpak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Reset & base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sage:   #8BA888;
+      --peach:  #E89B7B;
+      --cream:  #FEFCF7;
+      --dark:   #2C3E2D;
+      --mid:    #4A5E4B;
+      --light:  #F5F2EC;
+      --border: #D8D2C8;
+      --shadow: rgba(44,62,45,0.08);
+    }
+
+    html { font-size: 10.5pt; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      line-height: 1.7;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ─── Typography ─── */
+    h1, h2, h3, h4 {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--dark);
+    }
+
+    h1 { font-size: 2.6rem; font-weight: 700; }
+    h2 { font-size: 1.55rem; margin-bottom: 0.6rem; }
+    h3 { font-size: 1.2rem; margin-bottom: 0.4rem; font-weight: 600; }
+    h4 { font-size: 1rem; margin-bottom: 0.3rem; font-weight: 600; font-family: 'Inter', sans-serif; }
+
+    p { margin-bottom: 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol { padding-left: 1.4rem; margin-bottom: 0.85rem; }
+    li { margin-bottom: 0.3rem; }
+
+    strong { font-weight: 600; }
+
+    /* ─── Cover / header ─── */
+    .cover {
+      background: var(--dark);
+      color: var(--cream);
+      padding: 3.5rem 3rem 3rem;
+      page-break-after: always;
+    }
+
+    .cover-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 0.8rem;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 1.5rem;
+    }
+
+    .cover h1 {
+      color: var(--cream);
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.15;
+    }
+
+    .cover .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--peach);
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .cover-meta {
+      border-top: 1px solid rgba(254,252,247,0.2);
+      padding-top: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .cover-meta-item label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 0.25rem;
+    }
+
+    .cover-meta-item span {
+      font-size: 0.9rem;
+      color: var(--cream);
+    }
+
+    /* ─── Table of contents ─── */
+    .toc {
+      padding: 2.5rem 3rem;
+      background: var(--light);
+      page-break-after: always;
+    }
+
+    .toc h2 { margin-bottom: 1.5rem; color: var(--mid); font-size: 1.1rem; font-family: 'Inter', sans-serif; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    .toc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px dotted var(--border);
+    }
+
+    .toc-item:last-child { border-bottom: none; }
+
+    .toc-num {
+      font-family: 'Fraunces', serif;
+      font-size: 0.8rem;
+      color: var(--sage);
+      min-width: 1.8rem;
+    }
+
+    .toc-title {
+      font-size: 0.95rem;
+      flex: 1;
+    }
+
+    .toc-sub {
+      padding-left: 1.8rem;
+      font-size: 0.85rem;
+      color: var(--mid);
+    }
+
+    /* ─── Page wrapper ─── */
+    .page {
+      padding: 2.5rem 3rem;
+      page-break-after: always;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    /* ─── Section header ─── */
+    .section-header {
+      border-left: 4px solid var(--sage);
+      padding-left: 1rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .section-num {
+      font-family: 'Fraunces', serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--peach);
+      margin-bottom: 0.2rem;
+    }
+
+    /* ─── Divider ─── */
+    .divider {
+      height: 2px;
+      background: linear-gradient(to right, var(--sage), transparent);
+      margin: 2rem 0;
+    }
+
+    .divider-thin {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* ─── Tier cards ─── */
+    .tier-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .tier-card {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .tier-card-header {
+      padding: 1rem 1.25rem;
+      background: var(--light);
+    }
+
+    .tier-card.featured .tier-card-header {
+      background: var(--dark);
+      color: var(--cream);
+    }
+
+    .tier-card.featured .tier-card-header h3 {
+      color: var(--cream);
+    }
+
+    .tier-price {
+      font-family: 'Fraunces', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--sage);
+      margin-bottom: 0;
+    }
+
+    .tier-card.featured .tier-price {
+      color: var(--peach);
+    }
+
+    .tier-price-note {
+      font-size: 0.75rem;
+      color: var(--mid);
+      font-weight: 400;
+    }
+
+    .tier-card.featured .tier-price-note {
+      color: rgba(254,252,247,0.6);
+    }
+
+    .tier-card-body {
+      padding: 1rem 1.25rem;
+    }
+
+    .tier-card h4 {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .tier-card h4:first-child { margin-top: 0; }
+
+    .tier-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tier-list li {
+      padding: 0.2rem 0;
+      font-size: 0.88rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: baseline;
+    }
+
+    .check { color: #5B8C5A; }
+    .cross  { color: #B85C44; }
+
+    /* ─── Callout boxes ─── */
+    .callout {
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+    }
+
+    .callout-info {
+      background: rgba(139,168,136,0.12);
+      border-left: 3px solid var(--sage);
+    }
+
+    .callout-warn {
+      background: rgba(232,155,123,0.12);
+      border-left: 3px solid var(--peach);
+    }
+
+    .callout-dark {
+      background: var(--dark);
+      color: var(--cream);
+      border-left: 3px solid var(--peach);
+    }
+
+    .callout-dark p, .callout-dark li { color: var(--cream); }
+    .callout-dark h4 { color: var(--peach); }
+
+    .callout-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      color: var(--mid);
+    }
+
+    .callout-dark .callout-title { color: var(--peach); }
+
+    /* ─── Tables ─── */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1.25rem 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead tr {
+      background: var(--dark);
+      color: var(--cream);
+    }
+
+    thead th {
+      padding: 0.6rem 0.85rem;
+      text-align: left;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
+    tbody tr:nth-child(odd)  { background: var(--cream); }
+    tbody tr:nth-child(even) { background: var(--light); }
+
+    tbody td {
+      padding: 0.6rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    .td-num {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      color: var(--sage);
+      white-space: nowrap;
+    }
+
+    /* ─── Phase timeline ─── */
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .phase-card {
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+    }
+
+    .phase-num {
+      font-family: 'Fraunces', serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--peach);
+      margin-bottom: 0.3rem;
+    }
+
+    .phase-card h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .phase-period {
+      font-size: 0.78rem;
+      color: var(--mid);
+      margin-bottom: 0.4rem;
+    }
+
+    .phase-budget {
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--sage);
+      margin-bottom: 0.4rem;
+    }
+
+    .phase-goal {
+      font-size: 0.78rem;
+      color: var(--mid);
+      font-style: italic;
+    }
+
+    /* ─── Tech stack ─── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .tech-item {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.82rem;
+    }
+
+    .tech-item strong {
+      display: block;
+      color: var(--dark);
+      font-size: 0.85rem;
+      margin-bottom: 0.1rem;
+    }
+
+    .tech-item span {
+      color: var(--mid);
+      font-size: 0.78rem;
+    }
+
+    /* ─── ASCII architecture ─── */
+    .arch-box {
+      background: var(--dark);
+      color: #A8C9A5;
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      line-height: 1.6;
+      padding: 1.25rem 1.5rem;
+      border-radius: 6px;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* ─── Priority list ─── */
+    .priority-list {
+      counter-reset: priority;
+      list-style: none;
+      padding: 0;
+      margin: 1.25rem 0;
+    }
+
+    .priority-list li {
+      counter-increment: priority;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .priority-list li:last-child { border-bottom: none; }
+
+    .priority-list li::before {
+      content: counter(priority);
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cream);
+      background: var(--sage);
+      width: 1.8rem;
+      height: 1.8rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* ─── Footer ─── */
+    .doc-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--mid);
+    }
+
+    .doc-footer .brand {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      color: var(--sage);
+    }
+
+    /* ─── Iris feasibility matrix ─── */
+    .feasibility-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .feasibility-card {
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+    }
+
+    .feasibility-card.yes {
+      background: rgba(91,140,90,0.1);
+      border: 1.5px solid #5B8C5A;
+    }
+
+    .feasibility-card.no {
+      background: rgba(184,92,68,0.08);
+      border: 1.5px solid #B85C44;
+    }
+
+    .feasibility-card h4 {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .feasibility-card.yes h4 { color: #3D6B3C; }
+    .feasibility-card.no  h4 { color: #8C3521; }
+
+    .feasibility-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .feasibility-card ul li {
+      font-size: 0.85rem;
+      padding: 0.2rem 0;
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    /* ─── Print rules ─── */
+    @media print {
+      @page {
+        size: A4;
+        margin: 15mm 18mm 18mm;
+      }
+
+      body { font-size: 9.5pt; }
+
+      .cover { page-break-after: always; }
+      .toc   { page-break-after: always; }
+      .page  { page-break-after: always; padding: 0; }
+      .page:last-child { page-break-after: auto; }
+
+      h2, h3 { page-break-after: avoid; }
+      table  { page-break-inside: avoid; }
+      .tier-card { page-break-inside: avoid; }
+      .callout   { page-break-inside: avoid; }
+      .phase-card { page-break-inside: avoid; }
+      .feasibility-card { page-break-inside: avoid; }
+
+      .arch-box { page-break-inside: avoid; }
+
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     COVER
+════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-logo">European Reset Club</div>
+  <h1>Plan van Aanpak</h1>
+  <p class="subtitle">Versie 1.0 &nbsp;·&nbsp; Juni 2026</p>
+
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <label>Opgesteld door</label>
+      <span>Arjan &amp; Karlienka</span>
+    </div>
+    <div class="cover-meta-item">
+      <label>Document type</label>
+      <span>Strategisch businessplan</span>
+    </div>
+    <div class="cover-meta-item">
+      <label>Status</label>
+      <span>Concept — intern gebruik</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     INHOUDSOPGAVE
+════════════════════════════════════════════ -->
+<div class="toc">
+  <h2>Inhoudsopgave</h2>
+
+  <div class="toc-item">
+    <span class="toc-num">1</span>
+    <span class="toc-title"><strong>Twee-laags Membership Model</strong></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">1.1</span>
+    <span class="toc-title">Tier 1: Reset Explorer (€97/jaar)</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">1.2</span>
+    <span class="toc-title">Tier 2: Reset Member (€297/jaar)</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">1.3</span>
+    <span class="toc-title">Business model &amp; conversie doelstellingen</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">1.4</span>
+    <span class="toc-title">Vergelijkingstabel Tier 1 vs Tier 2</span>
+  </div>
+
+  <div class="toc-item">
+    <span class="toc-num">2</span>
+    <span class="toc-title"><strong>Website Bouwplan</strong></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">2.1</span>
+    <span class="toc-title">Fase 0: Validatie (Nu — Maand 1)</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">2.2</span>
+    <span class="toc-title">Fase 1: MVP Website (Maand 2–4)</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">2.3</span>
+    <span class="toc-title">Fase 2: Personalisatie Engine (Maand 5–8)</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">2.4</span>
+    <span class="toc-title">Fase 3: Schaling (Maand 9–18)</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">2.5</span>
+    <span class="toc-title">Tijdlijn &amp; budget overzicht</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">2.6</span>
+    <span class="toc-title">Technische architectuur</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">2.7</span>
+    <span class="toc-title">No-code first aanpak</span>
+  </div>
+
+  <div class="toc-item">
+    <span class="toc-num">3</span>
+    <span class="toc-title"><strong>App Haalbaarheid: Iris Scan via Telefooncamera</strong></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">3.1</span>
+    <span class="toc-title">Wat is iriscopie?</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">3.2</span>
+    <span class="toc-title">Technische haalbaarheid</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">3.3</span>
+    <span class="toc-title">Regulatoire context (EU MDR)</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">3.4</span>
+    <span class="toc-title">Realistische MVP aanpak &amp; implementatie</span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num">3.5</span>
+    <span class="toc-title">Conclusie &amp; aanbeveling</span>
+  </div>
+
+  <div class="toc-item">
+    <span class="toc-num">4</span>
+    <span class="toc-title"><strong>Samenvatting Aanbevelingen</strong></span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     SECTIE 1 — MEMBERSHIP MODEL
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">Sectie 1</div>
+    <h2>Twee-laags Membership Model</h2>
+  </div>
+
+  <p>
+    De European Reset Club werkt met een bewust gelaagd membership model. Dit model combineert schaalbaarheid met exclusiviteit: de instapdrempel is laag genoeg om een breed publiek aan te trekken, terwijl de premium laag gebonden is aan de persoonlijke capaciteit van Karlienka als gezondheidsthérapeut. Het resultaat is een funnel die zichzelf financiert en tegelijkertijd het onderscheidend vermogen van de club beschermt.
+  </p>
+
+  <p>
+    De filosofie achter twee lagen is eenvoudig: niet iedereen wil direct investeren in een volledige gezondheidscheck, maar bijna iedereen wil slimmer reizen met oog voor herstel en welzijn. Door de Explorer tier aan te bieden zonder medische component, kunnen we snel volume opbouwen en vertrouwen kweken — om vervolgens een betekenisvolle upgrade naar het volledige Reset Member pakket aan te bieden.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 1.1</div>
+    <h3>Tier 1: Reset Explorer — €97/jaar</h3>
+  </div>
+
+  <p>
+    De Reset Explorer tier is de toegangspoort tot de club. Zonder gezondheidscheck en zonder wachttijden kan iedereen direct starten. Dit maakt de tier bij uitstek geschikt voor digitale marketing, social media instroom en mond-tot-mondreclame. De jaarprijs van €97 is bewust laag gehouden: het bedrag is psychologisch bereikbaar (minder dan €9/maand) en rechtvaardigt zichzelf bij één enkele boeking via clubdeals.
+  </p>
+
+  <p>
+    De kern van de Explorer ervaring is de <strong>AI-gedreven bestemmingsaanbeveling</strong>. Na het invullen van een korte vragenlijst — met vragen over stressniveau, reisvoorkeur (actief/passief, solo/duo), budget, en gewenst seizoen — ontvangt het lid direct een persoonlijk advies voor de meest passende Reset-bestemming. Deze aanbeveling is gebaseerd op een matching-algoritme dat de antwoorden koppelt aan een samengestelde bestemmingsdatabase.
+  </p>
+
+  <div class="callout callout-info">
+    <div class="callout-title">Wat krijgt een Explorer?</div>
+    <ul class="tier-list">
+      <li><span class="check">✓</span> AI-gedreven bestemmingsaanbeveling op basis van vragenlijst</li>
+      <li><span class="check">✓</span> Toegang tot exclusieve clubdeals bij geselecteerde partners</li>
+      <li><span class="check">✓</span> Maandelijkse nieuwsbrief met reisinspiatie, seizoenstips en welzijnsinhoud</li>
+      <li><span class="check">✓</span> 10% korting op upgrade naar het Reset Startpakket (Member tier)</li>
+      <li><span class="cross">✗</span> Persoonlijke gezondheidscheck met Karlienka</li>
+      <li><span class="cross">✗</span> Live bloedanalyse rapport</li>
+      <li><span class="cross">✗</span> Persoonlijk supplement protocol</li>
+      <li><span class="cross">✗</span> Iridologie rapport</li>
+      <li><span class="cross">✗</span> Prioriteit op de wachtlijst voor populaire bestemmingen</li>
+      <li><span class="cross">✗</span> Ziekenfonds documentatie</li>
+    </ul>
+  </div>
+
+  <p>
+    De Explorer tier genereert directe cashflow zonder druk op Karlienka's agenda. Bij 200 Explorer-leden levert dit €19.400/jaar op, bij 500 leden al €48.500/jaar — geheel onafhankelijk van de consultcapaciteit. Dit maakt de tier strategisch onmisbaar als fundament voor de bedrijfsvoering.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 1.2</div>
+    <h3>Tier 2: Reset Member — €297/jaar (founding price €247)</h3>
+  </div>
+
+  <p>
+    De Reset Member tier is het premium hart van de club. Hier staat de persoonlijke gezondheidscheck van Karlienka centraal. Ieder Reset Member krijgt een <strong>60-minuten persoonlijk consult</strong> inclusief live bloedanalyse én iridologie — twee complementaire methoden die samen een integraal beeld geven van de huidige gezondheid, energiebalans en herstelbehoefte van het lid.
+  </p>
+
+  <p>
+    Op basis van dit consult stelt Karlienka een persoonlijk supplement protocol op én wordt de bestemmingsaanbeveling afgestemd op de gezondheidsuitslag. Iemand met een hoog cortisolprofiel en slaaptekort krijgt een andere aanbeveling dan iemand die herstelt van een burnout of juist energiek is maar behoefte heeft aan verdieping. Dit maatwerkadvies is precies wat de European Reset Club onderscheidt van generieke reisclubs of wellness-apps.
+  </p>
+
+  <div class="callout callout-info">
+    <div class="callout-title">Wat krijgt een Reset Member?</div>
+    <ul class="tier-list">
+      <li><span class="check">✓</span> Alles uit de Explorer tier</li>
+      <li><span class="check">✓</span> 60-minuten persoonlijk consult met Karlienka (live bloedanalyse + iridologie)</li>
+      <li><span class="check">✓</span> Persoonlijk supplement protocol afgestemd op consult</li>
+      <li><span class="check">✓</span> Jaarlijks herhalingscheck om voortgang te meten</li>
+      <li><span class="check">✓</span> Bestemmingsadvies afgestemd op gezondheidsuitslag</li>
+      <li><span class="check">✓</span> Ziekenfonds documentatie (voor terugbetaling via aanvullende verzekering)</li>
+      <li><span class="check">✓</span> Prioriteit bij populaire of schaarse bestemmingen</li>
+      <li><span class="check">✓</span> Founding Member badge en -prijs (€247 i.p.v. €297) bij aanmelding in jaar 1</li>
+    </ul>
+  </div>
+
+  <p>
+    De founding price van <strong>€247</strong> is beschikbaar voor de eerste lichting leden die zich aanmelden via de wachtlijst. Dit creëert een urgentieeffect en beloont vroege believers. Na de lancering stijgt de prijs naar de reguliere €297 per jaar.
+  </p>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">Capaciteitsgrens — het kwaliteitssignaal</div>
+    <p>
+      Karlienka kan realistisch <strong>8 tot 10 consulten per week</strong> uitvoeren. Op jaarbasis — rekening houdend met vakantie, eigen reizen en vrije dagen — betekent dit een maximale capaciteit van <strong>400 tot 520 Reset Members per jaar</strong>. Dit is geen beperking: het is het kwaliteitssignaal dat de exclusiviteit van het lidmaatschap onderbouwt. Een wachtlijst communiceert waarde. "Niet meer beschikbaar dit kwartaal" is een krachtigere marketingboodschap dan een lege agenda.
+    </p>
+  </div>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 1.3</div>
+    <h3>Business Model &amp; Conversiedoelstellingen</h3>
+  </div>
+
+  <p>
+    Het twee-laags model is bewust ontworpen als een funnel. De Explorer tier is de brede instroom: laagdrempelig, schaalbaar en onafhankelijk van Karlienka's capaciteit. De Member tier is de diepere conversie: persoonlijk, gelimiteerd en hoogwaardig.
+  </p>
+
+  <p>
+    De doelstelling voor <strong>conversie van Explorer naar Member</strong> bedraagt 15–20% binnen 12 maanden. Dit is een realistisch maar ambitieus streefcijfer. Op basis van benchmarks in soortgelijke wellnessabonnementen ligt de conversie van gratis/low-cost naar premium membership gemiddeld tussen 10–25%. Omdat ons Explorer-aanbod concrete waarde levert (clubdeals, AI-aanbeveling) en de Member upgrade een tastbaar en persoonlijk product is, mogen we hogere conversie verwachten dan het segment-gemiddelde.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th>Explorer leden</th>
+          <th>Explorer omzet</th>
+          <th>Conversie 15%</th>
+          <th>Member omzet</th>
+          <th>Totaal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jaar 1 (conservatief)</td>
+          <td>150</td>
+          <td class="td-num">€14.550</td>
+          <td>23 Members</td>
+          <td class="td-num">€5.681</td>
+          <td class="td-num">€20.231</td>
+        </tr>
+        <tr>
+          <td>Jaar 1 (realistisch)</td>
+          <td>300</td>
+          <td class="td-num">€29.100</td>
+          <td>45 Members</td>
+          <td class="td-num">€11.115</td>
+          <td class="td-num">€40.215</td>
+        </tr>
+        <tr>
+          <td>Jaar 2 (groei)</td>
+          <td>600</td>
+          <td class="td-num">€58.200</td>
+          <td>90 Members</td>
+          <td class="td-num">€26.730</td>
+          <td class="td-num">€84.930</td>
+        </tr>
+        <tr>
+          <td>Plafond (Karlienka max)</td>
+          <td>1.500+</td>
+          <td class="td-num">€145.500+</td>
+          <td>520 Members</td>
+          <td class="td-num">€154.440</td>
+          <td class="td-num">€299.940+</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Het plafond-scenario illustreert het potentieel wanneer de capaciteit van Karlienka volledig benut is (520 Members/jaar). Zelfs zonder verdere schaling — geen extra therapeuten, geen franchisemodel — is een jaaromzet van bijna €300.000 haalbaar wanneer de Explorer-instroom voldoende groot is.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 1.4</div>
+    <h3>Vergelijkingstabel: Tier 1 vs Tier 2</h3>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Onderdeel</th>
+          <th>Reset Explorer — €97/jr</th>
+          <th>Reset Member — €297/jr</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>AI bestemmingsaanbeveling</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Clubdeals bij partners</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Maandelijkse nieuwsbrief</td><td>✓</td><td>✓</td></tr>
+        <tr><td>10% korting op upgrade</td><td>✓</td><td>—</td></tr>
+        <tr><td>Persoonlijk consult Karlienka</td><td>✗</td><td>✓ (60 min)</td></tr>
+        <tr><td>Live bloedanalyse</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Iridologie rapport</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Supplement protocol</td><td>✗</td><td>✓ (persoonlijk)</td></tr>
+        <tr><td>Jaarlijkse herhalingscheck</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Ziekenfonds documentatie</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Prioriteit wachtlijst</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Founding Member prijs</td><td>—</td><td>€247 (jaar 1)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="doc-footer">
+    <span class="brand">European Reset Club</span>
+    <span>Plan van Aanpak — Versie 1.0 — Juni 2026</span>
+    <span>Sectie 1 van 4</span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     SECTIE 2 — WEBSITE BOUWPLAN
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">Sectie 2</div>
+    <h2>Website Bouwplan</h2>
+  </div>
+
+  <p>
+    De website is het primaire verkoopkanaal, het ledenbeheerplatform én de merkervaring van de European Reset Club. Het bouwplan volgt een gefaseerde aanpak: van een statische validatiepagina naar een volledig gepersonaliseerd ledenplatform. Elke fase heeft een duidelijk doel, een realistisch budget en meetbare mijlpalen voordat de volgende fase start.
+  </p>
+
+  <p>
+    Het uitgangsprincipe is <strong>no-code first</strong>: wij bouwen niet meer dan nodig is om de volgende validatiestap te kunnen zetten. Dit voorkomt over-engineering in een fase waar het concept nog bewezen moet worden. Technische complexiteit volgt bewezen vraag — niet andersom.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 2.1</div>
+    <h3>Fase 0: Validatie — Nu tot Maand 1 (€0–500)</h3>
+  </div>
+
+  <p>
+    De validatiefase heeft één doel: bewijzen dat er een publiek is dat zich vrijwillig aanmeldt voor de wachtlijst van de European Reset Club. Vóór er één euro in webdevelopment wordt geïnvesteerd, willen we minimaal <strong>100 aanmeldingen</strong> op de wachtlijst hebben. Dit is het eerste bewijs van product-markt fit.
+  </p>
+
+  <p>
+    In deze fase zetten we de bestaande <strong>v4.html landingspagina</strong> live op een eigen domein (europeanresetclub.com of een vergelijkbaar domein). De pagina bevat een duidelijke waardepropositie en een <strong>Tally formulier</strong> voor wachtlijstregistratie. Tally is gratis tot op zekere hoogte en stuurt leads direct door naar Brevo voor email automation.
+  </p>
+
+  <div class="callout callout-info">
+    <div class="callout-title">Toolstack Fase 0</div>
+    <ul class="tier-list">
+      <li><span class="check">✓</span> <strong>Domein &amp; hosting:</strong> €50–100/jaar (Vercel gratis tier + domeinregistratie)</li>
+      <li><span class="check">✓</span> <strong>Tally.so:</strong> gratis wachtlijstformulier met conditionale logica</li>
+      <li><span class="check">✓</span> <strong>Brevo:</strong> gratis tier (300 e-mails/dag) voor welkomstmail en nurture sequence</li>
+      <li><span class="check">✓</span> <strong>Google Analytics 4 of Plausible:</strong> voor conversie tracking (Plausible €9/maand)</li>
+    </ul>
+  </div>
+
+  <p>
+    Het succes van fase 0 wordt gemeten aan één metric: <strong>100 wachtlijstaanmeldingen binnen 4 weken</strong>. Als dit lukt zonder betaalde advertenties (uitsluitend via persoonlijk netwerk en organische social), is het concept sterk genoeg om door te investeren in fase 1.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 2.2</div>
+    <h3>Fase 1: MVP Website — Maand 2–4</h3>
+  </div>
+
+  <p>
+    <strong>Budget: €2.000–5.000 (eigen werk) of €8.000–15.000 (freelancer)</strong>
+  </p>
+
+  <p>
+    In fase 1 bouwen we de eerste volledige versie van de website: een functioneel platform waarbij bezoekers zich kunnen aanmelden, hun tier kunnen kiezen en direct kunnen betalen. De tech stack is bewust modern maar pragmatisch gekozen voor schaalbaarheid, snelheid en onderhoudbaarheid.
+  </p>
+
+  <h4>Tech Stack</h4>
+  <div class="tech-grid">
+    <div class="tech-item">
+      <strong>Next.js 15</strong>
+      <span>React framework, server-side rendering, SEO-vriendelijk</span>
+    </div>
+    <div class="tech-item">
+      <strong>TypeScript</strong>
+      <span>Type safety, minder bugs in productie</span>
+    </div>
+    <div class="tech-item">
+      <strong>Tailwind CSS</strong>
+      <span>Utility-first styling, snelle UI iteraties</span>
+    </div>
+    <div class="tech-item">
+      <strong>Supabase</strong>
+      <span>PostgreSQL database + Auth + Storage, open source</span>
+    </div>
+    <div class="tech-item">
+      <strong>Vercel</strong>
+      <span>Hosting + CI/CD, automatisch deploys vanuit Git</span>
+    </div>
+    <div class="tech-item">
+      <strong>Stripe</strong>
+      <span>Betalingen, abonnementsbeheer, facturatie</span>
+    </div>
+    <div class="tech-item">
+      <strong>Brevo</strong>
+      <span>Email automation, transactionele mails, campagnes</span>
+    </div>
+    <div class="tech-item">
+      <strong>Cal.com</strong>
+      <span>Agenda-integratie voor Karlienka's consulten (Member only)</span>
+    </div>
+    <div class="tech-item">
+      <strong>Make.com</strong>
+      <span>Automatiseringen tussen tools (Stripe → Supabase → Brevo)</span>
+    </div>
+  </div>
+
+  <h4 style="margin-top: 1.2rem;">Pagina's in fase 1</h4>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Pagina</th>
+          <th>Doel</th>
+          <th>Prioriteit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Home / Landingspagina</strong></td>
+          <td>Twee CTA's: Explorer en Member; waardepropositie uitgelegd</td>
+          <td>P0 — verplicht</td>
+        </tr>
+        <tr>
+          <td><strong>Bestemmingen overzicht</strong></td>
+          <td>Gefilterd op reistype, seizoen, budget; visueel aantrekkelijk</td>
+          <td>P0 — verplicht</td>
+        </tr>
+        <tr>
+          <td><strong>Bestemmingdetailpagina</strong></td>
+          <td>Uitgebreide info per bestemming, fotografie, programma</td>
+          <td>P1 — belangrijk</td>
+        </tr>
+        <tr>
+          <td><strong>Hoe het werkt / Voor wie</strong></td>
+          <td>Stapsgewijze uitleg, doelgroepomschrijving</td>
+          <td>P0 — verplicht</td>
+        </tr>
+        <tr>
+          <td><strong>Founders pagina</strong></td>
+          <td>Arjan &amp; Karlienka's verhaal, expertise, vertrouwen</td>
+          <td>P1 — belangrijk</td>
+        </tr>
+        <tr>
+          <td><strong>Blog / Inspiratie</strong></td>
+          <td>SEO-content, reisverslagen, gezondheidsartikelen</td>
+          <td>P2 — wenselijk</td>
+        </tr>
+        <tr>
+          <td><strong>Members Portaal</strong></td>
+          <td>Login, persoonlijke aanbevelingen, rapport, agenda</td>
+          <td>P0 — verplicht</td>
+        </tr>
+        <tr>
+          <td><strong>Boekingsflow</strong></td>
+          <td>Stap 1: profiel, Stap 2: kies tier, Stap 3: betaling</td>
+          <td>P0 — verplicht</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-dark">
+    <div class="callout-title">Succesmijlpaal fase 1</div>
+    <p>50 betalende leden (combinatie Explorer + Member) binnen 3 maanden na livegang. Bij het behalen van deze mijlpaal is het platform operationeel bewezen en kan fase 2 starten.</p>
+  </div>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 2.3</div>
+    <h3>Fase 2: Personalisatie Engine — Maand 5–8 (€3.000–8.000)</h3>
+  </div>
+
+  <p>
+    In fase 2 transformeert de website van een functioneel platform naar een <strong>gepersonaliseerde ledenomgeving</strong>. De kern van deze fase is de AI-aanbevelingslogica: een algoritme dat op basis van de ingevulde vragenlijst (stressniveau, reisvoorkeur, budget, seizoen) de meest passende bestemmingen uit de database selecteert en ranked.
+  </p>
+
+  <p>
+    Voor de Explorer tier werkt dit volledig geautomatiseerd. Voor de Member tier wordt de AI-aanbeveling als <em>voorselectie</em> gepresenteerd aan Karlienka, die de uitkomst verfijnt op basis van het consult. Zo werkt technologie als assistent van de therapeut — niet als vervanger.
+  </p>
+
+  <p>
+    Parallel bouwen we een uitgebreid <strong>Member Dashboard</strong>: een persoonlijk overzicht van de gezondheidsreis, de consulten, het supplement protocol, de voortgang en de volgende aanbevolen bestemming. Dit dashboard vergroot de perceived value van het lidmaatschap aanzienlijk en verhoogt de retentie.
+  </p>
+
+  <p>
+    Ten slotte lanceren we in deze fase een <strong>Partner Portal</strong> voor geselecteerde accommodaties en retreatcentra. Partners kunnen hun beschikbaarheid en deals beheren; leden zien direct welke bestemmingen beschikbaar zijn in hun gewenste periode.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 2.4</div>
+    <h3>Fase 3: Schaling — Maand 9–18 (€15.000–30.000)</h3>
+  </div>
+
+  <p>
+    Fase 3 draait om groei: meer leden, meer bestemmingen, meer partners en meer zichtbaarheid. De drie pijlers zijn een <strong>content machine</strong>, een <strong>affiliate programma</strong> en een <strong>community functie</strong>.
+  </p>
+
+  <p>
+    De content machine produceert consistente blog, SEO-artikelen en social media content rond de thema's herstel, reizen, natuur en gezondheid. Dit organisch kanaal heeft een lange aanlooptijd maar bouwt een duurzame instroom op die niet afhankelijk is van betaalde advertenties.
+  </p>
+
+  <p>
+    Het affiliate programma geeft partners — zowel accommodaties als gezondheidsmerken en supplementenleveranciers — de mogelijkheid om leden te verwijzen in ruil voor commissie. Dit verlaagt de klantacquisitiekosten significant en creëert een netwerk van ambassadeurs die belang hebben bij de groei van de club.
+  </p>
+
+  <p>
+    De community functie maakt het mogelijk dat leden onderling ervaringen delen, reisgenoten vinden en inspireren. Dit verhoogt de retentie sterk: leden die deel zijn van een actieve community verlaten een club minder snel dan leden die uitsluitend een dienst afnemen.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 2.5</div>
+    <h3>Tijdlijn &amp; Budget Overzicht</h3>
+  </div>
+
+  <div class="phase-grid">
+    <div class="phase-card">
+      <div class="phase-num">Fase 0</div>
+      <h4>Validatie</h4>
+      <div class="phase-period">Nu — Maand 1</div>
+      <div class="phase-budget">€0–500</div>
+      <div class="phase-goal">Doel: 100 wachtlijstaanmeldingen</div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Fase 1</div>
+      <h4>MVP Website</h4>
+      <div class="phase-period">Maand 2–4</div>
+      <div class="phase-budget">€8.000–15.000</div>
+      <div class="phase-goal">Doel: 50 betalende leden</div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Fase 2</div>
+      <h4>Personalisatie</h4>
+      <div class="phase-period">Maand 5–8</div>
+      <div class="phase-budget">€5.000–10.000</div>
+      <div class="phase-goal">Doel: 200 leden totaal</div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Fase 3</div>
+      <h4>Schaling</h4>
+      <div class="phase-period">Maand 9–18</div>
+      <div class="phase-budget">€15.000–30.000</div>
+      <div class="phase-goal">Doel: 500+ leden</div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Fase</th>
+          <th>Periode</th>
+          <th>Budget</th>
+          <th>Primair doel</th>
+          <th>Succesindicator</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Validatie</strong></td>
+          <td>Nu — M1</td>
+          <td class="td-num">€0–500</td>
+          <td>Concept valideren</td>
+          <td>100 wachtlijst</td>
+        </tr>
+        <tr>
+          <td><strong>MVP</strong></td>
+          <td>M2–M4</td>
+          <td class="td-num">€8–15k</td>
+          <td>Platform live + betalend</td>
+          <td>50 betalende leden</td>
+        </tr>
+        <tr>
+          <td><strong>Personalisatie</strong></td>
+          <td>M5–M8</td>
+          <td class="td-num">€5–10k</td>
+          <td>AI + dashboard actief</td>
+          <td>200 leden totaal</td>
+        </tr>
+        <tr>
+          <td><strong>Schaling</strong></td>
+          <td>M9–M18</td>
+          <td class="td-num">€15–30k</td>
+          <td>Groei + community</td>
+          <td>500+ leden</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 2.6</div>
+    <h3>Technische Architectuur</h3>
+  </div>
+
+  <div class="arch-box">
+┌─────────────────────────────────────────────────────────────────────┐
+│                     EUROPEAN RESET CLUB — ARCHITECTUUR              │
+└─────────────────────────────────────────────────────────────────────┘
+
+  GEBRUIKER / LID
+       │
+       ▼
+  ┌──────────────────────────────────┐
+  │  NEXT.JS 15 FRONTEND (Vercel)    │
+  │  · Home / Bestemmingen           │
+  │  · Boekingsflow                  │
+  │  · Members Portaal               │
+  │  · Blog / Inspiratie             │
+  └───────────┬──────────────────────┘
+              │ API calls
+              ▼
+  ┌──────────────────────────────────┐
+  │  NEXT.JS API ROUTES              │
+  │  · Auth middleware               │
+  │  · Tier-validatie                │
+  │  · Aanbevelingslogica (fase 2)   │
+  └─────┬──────────┬─────────────────┘
+        │          │
+        ▼          ▼
+  ┌──────────┐  ┌──────────────────┐
+  │ SUPABASE │  │     STRIPE       │
+  │ · Auth   │  │ · Abonnementen   │
+  │ · DB     │  │ · Betalingen     │
+  │ · Storage│  │ · Webhooks       │
+  └──────────┘  └──────────────────┘
+        │
+        ▼
+  ┌──────────────────────────────────────────────────────┐
+  │  MAKE.COM AUTOMATISERINGEN                           │
+  │  Stripe webhook → Supabase update → Brevo email      │
+  │  Nieuw Member → Cal.com afspraak link → welkomstmail │
+  │  Iris foto upload → Notificatie Karlienka            │
+  └──────────────┬───────────────────────────────────────┘
+                 │
+       ┌─────────┴──────────┐
+       ▼                    ▼
+  ┌──────────┐        ┌──────────────┐
+  │  BREVO   │        │  CAL.COM     │
+  │ E-mail   │        │ Agenda       │
+  │ flows    │        │ Karlienka    │
+  │ campagnes│        │ (Member only)│
+  └──────────┘        └──────────────┘
+  </div>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 2.7</div>
+    <h3>No-Code First Aanpak (Fase 0–1 Alternatief)</h3>
+  </div>
+
+  <p>
+    Voor founders die geen technische achtergrond hebben of die de ontwikkeling willen uitstellen totdat het concept bewezen is, is er een volledig no-code alternatief beschikbaar dat fase 0 en een groot deel van fase 1 kan dekken voor slechts €50–100 per maand.
+  </p>
+
+  <div class="callout callout-info">
+    <div class="callout-title">No-code stack — €50–100/maand, geen code nodig</div>
+    <ul>
+      <li><strong>Tally.so</strong> — Wachtlijstformulier + vragenlijst voor aanbeveling (gratis of €29/maand Pro)</li>
+      <li><strong>Brevo</strong> — E-mail automation, welkomstflows, maandelijkse newsletter (gratis–€25/maand)</li>
+      <li><strong>Make.com</strong> — Automatiseringen tussen tools, 1.000 operaties/maand gratis</li>
+      <li><strong>Notion</strong> — CMS voor bestemmingen en content (gratis team plan)</li>
+      <li><strong>Webflow of Framer</strong> — Visuele website builder, professioneel resultaat zonder code (€14–23/maand)</li>
+      <li><strong>Stripe Payment Links</strong> — Betalingen zonder eigen checkout (Stripe commissie: 1,4% + €0,25)</li>
+    </ul>
+  </div>
+
+  <p>
+    Dit no-code setup is niet de eindbestemming maar een bewuste <strong>first step</strong>. Het stelt ons in staat om de boekingsflow te testen, de e-mailsequenties te verfijnen en de juiste content te identificeren — vóórdat er geld aan custom development wordt besteed. De overstap naar de Next.js/Supabase stack in fase 2 wordt eenvoudiger omdat de learnings dan al beschikbaar zijn.
+  </p>
+
+  <div class="doc-footer">
+    <span class="brand">European Reset Club</span>
+    <span>Plan van Aanpak — Versie 1.0 — Juni 2026</span>
+    <span>Sectie 2 van 4</span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     SECTIE 3 — IRIS SCAN HAALBAARHEID
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">Sectie 3</div>
+    <h2>App Haalbaarheid: Iris Scan via Telefooncamera</h2>
+  </div>
+
+  <p>
+    Eén van de meest innovatieve elementen die we willen toevoegen aan het platform is de mogelijkheid voor leden om via hun telefooncamera een irisopname te maken als voorbereiding op het consult met Karlienka. In deze sectie analyseren we de technische haalbaarheid, de regulatoire grenzen en de meest realistische implementatieroute.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 3.1</div>
+    <h3>Wat is Iriscopie?</h3>
+  </div>
+
+  <p>
+    Iriscopie, ook wel iridologie genoemd, is een diagnostische methode waarbij de patronen, kleuren, pigmentaties en structuur van de iris worden geanalyseerd om informatie af te leiden over de gezondheid van organen en lichaamssystemen. De theorie is dat specifieke zones in de iris corresponderen met specifieke organen en dat afwijkingen in die zones kunnen wijzen op belasting, zwakte of ontsteking elders in het lichaam.
+  </p>
+
+  <p>
+    Karlienka is gecertificeerd iridoloog en gebruikt deze methode in combinatie met <strong>live bloedanalyse</strong> als deel van het integraal gezondheidsonderzoek. De twee methoden vullen elkaar aan: bloedanalyse geeft inzicht in actuele cellulaire processen, iriscopie geeft een constitutioneel beeld van aanleg en belasting. Samen vormen zij de basis voor het persoonlijke supplement protocol en het reisadvies.
+  </p>
+
+  <p>
+    Iridologie wordt niet erkend als reguliere geneeskunde in de EU, maar is breed geaccepteerd als complementaire diagnostische methode binnen de natuur- en orthomoleculaire geneeskunde. Karlienka's expertise en gecertificeerde status geven de European Reset Club een aantoonbaar en onderscheidend vermogen dat technologie niet kan vervangen.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 3.2</div>
+    <h3>Technische Haalbaarheid van Camera-gebaseerde Iris Scan</h3>
+  </div>
+
+  <p>
+    De vraag is: kunnen moderne smartphones voldoende beeldkwaliteit leveren voor een bruikbare irisopname, en kan AI-technologie die opname voorbereiden voor Karlienka's analyse?
+  </p>
+
+  <div class="feasibility-grid">
+    <div class="feasibility-card yes">
+      <h4>✓ Wat wél mogelijk is</h4>
+      <ul>
+        <li><span>·</span> Hoge resolutie macro-foto via telefoon (iPhone 14 Pro, Samsung S23 Ultra: 48MP+ sensoren)</li>
+        <li><span>·</span> AI-model trainen op irisbeelden met computer vision (TensorFlow, MediaPipe)</li>
+        <li><span>·</span> Gestandaardiseerde foto-instructies voor vergelijkbare beelden</li>
+        <li><span>·</span> Eerste screening als voorbereiding op Karlienka's consult</li>
+        <li><span>·</span> Bestaande apps als precedent: "IriScan" en "Iris Health" in App Store</li>
+        <li><span>·</span> Progressive Web App zonder App Store afhankelijkheid</li>
+        <li><span>·</span> Richtlijnoverlay voor correcte fotohoek en belichting</li>
+      </ul>
+    </div>
+    <div class="feasibility-card no">
+      <h4>✗ Wat niet mogelijk is (regulatoir)</h4>
+      <ul>
+        <li><span>·</span> Classificatie als diagnostisch hulpmiddel (valt onder EU MDR 2017/745)</li>
+        <li><span>·</span> CE-markering als medisch hulpmiddel vereist voor diagnose claims</li>
+        <li><span>·</span> Kosten CE-traject: €50.000–€500.000 en 2–5 jaar doorlooptijd</li>
+        <li><span>·</span> Apple en Google weigeren apps met medische diagnose claims zonder certificering</li>
+        <li><span>·</span> Zelfstandige diagnose-uitkomsten zonder gekwalificeerde therapeut</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>
+    De technische mogelijkheden zijn veelbelovend — het bottleneck zit hem uitsluitend in de <strong>regulatoire framing</strong>. Zolang de functie wordt gepositioneerd als een intake-tool (voorbereiding voor de therapeut) en niet als diagnostisch instrument, is de EU MDR niet van toepassing.
+  </p>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 3.3</div>
+    <h3>Regulatoire Context: EU Medical Device Regulation (MDR)</h3>
+  </div>
+
+  <p>
+    De <strong>EU Medical Device Regulation (MDR 2017/745)</strong> is de Europese wetgeving die van toepassing is op software die medische diagnoses stelt of onderbouwt. Een app valt onder MDR wanneer zij beweert een ziekte, aandoening of gezondheidstoestand te kunnen detecteren, diagnosticeren, monitoren of behandelen.
+  </p>
+
+  <p>
+    CE-markering als medisch hulpmiddel (klasse I, II of III afhankelijk van het risicoprofiel) vereist een conformiteitsbeoordelingstraject waarbij een notified body betrokken is. De doorlooptijd bedraagt minimaal 2 jaar, de kosten lopen op tot €500.000 voor hogere risicoklassen. Dit is geen realistisch traject voor een startup in de bootstrapfase.
+  </p>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">Juridisch advies nodig</div>
+    <p>
+      Voordat de iris-fotofunctionaliteit live gaat, is een korte juridische toets door een MDR-specialist aanbevolen (€500–1.500 éénmalig). Zij kunnen de exacte framing en disclaimers adviseren die de functie buiten de MDR-scope houden. Dit is een kleine investering met grote beschermingswaarde.
+    </p>
+  </div>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 3.4</div>
+    <h3>Realistische MVP Aanpak &amp; Technische Implementatie</h3>
+  </div>
+
+  <p>
+    De juiste aanpak is het gebruik van iris-foto's als <strong>pre-intake tool</strong> — uitdrukkelijk niet als diagnostisch instrument. De framing is: "Pre-intake foto voor uw therapeut." Het lid maakt een foto, de foto gaat naar Karlienka ter voorbereiding op het consult. Karlienka maakt de analyse — niet de app.
+  </p>
+
+  <p>
+    Deze aanpak levert een concreet praktisch voordeel op: Karlienka kan de iris al bekijken vóórdat het lid arriveert voor het consult. Dit bespaart <strong>15–20 minuten per consult</strong>, wat bij 400+ leden per jaar neerkomt op meer dan 100 uur gewonnen consulttijd per jaar. Die tijdwinst kan worden ingezet voor meer diepgang per consult of voor een hogere capaciteit.
+  </p>
+
+  <h4>Technische implementatie</h4>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Technologie</th>
+          <th>Toelichting</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>App type</strong></td>
+          <td>Progressive Web App (PWA)</td>
+          <td>Geen App Store nodig; werkt op iPhone én Android via browser</td>
+        </tr>
+        <tr>
+          <td><strong>Camera toegang</strong></td>
+          <td>MediaDevices.getUserMedia API</td>
+          <td>Browser-native, geen native app vereist</td>
+        </tr>
+        <tr>
+          <td><strong>Fotorichtlijn</strong></td>
+          <td>Canvas overlay in browser</td>
+          <td>Cirkeloverlay voor ooguitlijning + belichtingscheck</td>
+        </tr>
+        <tr>
+          <td><strong>Opslag</strong></td>
+          <td>Supabase Storage (versleuteld)</td>
+          <td>Privé per lid, toegankelijk voor Karlienka via dashboard</td>
+        </tr>
+        <tr>
+          <td><strong>Notificatie</strong></td>
+          <td>Make.com automatisering</td>
+          <td>Upload → notificatie naar Karlienka via e-mail of Slack</td>
+        </tr>
+        <tr>
+          <td><strong>GDPR</strong></td>
+          <td>Expliciete toestemming bij upload</td>
+          <td>Gezondheidsgerelateerde beelddata = bijzondere categorie persoonsgegevens</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-info">
+    <div class="callout-title">Kosteninschatting PWA iris-intake (fase 2)</div>
+    <p>
+      Een volledige PWA met camera-integratie, upload, Supabase storage en Make.com notificatie vereist naar schatting <strong>3–4 maanden ontwikkeling</strong> en een budget van <strong>€5.000–€15.000</strong>. Dit is inclusief de fotorichtlijn overlay, GDPR-toestemmingsstroom en Karlienka's therapeutendashboard.
+    </p>
+  </div>
+
+  <div class="divider-thin"></div>
+
+  <div class="section-header" style="border-color: var(--peach);">
+    <div class="section-num">Sectie 3.5</div>
+    <h3>Conclusie &amp; Aanbeveling: Drie Tijdshorizonnen</h3>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Horizon</th>
+          <th>Aanpak</th>
+          <th>Kosten</th>
+          <th>Doorlooptijd</th>
+          <th>Aanbeveling</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Korte termijn</strong></td>
+          <td>Foto-intake PWA (pre-analyse voor Karlienka)</td>
+          <td class="td-num">€5.000–15.000</td>
+          <td>3–4 maanden</td>
+          <td>✓ Haalbaar — prioriteit fase 2</td>
+        </tr>
+        <tr>
+          <td><strong>Middellange termijn</strong></td>
+          <td>AI pre-screening ter voorbereiding (ML-model op irisbeelden)</td>
+          <td class="td-num">€15.000–40.000</td>
+          <td>6–12 maanden</td>
+          <td>⚡ Haalbaar maar vereist trainingsdata</td>
+        </tr>
+        <tr>
+          <td><strong>Lange termijn</strong></td>
+          <td>CE-gecertificeerd diagnostisch hulpmiddel</td>
+          <td class="td-num">€50.000–500.000</td>
+          <td>2–5 jaar</td>
+          <td>✗ Niet aanbevolen voor startup</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-dark">
+    <div class="callout-title">Kernboodschap</div>
+    <p>
+      Technologie is een versterker van Karlienka's expertise — geen vervanger ervan. De iris-intake PWA maakt consulten efficiënter en waardevoller; het is Karlienka's analyse die het onderscheidend vermogen vormt. Dit is precies het juiste evenwicht: menselijke expertise als premium differentiator, technologie als scalable enabler.
+    </p>
+  </div>
+
+  <div class="doc-footer">
+    <span class="brand">European Reset Club</span>
+    <span>Plan van Aanpak — Versie 1.0 — Juni 2026</span>
+    <span>Sectie 3 van 4</span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     SECTIE 4 — SAMENVATTING AANBEVELINGEN
+════════════════════════════════════════════ -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">Sectie 4</div>
+    <h2>Samenvatting Aanbevelingen</h2>
+  </div>
+
+  <p>
+    Dit plan van aanpak beschrijft een gefaseerde, pragmatische route naar een werkend en winstgevend platform voor de European Reset Club. De aanbevelingen zijn geordend op prioriteit: eerder in de lijst staat hoog urgent en hoge impact; later staat wenselijk maar niet urgent.
+  </p>
+
+  <ol class="priority-list">
+    <li>
+      <div>
+        <strong>Valideer het concept vóór elke andere investering.</strong>
+        <p style="margin-top: 0.3rem; font-size: 0.9rem; color: var(--mid);">
+          Zet de bestaande v4.html landingspagina live op een eigen domein. Koppel een Tally wachtlijstformulier en een Brevo welkomstmail. Deel de pagina in je netwerk. Meet of je binnen 4 weken 100 aanmeldingen haalt. Doe dit vóórdat je één euro uitgeeft aan een developer of designer. Dit is de meest waardevolle beslissing die je kunt nemen.
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Start met de Explorer tier als laagdrempelige instroom (€97/jaar).</strong>
+        <p style="margin-top: 0.3rem; font-size: 0.9rem; color: var(--mid);">
+          De Explorer tier is de motor van de funnel. Hij genereert cashflow onafhankelijk van Karlienka's capaciteit, hij bouwt een database op van geïnteresseerden, en hij creëert de conversiekans naar Member. Lanceer de Explorer tier zo vroeg mogelijk — idealiter tegelijk met de wachtlijst als aankondiging van "Binnenkort beschikbaar."
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Begrens de Member tier op Karlienka's capaciteit en gebruik dat als kwaliteitssignaal.</strong>
+        <p style="margin-top: 0.3rem; font-size: 0.9rem; color: var(--mid);">
+          8–10 consulten per week is geen beperking — het is een marketingargument. Communiceer de capaciteitsgrens actief: "Slechts 400 Reset Members per jaar" en "Wachtlijst momenteel gesloten" zijn krachtigere berichten dan een lege agenda. Exclusiviteit is alleen geloofwaardig als ze concreet is.
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Bouw de website gefaseerd en begin no-code first.</strong>
+        <p style="margin-top: 0.3rem; font-size: 0.9rem; color: var(--mid);">
+          Investeer in de MVP website (fase 1) pas nadat fase 0 geslaagd is. Overweeg de no-code aanpak (Tally + Brevo + Stripe Payment Links + Webflow) als tijdelijke maar volwaardige oplossing voor de eerste 50 betalende leden. Migreer naar Next.js/Supabase wanneer de schaal of complexiteit dit rechtvaardigt.
+        </p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Lanceer de iris foto-intake als PWA in fase 2 — als voorbereiding op het consult, niet als diagnose.</strong>
+        <p style="margin-top: 0.3rem; font-size: 0.9rem; color: var(--mid);">
+          De foto-intake functie heeft een concreet praktisch nut (tijdsbesparing per consult), versterkt de technologische perceptie van de club, en valt buiten de EU MDR scope mits correct geframed. Laat de framing juridisch toetsen (€500–1.500) voordat de functie live gaat. Plan dit in fase 2 (maand 5–8).
+        </p>
+      </div>
+    </li>
+  </ol>
+
+  <div class="divider"></div>
+
+  <h3 style="margin-bottom: 1rem;">Financieel overzicht: investering vs. break-even</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Fase</th>
+          <th>Investering</th>
+          <th>Break-even (Explorer-leden)</th>
+          <th>Break-even (Members)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Fase 0 (Validatie)</td>
+          <td class="td-num">€500</td>
+          <td>6 Explorer-leden</td>
+          <td>2 Members</td>
+        </tr>
+        <tr>
+          <td>Fase 1 (MVP)</td>
+          <td class="td-num">€12.000</td>
+          <td>124 Explorer-leden</td>
+          <td>41 Members</td>
+        </tr>
+        <tr>
+          <td>Fase 2 (Personalisatie)</td>
+          <td class="td-num">€7.500</td>
+          <td>77 Explorer-leden extra</td>
+          <td>26 Members extra</td>
+        </tr>
+        <tr>
+          <td>Fase 3 (Schaling)</td>
+          <td class="td-num">€22.500</td>
+          <td>232 Explorer-leden extra</td>
+          <td>76 Members extra</td>
+        </tr>
+        <tr>
+          <td><strong>Totaal 18 maanden</strong></td>
+          <td class="td-num"><strong>€42.500</strong></td>
+          <td><strong>~440 Explorer cumulatief</strong></td>
+          <td><strong>~145 Members cumulatief</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Bovenstaande break-even analyse illustreert dat het totale 18-maanden investeringsplan terugverdiend is wanneer de club een combinatie van circa 440 Explorer-leden en 145 Members heeft bereikt. Bij het realistische scenario van 300 Explorer-leden en 45 Members aan het einde van jaar 1 is al ruim 50% van de totale investering terugverdiend — en dat is exclusief partnercommissies en affiliate-inkomsten in fase 3.
+  </p>
+
+  <div class="divider"></div>
+
+  <h3 style="margin-bottom: 1rem;">Kritieke succesfactoren</h3>
+
+  <div class="callout callout-dark">
+    <div class="callout-title">Wat maakt of breekt de European Reset Club</div>
+    <ul>
+      <li><strong>Karlienka's schaarse tijd beschermen:</strong> haar expertise is het enige wat concurrenten niet kunnen kopiëren. Elke beslissing moet getoetst worden aan de vraag: "Ontlast dit Karlienka, of belast het haar?"</li>
+      <li><strong>Vertrouwen als fundament:</strong> gezondheidsdata, bloed- en irisanalyses zijn bijzondere persoonsgegevens. GDPR-compliance, beveiliging en transparantie zijn niet optioneel.</li>
+      <li><strong>Kwaliteit boven kwantiteit in bestemmingen:</strong> liever 15 zorgvuldig geselecteerde Reset-bestemmingen die echt werken dan 100 generieke suggesties die het merk verwässern.</li>
+      <li><strong>Consequente content &amp; community:</strong> de club groeit organisch via mond-tot-mondreclame. Leden die écht hersteld zijn van een reis worden de beste verkopers.</li>
+      <li><strong>Gefaseerd bouwen, niet overinvesteren:</strong> elke fase start pas als de vorige fase zijn succesindicator heeft gehaald. Dit beschermt het kapitaal en houdt de motivatie hoog.</li>
+    </ul>
+  </div>
+
+  <div class="divider-thin"></div>
+
+  <div class="callout callout-info">
+    <div class="callout-title">Volgende stap — actie voor morgen</div>
+    <p>
+      De enige beslissing die telt op dit moment: kies een domein, zet v4.html live en deel de wachtlijstlink met 50 mensen die je kent. De rest van dit plan kan wachten totdat die 100 aanmeldingen er zijn.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <p style="font-size: 0.85rem; color: var(--mid); font-style: italic;">
+    Dit document is opgesteld als intern strategisch plan voor de European Reset Club. De inhoud is vertrouwelijk en bedoeld voor gebruik door de founders Arjan en Karlienka. Versie 1.0, Juni 2026. Het plan wordt herzien na afronding van fase 0 (validatie).
+  </p>
+
+  <div class="doc-footer">
+    <span class="brand">European Reset Club</span>
+    <span>Plan van Aanpak — Versie 1.0 — Juni 2026</span>
+    <span>Sectie 4 van 4</span>
+  </div>
+</div>
+
+</body>
+</html>
