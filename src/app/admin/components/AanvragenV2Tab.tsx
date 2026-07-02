@@ -229,7 +229,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
   );
 
   const fmtDate = (iso: string | null) =>
-    iso ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "short" }) : "—";
+    iso ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" }) : "—";
 
   const period = (r: BookingRequest) => {
     if (r.check_in && r.check_out) {
