@@ -15,7 +15,7 @@ export type LandingPageRow = {
 };
 export type BookingRequest = {
   id: string; created_at: string; updated_at: string;
-  bron: "homepage" | "app" | "terugkomer";
+  bron: "homepage" | "app" | "terugkomer" | "handmatig";
   guest_id: string | null;
   gast_naam: string; gast_email: string;
   lodge: string | null;
