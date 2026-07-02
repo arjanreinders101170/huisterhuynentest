@@ -8,7 +8,10 @@ const BRON_LABELS: Record<string, { icon: string; label: string }> = {
   homepage:   { icon: "🏠", label: "Homepage" },
   app:        { icon: "📱", label: "App" },
   terugkomer: { icon: "↩️", label: "Terugkomer" },
+  handmatig:  { icon: "✏️", label: "Handmatig" },
 };
+
+const PLATFORMS = ["Booking.com", "Airbnb", "Direct", "Anders"];
 
 const LODGE_SHORT_NAMES: Record<string, string> = {
   lodge_1: "De Heide",
@@ -41,6 +44,11 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<unknown>(null);
   const [payLoading, setPayLoading] = useState<string | null>(null);
+
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manualForm, setManualForm] = useState({ naam: "", platform: "Booking.com", lodge: "lodge_1", checkIn: "", checkOut: "" });
+  const [manualSaving, setManualSaving] = useState(false);
+  const [manualError, setManualError] = useState("");
 
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "9px 12px", borderRadius: 8,
@@ -221,6 +229,60 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
       setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "Verbindingsfout" } }));
     }
     setPayLoading(null);
+  };
+
+  const saveManualBooking = async () => {
+    const { naam, platform, lodge, checkIn, checkOut } = manualForm;
+    if (!naam.trim() || !checkIn || !checkOut) {
+      setManualError("Vul naam, inchechdatum en uitcheckdatum in.");
+      return;
+    }
+    if (checkOut <= checkIn) {
+      setManualError("Uitcheckdatum moet na inchechdatum liggen.");
+      return;
+    }
+    setManualSaving(true);
+    setManualError("");
+    try {
+      const r = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "add_manual_booking", naam: naam.trim(), platform, lodge, checkIn, checkOut }),
+      });
+      const d = await r.json();
+      if (d.success) {
+        const nachten = Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000);
+        const newReq: BookingRequest = {
+          id: d.id, created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+          bron: "handmatig", guest_id: null,
+          gast_naam: naam.trim(), gast_email: "",
+          lodge, check_in: checkIn, check_out: checkOut,
+          nachten, personen: null, huisdieren: false,
+          bericht: platform, periode_tekst: null,
+          voorgestelde_prijs: null, voorgestelde_prijs_label: null, promo_code: null,
+          prijs_verblijf: null, schoonmaak: null, toeristenbelasting: null,
+          extra_regels: [], totaal: null, status: "bevestigd", legacy_terugkeer_id: null,
+        };
+        setRequests([newReq, ...requests]);
+        setManualOpen(false);
+        setManualForm({ naam: "", platform: "Booking.com", lodge: "lodge_1", checkIn: "", checkOut: "" });
+      } else {
+        setManualError(d.error || "Opslaan mislukt");
+      }
+    } catch {
+      setManualError("Verbindingsfout");
+    }
+    setManualSaving(false);
+  };
+
+  const deleteManualBooking = async (id: string) => {
+    if (!confirm("Handmatige blokkering verwijderen?")) return;
+    await fetch("/api/admin/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete_manual_booking", id }),
+    });
+    setRequests(requests.filter(r => r.id !== id));
   };
 
   const filtered = requests.filter(r =>
@@ -427,10 +489,94 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
 
   return (
     <>
-      <div style={{ fontSize: 20, fontWeight: 500, color: C.text, marginBottom: 4 }}>Aanvragen</div>
-      <div style={{ fontSize: 13, color: C.light, marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+        <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Aanvragen</div>
+        <button
+          onClick={() => { setManualOpen(o => !o); setManualError(""); }}
+          style={{
+            padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.green}`,
+            background: manualOpen ? C.green : C.card, color: manualOpen ? "#fff" : C.green,
+            fontSize: 12, fontWeight: 600, cursor: "pointer",
+          }}
+        >
+          {manualOpen ? "Annuleren" : "+ Handmatige boeking"}
+        </button>
+      </div>
+      <div style={{ fontSize: 13, color: C.light, marginBottom: manualOpen ? 12 : 20 }}>
         Alle aanvragen uit alle bronnen — homepage, concierge-app en terugkomers — in één overzicht. Klik op een aanvraag om een offerte op te bouwen.
       </div>
+
+      {manualOpen && (
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 24px", marginBottom: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 14 }}>Datums blokkeren</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Naam gast *</label>
+              <input
+                value={manualForm.naam}
+                onChange={e => setManualForm(f => ({ ...f, naam: e.target.value }))}
+                placeholder="bijv. Jan de Vries"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Platform</label>
+              <select
+                value={manualForm.platform}
+                onChange={e => setManualForm(f => ({ ...f, platform: e.target.value }))}
+                style={inputStyle}
+              >
+                {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Lodge</label>
+              <select
+                value={manualForm.lodge}
+                onChange={e => setManualForm(f => ({ ...f, lodge: e.target.value }))}
+                style={inputStyle}
+              >
+                <option value="lodge_1">De Heide</option>
+                <option value="lodge_2">De Eik</option>
+              </select>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Inchechdatum *</label>
+              <input
+                type="date"
+                value={manualForm.checkIn}
+                onChange={e => setManualForm(f => ({ ...f, checkIn: e.target.value }))}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Uitcheckdatum *</label>
+              <input
+                type="date"
+                value={manualForm.checkOut}
+                onChange={e => setManualForm(f => ({ ...f, checkOut: e.target.value }))}
+                style={inputStyle}
+              />
+            </div>
+          </div>
+          {manualError && (
+            <div style={{ fontSize: 12, color: "#C62828", marginBottom: 12 }}>{manualError}</div>
+          )}
+          <button
+            onClick={saveManualBooking}
+            disabled={manualSaving}
+            style={{
+              padding: "9px 20px", borderRadius: 8, border: "none",
+              background: manualSaving ? C.border : C.green,
+              color: "#fff", fontSize: 13, fontWeight: 600, cursor: manualSaving ? "not-allowed" : "pointer",
+            }}
+          >
+            {manualSaving ? "Opslaan..." : "Datums blokkeren →"}
+          </button>
+        </div>
+      )}
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
         <button onClick={() => setFilterBron("all")} style={chipStyle(filterBron === "all")}>Alle bronnen ({counts.all})</button>
@@ -493,9 +639,12 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
                   <div style={{ fontSize: 12, color: C.muted }}>
                     {period(r)}
                     <div style={{ fontSize: 11 }}>
-                      {(r.personen ?? 0) > 0 && `${r.personen}p`}
-                      {r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
-                      {r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
+                      {r.bron === "handmatig" && r.bericht && (
+                        <span style={{ color: C.gold, fontWeight: 600 }}>{r.bericht}</span>
+                      )}
+                      {r.bron !== "handmatig" && (r.personen ?? 0) > 0 && `${r.personen}p`}
+                      {r.bron !== "handmatig" && r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
+                      {r.bron !== "handmatig" && r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
                     </div>
                   </div>
                   <div style={{ fontSize: 12, color: C.muted }}>{lodge}</div>
@@ -507,8 +656,18 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
                     {res?.ok && <div style={{ fontSize: 11, color: "#2E7D32", marginTop: 2 }}>✓ {res.msg}</div>}
                   </div>
                   <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>
-                    {timeAgo(r.created_at)}
-                    {isExpandable && <div style={{ fontSize: 10, color: C.gold, marginTop: 2 }}>{isExpanded ? "▲" : "▼"}</div>}
+                    {r.bron === "handmatig" ? (
+                      <button
+                        onClick={e => { e.stopPropagation(); deleteManualBooking(r.id); }}
+                        title="Verwijder blokkering"
+                        style={{ background: "none", border: "none", color: "#C62828", fontSize: 16, cursor: "pointer", padding: 0 }}
+                      >×</button>
+                    ) : (
+                      <>
+                        {timeAgo(r.created_at)}
+                        {isExpandable && <div style={{ fontSize: 10, color: C.gold, marginTop: 2 }}>{isExpanded ? "▲" : "▼"}</div>}
+                      </>
+                    )}
                   </div>
                 </div>
                 {isExpanded && (isEditable ? renderEditor(r) : renderPayment(r))}

@@ -314,6 +314,40 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
 
       return NextResponse.json({ success: true, checkoutUrl, amount, totaal, fase: phase });
     }
+    case "add_manual_booking": {
+      const { naam, platform, lodge, checkIn, checkOut } = body;
+      if (!naam || !lodge || !checkIn || !checkOut) {
+        return NextResponse.json({ error: "naam, lodge, checkIn en checkOut zijn verplicht" }, { status: 400 });
+      }
+      const nachten = Math.round((new Date(checkOut as string).getTime() - new Date(checkIn as string).getTime()) / 86400000);
+      if (nachten <= 0) return NextResponse.json({ error: "Uitcheckdatum moet na inchechdatum liggen" }, { status: 400 });
+
+      const { data, error } = await getSupabase().from("booking_requests").insert({
+        bron: "handmatig",
+        gast_naam: naam,
+        gast_email: "",
+        lodge,
+        check_in: checkIn,
+        check_out: checkOut,
+        nachten,
+        bericht: platform || null,
+        status: "bevestigd",
+        extra_regels: [],
+      }).select("id").single();
+
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ success: true, id: data?.id });
+    }
+    case "delete_manual_booking": {
+      if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+      const { error } = await getSupabase()
+        .from("booking_requests")
+        .delete()
+        .eq("id", body.id)
+        .eq("bron", "handmatig");
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ success: true });
+    }
     case "reject_booking_request": {
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
       await getSupabase().from("booking_requests").update({ status: "afgewezen" }).eq("id", body.id);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
@@ -41,13 +42,29 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const res = await fetch(ICAL_URLS[lodge], {
-      headers: { "User-Agent": "HuisTermHuynen-Calendar/1.0" },
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const ics = await res.text();
+    const [icalRes, manualRes] = await Promise.all([
+      fetch(ICAL_URLS[lodge], {
+        headers: { "User-Agent": "HuisTermHuynen-Calendar/1.0" },
+        next: { revalidate: 3600 },
+      }),
+      getSupabase()
+        .from("booking_requests")
+        .select("check_in, check_out")
+        .eq("lodge", lodge)
+        .eq("bron", "handmatig")
+        .not("check_in", "is", null)
+        .not("check_out", "is", null),
+    ]);
+
+    if (!icalRes.ok) throw new Error(`HTTP ${icalRes.status}`);
+    const ics = await icalRes.text();
     const events = parseICS(ics);
+
+    const manual = (manualRes.data || []) as { check_in: string; check_out: string }[];
+    for (const m of manual) {
+      if (m.check_in && m.check_out) events.push({ start: m.check_in, end: m.check_out });
+    }
+
     return NextResponse.json({ events }, {
       headers: { "Cache-Control": "s-maxage=3600, stale-while-revalidate=86400" },
     });
