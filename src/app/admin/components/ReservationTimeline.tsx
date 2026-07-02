@@ -1,8 +1,20 @@
 "use client";
 import React, { useState } from "react";
-import { Stay, Guest } from "../types";
+import { Stay, Guest, BookingRequest } from "../types";
 
-export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]; guests: Guest[]; guestMap: Record<string, string> }) {
+type TimelineItem = {
+  id: string;
+  lodge: string;
+  check_in: string;
+  check_out: string;
+  name: string;
+  status: string;
+  source: "stay" | "request";
+};
+
+const CONFIRMED_STATUSES = ["bevestigd", "aanbetaling_verstuurd", "aanbetaling_betaald", "restbetaling_verstuurd", "volledig_betaald"];
+
+export function ReservationTimeline({ stays, guests, guestMap, bookingRequests = [] }: { stays: Stay[]; guests: Guest[]; guestMap: Record<string, string>; bookingRequests?: BookingRequest[] }) {
   const DAYS = 21;
   const DAY_W = 54;
   const LEFT_W = 148;
@@ -31,10 +43,43 @@ export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]
     { id: "lodge_2", label: "Lodge 2", sub: "De Eik" },
   ];
 
-  const barColor = (status: string) => {
-    if (status === "actief") return "#10B981";
-    if (status === "verwacht" || status === "bevestigd") return "#3B82F6";
-    if (status === "uitgecheckt") return "#9CA3AF";
+  // Combineer stays en bevestigde booking_requests in één lijst
+  const stayItems: TimelineItem[] = stays
+    .filter(s => s.lodge && s.check_in && s.check_out)
+    .map(s => ({
+      id: s.id,
+      lodge: s.lodge,
+      check_in: s.check_in,
+      check_out: s.check_out,
+      name: s.guests?.naam || guestMap[s.guest_id] || "Gast",
+      status: s.status,
+      source: "stay",
+    }));
+
+  const requestItems: TimelineItem[] = bookingRequests
+    .filter(r => r.lodge && r.check_in && r.check_out && CONFIRMED_STATUSES.includes(r.status))
+    .filter(r => !stayItems.some(s => s.check_in === r.check_in && s.check_out === r.check_out && s.lodge === r.lodge))
+    .map(r => ({
+      id: r.id,
+      lodge: r.lodge!,
+      check_in: r.check_in!,
+      check_out: r.check_out!,
+      name: r.guest?.naam || r.gast_naam || "Gast",
+      status: r.status,
+      source: "request",
+    }));
+
+  const allItems: TimelineItem[] = [...stayItems, ...requestItems];
+
+  const barColor = (item: TimelineItem) => {
+    if (item.source === "request") {
+      if (item.status === "volledig_betaald") return "#10B981";
+      if (item.status === "aanbetaling_betaald") return "#10B981";
+      return "#3B82F6";
+    }
+    if (item.status === "actief") return "#10B981";
+    if (item.status === "verwacht" || item.status === "bevestigd") return "#3B82F6";
+    if (item.status === "uitgecheckt") return "#9CA3AF";
     return "#8B5CF6";
   };
 
@@ -77,7 +122,7 @@ export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]
 
         {/* Lodge rows */}
         {lodges.map((lodge, ri) => {
-          const lodgeStays = stays.filter(s => {
+          const lodgeStays = allItems.filter(s => {
             const ci = toDay(s.check_in);
             const co = toDay(s.check_out);
             return s.lodge === lodge.id && co > windowStart && ci < days[DAYS - 1];
@@ -92,7 +137,7 @@ export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]
                 borderRight: "1px solid #E5E7EB", background: "#FAFAFA",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: lodgeStays.some(s => s.status === "actief") ? "#10B981" : "#D1D5DB", flexShrink: 0 }} />
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: lodgeStays.some(s => s.status === "actief" || s.status === "volledig_betaald" || s.status === "aanbetaling_betaald") ? "#10B981" : lodgeStays.length > 0 ? "#3B82F6" : "#D1D5DB", flexShrink: 0 }} />
                   <span style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>{lodge.label}</span>
                 </div>
                 <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 3, marginLeft: 14 }}>{lodge.sub}</div>
@@ -119,29 +164,28 @@ export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]
                 }} />
 
                 {/* Bars */}
-                {lodgeStays.map(stay => {
-                  const ci = toDay(stay.check_in);
-                  const co = toDay(stay.check_out);
+                {lodgeStays.map(item => {
+                  const ci = toDay(item.check_in);
+                  const co = toDay(item.check_out);
                   const s0 = Math.max(0, dayOffset(ci));
                   const e0 = Math.min(DAYS, dayOffset(co));
                   if (e0 <= 0 || s0 >= DAYS) return null;
                   const left = s0 * DAY_W + 4;
                   const width = Math.max((e0 - s0) * DAY_W - 8, 24);
-                  const name = stay.guests?.naam || guestMap[stay.guest_id] || "Gast";
-                  const color = barColor(stay.status);
+                  const color = barColor(item);
                   const nights = Math.round(dayOffset(co) - dayOffset(ci));
 
                   return (
-                    <div key={stay.id} title={`${name} · ${nights} nacht${nights !== 1 ? "en" : ""}`} style={{
+                    <div key={item.id} title={`${item.name} · ${nights} nacht${nights !== 1 ? "en" : ""}${item.source === "request" ? " · aanvraag" : ""}`} style={{
                       position: "absolute", left, top: "50%", transform: "translateY(-50%)",
                       width, height: 36, background: "#fff",
-                      border: "1px solid #E5E7EB", borderRadius: 7,
+                      border: `1px solid ${item.source === "request" ? "#BFDBFE" : "#E5E7EB"}`, borderRadius: 7,
                       display: "flex", alignItems: "center", overflow: "hidden",
                       boxShadow: "0 1px 4px rgba(0,0,0,0.06)", zIndex: 1, cursor: "default",
                     }}>
                       <div style={{ width: 3, alignSelf: "stretch", background: color, flexShrink: 0, borderRadius: "6px 0 0 6px" }} />
                       <span style={{ fontSize: 12, fontWeight: 500, color: "#374151", marginLeft: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 8 }}>
-                        {name}
+                        {item.name}
                       </span>
                     </div>
                   );

@@ -375,7 +375,7 @@ export default function AdminDashboard() {
 
                 {/* Tijdlijn */}
                 <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12, letterSpacing: -0.1 }}>Bezettingstijdlijn</div>
-                <ReservationTimeline stays={stays} guests={guests} guestMap={guestMap} />
+                <ReservationTimeline stays={stays} guests={guests} guestMap={guestMap} bookingRequests={bookingRequests} />
 
                 {/* Recente boekingen */}
                 <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12, marginTop: 32, letterSpacing: -0.1 }}>Recente boekingen</div>
