@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         .from("booking_requests")
         .select("check_in, check_out")
         .eq("lodge", lodge)
-        .eq("bron", "handmatig")
+        .in("status", ["bevestigd", "aanbetaling_verstuurd", "aanbetaling_betaald", "restbetaling_verstuurd", "volledig_betaald"])
         .not("check_in", "is", null)
         .not("check_out", "is", null),
     ]);
