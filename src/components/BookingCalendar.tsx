@@ -130,8 +130,8 @@ function MonthCalendar({
 
           if (inMonth) {
             if (isPast || booked) {
-              bg = booked ? "#EDE8E0" : "transparent";
-              color = T.muted;
+              bg = booked ? "#F5D9D9" : "transparent";
+              color = booked ? "#9B3A3A" : T.muted;
               opacity = booked ? 1 : 0;
             } else {
               cursor = "pointer";
@@ -177,11 +177,8 @@ function MonthCalendar({
                 </span>
               )}
               {inMonth && booked && (
-                <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.25 }}>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <line x1="1" y1="1" x2="9" y2="9" stroke={T.muted} strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="9" y1="1" x2="1" y2="9" stroke={T.muted} strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
+                <span style={{ fontFamily: T.sans, fontSize: 9, fontWeight: 600, color: "#9B3A3A", lineHeight: 1, marginTop: 2, opacity: 0.8, textTransform: "uppercase", letterSpacing: "0.3px" }}>
+                  Bezet
                 </span>
               )}
             </div>
@@ -501,7 +498,7 @@ export default function BookingCalendar() {
             {[
               { color: T.green, label: "Geselecteerd" },
               { color: "rgba(47,79,62,.12)", border: "none", label: "Geselecteerde periode" },
-              { color: "#EDE8E0", label: "Bezet" },
+              { color: "#F5D9D9", label: "Bezet" },
             ].map((l, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: T.sans, fontSize: 12, color: T.muted }}>
                 <div style={{ width: 14, height: 14, borderRadius: 4, background: l.color }} />
