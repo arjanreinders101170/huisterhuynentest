@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 
@@ -33,11 +33,40 @@ export default function RequestForm() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  const [availabilityStatus, setAvailabilityStatus] = useState<"idle" | "checking" | "available" | "unavailable">("idle");
+  const availCheckRef = useRef<string>("");
 
   const minDate = BOOKINGS_OPEN_FROM;
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;
   const datesValid = !!checkIn && !!checkOut && nights >= 2;
-  const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending;
+  const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending && availabilityStatus !== "unavailable";
+
+  useEffect(() => {
+    if (!checkIn || !checkOut || nights < 2) {
+      setAvailabilityStatus("idle");
+      return;
+    }
+    const key = `${lodge}:${checkIn}:${checkOut}`;
+    if (availCheckRef.current === key) return;
+    availCheckRef.current = key;
+    setAvailabilityStatus("checking");
+
+    fetch(`/api/ical?lodge=${lodge}`)
+      .then(r => r.json())
+      .then(data => {
+        const events: { start: string; end: string }[] = data.events || [];
+        let d = checkIn;
+        let conflict = false;
+        while (d < checkOut) {
+          if (events.some(e => d >= e.start && d < e.end)) { conflict = true; break; }
+          const [y, m, day] = d.split("-").map(Number);
+          const next = new Date(y, m - 1, day + 1);
+          d = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
+        }
+        setAvailabilityStatus(conflict ? "unavailable" : "available");
+      })
+      .catch(() => setAvailabilityStatus("idle"));
+  }, [lodge, checkIn, checkOut, nights]);
 
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "11px 14px", borderRadius: 10,
@@ -109,7 +138,7 @@ export default function RequestForm() {
           Bedankt, {naam.split(" ")[0]}. We bekijken je gewenste data persoonlijk en sturen je binnen 24 uur een aanbod op maat via {email}.
         </p>
         <button
-          onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); }}
+          onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
           style={{ marginTop: 24, padding: "11px 26px", borderRadius: 10, border: `1px solid ${T.border}`, background: "#fff", fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}
         >
           Nieuwe aanvraag
@@ -130,7 +159,7 @@ export default function RequestForm() {
             <button
               key={l}
               type="button"
-              onClick={() => setLodge(l)}
+              onClick={() => { setLodge(l); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
               style={{
                 textAlign: "left", padding: "14px 16px", borderRadius: 12, cursor: "pointer",
                 border: lodge === l ? `2px solid ${T.green}` : `1px solid ${T.border}`,
@@ -162,11 +191,28 @@ export default function RequestForm() {
               onChange={e => setCheckOut(e.target.value)} style={inputStyle} />
           </div>
         </div>
-        <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: "0 0 20px" }}>
-          {nights > 0
-            ? `${nights} nacht${nights !== 1 ? "en" : ""} geselecteerd${nights < 2 ? " — minimaal 2 nachten" : ""}`
-            : "Een verblijf duurt minimaal 2 nachten."}
-        </p>
+        <div style={{ margin: "6px 0 20px", minHeight: 22 }}>
+          {availabilityStatus === "checking" && (
+            <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: 0 }}>
+              Beschikbaarheid controleren...
+            </p>
+          )}
+          {availabilityStatus === "available" && nights >= 2 && (
+            <p style={{ fontFamily: T.sans, fontSize: 12, color: "#2E7D32", fontWeight: 600, margin: 0 }}>
+              ✓ Deze periode is beschikbaar — {nights} nacht{nights !== 1 ? "en" : ""}
+            </p>
+          )}
+          {availabilityStatus === "unavailable" && (
+            <p style={{ fontFamily: T.sans, fontSize: 12, color: "#C62828", fontWeight: 600, margin: 0 }}>
+              ✗ Deze periode is helaas al bezet — kies andere datums
+            </p>
+          )}
+          {availabilityStatus === "idle" && (
+            <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: 0 }}>
+              {nights > 0 && nights < 2 ? "Minimaal 2 nachten vereist" : "Een verblijf duurt minimaal 2 nachten."}
+            </p>
+          )}
+        </div>
 
         {/* Personen + huisdieren */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
