@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Stay, Guest } from "../types";
 
 export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]; guests: Guest[]; guestMap: Record<string, string> }) {
@@ -7,11 +7,14 @@ export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]
   const DAY_W = 54;
   const LEFT_W = 148;
   const ROW_H = 62;
+  const MAX_OFFSET = 365;
+
+  const [slideOffset, setSlideOffset] = useState(0);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const windowStart = new Date(today);
-  windowStart.setDate(windowStart.getDate() - 3);
+  windowStart.setDate(windowStart.getDate() - 3 + slideOffset);
 
   const days = Array.from({ length: DAYS }, (_, i) => {
     const d = new Date(windowStart);
@@ -35,7 +38,16 @@ export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]
     return "#8B5CF6";
   };
 
+  const windowLabel = (() => {
+    const from = new Date(windowStart);
+    const to = new Date(windowStart);
+    to.setDate(to.getDate() + DAYS - 1);
+    const fmt = (d: Date) => d.toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" });
+    return `${fmt(from)} – ${fmt(to)}`;
+  })();
+
   return (
+    <div>
     <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #E5E7EB", background: "#fff" }}>
       <div style={{ minWidth: LEFT_W + DAYS * DAY_W }}>
         {/* Header */}
@@ -144,6 +156,53 @@ export function ReservationTimeline({ stays, guests, guestMap }: { stays: Stay[]
             </div>
           );
         })}
+      </div>
+    </div>
+
+      {/* Navigatie */}
+      <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 12 }}>
+        <button
+          onClick={() => setSlideOffset(o => Math.max(0, o - 7))}
+          disabled={slideOffset === 0}
+          style={{
+            padding: "5px 12px", borderRadius: 7, border: "1px solid #E5E7EB",
+            background: "#fff", fontSize: 13, color: slideOffset === 0 ? "#D1D5DB" : "#374151",
+            cursor: slideOffset === 0 ? "not-allowed" : "pointer", flexShrink: 0,
+          }}
+        >← Vorige week</button>
+
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+          <input
+            type="range"
+            min={0}
+            max={MAX_OFFSET}
+            value={slideOffset}
+            onChange={e => setSlideOffset(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#3B82F6", cursor: "pointer" }}
+          />
+          <div style={{ textAlign: "center", fontSize: 11, color: "#9CA3AF" }}>{windowLabel}</div>
+        </div>
+
+        <button
+          onClick={() => setSlideOffset(o => Math.min(MAX_OFFSET, o + 7))}
+          disabled={slideOffset >= MAX_OFFSET}
+          style={{
+            padding: "5px 12px", borderRadius: 7, border: "1px solid #E5E7EB",
+            background: "#fff", fontSize: 13, color: slideOffset >= MAX_OFFSET ? "#D1D5DB" : "#374151",
+            cursor: slideOffset >= MAX_OFFSET ? "not-allowed" : "pointer", flexShrink: 0,
+          }}
+        >Volgende week →</button>
+
+        {slideOffset > 0 && (
+          <button
+            onClick={() => setSlideOffset(0)}
+            style={{
+              padding: "5px 12px", borderRadius: 7, border: "1px solid #BFDBFE",
+              background: "#EFF6FF", fontSize: 12, color: "#3B82F6",
+              cursor: "pointer", flexShrink: 0,
+            }}
+          >Vandaag</button>
+        )}
       </div>
     </div>
   );
