@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, type OfferteRegel } from "@/lib/email";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
+import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
 
 const DEPOSIT_PCT = 0.30;
 
@@ -128,6 +129,9 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const { randomBytes } = await import("crypto");
       const confirmToken = randomBytes(32).toString("hex");
 
+      // Geldig t/m deze dag; daarna vervalt het aanbod via de dagelijkse cron.
+      const vervaltOp = offerExpiryDate(req.check_in);
+
       const { error: updErr } = await sb.from("booking_requests").update({
         status: "offerte_verstuurd",
         prijs_verblijf: verblijf,
@@ -136,12 +140,16 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         extra_regels: cleanRegels,
         totaal,
         confirm_token: confirmToken,
+        offerte_vervalt_op: vervaltOp,
+        // Opnieuw versturen betekent opnieuw een herinnering en een schone lei.
+        herinnering_verstuurd_op: null,
+        verlopen_op: null,
       }).eq("id", requestId);
       if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
 
       const resendKey = process.env.RESEND_API_KEY;
       if (!resendKey) {
-        return NextResponse.json({ success: true, totaal, emailSent: false, warning: "Resend niet geconfigureerd, offerte is wel opgeslagen" });
+        return NextResponse.json({ success: true, totaal, vervaltOp, emailSent: false, warning: "Resend niet geconfigureerd, offerte is wel opgeslagen" });
       }
 
       const fmt = (iso: string | null) => iso
@@ -170,16 +178,16 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
           html: buildOfferteHtmlV2(
             esc(req.gast_naam || ""), esc(van), esc(tot),
             req.personen || 2, emailRegels, totaal, (bericht as string) || "",
-            requestId as string, bevestigBase, confirmToken,
+            requestId as string, bevestigBase, confirmToken, formatDateNl(vervaltOp),
           ),
           replyTo: "lodge@huisterhuynen.nl",
         });
       } catch (e) {
         console.error("Offerte v2 email failed:", e);
-        return NextResponse.json({ success: true, totaal, emailSent: false, warning: "Offerte opgeslagen, maar e-mail versturen faalde" });
+        return NextResponse.json({ success: true, totaal, vervaltOp, emailSent: false, warning: "Offerte opgeslagen, maar e-mail versturen faalde" });
       }
 
-      return NextResponse.json({ success: true, totaal, emailSent: true });
+      return NextResponse.json({ success: true, totaal, vervaltOp, emailSent: true });
     }
     case "send_payment_link": {
       const { requestId, fase } = body;

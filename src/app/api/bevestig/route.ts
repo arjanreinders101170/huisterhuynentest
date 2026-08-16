@@ -5,6 +5,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
+import { todayISO } from "@/lib/offer-expiry";
 
 export const runtime = "nodejs";
 
@@ -13,6 +14,15 @@ const LODGE_NAME = "Huis ter Huynen";
 const REJECTED_MESSAGE =
   "Deze aanvraag is inmiddels vervallen. Je hebt hierover een e-mail van ons ontvangen — " +
   "neem gerust contact op als je vragen hebt of andere datums wilt bekijken.";
+const EXPIRED_MESSAGE =
+  "Dit aanbod is verlopen en de datums zijn weer vrijgegeven. Stuur ons gerust een bericht — " +
+  "zijn ze nog vrij, dan maken we het aanbod zo weer voor je in orde.";
+
+/** Verlopen: door de cron afgehandeld, of de vervaldatum is net gepasseerd. */
+function isExpired(a: LoadedAanvraag): boolean {
+  if (a.rawStatus === "verlopen") return true;
+  return a.rawStatus === "offerte_verstuurd" && !!a.vervaltOp && a.vervaltOp < todayISO();
+}
 
 type LoadedAanvraag = {
   source: "v2" | "legacy";
@@ -29,6 +39,8 @@ type LoadedAanvraag = {
   guestId: string | null;
   checkInIso: string | null;
   checkOutIso: string | null;
+  /** Geldig t/m deze dag (alleen v2). */
+  vervaltOp: string | null;
 };
 
 function fmtDate(iso: string): string {
@@ -69,6 +81,7 @@ async function loadFromBookingRequests(id: string, token: string | null): Promis
     guestId: data.guest_id || null,
     checkInIso: data.check_in || null,
     checkOutIso: data.check_out || null,
+    vervaltOp: data.offerte_vervalt_op || null,
   };
 }
 
@@ -112,6 +125,7 @@ async function loadFromLegacy(id: string, token: string | null): Promise<LoadedA
     guestId: data.guest_id || null,
     checkInIso: null,    // legacy heeft geen ISO datums
     checkOutIso: null,
+    vervaltOp: null,     // legacy-offertes kennen geen vervaldatum
   };
 }
 
@@ -130,6 +144,9 @@ export async function GET(request: NextRequest) {
     if (!a) return NextResponse.json({ error: "Aanvraag niet gevonden of ongeldige link" }, { status: 404 });
     if (a.rawStatus === "afgewezen") {
       return NextResponse.json({ error: REJECTED_MESSAGE }, { status: 410 });
+    }
+    if (isExpired(a)) {
+      return NextResponse.json({ error: EXPIRED_MESSAGE }, { status: 410 });
     }
 
     return NextResponse.json({
@@ -164,6 +181,10 @@ export async function POST(request: NextRequest) {
     // Een afgewezen aanvraag mag niet alsnog via een oude offerte-link bevestigd worden.
     if (a.rawStatus === "afgewezen") {
       return NextResponse.json({ error: REJECTED_MESSAGE }, { status: 410 });
+    }
+    // Idem voor een verlopen aanbod — de datums zijn weer vrijgegeven.
+    if (isExpired(a)) {
+      return NextResponse.json({ error: EXPIRED_MESSAGE }, { status: 410 });
     }
 
     // Update status in de juiste tabel

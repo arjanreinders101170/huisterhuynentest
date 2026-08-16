@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
-import { esc, welcomeEmail, lateCheckoutEmail, thankYouEmail, followUpEmail, lodgePhoto } from "@/lib/email";
+import {
+  esc, welcomeEmail, lateCheckoutEmail, thankYouEmail, followUpEmail, lodgePhoto,
+  offerReminderEmail, offerExpiredEmail, expiredOffersSummaryEmail, type ExpiredSummaryRow,
+} from "@/lib/email";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
+import { todayISO, addDaysISO, daysBetweenISO, formatDateNl, OFFER_REMINDER_DAYS_BEFORE } from "@/lib/offer-expiry";
 
 export const runtime = "nodejs";
+
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 
 function localDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -154,6 +160,128 @@ export async function GET(request: NextRequest) {
         }
       }
       results.followup = followupSent;
+
+      /* ── 4. Offertes: herinneren en laten vervallen ──
+       * Een offerte blokkeert de agenda niet, dus zonder einddatum blijft
+       * onduidelijk of de gast nog komt. Twee dagen voor de vervaldatum één
+       * herinnering, daarna vervalt het aanbod en gaan de datums weer vrij. */
+      const today = todayISO();
+
+      const { data: openOffers } = await getSupabase()
+        .from("booking_requests")
+        .select("*")
+        .eq("status", "offerte_verstuurd")
+        .not("offerte_vervalt_op", "is", null);
+
+      const offerContext = (req: {
+        lodge: string | null; check_in: string | null; check_out: string | null;
+        periode_tekst: string | null; gast_naam: string | null; totaal: number | null;
+      }) => {
+        const lodgeNaam = lodgeName(req.lodge || "lodge_1");
+        const { url } = lodgePhoto(baseUrl, req.lodge);
+        const fmt = (iso: string | null) => iso
+          ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })
+          : "";
+        const van = req.check_in ? fmt(req.check_in) : (req.periode_tekst?.split("—")[0]?.trim() || "");
+        const tot = req.check_out ? fmt(req.check_out) : (req.periode_tekst?.split("—")[1]?.trim() || "");
+        return {
+          lodgeNaam,
+          photoUrl: url,
+          periodeLabel: van && tot ? `${van} t/m ${tot}` : (req.periode_tekst || ""),
+          firstName: esc((req.gast_naam || "").split(" ")[0] || ""),
+          totaal: req.totaal != null ? Number(req.totaal) : null,
+        };
+      };
+
+      let reminderSent = 0;
+      let expiredCount = 0;
+      const expiredRows: ExpiredSummaryRow[] = [];
+
+      for (const req of openOffers ?? []) {
+        const expiry: string = req.offerte_vervalt_op;
+        const ctx = offerContext(req);
+
+        // Verlopen: vervaldatum ligt achter ons.
+        if (expiry < today) {
+          const { error: updErr } = await getSupabase().from("booking_requests").update({
+            status: "verlopen",
+            verlopen_op: new Date().toISOString(),
+          }).eq("id", req.id).eq("status", "offerte_verstuurd");
+          if (updErr) {
+            console.error("Offerte laten vervallen faalde voor", req.id, updErr.message);
+            continue;
+          }
+          expiredCount++;
+          expiredRows.push({
+            gastNaam: req.gast_naam || "Onbekend",
+            gastEmail: req.gast_email || "",
+            periodeLabel: ctx.periodeLabel,
+            lodgeNaam: ctx.lodgeNaam,
+            totaal: ctx.totaal,
+          });
+          if (!req.gast_email) continue;
+          try {
+            await resend.emails.send({
+              from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+              to: [req.gast_email],
+              subject: "Je aanbod is verlopen — Huis ter Huynen",
+              replyTo: "lodge@huisterhuynen.nl",
+              html: offerExpiredEmail({
+                ...ctx,
+                geldigTot: formatDateNl(expiry),
+                siteUrl: baseUrl,
+              }),
+            });
+          } catch (e) {
+            console.error("Vervalmail faalde voor", req.id, e);
+          }
+          continue;
+        }
+
+        // Herinnering: exact op de herinneringsdag, en maar één keer.
+        const reminderDay = addDaysISO(expiry, -OFFER_REMINDER_DAYS_BEFORE);
+        if (today === reminderDay && !req.herinnering_verstuurd_op && req.gast_email && req.confirm_token) {
+          try {
+            await resend.emails.send({
+              from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+              to: [req.gast_email],
+              subject: "Je persoonlijke aanbod staat nog klaar — Huis ter Huynen",
+              replyTo: "lodge@huisterhuynen.nl",
+              html: offerReminderEmail({
+                ...ctx,
+                geldigTot: formatDateNl(expiry),
+                confirmUrl: `${baseUrl}/bevestig?id=${req.id}&t=${req.confirm_token}`,
+                dagenResterend: daysBetweenISO(today, expiry),
+              }),
+            });
+            await getSupabase().from("booking_requests")
+              .update({ herinnering_verstuurd_op: new Date().toISOString() })
+              .eq("id", req.id);
+            reminderSent++;
+          } catch (e) {
+            console.error("Herinneringsmail faalde voor", req.id, e);
+          }
+        }
+      }
+
+      // Eén verzamelmail naar de host, alleen als er echt iets verliep.
+      if (expiredRows.length > 0) {
+        try {
+          await resend.emails.send({
+            from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+            to: [OWNER_EMAIL],
+            subject: expiredRows.length === 1
+              ? "Aanbod verlopen — 1 aanvraag"
+              : `Aanbiedingen verlopen — ${expiredRows.length} aanvragen`,
+            html: expiredOffersSummaryEmail(expiredRows),
+          });
+        } catch (e) {
+          console.error("Verzamelmail verlopen offertes faalde:", e);
+        }
+      }
+
+      results.offerteHerinnering = reminderSent;
+      results.offerteVerlopen = expiredCount;
     }
 
     if (type === "evening") {
