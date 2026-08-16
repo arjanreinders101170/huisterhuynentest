@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
+import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate, MIN_NIGHTS } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 
 const T = {
@@ -34,9 +34,11 @@ export default function RequestFormDE() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
-  const minDate = BOOKINGS_OPEN_FROM;
+  const minDate = earliestStayDate();
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;
-  const datesValid = !!checkIn && !!checkOut && nights >= 2;
+  const dateCheck = checkStayDates(checkIn, checkOut, { locale: "de" });
+  const datesValid = dateCheck.ok;
+  const dateError = checkIn && checkOut && !dateCheck.ok ? dateCheck.error : "";
   const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending;
 
   const inputStyle: React.CSSProperties = {
@@ -51,8 +53,7 @@ export default function RequestFormDE() {
 
   const handleSubmit = async () => {
     setError("");
-    if (!checkIn || !checkOut) { setError("Bitte wählen Sie ein Anreise- und Abreisedatum."); return; }
-    if (nights < 2) { setError("Ein Aufenthalt dauert mindestens 2 Nächte."); return; }
+    if (!dateCheck.ok) { setError(dateCheck.error); return; }
     if (!naam.trim() || !email.includes("@")) { setError("Bitte geben Sie Ihren Namen und Ihre E-Mail-Adresse an."); return; }
 
     setSending(true);
@@ -87,10 +88,16 @@ export default function RequestFormDE() {
           bericht: bericht.trim(),
           aantalPersonen: String(aantalPersonen),
           huisdieren: huisdieren ? "ja" : "nee",
+          locale: "de",
           _meta: { event_id: metaEventId },
         }),
       });
-      if (!res.ok) throw new Error("request failed");
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error || "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns auf WhatsApp.");
+        setSending(false);
+        return;
+      }
       setSent(true);
     } catch {
       setError("Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns auf WhatsApp.");
@@ -162,11 +169,22 @@ export default function RequestFormDE() {
               onChange={e => setCheckOut(e.target.value)} style={inputStyle} />
           </div>
         </div>
-        <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: "0 0 20px" }}>
-          {nights > 0
-            ? `${nights} Nacht${nights !== 1 ? "e" : ""} ausgewählt${nights < 2 ? " — Mindestaufenthalt 2 Nächte" : ""}`
-            : "Mindestaufenthalt 2 Nächte."}
-        </p>
+        {bookingsNotYetOpen() && (
+          <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: "0 0 4px", lineHeight: 1.6 }}>
+            Wir eröffnen am {formatOpeningDate("de")} — Anfragen sind für Daten ab diesem Tag möglich.
+          </p>
+        )}
+        {dateError ? (
+          <p style={{ fontFamily: T.sans, fontSize: 12, color: "#C62828", fontWeight: 600, margin: "0 0 20px" }}>
+            {dateError}
+          </p>
+        ) : (
+          <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: "0 0 20px" }}>
+            {datesValid
+              ? `${nights} Nacht${nights !== 1 ? "e" : ""} ausgewählt`
+              : `Mindestaufenthalt ${MIN_NIGHTS} Nächte.`}
+          </p>
+        )}
 
         {/* Personen + Haustiere */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>

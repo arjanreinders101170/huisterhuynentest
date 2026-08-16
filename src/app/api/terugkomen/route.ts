@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { safeInsertBookingRequest, computeStayPrice } from "@/lib/pricing";
 import { APP_URL_FALLBACK } from "@/data/lodge";
+import { checkStayDates } from "@/lib/stay-dates";
 
 export const runtime = "nodejs";
 
@@ -25,6 +26,16 @@ export async function POST(request: NextRequest) {
     const parsed = terugkomenSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
+    }
+
+    /* Terugkomers mogen een aanvraag zonder exacte datums sturen ("ergens in
+     * het najaar"). Zijn de datums er wél, dan gelden dezelfde regels als op
+     * de homepage — het formulier beperkt de kalender, maar dat is UI. */
+    if (fromIso && toIso) {
+      const dateCheck = checkStayDates(fromIso, toIso);
+      if (!dateCheck.ok) {
+        return NextResponse.json({ error: dateCheck.error }, { status: 400 });
+      }
     }
 
     let guestId = null;

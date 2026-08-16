@@ -7,6 +7,7 @@ import {
   checklist, detailsBlock,
 } from "@/lib/email";
 import { APP_URL_FALLBACK } from "@/data/lodge";
+import { checkStayDates } from "@/lib/stay-dates";
 
 export const runtime = "nodejs";
 
@@ -70,7 +71,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
   }
 
-  const { naam, email, lodge, checkIn, checkOut, nights, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode, _meta } = parsed.data;
+  const { naam, email, lodge, checkIn, checkOut, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode, locale, _meta } = parsed.data;
+
+  /* Datumcontrole hoort hier thuis: het `min`-attribuut op de datumvelden in
+   * het formulier beperkt alleen de datumkiezer, niet wat er verstuurd wordt. */
+  const dateCheck = checkStayDates(checkIn, checkOut, { locale });
+  if (!dateCheck.ok) {
+    return NextResponse.json({ error: dateCheck.error }, { status: 400 });
+  }
 
   /* Tracking signals — for Meta CAPI deduplication when the booking later
    * converts to a paid Mollie transaction. fbp/fbc come from cookies set
@@ -81,7 +89,8 @@ export async function POST(request: NextRequest) {
   const lodgeLabel = LODGE_LABELS[lodge] || lodge;
   const checkInFmt = fmtDate(checkIn);
   const checkOutFmt = fmtDate(checkOut);
-  const nightsNum = parseInt(nights) || 0;
+  // Nachten uit de gevalideerde datums, niet uit het meegestuurde veld.
+  const nightsNum = dateCheck.nights;
   let totalNum = parseFloat(totalPrice) || 0;
 
   // Server-side promo code validation and use-count increment

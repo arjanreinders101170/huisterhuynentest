@@ -55,6 +55,8 @@ export const reserveringSchema = z.object({
   aantalPersonen: z.string().max(5).optional(),
   huisdieren: z.enum(["ja", "nee"]).optional(),
   promoCode: z.string().max(50).optional(),
+  /** Taal van het formulier — bepaalt in welke taal foutmeldingen terugkomen. */
+  locale: z.enum(["nl", "de"]).optional(),
   _meta: z.object({
     event_id: z.string().min(8).max(80),
     anonymous_id: z.string().max(80).optional(),

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
+import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate, MIN_NIGHTS } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 
 const T = {
@@ -36,9 +36,12 @@ export default function RequestForm() {
   const [availabilityStatus, setAvailabilityStatus] = useState<"idle" | "checking" | "available" | "unavailable">("idle");
   const availCheckRef = useRef<string>("");
 
-  const minDate = BOOKINGS_OPEN_FROM;
+  const minDate = earliestStayDate();
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;
-  const datesValid = !!checkIn && !!checkOut && nights >= 2;
+  const dateCheck = checkStayDates(checkIn, checkOut);
+  const datesValid = dateCheck.ok;
+  // Alleen tonen als er iets te melden valt over ingevulde datums.
+  const dateError = checkIn && checkOut && !dateCheck.ok ? dateCheck.error : "";
   const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending && availabilityStatus !== "unavailable";
 
   useEffect(() => {
@@ -80,8 +83,7 @@ export default function RequestForm() {
 
   const handleSubmit = async () => {
     setError("");
-    if (!checkIn || !checkOut) { setError("Kies een aankomst- en vertrekdatum."); return; }
-    if (nights < 2) { setError("Een verblijf duurt minimaal 2 nachten."); return; }
+    if (!dateCheck.ok) { setError(dateCheck.error); return; }
     if (!naam.trim() || !email.includes("@")) { setError("Vul je naam en e-mailadres in."); return; }
 
     setSending(true);
@@ -119,7 +121,12 @@ export default function RequestForm() {
           _meta: { event_id: metaEventId },
         }),
       });
-      if (!res.ok) throw new Error("request failed");
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error || "Er ging iets mis. Probeer het opnieuw of WhatsApp ons.");
+        setSending(false);
+        return;
+      }
       setSent(true);
     } catch {
       setError("Er ging iets mis. Probeer het opnieuw of WhatsApp ons.");
@@ -191,25 +198,36 @@ export default function RequestForm() {
               onChange={e => setCheckOut(e.target.value)} style={inputStyle} />
           </div>
         </div>
+        {bookingsNotYetOpen() && (
+          <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: "0 0 6px", lineHeight: 1.6 }}>
+            We openen op {formatOpeningDate()} — aanvragen kunnen voor data vanaf die dag.
+          </p>
+        )}
+
         <div style={{ margin: "6px 0 20px", minHeight: 22 }}>
-          {availabilityStatus === "checking" && (
+          {dateError && (
+            <p style={{ fontFamily: T.sans, fontSize: 12, color: "#C62828", fontWeight: 600, margin: 0 }}>
+              {dateError}
+            </p>
+          )}
+          {!dateError && availabilityStatus === "checking" && (
             <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: 0 }}>
               Beschikbaarheid controleren...
             </p>
           )}
-          {availabilityStatus === "available" && nights >= 2 && (
+          {!dateError && availabilityStatus === "available" && datesValid && (
             <p style={{ fontFamily: T.sans, fontSize: 12, color: "#2E7D32", fontWeight: 600, margin: 0 }}>
               ✓ Deze periode is beschikbaar — {nights} nacht{nights !== 1 ? "en" : ""}
             </p>
           )}
-          {availabilityStatus === "unavailable" && (
+          {!dateError && availabilityStatus === "unavailable" && (
             <p style={{ fontFamily: T.sans, fontSize: 12, color: "#C62828", fontWeight: 600, margin: 0 }}>
               ✗ Deze periode is helaas al bezet — kies andere datums
             </p>
           )}
-          {availabilityStatus === "idle" && (
+          {!dateError && availabilityStatus === "idle" && (
             <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: 0 }}>
-              {nights > 0 && nights < 2 ? "Minimaal 2 nachten vereist" : "Een verblijf duurt minimaal 2 nachten."}
+              Een verblijf duurt minimaal {MIN_NIGHTS} nachten.
             </p>
           )}
         </div>

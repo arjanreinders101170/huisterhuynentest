@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, type OfferteRegel } from "@/lib/email";
+import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, type OfferteRegel } from "@/lib/email";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
 
@@ -350,8 +350,72 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
     }
     case "reject_booking_request": {
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
-      await getSupabase().from("booking_requests").update({ status: "afgewezen" }).eq("id", body.id);
-      return NextResponse.json({ success: true });
+
+      const tekst = String(body.bericht ?? "").trim();
+      if (tekst.length < 10) {
+        return NextResponse.json({ error: "Schrijf een bericht voor de gast (minimaal 10 tekens)" }, { status: 400 });
+      }
+      if (tekst.length > 4000) {
+        return NextResponse.json({ error: "Bericht is te lang (maximaal 4000 tekens)" }, { status: 400 });
+      }
+
+      const sb = getSupabase();
+      const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", body.id).single();
+      if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+      if (req.status === "afgewezen") {
+        return NextResponse.json({ error: "Deze aanvraag is al afgewezen" }, { status: 409 });
+      }
+
+      const { error: updErr } = await sb.from("booking_requests").update({
+        status: "afgewezen",
+        afwijs_reden: tekst,
+        afgewezen_op: new Date().toISOString(),
+      }).eq("id", body.id);
+      if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
+
+      if (!req.gast_email) {
+        return NextResponse.json({ success: true, emailSent: false, warning: "Afgewezen — geen e-mailadres bekend, gast is niet geïnformeerd" });
+      }
+
+      const resendKey = process.env.RESEND_API_KEY;
+      if (!resendKey) {
+        return NextResponse.json({ success: true, emailSent: false, warning: "Afgewezen — Resend niet geconfigureerd, gast is niet geïnformeerd" });
+      }
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
+      const origin = new URL(appUrl).origin;
+      const lodgeNaam = lodgeName(req.lodge || "lodge_1");
+      const { url: photoUrl } = lodgePhoto(origin, req.lodge);
+      const fmtNl = (iso: string | null) => iso
+        ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" })
+        : "";
+      const van = req.check_in ? fmtNl(req.check_in) : (req.periode_tekst?.split("—")[0]?.trim() || "");
+      const tot = req.check_out ? fmtNl(req.check_out) : (req.periode_tekst?.split("—")[1]?.trim() || "");
+      const periodeLabel = van && tot ? `${van} t/m ${tot}` : (req.periode_tekst || "");
+
+      try {
+        const { Resend } = await import("resend");
+        const resend = new Resend(resendKey);
+        await resend.emails.send({
+          from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+          to: [req.gast_email],
+          subject: "Over je aanvraag — Huis ter Huynen",
+          html: rejectionEmail({
+            firstName: (req.gast_naam || "").split(" ")[0] || "",
+            lodgeNaam,
+            photoUrl,
+            periodeLabel,
+            bericht: tekst,
+            siteUrl: origin,
+          }),
+          replyTo: "lodge@huisterhuynen.nl",
+        });
+      } catch (e) {
+        console.error("Afwijsmail versturen faalde:", e);
+        return NextResponse.json({ success: true, emailSent: false, warning: "Afgewezen, maar e-mail versturen faalde — informeer de gast handmatig" });
+      }
+
+      return NextResponse.json({ success: true, emailSent: true, email: req.gast_email });
     }
     case "mark_booking_in_behandeling": {
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });

@@ -30,6 +30,8 @@ export type BookingRequest = {
   status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen"
     | "aanbetaling_verstuurd" | "aanbetaling_betaald" | "restbetaling_verstuurd" | "volledig_betaald";
   legacy_terugkeer_id: string | null;
+  afwijs_reden?: string | null;
+  afgewezen_op?: string | null;
   guest?: { naam: string; email: string } | null;
 };
 export type FeeTemplate = {
