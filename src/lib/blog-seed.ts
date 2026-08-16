@@ -611,7 +611,7 @@ Er is ook een financieel verschil: snelladen onderweg is de duurste manier om te
 
 ## Zo werkt het straks bij Huis ter Huynen
 
-Op het terrein in Zeijen staat een laadpaal voor elektrische auto's. Voor gasten is het gebruik daarvan gratis — er komt dus geen laadnota bovenop je verblijf.
+Op het terrein in Zeijen komen laadstations voor elektrische auto's: gewone laadpunten waar je de auto aan de kant zet en aansluit. Geen snelladers dus, maar dat is precies wat je op een vakantieadres wilt — je auto staat er toch de hele avond en nacht, en rustig laden is beter voor je accu dan telkens snelladen. Voor gasten is het gebruik gratis, er komt dus geen laadnota bovenop je verblijf.
 
 Wat het extra makkelijk maakt: het laden is terug te zien in de lodge-app die je tijdens je verblijf gebruikt. In dezelfde app waarmee je de verwarming en de verlichting bedient, zie je of de auto laadt en hoe ver hij is. Je hoeft dus niet in je jas de kou in om te controleren of de stekker het wel doet.
 
@@ -679,7 +679,7 @@ Schrijf je in voor de nieuwsbrief om als eerste te horen wanneer die data openga
 
 ### Is er een laadpaal bij de lodges?
 
-Ja. Op het terrein staat een laadpaal voor elektrische voertuigen, en het gebruik ervan is gratis voor gasten.
+Ja. Op het terrein komen laadstations voor elektrische voertuigen — gewone laadpunten, geen snelladers — en het gebruik ervan is gratis voor gasten.
 
 ### Wat kost het opladen tijdens mijn verblijf?
 

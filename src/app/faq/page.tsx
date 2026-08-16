@@ -27,7 +27,7 @@ const faqItems = [
   },
   {
     v: "Is er een EV-laadpaal aanwezig?",
-    a: "Ja, op het terrein staat een laadpaal voor elektrische voertuigen. Gebruik hiervan is gratis voor gasten.",
+    a: "Ja, op het terrein staan laadstations voor elektrische voertuigen. Gebruik hiervan is gratis voor gasten.",
   },
   {
     v: "Wat zijn de annuleringsvoorwaarden?",

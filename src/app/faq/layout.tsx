@@ -59,7 +59,7 @@ const faqSchema = {
       name: "Is er een EV-laadpaal aanwezig?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Ja, op het terrein staat een laadpaal voor elektrische voertuigen. Gebruik hiervan is gratis voor gasten.",
+        text: "Ja, op het terrein staan laadstations voor elektrische voertuigen. Gebruik hiervan is gratis voor gasten.",
       },
     },
     {
