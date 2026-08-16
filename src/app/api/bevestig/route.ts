@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { todayISO } from "@/lib/offer-expiry";
+import { findConflict, openOffersOverlapping, type Period } from "@/lib/availability";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,52 @@ const REJECTED_MESSAGE =
 const EXPIRED_MESSAGE =
   "Dit aanbod is verlopen en de datums zijn weer vrijgegeven. Stuur ons gerust een bericht — " +
   "zijn ze nog vrij, dan maken we het aanbod zo weer voor je in orde.";
+
+const TAKEN_MESSAGE =
+  "Deze datums zijn helaas net vergeven — iemand anders was je voor. We hebben je aanvraag " +
+  "doorgegeven; we nemen zo snel mogelijk contact met je op om mee te denken over een alternatief.";
+
+/**
+ * De gast klikte op bevestigen terwijl de datums net bezet zijn geraakt.
+ * Dat is precies het moment waarop de host het moet weten — niet later.
+ */
+async function notifyOwnerOfConflict(a: LoadedAanvraag, conflict: Period): Promise<void> {
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) return;
+  try {
+    const { Resend } = await import("resend");
+    const resend = new Resend(resendKey);
+    const lodgeNaam = lodgeName(a.lodge || "lodge_1");
+    await resend.emails.send({
+      from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
+      to: [OWNER_EMAIL],
+      replyTo: a.gastEmail || undefined,
+      subject: `Bevestiging geblokkeerd — datums al bezet (${esc(a.gastNaam || "gast")})`,
+      html: lodgeEmail({
+        title: "Bevestiging geblokkeerd",
+        intro: `${esc(a.gastNaam || "Een gast")} probeerde zojuist het aanbod te bevestigen, maar de datums zijn inmiddels bezet. De reservering is niet doorgezet.`,
+        blocks: [
+          infoBlock("Aangevraagd", `${esc(a.van)} t/m ${esc(a.tot)}`, `Lodge ${esc(lodgeNaam)}`),
+          detailsBlock("Gast", [
+            { label: "Naam", value: esc(a.gastNaam || "—") },
+            ...(a.gastEmail ? [{ label: "E-mail", value: esc(a.gastEmail), href: `mailto:${esc(a.gastEmail)}` }] : []),
+            { label: "Conflict", value: esc(conflict.bron || "bestaande reservering") },
+            { label: "Bezet van", value: `${esc(conflict.start)} t/m ${esc(conflict.end)}` },
+          ]),
+          calloutBlock(
+            "Actie",
+            "De gast heeft te horen gekregen dat je contact opneemt over een alternatief. Bied andere datums of de andere lodge aan, of wijs de aanvraag netjes af met een bericht.",
+          ),
+        ],
+        footer: a.gastEmail
+          ? `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(a.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(a.gastEmail)}</a>`
+          : undefined,
+      }),
+    });
+  } catch (e) {
+    console.error("[bevestig] conflictmail naar host faalde:", e);
+  }
+}
 
 /** Verlopen: door de cron afgehandeld, of de vervaldatum is net gepasseerd. */
 function isExpired(a: LoadedAanvraag): boolean {
@@ -187,6 +234,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: EXPIRED_MESSAGE }, { status: 410 });
     }
 
+    /* Twee gasten kunnen tegelijk een aanbod voor dezelfde nachten hebben —
+     * een offerte blokkeert de agenda immers niet. Wie het eerst bevestigt
+     * krijgt de plek; hier vangen we de tweede op vóór de dubbele boeking. */
+    let icalIncompleet = false;
+    if (a.source === "v2" && a.lodge && a.checkInIso && a.checkOutIso) {
+      const { conflict, icalOk } = await findConflict({
+        lodge: a.lodge,
+        checkIn: a.checkInIso,
+        checkOut: a.checkOutIso,
+        excludeRequestId: id,
+      });
+      icalIncompleet = !icalOk;
+      if (conflict) {
+        console.warn(`[bevestig] conflict voor aanvraag ${id}: ${conflict.bron ?? "onbekend"} (${conflict.start}–${conflict.end})`);
+        await notifyOwnerOfConflict(a, conflict);
+        return NextResponse.json({ error: TAKEN_MESSAGE }, { status: 409 });
+      }
+    }
+
     // Update status in de juiste tabel
     if (a.source === "v2") {
       await getSupabase().from("booking_requests").update({ status: "bevestigd" }).eq("id", id);
@@ -195,6 +261,39 @@ export async function POST(request: NextRequest) {
         status: "geboekt",
         updated_at: new Date().toISOString(),
       }).eq("id", id);
+    }
+
+    /* Alternatieven opruimen. Kreeg deze gast twee aanbiedingen voor dezelfde
+     * nachten (bijvoorbeeld beide lodges), dan vervalt de niet-gekozen optie
+     * zodra er één bevestigd is — anders kan hij die later alsnog aanklikken.
+     * Openstaande offertes van ándere gasten blijven staan: die kunnen niet
+     * meer bevestigd worden en zijn aan de host om af te handelen. */
+    const ingetrokken: string[] = [];
+    const blijvenStaan: { naam: string; email: string }[] = [];
+    if (a.source === "v2" && a.checkInIso && a.checkOutIso) {
+      try {
+        const others = await openOffersOverlapping({
+          checkIn: a.checkInIso,
+          checkOut: a.checkOutIso,
+          excludeRequestId: id,
+        });
+        for (const o of others) {
+          const zelfdeGast =
+            (a.guestId && o.guest_id && o.guest_id === a.guestId) ||
+            (!!a.gastEmail && !!o.gast_email && o.gast_email.toLowerCase() === a.gastEmail.toLowerCase());
+          if (zelfdeGast) {
+            await getSupabase().from("booking_requests").update({
+              status: "verlopen",
+              verlopen_op: new Date().toISOString(),
+            }).eq("id", o.id).eq("status", "offerte_verstuurd");
+            ingetrokken.push(lodgeName(o.lodge || "lodge_1"));
+          } else if (o.lodge === a.lodge) {
+            blijvenStaan.push({ naam: o.gast_naam || "onbekend", email: o.gast_email || "" });
+          }
+        }
+      } catch (e) {
+        console.error("[bevestig] opruimen alternatieven faalde:", e);
+      }
     }
 
     // Auto-create stays record voor v2 met volledige data. De welkomstmail
@@ -265,6 +364,19 @@ export async function POST(request: NextRequest) {
               { label: "E-mail", value: esc(a.gastEmail), href: `mailto:${esc(a.gastEmail)}` },
             ]),
             calloutBlock("Volgende stap", "Maak een verblijf aan in admin met deurcode en stuur de welkomstmail enkele dagen voor aankomst."),
+            ...(ingetrokken.length > 0 ? [calloutBlock(
+              "Alternatief ingetrokken",
+              `Deze gast had ook een openstaand aanbod voor ${ingetrokken.map(l => `Lodge ${esc(l)}`).join(" en ")} in dezelfde periode. Dat staat nu op &lsquo;verlopen&rsquo;, zodat het niet alsnog bevestigd kan worden.`,
+              { background: "muted" },
+            )] : []),
+            ...(blijvenStaan.length > 0 ? [calloutBlock(
+              "Let op: nog een open offerte",
+              `Voor deze lodge en periode staat nog een aanbod open bij ${blijvenStaan.map(o => esc(o.naam)).join(", ")}. Bevestigen kan niet meer &mdash; laat het ze weten of bied een alternatief aan.`,
+            )] : []),
+            ...(icalIncompleet ? [calloutBlock(
+              "Agenda niet volledig gecontroleerd",
+              "De agenda van Booking.com was tijdens het bevestigen niet bereikbaar. De eigen reserveringen zijn wel gecontroleerd &mdash; controleer voor de zekerheid of deze datums daar ook vrij waren.",
+            )] : []),
             checklist([
               "Aanbod door gast geaccepteerd",
               "Status in admin op &lsquo;bevestigd&rsquo;",

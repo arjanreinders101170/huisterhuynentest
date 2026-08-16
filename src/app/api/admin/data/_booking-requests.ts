@@ -4,6 +4,7 @@ import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBloc
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
 import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
+import { findConflict, openOffersOverlapping } from "@/lib/availability";
 
 const DEPOSIT_PCT = 0.30;
 
@@ -88,8 +89,30 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         }
       }
 
+      /* Waarschuwen vóór het versturen: een offerte blokkeert de agenda niet,
+       * dus je kunt ongemerkt een aanbod doen op nachten die al vergeven zijn
+       * of waar al een andere gast op zit te wachten. */
+      const waarschuwingen: string[] = [];
+      if (req.lodge && req.check_in && req.check_out) {
+        try {
+          const [{ conflict }, andere] = await Promise.all([
+            findConflict({ lodge: req.lodge, checkIn: req.check_in, checkOut: req.check_out, excludeRequestId: req.id }),
+            openOffersOverlapping({ checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge, excludeRequestId: req.id }),
+          ]);
+          if (conflict) {
+            waarschuwingen.push(`Deze nachten zijn al bezet — ${conflict.bron || "bestaande reservering"} (${conflict.start} t/m ${conflict.end}). De gast kan niet bevestigen.`);
+          }
+          for (const o of andere) {
+            waarschuwingen.push(`Er staat al een open offerte voor deze lodge en periode bij ${o.gast_naam || "een andere gast"}. Wie het eerst bevestigt, krijgt de plek.`);
+          }
+        } catch (e) {
+          console.error("Beschikbaarheidscheck bij prefill faalde:", e);
+        }
+      }
+
       return NextResponse.json({
         success: true,
+        waarschuwingen,
         prefill: {
           verblijf, schoonmaak, toeristenbelasting, extraRegels, nachten, personen,
           gast_naam: req.gast_naam, gast_email: req.gast_email,

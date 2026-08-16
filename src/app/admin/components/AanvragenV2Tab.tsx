@@ -82,6 +82,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
   const [payLoading, setPayLoading] = useState<string | null>(null);
   const [rejectOpen, setRejectOpen] = useState<string | null>(null);
   const [rejectText, setRejectText] = useState("");
+  const [warnings, setWarnings] = useState<Record<string, string[]>>({});
 
   const [manualOpen, setManualOpen] = useState(false);
   const [manualForm, setManualForm] = useState({ naam: "", platform: "Booking.com", lodge: "lodge_1", checkIn: "", checkOut: "" });
@@ -124,6 +125,9 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
         body: JSON.stringify({ action: "prefill_offerte", requestId: req.id }),
       });
       const d = await r.json();
+      if (d.success && Array.isArray(d.waarschuwingen)) {
+        setWarnings(prev => ({ ...prev, [req.id]: d.waarschuwingen }));
+      }
       if (d.success && d.prefill) {
         setForms(prev => ({
           ...prev,
@@ -400,6 +404,16 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
         <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, marginBottom: 12, fontWeight: 500 }}>
           Offerte opbouwen
         </div>
+
+        {(warnings[req.id] || []).length > 0 && (
+          <div style={{ marginBottom: 14, padding: "12px 14px", background: "#FFF8E1", border: "1px solid #FFE0A3", borderRadius: 8 }}>
+            {(warnings[req.id] || []).map((w, i) => (
+              <div key={i} style={{ fontSize: 12, color: "#8A6D1B", lineHeight: 1.5, marginTop: i === 0 ? 0 : 6 }}>
+                ⚠ {w}
+              </div>
+            ))}
+          </div>
+        )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
           <div>
