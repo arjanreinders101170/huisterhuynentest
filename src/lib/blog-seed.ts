@@ -592,4 +592,114 @@ De lodges openen op 1 januari 2027. Het najaar van 2027 — inclusief de heidepe
     og_image: "/heide3.jpg",
     publish: true,
   },
+  {
+    slug: "vakantiehuis-met-laadpaal-drenthe",
+    titel: "Vakantiehuis met laadpaal in Drenthe: elektrisch op vakantie zonder laadstress",
+    intro:
+      "Een vakantiehuis met laadpaal scheelt je het hele vakantieprobleem van elektrisch rijden: geen omweg naar een snellaadstation, geen wachten in de kou. Hoe je met de elektrische auto naar Drenthe rijdt, wat er in het najaar verandert aan je actieradius, en waarom bij ons straks gewoon de stekker in de auto kan.",
+    inhoud: `Wie elektrisch rijdt, kent het rekensommetje dat je maakt zodra je een vakantie boekt. Hoe ver is het? Haal ik het in één keer? En vooral: kan ik daar laden, of sta ik elke twee dagen een uur op een parkeerplaats bij een tankstation te wachten terwijl de rest van het gezelschap koffie drinkt?
+
+Dat sommetje is precies waarom een vakantieadres met een eigen laadpaal zoveel prettiger is. Je rijdt aan, zet de stekker erin, en de rest van de week denk je er niet meer over na. Nu de zomervakantie ten einde loopt en veel mensen alweer naar het najaar kijken, is dit een goed moment om uit te leggen hoe dat bij ons in Zeijen straks werkt — en wat elektrisch rijden in Drenthe in het naseizoen zo comfortabel maakt.
+
+## Waarom laden op je vakantieadres alles verandert
+
+Onderweg laden is prima geregeld in Nederland, maar op vakantie werkt het net anders. Je hebt geen vast ritme, je rijdt korte afstanden kriskras door de regio, en je wilt 's avonds niet nog een half uur wegrijden om aan een paal te hangen.
+
+Met een laadpaal op het terrein verdwijnt dat hele stukje planning. Je auto laadt terwijl je wandelt, terwijl je in de hottub zit, terwijl je slaapt. Elke ochtend vertrek je met een volle accu, en omdat vrijwel alles in Drenthe binnen een half uur rijden ligt, kom je met die ene lading de hele dag door. Geen laadpas-gedoe, geen zoeken naar een vrije paal in een dorp waar er twee staan.
+
+Er is ook een financieel verschil: snelladen onderweg is de duurste manier om te laden. Wie tijdens het verblijf op de bestemming laadt, rijdt de hele vakantie op laadstroom in plaats van op snellaadtarieven.
+
+## Zo werkt het straks bij Huis ter Huynen
+
+Op het terrein in Zeijen staat een laadpaal voor elektrische auto's. Voor gasten is het gebruik daarvan gratis — er komt dus geen laadnota bovenop je verblijf.
+
+Wat het extra makkelijk maakt: het laden is terug te zien in de lodge-app die je tijdens je verblijf gebruikt. In dezelfde app waarmee je de verwarming en de verlichting bedient, zie je of de auto laadt en hoe ver hij is. Je hoeft dus niet in je jas de kou in om te controleren of de stekker het wel doet.
+
+De lodges zelf, Lodge De Heide en Lodge De Eik, zijn volledig privé: eigen terras, eigen hottub, geen receptie en geen gedeelde voorzieningen. Je eigen parkeerplek hoort daarbij, dus de auto staat bij de lodge en niet op een centraal veld tussen honderd andere.
+
+## De rit naar Zeijen
+
+Het adres is Zuiderstraat 6 in Zeijen, vlak bij afslag Zeijen van de A28. Dat is prettig rijden: je gaat vrijwel de hele weg over de snelweg en de laatste kilometers over rustige provinciale wegen.
+
+### Vanuit de Randstad
+
+Reken op ongeveer twee tot tweeënhalf uur. Voor de meeste moderne elektrische auto's is dat een rit die in één keer te doen is, ook in de winter. Vertrek je met een volle accu, dan kun je het laadmoment onderweg gewoon overslaan en pas bij aankomst de stekker erin doen.
+
+### Vanuit het oosten en vanuit Duitsland
+
+Vanuit de Duitse grensstreek rijd je via de A37 of de A28 in ongeveer anderhalf uur naar Zeijen. Ook dat is voor de meeste auto's een enkele rit zonder tussenstop.
+
+### Onderweg laden als het toch nodig is
+
+Langs de A28 tussen Zwolle en Groningen liggen meerdere snellaadlocaties, en ook in Assen — twaalf minuten van Zeijen — zijn diverse laadpunten te vinden. Kom je met een kleinere accu of trek je een aanhanger, dan is een korte tussenstop dus geen enkel probleem. Voor de meeste gasten is het simpelweg niet nodig.
+
+## Elektrisch rijden in het najaar: dit verandert er
+
+Nu de temperaturen zakken, is het goed om te weten wat kou met een elektrische auto doet. Het is geen probleem, maar het scheelt wel als je het weet.
+
+### Je actieradius zakt
+
+Bij lagere temperaturen levert een accu minder op, en de verwarming kost extra energie. Reken in het najaar en de winter op grofweg tien tot twintig procent minder bereik dan in de zomer, en bij vorst kan het meer zijn. Voor de rit naar Drenthe maakt dat zelden het verschil, maar het is prettig om je marge iets ruimer te nemen.
+
+### Voorverwarmen terwijl de stekker erin zit
+
+Dit is de beste gewoonte van het seizoen: verwarm de auto voor terwijl hij nog aan de laadpaal hangt. De energie voor het opwarmen van interieur en accu komt dan uit de paal in plaats van uit je accu, en je stapt in een auto die al warm is en een ruit die al vrij is. Op een mistige oktoberochtend na een nacht op de heide is dat geen luxe.
+
+### Bandenspanning en banden
+
+Kou laat de bandenspanning zakken, en een te lage spanning kost direct bereik. Controleer de spanning voordat je op vakantie gaat. Rijd je op winterbanden, houd er dan rekening mee dat die iets meer rolweerstand hebben en dus ook wat bereik kosten.
+
+### Kortere dagen
+
+In oktober is het rond half zeven donker. Plan je terugrit van een dagtocht dus iets vroeger, niet vanwege de accu, maar omdat de mooiste route over de landweggetjes bij daglicht een stuk leuker is dan in het donker.
+
+## Alles ligt binnen één acculading
+
+Dit is misschien wel het grootste voordeel van deze uithoek van Drenthe: de afstanden zijn klein. Vrijwel elke bestemming die je hier wilt zien, ligt op een half uur rijden of minder — heen en terug dus ruim binnen honderd kilometer, en daarmee binnen één acculading van zelfs de kleinste elektrische auto.
+
+Een paar voorbeelden vanaf Zeijen: het Ballooërveld ligt op twaalf minuten, het beekdal van de Drentsche Aa op een kwartier, en de tweeling-hunebedden bij Rolde eveneens op een kwartier. Het Drents Museum en de terrassen aan de Brink in Assen bereik je in twaalf minuten. Nationaal Park Dwingelderveld ligt op vijfentwintig minuten, net als het Gevangenismuseum in Veenhuizen en museumdorp Orvelte. Het Hunebedcentrum in Borger is een half uur rijden, Herinneringscentrum Kamp Westerbork ruim twintig minuten.
+
+Met andere woorden: je kunt hier een week lang elke dag iets anders doen zonder ooit een laadstop in te plannen. 's Avonds sluit je gewoon weer aan bij de lodge.
+
+## Duurzaam op vakantie is meer dan de auto
+
+De laadpaal is één onderdeel; het echte voordeel van deze plek is dat je de auto vaak helemaal kunt laten staan. De Veentjesroute begint letterlijk bij de lodge, de Zeijerstrubben liggen op drie minuten en het Noordsche Veld op vijf. Wandelen doe je hier zonder eerst naar een parkeerterrein te rijden.
+
+Voor de wat grotere rondjes is er de fiets: in Assen en in de directe omgeving zijn e-bikes te huren, vaak met bezorging op het verblijfadres, en het knooppuntennetwerk van Drenthe begint bij het dorp. Een dag fietsen over de heide en langs de beekdalen betekent nul kilometer met de auto.
+
+En dan is er nog het simpelste argument: restaurants, het dorpscafé aan de brink en de streekproducten uit de regio liggen dichtbij genoeg om er niet ver voor te hoeven rijden.
+
+## Vanaf wanneer je welkom bent
+
+Huis ter Huynen opent op 1 januari 2027. Vanaf dat moment kun je in Lodge De Heide of Lodge De Eik verblijven — inclusief de laadpaal op het terrein. Wie nu al aan het najaar denkt: het najaar van 2027, met de bloeiende heide in augustus, de kleuromslag in september en de herfstvakantie in oktober, is het eerste najaar waarin wij gasten ontvangen.
+
+Schrijf je in voor de nieuwsbrief om als eerste te horen wanneer die data opengaan. Inschrijvers krijgen bovendien de vroegboekkorting die alleen voor hen geldt.
+
+## Veelgestelde vragen
+
+### Is er een laadpaal bij de lodges?
+
+Ja. Op het terrein staat een laadpaal voor elektrische voertuigen, en het gebruik ervan is gratis voor gasten.
+
+### Wat kost het opladen tijdens mijn verblijf?
+
+Niets. Het laden is inbegrepen bij je verblijf, dus je betaalt geen apart laadtarief.
+
+### Kan ik met een elektrische auto de omgeving verkennen?
+
+Ruimschoots. Vrijwel alle bezienswaardigheden rond Zeijen liggen binnen een half uur rijden, dus een dagtocht kost heen en terug zelden meer dan honderd kilometer. 's Avonds laad je weer bij de lodge.
+
+### Hoe zit het met laden onderweg naar Drenthe?
+
+Langs de A28 en in Assen zijn diverse snellaadlocaties te vinden. Vanuit de Randstad is de rit voor de meeste auto's in één keer te doen, ook in de winter.
+
+### Wanneer kan ik boeken?
+
+De lodges openen op 1 januari 2027. Via de nieuwsbrief hoor je als eerste wanneer de agenda voor 2027 opengaat, inclusief het najaar.`,
+    categorie: "Reistips",
+    leestijd: "7 minuten",
+    auteur: "Arjan Reinders",
+    og_image: "/lodge-eik.jpg",
+    publish: true,
+  },
 ];
