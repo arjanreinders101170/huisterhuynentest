@@ -391,6 +391,47 @@ export function newsletterWelcomeEmail(opts: NewsletterWelcomeEmailOpts): string
   });
 }
 
+/**
+ * Zet platte tekst (zoals ingetypt in de admin) om naar veilige e-mail-alinea's.
+ * Escapet alles, splitst op lege regels en behoudt enkele regelovergangen.
+ */
+export function plainTextParagraphs(text: string): EmailBlock[] {
+  return String(text)
+    .replace(/\r\n/g, "\n")
+    .split(/\n\s*\n/)
+    .map(p => p.trim())
+    .filter(Boolean)
+    .map(p => paragraph(esc(p).replace(/\n/g, "<br/>"), { align: "left", color: "text" }));
+}
+
+export type RejectionEmailOpts = {
+  firstName: string;
+  lodgeNaam: string;
+  photoUrl?: string;
+  /** bv. "4 september 2026 t/m 6 september 2026" */
+  periodeLabel: string;
+  /** Vrije tekst van de host — wordt ge-escape'd. */
+  bericht: string;
+  siteUrl: string;
+};
+
+/** Afwijzingsmail: de tekst van de host staat centraal, de rest is context. */
+export function rejectionEmail(opts: RejectionEmailOpts): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: `Lodge ${esc(opts.lodgeNaam)}`,
+    title: `Over je aanvraag${opts.firstName ? `, ${esc(opts.firstName)}` : ""}`,
+    blocks: [
+      ...(opts.periodeLabel
+        ? [infoBlock("Je aanvraag", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}`)]
+        : []),
+      ...plainTextParagraphs(opts.bericht),
+      ctaButton(`${opts.siteUrl}/#reserveren`, "Bekijk andere data &#8594;"),
+      smallNote("Andere datums in gedachten? Laat het ons gerust weten &mdash; we denken graag met je mee."),
+    ],
+  });
+}
+
 export type OfferteRegel = { label: string; bedrag: number; soort: "toeslag" | "korting" | "belasting" | "verblijf" };
 
 export function buildOfferteHtmlV2(

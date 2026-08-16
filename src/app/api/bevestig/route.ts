@@ -10,6 +10,9 @@ export const runtime = "nodejs";
 
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
+const REJECTED_MESSAGE =
+  "Deze aanvraag is inmiddels vervallen. Je hebt hierover een e-mail van ons ontvangen — " +
+  "neem gerust contact op als je vragen hebt of andere datums wilt bekijken.";
 
 type LoadedAanvraag = {
   source: "v2" | "legacy";
@@ -125,6 +128,9 @@ export async function GET(request: NextRequest) {
   try {
     const a = await load(id, token);
     if (!a) return NextResponse.json({ error: "Aanvraag niet gevonden of ongeldige link" }, { status: 404 });
+    if (a.rawStatus === "afgewezen") {
+      return NextResponse.json({ error: REJECTED_MESSAGE }, { status: 410 });
+    }
 
     return NextResponse.json({
       id: a.id,
@@ -153,6 +159,11 @@ export async function POST(request: NextRequest) {
 
     if (a.status === "geboekt") {
       return NextResponse.json({ error: "Deze reservering is al bevestigd" }, { status: 400 });
+    }
+
+    // Een afgewezen aanvraag mag niet alsnog via een oude offerte-link bevestigd worden.
+    if (a.rawStatus === "afgewezen") {
+      return NextResponse.json({ error: REJECTED_MESSAGE }, { status: 410 });
     }
 
     // Update status in de juiste tabel

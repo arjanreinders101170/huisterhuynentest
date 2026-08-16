@@ -24,6 +24,25 @@ const SOORT_LABEL: Record<string, { label: string; color: string }> = {
   belasting: { label: "Belasting", color: "#1565C0" },
 };
 
+/** Startsuggestie voor de afwijsmail. De host past deze tekst zelf aan. */
+function defaultRejectText(req: BookingRequest): string {
+  const voornaam = (req.gast_naam || "").trim().split(" ")[0];
+  const fmt = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" }) : "";
+  const periode = req.check_in && req.check_out
+    ? `${fmt(req.check_in)} t/m ${fmt(req.check_out)}`
+    : (req.periode_tekst || "de gevraagde periode");
+
+  return `Beste ${voornaam || "gast"},
+
+Hartelijk dank voor je aanvraag voor ${periode}. Helaas kunnen we je voor deze datums geen plek aanbieden.
+
+We hopen je een andere keer te mogen ontvangen — laat het ons gerust weten als je andere datums in gedachten hebt, dan kijken we graag met je mee.
+
+Hartelijke groet,
+Huis ter Huynen`;
+}
+
 type OfferteForm = {
   prijsVerblijf: string;
   schoonmaak: string;
@@ -44,6 +63,8 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<unknown>(null);
   const [payLoading, setPayLoading] = useState<string | null>(null);
+  const [rejectOpen, setRejectOpen] = useState<string | null>(null);
+  const [rejectText, setRejectText] = useState("");
 
   const [manualOpen, setManualOpen] = useState(false);
   const [manualForm, setManualForm] = useState({ naam: "", platform: "Booking.com", lodge: "lodge_1", checkIn: "", checkOut: "" });
@@ -178,18 +199,50 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     setSaving(null);
   };
 
-  const rejectRequest = async (id: string) => {
-    if (!confirm("Aanvraag afwijzen?")) return;
-    setSaving(id);
+  const openReject = (req: BookingRequest) => {
+    if (rejectOpen === req.id) {
+      setRejectOpen(null);
+      return;
+    }
+    setRejectOpen(req.id);
+    setRejectText(defaultRejectText(req));
+    setResult(p => ({ ...p, [req.id]: { ok: false, msg: "" } }));
+  };
+
+  const rejectRequest = async (req: BookingRequest) => {
+    const tekst = rejectText.trim();
+    if (tekst.length < 10) {
+      setResult(p => ({ ...p, [req.id]: { ok: false, msg: "Schrijf eerst een bericht voor de gast" } }));
+      return;
+    }
+    setSaving(req.id);
     try {
-      await fetch("/api/admin/data", {
+      const r = await fetch("/api/admin/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reject_booking_request", id }),
+        body: JSON.stringify({ action: "reject_booking_request", id: req.id, bericht: tekst }),
       });
-      setRequests(requests.map(x => x.id === id ? { ...x, status: "afgewezen" } : x));
-      setExpandedId(null);
-    } catch {}
+      const d = await r.json();
+      if (d.success) {
+        setRequests(requests.map(x => x.id === req.id ? { ...x, status: "afgewezen" } : x));
+        setRejectOpen(null);
+        setRejectText("");
+        setExpandedId(null);
+        setResult(p => ({
+          ...p,
+          [req.id]: {
+            ok: true,
+            msg: d.emailSent
+              ? `Afwijzing gemaild naar ${d.email || req.gast_email}`
+              : (d.warning || "Afgewezen — gast is niet geïnformeerd"),
+          },
+        }));
+      } else {
+        setResult(p => ({ ...p, [req.id]: { ok: false, msg: d.error || "Afwijzen mislukt" } }));
+      }
+    } catch {
+      setResult(p => ({ ...p, [req.id]: { ok: false, msg: "Verbindingsfout" } }));
+    }
     setSaving(null);
   };
 
@@ -382,6 +435,39 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
             rows={3} style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }} />
         </div>
 
+        {rejectOpen === req.id && (
+          <div style={{ marginBottom: 16, padding: "16px 18px", background: "#FFF6F5", border: "1px solid #F3D5D2", borderRadius: 10 }}>
+            <div style={{ fontSize: 11, color: "#C62828", textTransform: "uppercase", letterSpacing: .5, marginBottom: 8, fontWeight: 600 }}>
+              Afwijzen — bericht aan de gast
+            </div>
+            <p style={{ margin: "0 0 10px", fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
+              Deze tekst gaat als e-mail naar {req.gast_email || "de gast"}. Pas hem gerust aan — hij wordt precies zo verstuurd.
+            </p>
+            <textarea
+              value={rejectText}
+              onChange={e => setRejectText(e.target.value)}
+              rows={9}
+              style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit", lineHeight: 1.5 }}
+            />
+            {!req.gast_email && (
+              <div style={{ fontSize: 12, color: "#E24B4A", marginTop: 8 }}>
+                Let op: bij deze aanvraag is geen e-mailadres bekend. De aanvraag wordt wel afgewezen, maar de gast krijgt geen bericht.
+              </div>
+            )}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
+              <button onClick={() => setRejectOpen(null)} disabled={isSaving} style={{
+                padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+                background: C.card, fontSize: 12, color: C.muted, cursor: isSaving ? "not-allowed" : "pointer",
+              }}>Annuleren</button>
+              <button onClick={() => rejectRequest(req)} disabled={isSaving} style={{
+                padding: "8px 20px", borderRadius: 8, border: "none",
+                background: isSaving ? C.border : "#C62828",
+                fontSize: 12, fontWeight: 500, color: "#fff", cursor: isSaving ? "not-allowed" : "pointer",
+              }}>{isSaving ? "Versturen..." : "Wijs af en mail gast →"}</button>
+            </div>
+          </div>
+        )}
+
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
           <div style={{ fontSize: 16, fontWeight: 500, color: C.green }}>
             Totaal: € {total.toFixed(2)}
@@ -390,10 +476,11 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
             {res && !res.ok && res.msg && (
               <span style={{ fontSize: 12, color: "#E24B4A" }}>{res.msg}</span>
             )}
-            <button onClick={() => rejectRequest(req.id)} disabled={isSaving} style={{
-              padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+            <button onClick={() => openReject(req)} disabled={isSaving} style={{
+              padding: "8px 16px", borderRadius: 8,
+              border: `1px solid ${rejectOpen === req.id ? "#C62828" : C.border}`,
               background: C.card, fontSize: 12, color: "#E24B4A", cursor: isSaving ? "not-allowed" : "pointer",
-            }}>Wijs af</button>
+            }}>{rejectOpen === req.id ? "Afwijzen sluiten" : "Wijs af"}</button>
             {req.status === "nieuw" && (
               <button onClick={() => markInBehandeling(req.id)} disabled={isSaving} style={{
                 padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
