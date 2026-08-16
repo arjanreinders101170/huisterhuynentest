@@ -900,6 +900,265 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     sort_order: 12,
   },
   {
+    slug: "wandelroutes-drenthe",
+    breadcrumb: "Wandelroutes Drenthe",
+    eyebrow: "Wandelen · Zeijen · Drenthe",
+    h1: "De mooiste wandelroutes in Drenthe",
+    hero_sub:
+      "Van een rondje van 7,5 km dat bij de lodge begint tot dagvullende tochten door nationaal park en hoogveen. Dit zijn de mooiste wandelroutes rond Zeijen — met de afstand in minuten erbij.",
+    hero_image: "/wandel_drenthe.jpg",
+    hero_image_alt:
+      "Zandpad door bos en heide bij Zeijen in Drenthe, startpunt van de wandelroutes rond Huis ter Huynen",
+    price_from: PRICE,
+    intro:
+      "Drenthe is de wandelprovincie van Nederland: zandpaden, houtwallen, beekdalen en heidevelden, met opvallend weinig drukte. Rond Zeijen ligt daarvan misschien wel het mooiste stukje. Vier gemarkeerde routes beginnen letterlijk bij de brink naast de lodges, en binnen een half uur rijden liggen twee nationale parken, een hoogveengebied met kraanvogels en het Ballooërveld met zijn schaapskudde. Hieronder vindt u de routes op een rij — geordend op afstand, zodat u snel ziet wat bij uw dag past.",
+    sections: [
+      {
+        eyebrow: "Vanuit de deur",
+        heading: "Vier wandelroutes die bij de lodge beginnen",
+        body: [
+          "U hoeft niet in de auto om te gaan wandelen. Vanaf de brink van Zeijen, op een paar minuten lopen van de lodges, starten vier gemarkeerde routes van 7,5 tot 17 kilometer. Ze voeren allemaal door hetzelfde kleinschalige landschap van houtwallen, veentjes, essen en strubbenbos — maar elk met een eigen karakter.",
+        ],
+        bullets: [
+          "Veentjesroute Zeijen — 7,5 km, ± 2 uur, makkelijk. De populairste route: langs houtwallen, veentjes en het Zeijerwiek, met Drentse gedichten en informatiebordjes onderweg.",
+          "Weg van Zeijen — 11 km, ± 3 uur, gemiddeld. Twee lussen langs een eeuwenoud kerkpad, tjaskers bij het Meestersveen en door het strubbenbos.",
+          "De Zeijerlaar — 14 km, ± 3,5 uur, gemiddeld. Tweeduizend jaar landbouwgeschiedenis, met hoogteverschillen tussen de essen en het beekdal van de Masloot.",
+          "Knapzakroute Zeijen–Peest — 17 km, ± 4,5 uur, pittig. Door het stroomdal van de Broekenloop, ook te splitsen in een lus van 7 of 11 km.",
+        ],
+      },
+      {
+        eyebrow: "Korte rijafstand",
+        heading: "De mooiste natuurgebieden binnen een half uur",
+        body: [
+          "Wie meer variatie wil, heeft aan een korte autorit genoeg. Vanuit Zeijen ligt een verrassend groot deel van natuurlijk Drenthe binnen dertig minuten — van stil strubbenbos tot de grootste natte heide van West-Europa.",
+        ],
+        bullets: [
+          "Zeijerstrubben (3 min) — oud strubbenbos met kronkelende eiken. Vrij te belopen, ideaal voor een stille ochtendwandeling.",
+          "Noordsche Veld (5 min) — heide, bos, moeras en houtwallen in één gebied, met grafheuvels en urnenvelden.",
+          "Ballooërveld (12 min) — 367 hectare heide met een rondtrekkende schaapskudde. Het Boswachterspad (9 km) is de mooiste route, spectaculair in augustus.",
+          "Nationaal Park Drentsche Aa (15 min) — kronkelende beken en vlonderpaden. Het Boswachterspad Oudemolense Diep (7 km) is een aanrader, met kans op de ijsvogel.",
+          "Fochteloërveen (25 min) — uitgestrekt hoogveen op de grens met Friesland, waar kraanvogels broeden.",
+          "Nationaal Park Dwingelderveld (25 min) — grootste natte heidegebied van West-Europa, met routes van 2,5 tot 20+ km en twee schaapskuddes.",
+          "Drents-Friese Wold (30 min) — meer dan 130 km aan routes door zandverstuivingen, vennen en heide.",
+        ],
+      },
+      {
+        eyebrow: "Kiezen",
+        heading: "Welke route past bij uw dag?",
+        body: [
+          "Wilt u een ochtendwandeling met koffie na afloop? Dan is de Veentjesroute ideaal: 7,5 km, goed te doen in twee uur, en Café Hingstman aan de brink ligt precies aan het eindpunt. Wandelt u met kinderen, kies dan het Ballooërveld of de Zeijerstrubben — korte afstanden, veel te zien en geen kilometerdwang.",
+          "Voor een dagvullende tocht rijdt u naar het Dwingelderveld of het Drents-Friese Wold: daar knoopt u routes van 15 tot 20 kilometer aan elkaar. En wie vooral rust zoekt, gaat doordeweeks naar het Noordsche Veld of het Fochteloërveen; daar komt u soms uren niemand tegen.",
+        ],
+      },
+      {
+        eyebrow: "Praktisch",
+        heading: "Zo wandelt u prettig in Drenthe",
+        body: [
+          "Bijna alle routes zijn gemarkeerd met paaltjes of aangesloten op het wandelknooppuntennetwerk, dus verdwalen is lastig. Toch is een routekaart of de knooppuntenapp handig — in het bos verliest u soms even het overzicht. In de lodge liggen kaarten van de routes rond Zeijen klaar.",
+          "Trek stevige schoenen aan: de paden zijn overwegend onverhard en na regen behoorlijk vochtig. Neem water mee, want onderweg zijn er weinig voorzieningen. Honden zijn op de meeste routes welkom, meestal aangelijnd in verband met broedvogels en grazende schapen. Controleer na een wandeling door bos of heide even op teken.",
+          "Het mooiste moment is vroeg in de ochtend: zacht licht, nauwelijks andere wandelaars en de grootste kans op reeën. In augustus en september kleurt de heide paars — dan zijn het Ballooërveld en het Dwingelderveld op hun mooist.",
+        ],
+      },
+      {
+        eyebrow: "Overnachten",
+        heading: "Thuiskomen na een dag wandelen",
+        body: [
+          "Wandelen wordt pas echt ontspannend als u daarna goed neerstrijkt. Huis ter Huynen ligt in Zeijen, midden in het routenetwerk: twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras. Lodge De Heide heeft bovendien een eigen sauna, Lodge De Eik een buitenkeuken met BBQ.",
+          "Modderige schoenen bij de deur, benen in het warme water van de hottub, de stilte van Drenthe eromheen — dat is de beloning na een dag op pad. Wie meerdere dagen blijft, loopt zo een andere route uit het overzicht hierboven.",
+        ],
+      },
+    ],
+    faq: [
+      "Welke wandelroutes starten bij de lodge? :: Vanaf de brink van Zeijen, op een paar minuten lopen, starten vier gemarkeerde routes: de Veentjesroute (7,5 km), Weg van Zeijen (11 km), De Zeijerlaar (14 km) en de Knapzakroute Zeijen–Peest (17 km, splitsbaar in 7 of 11 km).",
+      "Wat is de mooiste wandelroute in Drenthe voor beginners? :: De Veentjesroute van 7,5 km is makkelijk, goed gemarkeerd en in ongeveer twee uur te lopen. Ook het Boswachterspad Oudemolense Diep (7 km) in het Nationaal Park Drentsche Aa is prima te doen en heeft vlonderpaden langs het water.",
+      "Kan ik met mijn hond wandelen in de omgeving? :: Ja. Honden zijn op vrijwel alle routes welkom, meestal aangelijnd vanwege broedvogels en schaapskuddes. In de lodges zijn honden in overleg ook welkom.",
+      "Wanneer is de heide op de routes paars? :: Doorgaans van half augustus tot begin september. Het Ballooërveld (12 min) en het Dwingelderveld (25 min) zijn dan de mooiste bestemmingen.",
+      "Hoe kan ik direct boeken? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp — zonder tussenpersoon en met persoonlijke bevestiging binnen 24 uur.",
+    ].join("\n"),
+    related: [
+      "Fietsen in Drenthe :: /fietsen-in-drenthe",
+      "Fochteloërveen :: /fochteloerveen-drenthe",
+      "Paarse heide Drenthe :: /heide-drenthe",
+      "Vakantiehuis in Drenthe met hond :: /vakantiehuis-drenthe-met-hond",
+      "Omgeving & activiteiten :: /omgeving",
+    ].join("\n"),
+    cta_title: "Wandelen vanuit uw eigen lodge",
+    cta_body:
+      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Wandelroutes in Drenthe | De Mooiste Routes rond Zeijen",
+    meta_description:
+      "De mooiste wandelroutes in Drenthe: vier routes vanaf de brink in Zeijen (7,5–17 km) en de beste natuurgebieden binnen 30 minuten. Overnacht in een lodge met hottub.",
+    og_image: "/wandel_drenthe.jpg",
+    sort_order: 16,
+  },
+  {
+    slug: "fochteloerveen-drenthe",
+    breadcrumb: "Fochteloërveen",
+    eyebrow: "Hoogveen & kraanvogels · 25 min van de lodge",
+    h1: "Fochteloërveen: hoogveen en kraanvogels in Drenthe",
+    hero_sub:
+      "Een van de laatste levende hoogveengebieden van Nederland, op 25 minuten rijden van Zeijen. Wijds, stil en de enige plek in het land waar kraanvogels broeden.",
+    hero_image: "/heide2.jpg",
+    hero_image_alt:
+      "Wijds veen- en heidelandschap in Noord-Drenthe, vergelijkbaar met het Fochteloërveen bij Zeijen",
+    price_from: PRICE,
+    intro:
+      "Het Fochteloërveen is anders dan de rest van Drenthe. Geen bos, geen houtwallen, maar een wijds, open veenlandschap op de grens van Drenthe en Friesland — met een horizon die u in Nederland zelden ziet. Het is een van de laatste plekken waar het hoogveen nog groeit, een officieel stiltegebied, en de enige plaats in Nederland waar kraanvogels broeden. Vanuit Huis ter Huynen in Zeijen rijdt u er in ongeveer 25 minuten naartoe: een ochtend of avond die u niet snel vergeet.",
+    sections: [
+      {
+        eyebrow: "Het gebied",
+        heading: "Wat het Fochteloërveen zo bijzonder maakt",
+        body: [
+          "Hoogveen ontstaat waar veenmos eeuwenlang op regenwater groeit — laag op laag, millimeter voor millimeter. Vrijwel al het Nederlandse hoogveen is in de loop van de tijd afgegraven voor turf. Het Fochteloërveen is een van de weinige gebieden waar nog een levende veenkern over is, en waar het veen dankzij beheer van Natuurmonumenten zelfs weer aangroeit.",
+          "Wat u vooral ervaart, is de ruimte. Het landschap is vlak en open, met veenputten, plassen, pijpenstrootje en berkenopslag. Er staan nauwelijks gebouwen in de buurt en het is aangewezen als stiltegebied: op een doordeweekse ochtend hoort u werkelijk alleen wind en vogels. Wie uit de Randstad komt, merkt dat verschil binnen vijf minuten.",
+        ],
+      },
+      {
+        eyebrow: "De kraanvogels",
+        heading: "Kraanvogels kijken: wanneer en hoe",
+        body: [
+          "Het Fochteloërveen is beroemd om zijn kraanvogels. Sinds het begin van deze eeuw broeden ze hier weer — de eerste broedende kraanvogels in Nederland in eeuwen. Het zijn imposante vogels van ruim een meter hoog, met een roep die kilometers ver draagt.",
+          "In het vroege voorjaar (maart en april) maken de paren hun opvallende baltsdans. In het najaar, ruwweg van september tot november, gebruiken trekkende kraanvogels het gebied als rustplaats en kunt u met wat geluk grotere groepen zien. Kom vroeg in de ochtend of tegen zonsondergang: dan zijn de vogels het actiefst en is het licht het mooist.",
+        ],
+        bullets: [
+          "Maart–april: baltsende en broedende paren, roepen goed hoorbaar vanaf de paden.",
+          "September–november: trekvogels rusten in het gebied, grotere groepen mogelijk.",
+          "Vroege ochtend en het laatste uur voor zonsondergang zijn de beste momenten.",
+          "Neem een verrekijker mee — de vogels blijven op afstand, en dat hoort ook zo.",
+          "Blijf op de paden en houd het stil: broedende kraanvogels zijn erg gevoelig voor verstoring.",
+        ],
+      },
+      {
+        eyebrow: "Wandelen",
+        heading: "Wandelen in en rond het veen",
+        body: [
+          "Vanaf de randen van het gebied lopen gemarkeerde wandelroutes het veen in, deels over vlonderpaden en zandpaden langs de veenplassen. De routes zijn vlak en makkelijk te lopen; reken op twee tot drie uur voor een mooie ronde. Aan de rand van het gebied liggen uitkijkpunten waar u over het veen uitkijkt — de beste plek om rustig te kijken zonder dieren te verstoren.",
+          "Naast kraanvogels leven hier adders (schuw en ongevaarlijk als u op de paden blijft), reeën, blauwe kiekendieven en veel libellen boven de veenplassen. Het gebied is open en biedt weinig schaduw: in de zomer is een hoed en water geen overbodige luxe, in het najaar juist een windjack, want de wind heeft hier vrij spel.",
+          "Let op de borden bij de ingang: in delen van het gebied gelden beperkingen, en honden zijn niet overal toegestaan. Combineer het bezoek eventueel met Veenhuizen (UNESCO-werelderfgoed) of Norg, die beide vlakbij liggen.",
+        ],
+      },
+      {
+        eyebrow: "Overnachten",
+        heading: "Overnachten op 25 minuten van het Fochteloërveen",
+        body: [
+          "Om het veen op zijn mooist te zien, wilt u er vroeg zijn — en dan helpt het als u in de buurt slaapt. Huis ter Huynen in Zeijen ligt op ongeveer 25 minuten rijden: dichtbij genoeg voor een ochtendbezoek bij zonsopkomst, ver genoeg om zelf in alle rust te zitten.",
+          "De twee lodges zijn volledig privé en geschikt voor maximaal vier personen, elk met een eigen hottub op het terras. Na een ochtend in het veen bent u terug voor een late lunch, en 's avonds zit u in het warme water onder een sterrenhemel die in Drenthe nauwelijks last heeft van lichtvervuiling. Wie meer natuur wil, vindt in de directe omgeving het Ballooërveld, het Nationaal Park Drentsche Aa en de wandelroutes vanaf de brink van Zeijen.",
+        ],
+      },
+    ],
+    faq: [
+      "Hoe ver ligt het Fochteloërveen van Huis ter Huynen? :: Ongeveer 25 minuten rijden vanaf de lodges in Zeijen. Goed te combineren met een bezoek aan Veenhuizen of Norg.",
+      "Wanneer kan ik kraanvogels zien in het Fochteloërveen? :: In maart en april tijdens de balts en het broedseizoen, en van september tot november wanneer trekkende kraanvogels het gebied als rustplaats gebruiken. Vroege ochtend en zonsondergang zijn de beste momenten.",
+      "Is het Fochteloërveen geschikt voor een wandeling met kinderen? :: Ja. De routes zijn vlak en makkelijk, deels over vlonderpaden. Reken op twee tot drie uur; er is weinig schaduw, dus neem in de zomer water mee.",
+      "Mag mijn hond mee het Fochteloërveen in? :: Niet overal — in delen van het gebied zijn honden niet toegestaan of alleen aangelijnd, vanwege broedende vogels. Kijk de borden bij de ingang na. In de lodges zijn honden in overleg welkom.",
+      "Hoe kan ik direct boeken? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp — zonder tussenpersoon en met persoonlijke bevestiging binnen 24 uur.",
+    ].join("\n"),
+    related: [
+      "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
+      "Overnachten bij Veenhuizen :: /overnachten-veenhuizen",
+      "Vakantiehuis bij Norg :: /vakantiehuis-norg",
+      "Omgeving & activiteiten :: /omgeving",
+    ].join("\n"),
+    cta_title: "Slaap vlak bij het Fochteloërveen",
+    cta_body:
+      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Fochteloërveen | Hoogveen & Kraanvogels in Drenthe",
+    meta_description:
+      "Het Fochteloërveen: hoogveen, stilte en de enige broedende kraanvogels van Nederland. Wanneer u ze ziet, waar u wandelt en waar u vlakbij overnacht in Zeijen.",
+    og_image: "/heide2.jpg",
+    sort_order: 17,
+  },
+  {
+    slug: "fietsen-in-drenthe",
+    breadcrumb: "Fietsen in Drenthe",
+    eyebrow: "Fietsen · Zeijen · Drenthe",
+    h1: "Fietsen in Drenthe: de mooiste routes vanuit Zeijen",
+    hero_sub:
+      "Duizenden kilometers vrijliggend fietspad, een fijnmazig knooppuntennetwerk en nauwelijks verkeer. Vier routes vanaf de lodge, plus waar u een e-bike huurt.",
+    hero_image: "/rent_a_bike.jpg",
+    hero_image_alt:
+      "Fietsen klaar voor vertrek bij een lodge in Drenthe, startpunt voor fietsroutes rond Zeijen",
+    price_from: PRICE,
+    intro:
+      "Drenthe geldt niet voor niets als dé fietsprovincie van Nederland: vlak terrein, duizenden kilometers vrijliggend fietspad en een knooppuntennetwerk waarmee u onderweg zelf uw route langer of korter maakt. Vanuit Zeijen fietst u binnen een kwartier het beekdal van de Drentsche Aa in, in een half uur naar de hunebedden en in een uur naar Veenhuizen. Hieronder vier concrete routes vanaf de lodge, waar u fietsen huurt en wat handig is om vooraf te weten.",
+    sections: [
+      {
+        eyebrow: "Waarom hier",
+        heading: "Waarom Drenthe zo prettig fietst",
+        body: [
+          "Drie dingen maken het verschil. Ten eerste het knooppuntennetwerk: u noteert een rij nummers en volgt de bordjes, zonder kaartlezen of omrijden. Ten tweede de rust — buiten de dorpen komt u op veel wegen nauwelijks een auto tegen. En ten derde de afwisseling: essen, beekdalen, heide, bos en brinkdorpen wisselen elkaar in enkele kilometers af.",
+          "Het terrein is vlak tot licht glooiend, dus u hoeft geen getrainde fietser te zijn. Met een gewone fiets zijn ritten van 25 tot 40 kilometer prima te doen; met een e-bike verdubbelt uw actieradius moeiteloos en ligt half Noord-Drenthe binnen bereik.",
+        ],
+      },
+      {
+        eyebrow: "De routes",
+        heading: "Vier fietsroutes vanaf de lodge",
+        body: [
+          "Alle routes hieronder starten bij Huis ter Huynen in Zeijen. De afstanden zijn indicatief: via de knooppunten kort u ze in of maakt u ze langer, precies zoals het die dag uitkomt.",
+        ],
+        bullets: [
+          "Rondje Drentsche Aa — circa 40 km. Door het nationaal park langs kronkelende beken, houtwallen en oude essendorpen. De klassieker van Noord-Drenthe.",
+          "Heide- en hunebeddenroute — circa 35 km. Via het Ballooërveld naar Rolde, waar twee hunebedden bij de middeleeuwse kerk vrij te bezoeken zijn.",
+          "Norg en Veenhuizen — circa 45 km. Door de bossen van de Norgerberg naar het UNESCO-dorp Veenhuizen, met het Gevangenismuseum als stop onderweg.",
+          "Korte lus Zeijen–Peest–Noordsche Veld — circa 20 km. Ideaal voor een ochtend of een middag, grotendeels over rustige landwegen.",
+          "Assen — circa 12 km enkele reis. Het Drents Museum, terrassen aan de Brink en volop lunchadressen.",
+        ],
+      },
+      {
+        eyebrow: "Fietsen huren",
+        heading: "E-bike of gewone fiets huren",
+        body: [
+          "Geen fietsen op het dak? Dat hoeft ook niet. Via de lodge huurt u een e-bike voor € 12,50 per dag; geef het bij uw boeking of tijdens uw verblijf even door, dan staan ze klaar. Wilt u zelf regelen, dan zijn er verhuurders in de buurt die ook op locatie bezorgen.",
+        ],
+        bullets: [
+          "Via Huis ter Huynen — e-bikes vanaf € 12,50 per dag, te boeken bij uw reservering of ter plekke.",
+          "Fietsverhuur Assen (12 min) — e-bikes en gewone fietsen vanaf € 12,50 per dag, bezorging op locatie mogelijk.",
+          "Drenthe Fietsverhuur (15 min) — fietsen, e-bikes en ATB's vanaf € 15 per dag, inclusief levering op uw verblijfsadres.",
+          "Mountainbiken? Er liggen MTB-routes in de omgeving; bij Drenthe Fietsverhuur huurt u de juiste fiets en boekt u eventueel een clinic.",
+        ],
+      },
+      {
+        eyebrow: "Praktisch",
+        heading: "Handig om te weten voor u vertrekt",
+        body: [
+          "Werk met knooppunten: noteer de nummers van uw route op een briefje of in de fietsknooppuntenapp, dan hoeft u onderweg alleen de bordjes te volgen. In de lodge ligt een fietskaart van de omgeving klaar.",
+          "Plan een pauze in: Café Hingstman aan de brink van Zeijen, het Bospaviljoen De Norgerberg en de terrassen rond het Drents Museum in Assen zijn alle drie fijne stops. In het hoogseizoen is reserveren voor een lunch geen slecht idee.",
+          "Het mooiste fietsseizoen loopt van april tot en met oktober. Mei en juni geven fris groen en lange dagen, augustus en september de paarse heide en de oogst op het land. Neem een windjack mee — het is vlak, en dat betekent dat u de wind altijd voelt. Uw e-bike laadt u 's avonds gewoon bij de lodge op; auto's kunnen terecht bij de EV-laadpaal op het terrein.",
+        ],
+      },
+      {
+        eyebrow: "Overnachten",
+        heading: "Een fietsvakantie met een goede basis",
+        body: [
+          "Bij Huis ter Huynen fietst u elke dag een andere richting uit zonder te hoeven verkassen. De twee lodges zijn volledig privé en geschikt voor maximaal vier personen, elk met een eigen hottub op het terras — na 40 kilometer in het zadel precies wat uw benen nodig hebben. Lodge De Heide heeft daarnaast een eigen sauna, Lodge De Eik een buitenkeuken met BBQ voor een avond buiten eten.",
+          "Fietsen staan droog en veilig bij de lodge, en het startpunt van de knooppuntenroutes ligt om de hoek. Blijft u langer, dan combineert u de fietsdagen makkelijk met een wandeling vanaf de brink of een bezoek aan het Fochteloërveen.",
+        ],
+      },
+    ],
+    faq: [
+      "Kan ik fietsen huren bij de lodge? :: Ja. Via Huis ter Huynen huurt u e-bikes vanaf € 12,50 per dag. Geef het door bij uw reservering of tijdens uw verblijf, dan staan ze klaar. Verhuurders in Assen en de omgeving bezorgen desgewenst ook op locatie.",
+      "Hoe werkt het fietsknooppuntennetwerk in Drenthe? :: U kiest een reeks genummerde knooppunten en volgt onderweg de bordjes van knooppunt naar knooppunt. Zo stelt u zelf uw route samen en kort u hem onderweg in of maakt u hem langer.",
+      "Welke fietsroute is de mooiste vanuit Zeijen? :: Het rondje door het Nationaal Park Drentsche Aa (circa 40 km) is de klassieker: beekdalen, houtwallen en oude essendorpen. Voor een kortere rit is de lus Zeijen–Peest–Noordsche Veld (circa 20 km) een aanrader.",
+      "Wat is de beste periode om te fietsen in Drenthe? :: April tot en met oktober. Mei en juni bieden fris groen en lange dagen, augustus en september de bloeiende paarse heide.",
+      "Hoe kan ik direct boeken? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp — zonder tussenpersoon en met persoonlijke bevestiging binnen 24 uur.",
+    ].join("\n"),
+    related: [
+      "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
+      "Hunebedden in Drenthe :: /hunebedden-drenthe",
+      "Paarse heide Drenthe :: /heide-drenthe",
+      "Fochteloërveen :: /fochteloerveen-drenthe",
+      "Omgeving & activiteiten :: /omgeving",
+    ].join("\n"),
+    cta_title: "Fiets Drenthe vanuit uw eigen lodge",
+    cta_body:
+      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Fietsen in Drenthe | Routes & E-bike Huren vanuit Zeijen",
+    meta_description:
+      "Fietsen in Drenthe: vier routes vanaf de lodge in Zeijen (20–45 km), uitleg over de knooppunten en waar u een e-bike huurt vanaf € 12,50 per dag. Boek direct.",
+    og_image: "/rent_a_bike.jpg",
+    sort_order: 18,
+  },
+  {
     slug: "de/luxus-lodge-drenthe",
     breadcrumb: "Luxus Lodge Drenthe",
     eyebrow: "Boutique Lodge · Zeijen · Drenthe",
