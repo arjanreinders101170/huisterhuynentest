@@ -3,6 +3,8 @@ import { getSupabase } from "@/lib/supabase";
 import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, type OfferteRegel } from "@/lib/email";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
+import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
+import { findConflict, openOffersOverlapping } from "@/lib/availability";
 
 const DEPOSIT_PCT = 0.30;
 
@@ -87,8 +89,30 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         }
       }
 
+      /* Waarschuwen vóór het versturen: een offerte blokkeert de agenda niet,
+       * dus je kunt ongemerkt een aanbod doen op nachten die al vergeven zijn
+       * of waar al een andere gast op zit te wachten. */
+      const waarschuwingen: string[] = [];
+      if (req.lodge && req.check_in && req.check_out) {
+        try {
+          const [{ conflict }, andere] = await Promise.all([
+            findConflict({ lodge: req.lodge, checkIn: req.check_in, checkOut: req.check_out, excludeRequestId: req.id }),
+            openOffersOverlapping({ checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge, excludeRequestId: req.id }),
+          ]);
+          if (conflict) {
+            waarschuwingen.push(`Deze nachten zijn al bezet — ${conflict.bron || "bestaande reservering"} (${conflict.start} t/m ${conflict.end}). De gast kan niet bevestigen.`);
+          }
+          for (const o of andere) {
+            waarschuwingen.push(`Er staat al een open offerte voor deze lodge en periode bij ${o.gast_naam || "een andere gast"}. Wie het eerst bevestigt, krijgt de plek.`);
+          }
+        } catch (e) {
+          console.error("Beschikbaarheidscheck bij prefill faalde:", e);
+        }
+      }
+
       return NextResponse.json({
         success: true,
+        waarschuwingen,
         prefill: {
           verblijf, schoonmaak, toeristenbelasting, extraRegels, nachten, personen,
           gast_naam: req.gast_naam, gast_email: req.gast_email,
@@ -128,6 +152,9 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const { randomBytes } = await import("crypto");
       const confirmToken = randomBytes(32).toString("hex");
 
+      // Geldig t/m deze dag; daarna vervalt het aanbod via de dagelijkse cron.
+      const vervaltOp = offerExpiryDate(req.check_in);
+
       const { error: updErr } = await sb.from("booking_requests").update({
         status: "offerte_verstuurd",
         prijs_verblijf: verblijf,
@@ -136,12 +163,16 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         extra_regels: cleanRegels,
         totaal,
         confirm_token: confirmToken,
+        offerte_vervalt_op: vervaltOp,
+        // Opnieuw versturen betekent opnieuw een herinnering en een schone lei.
+        herinnering_verstuurd_op: null,
+        verlopen_op: null,
       }).eq("id", requestId);
       if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
 
       const resendKey = process.env.RESEND_API_KEY;
       if (!resendKey) {
-        return NextResponse.json({ success: true, totaal, emailSent: false, warning: "Resend niet geconfigureerd, offerte is wel opgeslagen" });
+        return NextResponse.json({ success: true, totaal, vervaltOp, emailSent: false, warning: "Resend niet geconfigureerd, offerte is wel opgeslagen" });
       }
 
       const fmt = (iso: string | null) => iso
@@ -170,16 +201,16 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
           html: buildOfferteHtmlV2(
             esc(req.gast_naam || ""), esc(van), esc(tot),
             req.personen || 2, emailRegels, totaal, (bericht as string) || "",
-            requestId as string, bevestigBase, confirmToken,
+            requestId as string, bevestigBase, confirmToken, formatDateNl(vervaltOp),
           ),
           replyTo: "lodge@huisterhuynen.nl",
         });
       } catch (e) {
         console.error("Offerte v2 email failed:", e);
-        return NextResponse.json({ success: true, totaal, emailSent: false, warning: "Offerte opgeslagen, maar e-mail versturen faalde" });
+        return NextResponse.json({ success: true, totaal, vervaltOp, emailSent: false, warning: "Offerte opgeslagen, maar e-mail versturen faalde" });
       }
 
-      return NextResponse.json({ success: true, totaal, emailSent: true });
+      return NextResponse.json({ success: true, totaal, vervaltOp, emailSent: true });
     }
     case "send_payment_link": {
       const { requestId, fase } = body;

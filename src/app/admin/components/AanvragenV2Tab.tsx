@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BookingRequest } from "../types";
 import { Badge } from "./Badge";
 import { timeAgo } from "./Badge";
+import { offerCountdown, offerExpiryDate, formatDateNl, OFFER_VALID_DAYS } from "@/lib/offer-expiry";
 
 const BRON_LABELS: Record<string, { icon: string; label: string }> = {
   homepage:   { icon: "🏠", label: "Homepage" },
@@ -23,6 +24,22 @@ const SOORT_LABEL: Record<string, { label: string; color: string }> = {
   korting:   { label: "Korting",   color: "#2E7D32" },
   belasting: { label: "Belasting", color: "#1565C0" },
 };
+
+/** Hoe lang staat dit aanbod nog open? Alleen relevant zolang het loopt. */
+function expiryNote(req: BookingRequest): { text: string; color: string } | null {
+  if (req.status === "verlopen") {
+    return { text: "aanbod verlopen", color: "#9E9E9E" };
+  }
+  if (req.status !== "offerte_verstuurd" || !req.offerte_vervalt_op) return null;
+
+  const c = offerCountdown(req.offerte_vervalt_op);
+  if (c.state === "expired") return { text: "verloopt vannacht", color: "#C62828" };
+  if (c.state === "today") return { text: "verloopt vandaag", color: "#C62828" };
+  return {
+    text: `verloopt over ${c.days} ${c.days === 1 ? "dag" : "dagen"}`,
+    color: c.days <= 2 ? "#E67E22" : "#8A7D6A",
+  };
+}
 
 /** Startsuggestie voor de afwijsmail. De host past deze tekst zelf aan. */
 function defaultRejectText(req: BookingRequest): string {
@@ -65,6 +82,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
   const [payLoading, setPayLoading] = useState<string | null>(null);
   const [rejectOpen, setRejectOpen] = useState<string | null>(null);
   const [rejectText, setRejectText] = useState("");
+  const [warnings, setWarnings] = useState<Record<string, string[]>>({});
 
   const [manualOpen, setManualOpen] = useState(false);
   const [manualForm, setManualForm] = useState({ naam: "", platform: "Booking.com", lodge: "lodge_1", checkIn: "", checkOut: "" });
@@ -107,6 +125,9 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
         body: JSON.stringify({ action: "prefill_offerte", requestId: req.id }),
       });
       const d = await r.json();
+      if (d.success && Array.isArray(d.waarschuwingen)) {
+        setWarnings(prev => ({ ...prev, [req.id]: d.waarschuwingen }));
+      }
       if (d.success && d.prefill) {
         setForms(prev => ({
           ...prev,
@@ -187,7 +208,9 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
       });
       const d = await r.json();
       if (d.success) {
-        setRequests(requests.map(x => x.id === req.id ? { ...x, status: "offerte_verstuurd", totaal: d.totaal } : x));
+        setRequests(requests.map(x => x.id === req.id
+          ? { ...x, status: "offerte_verstuurd", totaal: d.totaal, offerte_vervalt_op: d.vervaltOp ?? null, herinnering_verstuurd_op: null, verlopen_op: null }
+          : x));
         setExpandedId(null);
         setResult(prev => ({ ...prev, [req.id]: { ok: true, msg: d.warning || `Offerte € ${Number(d.totaal).toFixed(2)} verstuurd` } }));
       } else {
@@ -382,6 +405,16 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
           Offerte opbouwen
         </div>
 
+        {(warnings[req.id] || []).length > 0 && (
+          <div style={{ marginBottom: 14, padding: "12px 14px", background: "#FFF8E1", border: "1px solid #FFE0A3", borderRadius: 8 }}>
+            {(warnings[req.id] || []).map((w, i) => (
+              <div key={i} style={{ fontSize: 12, color: "#8A6D1B", lineHeight: 1.5, marginTop: i === 0 ? 0 : 6 }}>
+                ⚠ {w}
+              </div>
+            ))}
+          </div>
+        )}
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
           <div>
             <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Verblijf (€) *</label>
@@ -426,6 +459,12 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
             padding: "8px 14px", borderRadius: 6, border: `1px dashed ${C.green}`,
             background: "transparent", fontSize: 12, fontWeight: 600, color: C.green, cursor: "pointer",
           }}>+ Extra regel</button>
+        </div>
+
+        <div style={{ marginBottom: 14, padding: "10px 14px", background: "#F9F4E8", borderRadius: 8, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
+          Bedenktijd: <strong style={{ color: C.text }}>{OFFER_VALID_DAYS} dagen</strong> — geldig t/m{" "}
+          <strong style={{ color: C.text }}>{formatDateNl(offerExpiryDate(req.check_in))}</strong>.
+          De gast krijgt 2 dagen ervoor een herinnering; daarna vervalt het aanbod automatisch.
         </div>
 
         <div style={{ marginBottom: 16 }}>
@@ -674,7 +713,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
         <button onClick={() => setFilterStatus("all")} style={chipStyle(filterStatus === "all")}>Alle statussen</button>
-        {(["nieuw", "in_behandeling", "offerte_verstuurd", "bevestigd", "afgewezen"] as const).map(s => (
+        {(["nieuw", "in_behandeling", "offerte_verstuurd", "bevestigd", "verlopen", "afgewezen"] as const).map(s => (
           <button key={s} onClick={() => setFilterStatus(s)} style={chipStyle(filterStatus === s)}>{s.replace("_", " ")}</button>
         ))}
       </div>
@@ -702,7 +741,8 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
             const email = r.guest?.email || r.gast_email || "";
             const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
             const isExpanded = expandedId === r.id;
-            const isEditable = r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd";
+            // Verlopen aanvragen blijven bewerkbaar: een nieuwe offerte start de bedenktijd opnieuw.
+            const isEditable = r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd" || r.status === "verlopen";
             const isPayable = r.status === "bevestigd" || r.status === "aanbetaling_verstuurd" || r.status === "aanbetaling_betaald" || r.status === "restbetaling_verstuurd" || r.status === "volledig_betaald";
             const isExpandable = isEditable || isPayable;
             const res = result[r.id];
@@ -740,6 +780,9 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
                   </div>
                   <div>
                     <Badge status={r.status} />
+                    {expiryNote(r) && (
+                      <div style={{ fontSize: 11, color: expiryNote(r)!.color, marginTop: 2 }}>{expiryNote(r)!.text}</div>
+                    )}
                     {res?.ok && <div style={{ fontSize: 11, color: "#2E7D32", marginTop: 2 }}>✓ {res.msg}</div>}
                   </div>
                   <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>
