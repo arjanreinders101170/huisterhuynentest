@@ -1,0 +1,3424 @@
+<title>Groeiplan Huis ter Huynen 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@600;700&display=swap">
+<style>
+:root {
+  --forest:#2F4F3E; --gold:#B49A5E; --sand:#EAE3D2; --paper:#FDFBF6;
+  --ground:#F4EFE3; --ink:#2A2418; --muted:#5A534C; --line:#E0D8C8;
+  --rail:#FFFFFF;
+  --on-forest:#FDFBF6; --eyebrow:#D9C48A;
+  --p0:#9A3F28; --p1:#B47B2E; --p2:#3E6B52; --p3:#7C756B;
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --sans:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --shadow:0 1px 2px rgba(42,36,24,.05), 0 8px 24px rgba(42,36,24,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --forest:#84AC92; --gold:#CDB47C; --sand:#232019; --paper:#1D1A15;
+    --ground:#15130F; --ink:#EDE5D4; --muted:#A79E90; --line:#332E25;
+    --rail:#1A1712;
+    --on-forest:#15130F; --eyebrow:#24402F;
+    --p0:#D2755A; --p1:#D6A253; --p2:#7FB394; --p3:#948B7E;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.28);
+  }
+}
+:root[data-theme="dark"] {
+  --forest:#84AC92; --gold:#CDB47C; --sand:#232019; --paper:#1D1A15;
+  --ground:#15130F; --ink:#EDE5D4; --muted:#A79E90; --line:#332E25;
+  --rail:#1A1712;
+  --on-forest:#15130F; --eyebrow:#24402F;
+  --p0:#D2755A; --p1:#D6A253; --p2:#7FB394; --p3:#948B7E;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.28);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-weight:400; font-size:16px; line-height:1.72;
+  font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+}
+
+/* ── Kop ── */
+.masthead{
+  background:var(--forest); color:var(--on-forest); padding:60px 32px 54px;
+  border-bottom:3px solid var(--gold);
+}
+.masthead__in{max-width:1180px; margin:0 auto}
+.eyebrow{
+  font-size:11px; font-weight:700; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--eyebrow); margin:0 0 18px;
+}
+.masthead h1{
+  font-family:var(--serif); font-weight:700; font-size:clamp(30px,4.6vw,52px);
+  line-height:1.1; margin:0 0 16px; text-wrap:balance; letter-spacing:-.01em;
+}
+.masthead p{
+  margin:0; max-width:62ch; font-size:17px; font-weight:300; line-height:1.7;
+  opacity:.9;
+}
+.meta{
+  margin-top:26px; display:flex; flex-wrap:wrap; gap:8px 26px;
+  font-size:12.5px; letter-spacing:.03em; opacity:.75;
+}
+
+/* ── KPI-band ── */
+.kpis{
+  max-width:1180px; margin:-30px auto 0; padding:0 32px;
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:14px;
+  position:relative; z-index:2;
+}
+.kpi{
+  background:var(--paper); border:1px solid var(--line); border-radius:12px;
+  padding:20px 20px 18px; box-shadow:var(--shadow);
+  border-top:3px solid var(--gold);
+}
+.kpi--alarm{border-top-color:var(--p0)}
+.kpi__v{
+  font-family:var(--serif); font-size:36px; font-weight:700; line-height:1;
+  color:var(--forest); letter-spacing:-.02em;
+}
+.kpi--alarm .kpi__v{color:var(--p0)}
+.kpi__u{font-size:20px; opacity:.6; margin-left:1px}
+.kpi__l{
+  margin-top:11px; font-size:12.5px; line-height:1.55; color:var(--muted);
+  font-weight:400;
+}
+
+/* ── Shell ── */
+.shell{
+  max-width:1180px; margin:0 auto; padding:44px 32px 90px;
+  display:grid; grid-template-columns:230px minmax(0,1fr); gap:52px; align-items:start;
+}
+@media (max-width:940px){
+  .shell{grid-template-columns:minmax(0,1fr); gap:0; padding-top:36px}
+  .nav{display:none}
+}
+
+/* ── Navigatie ── */
+.nav{
+  position:sticky; top:22px; background:var(--rail); border:1px solid var(--line);
+  border-radius:12px; padding:14px 10px; box-shadow:var(--shadow);
+  max-height:calc(100vh - 44px); overflow-y:auto;
+}
+.nav__t{
+  font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--muted); padding:6px 10px 10px;
+}
+.nav__item{
+  display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:7px;
+  text-decoration:none; color:var(--ink); font-size:13.5px; line-height:1.35;
+}
+.nav__item:hover{background:var(--sand); color:var(--forest)}
+.nav__num{
+  font-size:10.5px; font-weight:700; color:var(--gold); min-width:14px;
+  font-variant-numeric:tabular-nums;
+}
+.nav__label{flex:1}
+
+/* ── Inhoud ── */
+.doc{min-width:0; max-width:74ch}
+.sec{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:34px 38px 38px; margin-bottom:22px; box-shadow:var(--shadow);
+  scroll-margin-top:20px;
+}
+@media (max-width:640px){ .sec{padding:26px 20px 30px; border-radius:10px} }
+.sec__head{
+  display:flex; align-items:baseline; gap:14px; margin:0 0 22px;
+  padding-bottom:16px; border-bottom:2px solid var(--sand);
+}
+.sec__num{
+  font-family:var(--serif); font-size:15px; font-weight:700; color:var(--gold);
+  border:1.5px solid var(--gold); border-radius:50%;
+  width:32px; height:32px; min-width:32px; display:flex;
+  align-items:center; justify-content:center; line-height:1;
+}
+.sec__head h2{
+  font-family:var(--serif); font-size:clamp(21px,2.7vw,29px); font-weight:700;
+  margin:0; line-height:1.2; color:var(--ink); text-wrap:balance; letter-spacing:-.01em;
+}
+.sec--intro > p:first-child{
+  font-size:17.5px; line-height:1.65; color:var(--ink);
+  padding-bottom:16px; border-bottom:2px solid var(--sand); margin-bottom:18px;
+}
+.sec--intro h2{
+  font-family:var(--serif); font-size:clamp(20px,2.5vw,26px); font-weight:700;
+  margin:30px 0 14px; line-height:1.22; text-wrap:balance;
+}
+.doc h2:not(.sec__head h2){
+  font-family:var(--serif); font-size:21px; font-weight:700; margin:34px 0 12px;
+  line-height:1.28; text-wrap:balance;
+}
+.doc h3{
+  font-family:var(--sans); font-size:15.5px; font-weight:700; margin:26px 0 9px;
+  color:var(--forest); letter-spacing:.005em;
+}
+.doc h4{font-size:14px; font-weight:700; margin:20px 0 7px; color:var(--muted)}
+.doc p{margin:0 0 15px}
+.doc > p:first-child{margin-top:0}
+.doc ul,.doc ol{margin:0 0 16px; padding-left:22px}
+.doc li{margin:0 0 7px}
+.doc li::marker{color:var(--gold)}
+.doc a{color:var(--forest); text-decoration-color:var(--gold); text-underline-offset:3px}
+.doc strong{font-weight:700; color:var(--ink)}
+.doc em{color:var(--muted)}
+.doc hr{border:0; border-top:1px solid var(--line); margin:30px 0}
+.doc blockquote{
+  margin:22px 0; padding:16px 22px; border-left:3px solid var(--gold);
+  background:var(--sand); border-radius:0 8px 8px 0;
+  font-family:var(--serif); font-size:17.5px; font-style:italic; color:var(--ink);
+}
+.doc blockquote p{margin:0}
+.doc code{
+  font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.87em;
+  background:var(--sand); padding:2px 6px; border-radius:4px; color:var(--forest);
+  font-weight:500;
+}
+.doc pre{
+  background:var(--sand); border:1px solid var(--line); border-radius:9px;
+  padding:16px 18px; overflow-x:auto; font-size:12.5px; line-height:1.7;
+}
+.doc pre code{background:none; padding:0; color:var(--ink)}
+
+/* ── Tabellen ── */
+.tw{overflow-x:auto; margin:0 0 20px; border:1px solid var(--line); border-radius:10px}
+.doc table{border-collapse:collapse; width:100%; font-size:13.5px; line-height:1.55}
+.doc thead th{
+  background:var(--forest); color:var(--on-forest); text-align:left; font-weight:500;
+  padding:11px 13px; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+  white-space:nowrap; vertical-align:bottom;
+}
+.doc tbody td{padding:10px 13px; border-top:1px solid var(--line); vertical-align:top}
+.doc tbody tr:nth-child(even){background:color-mix(in srgb, var(--sand) 45%, transparent)}
+.doc tbody td:first-child{font-weight:500}
+
+/* ── Chips: herkomst van elk cijfer ── */
+.src{
+  display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.09em;
+  text-transform:uppercase; padding:2px 6px; border-radius:4px;
+  vertical-align:1.5px; white-space:nowrap; border:1px solid;
+}
+.src--gsc{color:var(--forest); border-color:var(--forest); background:color-mix(in srgb,var(--forest) 9%,transparent)}
+.src--code{color:var(--p2); border-color:var(--p2); background:color-mix(in srgb,var(--p2) 9%,transparent)}
+.src--serp{color:var(--gold); border-color:var(--gold); background:color-mix(in srgb,var(--gold) 12%,transparent)}
+.src--analyse{color:var(--muted); border-color:var(--muted); background:color-mix(in srgb,var(--muted) 8%,transparent)}
+.src--aanname{color:var(--p1); border-color:var(--p1); background:color-mix(in srgb,var(--p1) 12%,transparent)}
+
+/* ── Prioriteit ── */
+.pri{
+  display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.05em;
+  padding:2px 7px; border-radius:20px; color:var(--on-forest); white-space:nowrap;
+}
+.pri--p0{background:var(--p0)} .pri--p1{background:var(--p1)}
+.pri--p2{background:var(--p2)} .pri--p3{background:var(--p3)}
+
+/* ── Taken ── */
+.doc li.task{
+  list-style:none; margin-left:-22px; padding-left:30px; position:relative;
+}
+.doc li.task::before{
+  content:""; position:absolute; left:0; top:5px; width:15px; height:15px;
+  border:1.5px solid var(--gold); border-radius:4px; background:var(--paper);
+}
+
+.foot{
+  max-width:1180px; margin:0 auto; padding:0 32px 60px;
+  font-size:12.5px; color:var(--muted); line-height:1.7;
+}
+@media (max-width:940px){ .foot{padding-bottom:44px} }
+
+:focus-visible{outline:2px solid var(--gold); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+</style>
+
+<header class="masthead">
+  <div class="masthead__in">
+    <p class="eyebrow">Zoekstrategie &middot; Conversie &middot; Bezetting</p>
+    <h1>Groeiplan Huis ter Huynen 2027</h1>
+    <p>Twee lodges op de Drentse heide zo volledig mogelijk bezetten tegen een winstgevende nachtprijs. Gebouwd op Search Console-data, de sitecode als feitenbron en live SERP-controles &mdash; niet op aannames.</p>
+    <div class="meta">
+      <span>Augustus 2026</span>
+      <span>221 zoekopdrachten &middot; 35 pagina&rsquo;s</span>
+      <span>Zeijen, Drenthe</span>
+    </div>
+  </div>
+</header>
+
+
+<div class="kpis">
+  <div class="kpi">
+    <div class="kpi__v">92,3<span class="kpi__u">%</span></div>
+    <div class="kpi__l">van alle vertoningen staat op positie 31 of lager</div>
+  </div>
+  <div class="kpi kpi--alarm">
+    <div class="kpi__v">0</div>
+    <div class="kpi__l">niet-merkgebonden klikken — alle 8 klikken zijn merknaam</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi__v">754<span class="kpi__u">/249</span></div>
+    <div class="kpi__l">vertoningen op &ldquo;jacuzzi&rdquo; tegen &ldquo;hottub&rdquo; — de site zegt hottub</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi__v">0,25<span class="kpi__u">%</span></div>
+    <div class="kpi__l">CTR commerci&euml;le pagina&rsquo;s, tegen 3,31% voor de blogs</div>
+  </div>
+</div>
+
+
+<div class="shell">
+  <nav class="nav" aria-label="Inhoudsopgave">
+    <div class="nav__t">Inhoud</div>
+    <a class="nav__item" href="#executive-summary"><span class="nav__num">—</span><span class="nav__label">Executive Summary</span></a>
+<a class="nav__item" href="#1-seo-audit"><span class="nav__num">1</span><span class="nav__label">SEO Audit</span></a>
+<a class="nav__item" href="#2-keyword-opportunity-map"><span class="nav__num">2</span><span class="nav__label">Keyword Opportunity Map</span></a>
+<a class="nav__item" href="#3-competitor-benchmark"><span class="nav__num">3</span><span class="nav__label">Competitor Benchmark</span></a>
+<a class="nav__item" href="#4-bestaande-pagina-s-actie-per-url"><span class="nav__num">4</span><span class="nav__label">Bestaande pagina&#x27;s — actie per URL</span></a>
+<a class="nav__item" href="#5-de-8-prioritaire-landingspagina-s"><span class="nav__num">5</span><span class="nav__label">De 8 prioritaire landingspagina&#x27;s</span></a>
+<a class="nav__item" href="#6-contentplan-6-maanden"><span class="nav__num">6</span><span class="nav__label">Contentplan — 6 maanden</span></a>
+<a class="nav__item" href="#7-ctr-plan"><span class="nav__num">7</span><span class="nav__label">CTR-plan</span></a>
+<a class="nav__item" href="#8-cta-cro-plan"><span class="nav__num">8</span><span class="nav__label">CTA- &amp; CRO-plan</span></a>
+<a class="nav__item" href="#9-interne-linkmatrix"><span class="nav__num">9</span><span class="nav__label">Interne linkmatrix</span></a>
+<a class="nav__item" href="#10-2027-bezettings-omzetstrategie"><span class="nav__num">10</span><span class="nav__label">2027 Bezettings- &amp; omzetstrategie</span></a>
+<a class="nav__item" href="#11-seizoenskalender-2027"><span class="nav__num">11</span><span class="nav__label">Seizoenskalender 2027</span></a>
+<a class="nav__item" href="#12-90-dagenplan"><span class="nav__num">12</span><span class="nav__label">90-dagenplan</span></a>
+<a class="nav__item" href="#13-kpi-dashboard"><span class="nav__num">13</span><span class="nav__label">KPI-dashboard</span></a>
+<a class="nav__item" href="#14-backlog"><span class="nav__num">14</span><span class="nav__label">Backlog</span></a>
+<a class="nav__item" href="#15-de-10-acties-die-ik-als-eerste-zou-uitvoeren"><span class="nav__num">15</span><span class="nav__label">De 10 acties die ik als eerste zou uitvoeren</span></a>
+  </nav>
+  <main class="doc">
+    <section class="sec sec--intro"><p><strong>Doel:</strong> twee lodges (De Heide, De Eik) structureel hoog bezetten in 2027, tegen een winstgevende gemiddelde nachtprijs, met een groeiend aandeel directe organische boekingen.</p>
+<p><strong>Opgesteld:</strong> augustus 2026
+<strong>Databronnen:</strong> Google Search Console export "Zoekopdrachten" (221 queries) + "Pagina's" (35 URL's), de codebase van huisterhuynen.nl (bron voor alle feitelijke accommodatie-eigenschappen), en live Google-SERP's (augustus 2026).</p>
+<hr />
+<h2>Bronverantwoording &amp; databeperkingen</h2>
+<p>Lees dit eerst. Het bepaalt hoe hard elke conclusie hieronder is.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Betekenis</th>
+<th>Waar gebruikt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><span class="src src--gsc">GSC</span></strong></td>
+<td>First-party Google Search Console data uit de twee aangeleverde exports. Hard.</td>
+<td>Alle impressie-, klik-, CTR- en positiecijfers</td>
+</tr>
+<tr>
+<td><strong><span class="src src--code">CODE</span></strong></td>
+<td>Afgeleid uit de repository van de website zelf (<code>src/</code>). Hard — dit ís de site.</td>
+<td>Alle uitspraken over titles, H1's, CTA's, schema, funnel</td>
+</tr>
+<tr>
+<td><strong><span class="src src--serp">SERP</span></strong></td>
+<td>Live Google-resultaten, opgehaald augustus 2026 via zoekopdrachten. Momentopname.</td>
+<td>Concurrentiebenchmark</td>
+</tr>
+<tr>
+<td><strong><span class="src src--analyse">ANALYSE</span></strong></td>
+<td>Mijn eigen berekening op basis van <span class="src src--gsc">GSC</span>. Reproduceerbaar.</td>
+<td>Clustering, opportunity score, positiebuckets</td>
+</tr>
+<tr>
+<td><strong><span class="src src--aanname">AANNAME</span></strong></td>
+<td>Schatting of branchebenchmark. Expliciet gemarkeerd, altijd met bandbreedte.</td>
+<td>Funnelconversies, revenuemodel, forecast</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Vier beperkingen die u moet kennen:</strong></p>
+<ol>
+<li><strong>De meetperiode van de GSC-export is onbekend.</strong> Er staat geen datumbereik in de bestanden. Alle "per maand"-cijfers in dit rapport gaan uit van een <strong>periode van 3 maanden</strong> en zijn daarom gemarkeerd als <span class="src src--aanname">AANNAME</span>. <em>Benodigde input: exporteer opnieuw met zichtbaar datumbereik.</em> Dit verandert de forecast met een factor 3 als het 1 maand blijkt te zijn.</li>
+<li><strong>De twee datasets sluiten niet op elkaar aan.</strong> Queries: 3.861 impressies / 8 klikken. Pagina's: 7.288 impressies / 85 klikken. Dat is normaal — Google anonimiseert zeldzame zoekopdrachten weg uit de query-export — maar het betekent dat de query-lijst <strong>ongeveer de helft</strong> van uw werkelijke vertoningen dekt. Conclusies over totalen komen daarom uit de pagina-export, conclusies over zoekgedrag uit de query-export.</li>
+<li><strong>Geen externe zoekvolumes.</strong> Ik heb geen betrouwbare Ahrefs/Semrush-data. Er staat <strong>geen enkel verzonnen zoekvolume</strong> in dit rapport. Waar ik "vraag" zeg, bedoel ik GSC-impressies als first-party proxy.</li>
+<li><strong>De concurrentiebenchmark is SERP-gebaseerd, niet on-page.</strong> De omgeving waarin dit rapport is gemaakt blokkeert het ophalen van externe pagina's. Ik kan dus wel hard vaststellen <em>wie</em> rankt, met welke URL, welk paginatype en welke positionering — maar ik heb de concurrentpagina's niet regel voor regel kunnen uitmeten (exacte woordaantallen, H2-structuur, aantal foto's). Waar ik daarover iets zeg, staat het als hypothese. Ik heb dat niet ingevuld met plausibel klinkende verzinsels.</li>
+</ol>
+<hr />
+</section><section class="sec" id="executive-summary"><header class="sec__head"><h2>Executive Summary</h2></header>
+<p><strong>Wat er aan de hand is.</strong></p>
+<p>Huis ter Huynen heeft in de gemeten periode 7.288 vertoningen en 85 klikken opgehaald <span class="src src--gsc">GSC</span>. Van de 8 klikken in de query-dataset komen er <strong>8 uit merknaam-zoekopdrachten</strong> — "huis ter huynen", "huis ter zeijen", "huynen" <span class="src src--analyse">ANALYSE</span>. Dat betekent: <strong>nul niet-merkgebonden klikken.</strong> De site trekt op dit moment geen enkele nieuwe gast aan via Google.</p>
+<p>De oorzaak is niet subtiel. <strong>92,3% van alle vertoningen valt op positie 31 of lager</strong> <span class="src src--analyse">ANALYSE</span>. Slechts 2,3% van de vertoningen zit in de top 10. De gemiddelde gewogen positie is 49,5. Google kent de site, toont hem regelmatig — op pagina 4, 5 en 6, waar niemand kijkt.</p>
+<p>Dit is de belangrijkste conclusie van het hele rapport, en hij spreekt de opdracht op één punt tegen: <strong>u heeft geen CTR-probleem. U heeft een ranking-probleem.</strong> Van de 35 pagina's zijn er precies drie waar een lage CTR echt aan de snippet ligt. Bij alle andere is de CTR laag omdat de positie te laag is om überhaupt geklikt te worden. Titeloptimalisatie is in dit rapport daarom bewust naar achteren geschoven — het is werk voor stap twee, niet stap één.</p>
+<p><strong>Waar de grootste kans ligt.</strong></p>
+<p>Drie observaties, alle drie direct te verzilveren:</p>
+<ol>
+<li>
+<p><strong>Uw commerciële pagina's presteren 13× slechter dan uw blogs.</strong> De commerciële landingspagina's halen 5.111 vertoningen en 13 klikken (CTR 0,25%). De blogs en informatiepagina's halen 2.177 vertoningen en 72 klikken (CTR 3,31%) <span class="src src--analyse">ANALYSE</span>. Uw geldpagina's krijgen 70% van de zichtbaarheid en leveren 15% van het verkeer. Ze staan te laag en ze onderscheiden zich niet.</p>
+</li>
+<li>
+<p><strong>U schrijft "hottub", uw markt zoekt "jacuzzi".</strong> Zoekopdrachten met "jacuzzi": 754 vertoningen. Met "hottub": 249 <span class="src src--analyse">ANALYSE</span>. Uw URL, uw title, uw H1, uw navigatielabel en uw complete paginatekst zeggen consequent "hottub" <span class="src src--code">CODE</span>. U mist daarmee de grootste commerciële cluster die u heeft (26% van alle vertoningen). Hetzelfde patroon bij "huisje" (643 vertoningen) versus uw eigen woord "vakantiehuis" (549) — geen enkele pagina target "huisje".</p>
+</li>
+<li>
+<p><strong>Eén zoekterm staat al binnen bereik.</strong> "romantisch weekendje weg drenthe": 95 vertoningen, positie 26,4 <span class="src src--gsc">GSC</span>. Dat is de enige commerciële term met echt volume die dicht genoeg bij pagina 1 staat om er dit jaar te komen. De bijbehorende pagina heeft 1.305 vertoningen en nul klikken. Dit is de hoogste prioriteit op de hele lijst.</p>
+</li>
+</ol>
+<p><strong>Wat we onmiddellijk moeten doen.</strong></p>
+<p>De vier P0-acties, uit te voeren in de komende twee weken:</p>
+<ol>
+<li><strong>Herbouw <code>/wellness-vakantie-drenthe</code></strong> — 1.526 vertoningen, positie 62,6, nul klikken. Grootste pagina van de site, slechtste positie. Retarget naar "wellness huisje drenthe".</li>
+<li><strong>Voeg "jacuzzi" toe</strong> aan title, H1, intro en FAQ van <code>/vakantiehuis-met-hottub-drenthe</code> (URL laten staan). Kost een uur, raakt 754 vertoningen aan vraag.</li>
+<li><strong>Duw <code>/romantisch-weekend-weg-drenthe</code> van 26 naar de top 10</strong> — de enige realistische pagina-1-kans binnen 6 maanden.</li>
+<li><strong>Repareer de conversiepaden.</strong> Elke landingspagina-CTA springt nu naar <code>/#reserveren</code> op de homepage <span class="src src--code">CODE</span> — de bezoeker verliest zijn context (wellness, romantiek, hottub) én belandt in een <em>aanvraag</em>formulier zonder prijszekerheid. Dat is de duurste lek in de funnel en het staat volledig los van SEO.</li>
+</ol>
+<p><strong>Eén verwachting die bijgesteld moet worden.</strong> Het doel van 30.000 vertoningen per maand is haalbaar, maar het is 3 à 4× méér dan u nodig heeft om twee lodges vol te krijgen. De rekensom staat in deel 10. Sturen op 30.000 vertoningen leidt u naar informatieve content die geen boekingen oplevert. Het juiste doel is ~8.000–10.000 <em>commerciële</em> vertoningen per maand bij een CTR van 3,5%. Zie deel 10 voor de onderbouwing en een beter KPI-voorstel.</p>
+<hr />
+</section>
+<section class="sec" id="1-seo-audit"><header class="sec__head"><span class="sec__num">1</span><h2>SEO Audit</h2></header>
+<h2>1.1 Techniek</h2>
+<p>Het technische fundament is beter dan gemiddeld voor een accommodatiesite. Er is een dynamische sitemap met hreflang-koppelingen, correcte canonicals, LodgingBusiness-schema met <code>containsPlace</code> per lodge, FAQPage- en BreadcrumbList-schema op alle landingspagina's, en per-pagina OG-images <span class="src src--code">CODE</span>. Dat is geen doorsnee-implementatie; die complimenten zijn verdiend.</p>
+<p>De problemen zitten elders.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Bevinding</th>
+<th>Bewijs</th>
+<th>Impact</th>
+<th>Actie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td><strong>Geen <code>Offer</code>/prijsdata in schema.</strong> <code>LodgingBusiness</code> heeft alleen <code>priceRange: "€€€"</code>. De echte vanafprijs (€165) staat wél in de paginatekst, maar niet machineleesbaar.</td>
+<td><span class="src src--code">CODE</span> <code>layout.tsx</code>, <code>PRICE_FROM_EUR</code></td>
+<td>Hoog — blokkeert prijs-rich-results en Google's hotel/vakantiehuis-surfaces</td>
+<td>Voeg <code>makesOffer</code> met <code>priceSpecification</code> (€165, EUR, per nacht) toe aan de LodgingBusiness, en een <code>Offer</code> per <code>Accommodation</code></td>
+</tr>
+<tr>
+<td>T2</td>
+<td><strong>Geen <code>aggregateRating</code> / <code>Review</code>-schema.</strong></td>
+<td><span class="src src--code">CODE</span></td>
+<td>Hoog — sterren in de SERP zijn de sterkste CTR-hefboom die er is</td>
+<td>Zodra er ≥5 echte reviews zijn: <code>aggregateRating</code> toevoegen. Nooit eerder, nooit verzonnen</td>
+</tr>
+<tr>
+<td>T3</td>
+<td><strong>Eén blog-URL is een volledige alinea.</strong> <code>/blog/fietsen-in-drenthe-is-misschien-wel-de-mooiste-manier-om-de-provincie-echt-te-beleven-uitgestrekte-heidevelden-eeuwenoude-bossen-kronkelende-beekdalen-karakteristieke-brinkdorpen-en-kilometers-autoluwe-fietspaden-maken-drenthe-tot-een-waar-paradijs-voor-fietsers</code> — 28 vertoningen, positie 30,1</td>
+<td><span class="src src--gsc">GSC</span></td>
+<td>Middel — onklikbaar in de SERP, wordt afgekapt, oogt als spam</td>
+<td>301 naar <code>/blog/fietsen-in-drenthe</code>; slug-lengte begrenzen bij het aanmaken</td>
+</tr>
+<tr>
+<td>T4</td>
+<td><strong><code>/de</code> staat op positie 32,6 met 192 vertoningen en de Duitse rechtspagina's worden geïndexeerd</strong> (<code>/impressum</code> 28 vertoningen, <code>/datenschutz</code> 21, <code>/agb</code> 14)</td>
+<td><span class="src src--gsc">GSC</span></td>
+<td>Laag-middel — rechtspagina's kannibaliseren geen omzet maar verdunnen wel de crawl</td>
+<td><code>/impressum</code>, <code>/datenschutz</code>, <code>/agb</code>, <code>/privacy</code>, <code>/terms</code> op <code>noindex, follow</code>. Ze staan nu wel in <code>robots.txt</code>-vrije ruimte en in de sitemap</td>
+</tr>
+<tr>
+<td>T5</td>
+<td><strong><code>/welkom</code> staat in de sitemap met priority 0,4</strong> — 13 vertoningen, positie 4,6, 1 klik. Dit is een interne/gast-pagina</td>
+<td><span class="src src--gsc">GSC</span> <span class="src src--code">CODE</span> <code>sitemap.ts</code></td>
+<td>Laag</td>
+<td>Uit de sitemap, <code>noindex</code></td>
+</tr>
+<tr>
+<td>T6</td>
+<td><strong>Geen <code>hreflang</code> op paginaniveau, alleen in de sitemap.</strong> De 4 NL↔DE-paren zijn wel gekoppeld in <code>sitemap.ts</code>, maar de landingspagina's zelf hebben geen <code>alternates.languages</code> in hun metadata</td>
+<td><span class="src src--code">CODE</span> <code>[slug]/page.tsx</code> vs <code>sitemap.ts</code></td>
+<td>Middel voor de DE-markt</td>
+<td><code>alternates.languages</code> toevoegen in <code>generateMetadata</code> van <code>[slug]</code> en <code>de/[slug]</code></td>
+</tr>
+<tr>
+<td>T7</td>
+<td><strong><code>revalidate = 60</code> op alle landingspagina's</strong> — elke minuut hervalidatie voor content die maandelijks wijzigt</td>
+<td><span class="src src--code">CODE</span></td>
+<td>Laag (kosten, niet SEO)</td>
+<td>Naar 3600</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Wat ik níét als probleem zie</strong>, ondanks dat het vaak geadviseerd wordt: de pagina's zijn server-rendered zonder hydratie <span class="src src--code">CODE</span>, de afbeeldingen gaan door <code>next/image</code> met <code>priority</code> op de hero, en er is geen JS-afhankelijke content. Core Web Vitals zijn hier vrijwel zeker niet uw bottleneck. Besteed daar geen budget aan tot de rankings bewegen.</p>
+<h2>1.2 Content</h2>
+<p><strong>Data:</strong> 18 landingspagina's + 12 blogs voor 2 verhuureenheden <span class="src src--code">CODE</span> <span class="src src--gsc">GSC</span>.
+<strong>Observatie:</strong> de site heeft negen keer zoveel commerciële pagina's als producten. Alle landingspagina's delen dezelfde template, dezelfde vier-tot-vijf sectiestructuur, dezelfde FAQ-opzet, dezelfde twee CTA's en grotendeels dezelfde feiten (twee lodges, vier personen, hottub, 20 minuten van Assen) <span class="src src--code">CODE</span>.
+<strong>Hypothese:</strong> Google ziet een set pagina's die elkaar in intentie en inhoud sterk overlappen, en kan geen enkele daarvan als <em>de</em> autoriteit aanwijzen. Dat verklaart waarom vrijwel alle commerciële pagina's rond positie 49–62 blijven hangen in plaats van dat er één doorbreekt.
+<strong>Actie:</strong> consolideren, niet uitbreiden. Zie deel 4 en 11.
+<strong>KPI:</strong> één pagina per intentiecluster binnen de top 20 binnen 6 maanden, in plaats van vijf pagina's op positie 50.</p>
+<p>Dit is mijn belangrijkste inhoudelijke tegenspraak bij de opdracht: <strong>het probleem is niet dat er landingspagina's ontbreken. Het probleem is dat er te veel zijn voor de hoeveelheid autoriteit die de site heeft.</strong> De opdracht vraagt om maximaal 8 nieuwe of te optimaliseren pagina's; mijn advies is 8 pagina's te <em>verbeteren of samen te voegen</em> en er netto slechts <strong>twee</strong> bij te bouwen (de twee lodgepagina's).</p>
+<h2>1.3 Keywords</h2>
+<p>Volledig uitgewerkt in deel 2. De kern in drie regels:</p>
+<ul>
+<li><strong>Vraagverdeling</strong> <span class="src src--analyse">ANALYSE</span>: Hottub/Jacuzzi 26,0% · Weekendje weg 18,6% · Wellness/Sauna 14,3% · Luxe/Lodge 9,4% · Romantiek 6,9% · Locatie 5,1%.</li>
+<li><strong>Woordkeuze-mismatch</strong>: jacuzzi (754) ≫ hottub (249); huisje (643) &gt; vakantiehuis (549).</li>
+<li><strong>Ruis</strong>: 475 vertoningen komen van "hotel"-zoekopdrachten (25 queries) <span class="src src--analyse">ANALYSE</span>. Huis ter Huynen is geen hotel. Deze vertoningen zijn grotendeels onwinbaar én zouden bij een klik slecht converteren. Niet op sturen.</li>
+</ul>
+<h2>1.4 Interne links</h2>
+<p><strong>Data:</strong> elke landingspagina toont in de footer een blok met 13 andere landingspagina's, plus een "Ontdek ook"-blok met 4 handmatig gekozen links <span class="src src--code">CODE</span> <code>LandingTemplate.tsx</code>, <code>LANDING_NAV</code>.
+<strong>Observatie:</strong> de interne linkstructuur is <strong>plat</strong>. Elke pagina linkt naar bijna elke andere pagina, met een generiek label als ankertekst ("Luxe lodge Drenthe"). Er is geen hiërarchie: <code>/hunebedden-drenthe</code> — een informatieve pagina — geeft evenveel interne link-equity door als de commerciële hottub-pagina, en krijgt er evenveel terug.
+<strong>Hypothese:</strong> door alles gelijk te behandelen, concentreert de site geen autoriteit op de pagina's die geld moeten opleveren. Dit is een tweede, onafhankelijke verklaring voor de gelijkmatige positie-49-verdeling.
+<strong>Actie:</strong> hub-and-spoke invoeren met asymmetrische links — zie deel 9 voor de concrete matrix.
+<strong>KPI:</strong> de drie geldpagina's ontvangen elk ≥8 contextuele inkomende links met beschrijvende ankertekst binnen 60 dagen.</p>
+<p>De grootste gemiste kans zit hier: <strong>de best presterende pagina's van de site zijn informatief en linken niet gericht door.</strong> <code>/hunebedden-drenthe</code> (568 vertoningen, positie 13,0), <code>/heide-drenthe</code> (261 vertoningen, positie 9,7) en de blogs rond kanovaren en fietsen (positie 8–10) zijn de enige pagina's met echte zichtbaarheid <span class="src src--gsc">GSC</span>. Die autoriteit lekt nu weg via een generiek footerblok in plaats van via een gerichte contextuele link naar de wellness- en jacuzzipagina.</p>
+<h2>1.5 Local SEO</h2>
+<p><strong>Data:</strong> "overnachten in veenhuizen" staat op positie 15,2 met 40 vertoningen; "veenhuizen overnachten" op 24,1; "natuurhuisje zeijen" op 12,0; "vakantiehuis assen" op 43,5; de pagina <code>/vakantiehuis-assen</code> op 23,4 met 333 vertoningen en 6 klikken (CTR 1,8% — de op één na beste commerciële pagina) <span class="src src--gsc">GSC</span>.
+<strong>Observatie:</strong> de locatiecluster heeft de <strong>hoogste winbaarheid van alle clusters</strong> (0,8 in mijn model) en presteert nu al relatief het best, ondanks de laagste aandacht. Er zijn simpelweg weinig accommodaties in Zeijen, Norg en rond Veenhuizen die om deze termen vechten.
+<strong>Hypothese:</strong> dit is de enige cluster waar Huis ter Huynen op korte termijn structureel top-5 kan staan, omdat het geen concurrentie is tegen portals maar tegen een handvol lokale aanbieders.
+<strong>Actie:</strong> zie deel 7 — Google Business Profile is hier de hefboom, niet de website.
+<strong>KPI:</strong> top-5 op "vakantiehuis assen", "overnachten veenhuizen" en "natuurhuisje zeijen" binnen 90 dagen.</p>
+<p><strong>Google Business Profile:</strong> ik kan vanuit deze omgeving niet verifiëren of er een GBP bestaat en hoe die is ingericht. <em>Benodigde input.</em> Als er geen geverifieerd profiel is, is dat op dit moment waarschijnlijk de <strong>hoogste ROI-actie van het hele rapport</strong> — hoger dan welke pagina-optimalisatie ook. Zie 7.1.</p>
+<h2>1.6 CRO</h2>
+<p>Uitgebreid in deel 8. De twee structurele bevindingen:</p>
+<p><strong>CRO-1 — De landingspagina-CTA gooit de bezoeker uit zijn context.</strong>
+Alle CTA's op alle landingspagina's linken naar <code>/#reserveren</code> <span class="src src--code">CODE</span> <code>LandingTemplate.tsx</code>. Iemand die binnenkomt op "romantisch weekendje weg drenthe" landt na één klik op een generieke homepage-sectie zonder enige verwijzing naar romantiek, zonder voorgeselecteerde lodge en zonder voorgeselecteerde data. Elke wissel van pagina in een boekingsfunnel kost bezoekers; deze wissel kost bovendien de complete emotionele opbouw van de landingspagina.</p>
+<p><strong>CRO-2 — De site boekt niet, hij vraagt aan.</strong>
+De funnel eindigt in "Geef uw gewenste data door, dan reserveren wij die persoonlijk voor u. U ontvangt binnen 24 uur een aanbod op maat" en "De definitieve prijs wordt door ons bevestigd na je aanvraag" <span class="src src--code">CODE</span> <code>page.tsx</code>, <code>BookingCalendar.tsx</code>. De bezoeker verlaat de site <strong>zonder prijs en zonder bevestiging</strong>, met een wachttijd van 24 uur.</p>
+<p>Dat is een bewuste keuze met een echte opbrengst (persoonlijk contact, hogere marge, geen OTA-commissie) en ik adviseer niet om hem zomaar overboord te gooien. Maar het is wel de duurste stap in uw funnel: iedere concurrent in de SERP-benchmark biedt directe bevestiging. Zie 8.4 voor hoe u het persoonlijke karakter behoudt en tóch de drempel verlaagt.</p>
+<hr />
+</section>
+<section class="sec" id="2-keyword-opportunity-map"><header class="sec__head"><span class="sec__num">2</span><h2>Keyword Opportunity Map</h2></header>
+<h2>2.1 Totaalbeeld</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Waarde</th>
+<th>Bron</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zoekopdrachten</td>
+<td>221</td>
+<td><span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td>Vertoningen (query-export)</td>
+<td>3.861</td>
+<td><span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td>Klikken (query-export)</td>
+<td>8</td>
+<td><span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td>CTR</td>
+<td>0,21%</td>
+<td><span class="src src--analyse">ANALYSE</span></td>
+</tr>
+<tr>
+<td>Gewogen gemiddelde positie</td>
+<td>49,5</td>
+<td><span class="src src--analyse">ANALYSE</span></td>
+</tr>
+<tr>
+<td>Niet-merkgebonden klikken</td>
+<td><strong>0</strong></td>
+<td><span class="src src--analyse">ANALYSE</span></td>
+</tr>
+</tbody>
+</table></div>
+<h2>2.2 Positieverdeling — de kernbevinding</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Positie</th>
+<th>Queries</th>
+<th>Vertoningen</th>
+<th>Aandeel</th>
+<th>Klikken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–10</td>
+<td>16</td>
+<td>90</td>
+<td>2,3%</td>
+<td>8</td>
+</tr>
+<tr>
+<td>11–20</td>
+<td>15</td>
+<td>82</td>
+<td>2,1%</td>
+<td>0</td>
+</tr>
+<tr>
+<td>21–30</td>
+<td>9</td>
+<td>127</td>
+<td>3,3%</td>
+<td>0</td>
+</tr>
+<tr>
+<td>31–50</td>
+<td>63</td>
+<td>1.343</td>
+<td>34,8%</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>50+</strong></td>
+<td><strong>118</strong></td>
+<td><strong>2.219</strong></td>
+<td><strong>57,5%</strong></td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--analyse">ANALYSE</span></p>
+<p>Lees deze tabel goed. <strong>57,5% van uw zichtbaarheid staat voorbij positie 50.</strong> Nog eens 34,8% staat tussen 31 en 50. Alle acht klikken komen uit de top 10, en die top 10 is bijna volledig merknaam.</p>
+<p>Dit is waarom ik de opdracht op het punt van CTR-optimalisatie tegenspreek: bij positie 50 is de verwachte CTR 0,0–0,1%. Een perfecte title verandert daar niets aan, omdat niemand pagina 5 bekijkt. Titelwerk levert pas rendement op vanaf ongeveer positie 15.</p>
+<h2>2.3 Clusters</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Cluster</th>
+<th>Queries</th>
+<th>Vertoningen</th>
+<th>Aandeel</th>
+<th>Gew. positie</th>
+<th>Boekingsintentie</th>
+<th>Winbaarheid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hottub / Jacuzzi</td>
+<td>21</td>
+<td>1.003</td>
+<td>26,0%</td>
+<td>51,8</td>
+<td>5/5</td>
+<td>0,45</td>
+</tr>
+<tr>
+<td>Weekendje weg</td>
+<td>7</td>
+<td>718</td>
+<td>18,6%</td>
+<td>49,7</td>
+<td>3/5</td>
+<td><strong>0,15</strong></td>
+</tr>
+<tr>
+<td>Wellness / Sauna</td>
+<td>37</td>
+<td>554</td>
+<td>14,3%</td>
+<td>51,0</td>
+<td>4/5</td>
+<td>0,45</td>
+</tr>
+<tr>
+<td>Luxe / Lodge / Boutique</td>
+<td>10</td>
+<td>364</td>
+<td>9,4%</td>
+<td>52,2</td>
+<td>4/5</td>
+<td>0,40</td>
+</tr>
+<tr>
+<td>Romantiek / Koppels</td>
+<td>7</td>
+<td>266</td>
+<td>6,9%</td>
+<td><strong>41,9</strong></td>
+<td>5/5</td>
+<td>0,50</td>
+</tr>
+<tr>
+<td>Locatie (Assen/Norg/Veenhuizen/Zeijen)</td>
+<td>25</td>
+<td>198</td>
+<td>5,1%</td>
+<td>44,6</td>
+<td>4/5</td>
+<td><strong>0,80</strong></td>
+</tr>
+<tr>
+<td>Bijzonder overnachten</td>
+<td>7</td>
+<td>180</td>
+<td>4,7%</td>
+<td>62,1</td>
+<td>4/5</td>
+<td>0,30</td>
+</tr>
+<tr>
+<td>Natuur &amp; activiteiten</td>
+<td>21</td>
+<td>136</td>
+<td>3,5%</td>
+<td>48,0</td>
+<td>1/5</td>
+<td>0,65</td>
+</tr>
+<tr>
+<td>Concurrent / navigational</td>
+<td>34</td>
+<td>134</td>
+<td>3,5%</td>
+<td>45,0</td>
+<td>2/5</td>
+<td>0,10</td>
+</tr>
+<tr>
+<td>Hunebedden</td>
+<td>15</td>
+<td>88</td>
+<td>2,3%</td>
+<td>33,6</td>
+<td>1/5</td>
+<td>0,60</td>
+</tr>
+<tr>
+<td>Hond</td>
+<td>14</td>
+<td>74</td>
+<td>1,9%</td>
+<td>72,9</td>
+<td>4/5</td>
+<td>0,50</td>
+</tr>
+<tr>
+<td>Merk</td>
+<td>10</td>
+<td>69</td>
+<td>1,8%</td>
+<td><strong>15,3</strong></td>
+<td>5/5</td>
+<td>1,00</td>
+</tr>
+<tr>
+<td>Duitsland (DE)</td>
+<td>5</td>
+<td>50</td>
+<td>1,3%</td>
+<td>51,1</td>
+<td>4/5</td>
+<td>0,75</td>
+</tr>
+<tr>
+<td>Heide</td>
+<td>7</td>
+<td>26</td>
+<td>0,7%</td>
+<td><strong>20,1</strong></td>
+<td>2/5</td>
+<td>0,70</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--analyse">ANALYSE</span> — winbaarheid geschat op basis van de SERP-check in deel 3, schaal 0–1.</p>
+<p><strong>Drie dingen die opvallen en tegen de intuïtie ingaan:</strong></p>
+<ul>
+<li><strong>Weekendje weg is de op één na grootste cluster (18,6%) en de slechtst winbare (0,15).</strong> Zie deel 3: deze SERP is volledig eigendom van OTA's en portals. Ik adviseer nadrukkelijk om hier <em>geen</em> hoofdlandingspagina op te bouwen. Meer daarover in 2.6.</li>
+<li><strong>De merkcluster staat op gemiddeld positie 15,3.</strong> Voor uw eigen naam. "huis ter huynen" staat weliswaar op 3,9, maar "huynen" op 19,6 en "landgoed de huynen" op 61,2. Dat is een merk dat Google nog niet als entiteit heeft vastgelegd — een probleem dat u met GBP en citaties oplost, niet met content.</li>
+<li><strong>De hondcluster staat op positie 72,9</strong>, de slechtste van alle clusters, terwijl er wel 14 queries en 74 vertoningen zijn. En uw eigen propositie is "honden zijn in overleg welkom" <span class="src src--code">CODE</span>. Dat is geen propositie waarmee u een SERP wint. Beslis: óf u wordt echt hondvriendelijk (omheinde tuin — er wordt letterlijk op "huisje huren met omheinde tuin drenthe" gezocht), óf u laat deze cluster los. Zie deel 4, <code>/vakantiehuis-drenthe-met-hond</code>.</li>
+</ul>
+<h2>2.4 Woordkeuze: waar u de markt misloopt</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Uw woord <span class="src src--code">CODE</span></th>
+<th>Vertoningen</th>
+<th>Woord van de markt</th>
+<th>Vertoningen</th>
+<th>Verschil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hottub</td>
+<td>249</td>
+<td><strong>jacuzzi</strong></td>
+<td><strong>754</strong></td>
+<td>3,0×</td>
+</tr>
+<tr>
+<td>vakantiehuis</td>
+<td>549</td>
+<td><strong>huisje</strong></td>
+<td><strong>643</strong></td>
+<td>1,2×</td>
+</tr>
+<tr>
+<td>lodge</td>
+<td>27</td>
+<td>(huisje / vakantiehuis)</td>
+<td>1.192</td>
+<td>44×</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--analyse">ANALYSE</span></p>
+<p><strong>Data:</strong> "lodge" komt voor in 8 zoekopdrachten met samen 27 vertoningen. "Huisje" en "vakantiehuis" samen: 1.192 vertoningen.
+<strong>Observatie:</strong> het woord waarmee u uw product benoemt — lodge — is vrijwel geen zoekwoord. Uw homepage-title begint ermee: "Lodge Drenthe | Vakantiewoning met Hottub bij Assen" <span class="src src--code">CODE</span>.
+<strong>Hypothese:</strong> "lodge" is uw merktaal, geen markttaal. Het mag in de merkbeleving blijven, maar het hoort niet vooraan in de title van de belangrijkste pagina van de site.
+<strong>Actie:</strong> homepage-title herschrijven (zie deel 7), "jacuzzi" en "huisje" opnemen in H1/intro/FAQ van de commerciële pagina's.
+<strong>KPI:</strong> vertoningen op jacuzzi-queries +100% binnen 90 dagen; eerste niet-merkgebonden klikken binnen 60 dagen.</p>
+<p>Let op de nuance: dit is <strong>geen</strong> advies om "lodge" overal te vervangen. Google begrijpt jacuzzi/hottub als vrijwel synoniem, dus u wint hier geen ranking door woordvervanging alleen — u wint doordat de snippet het woord toont dat de zoeker net heeft ingetypt, en doordat de pagina aantoonbaar over hun onderwerp gaat. Het is een ondersteunende actie, geen wondermiddel.</p>
+<h2>2.5 Het Opportunity Score-model</h2>
+<p>Score van 0–100, opgebouwd uit vijf componenten. Volledig reproduceerbaar; het script staat in de bijlage-omschrijving onderaan.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Max</th>
+<th>Berekening</th>
+<th>Waarom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Vraag</strong></td>
+<td>25</td>
+<td><code>25 × ln(1+impressies) / ln(1+310)</code></td>
+<td>Logaritmisch, want het verschil tussen 10 en 100 vertoningen telt zwaarder dan tussen 200 en 300. 310 = hoogste waarde in de dataset</td>
+</tr>
+<tr>
+<td><strong>Positie-upside</strong></td>
+<td>20</td>
+<td>pos ≤3 → 4 · 4–10 → 20 · 11–20 → 18 · 21–30 → 14 · 31–50 → 8 · 50+ → 4</td>
+<td>Niet "hoe laag sta ik", maar "hoeveel valt hier realistisch te winnen". Positie 60 krijgt bewust een lage score: daar is geen quick win, daar is herbouw nodig</td>
+</tr>
+<tr>
+<td><strong>Commerciële intentie</strong></td>
+<td>30</td>
+<td><code>30 × (boekingsnabijheid − 1) / 4</code></td>
+<td>Zwaarst wegend. Boekingsnabijheid 1–5 per query bepaald (zie 2.6)</td>
+</tr>
+<tr>
+<td><strong>Relevantie</strong></td>
+<td>15</td>
+<td><code>15 × relevantiefactor (0–1)</code></td>
+<td>Past de zoekopdracht bij 2 lodges voor max 4 personen met privé-jacuzzi? "hotel veenhuizen" scoort 0,25</td>
+</tr>
+<tr>
+<td><strong>Winbaarheid</strong></td>
+<td>10</td>
+<td><code>10 × winbaarheidsfactor (0–1)</code></td>
+<td>Uit de SERP-benchmark. Portal-gedomineerde SERP's scoren laag</td>
+</tr>
+</tbody>
+</table></div>
+<p>De weging is bewust: <strong>intentie (30) weegt zwaarder dan vraag (25)</strong>, omdat het doel omzet is en niet verkeer. En positie-upside (20) weegt zwaarder dan winbaarheid (10), omdat winbaarheid een inschatting is en positie een meting.</p>
+<h2>2.6 Zoekintentie &amp; boekingsnabijheid</h2>
+<p>Classificatie per cluster, met de boekingsnabijheid op een schaal van 1 (ver van een boeking) tot 5 (direct voor een boeking).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Cluster</th>
+<th>Zoekintentie</th>
+<th>Boekingsnabijheid</th>
+<th>Toelichting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hottub / Jacuzzi</td>
+<td>Transactional</td>
+<td><strong>5/5</strong></td>
+<td>"huisje met jacuzzi drenthe" is een productzoekopdracht. De zoeker weet wat hij wil en zoekt waar</td>
+</tr>
+<tr>
+<td>Romantiek / Koppels</td>
+<td>Transactional</td>
+<td><strong>5/5</strong></td>
+<td>Gelegenheidsgedreven, korte beslistijd, lage prijsgevoeligheid</td>
+</tr>
+<tr>
+<td>Merk</td>
+<td>Navigational</td>
+<td>5/5</td>
+<td>Al overtuigd</td>
+</tr>
+<tr>
+<td>Wellness / Sauna</td>
+<td>Commercial investigation</td>
+<td>4/5</td>
+<td>Vergelijkt nog; "wellness huisje drenthe" is wel transactioneel (5/5), "dagje wellness drenthe" juist niet (1/5 — dat zijn saunabezoekers, geen overnachters)</td>
+</tr>
+<tr>
+<td>Luxe / Boutique</td>
+<td>Commercial investigation</td>
+<td>4/5</td>
+<td>Vaak nog aan het oriënteren op type accommodatie</td>
+</tr>
+<tr>
+<td>Locatie</td>
+<td>Local intent</td>
+<td>4/5</td>
+<td>Bestemming staat vast, accommodatie nog niet</td>
+</tr>
+<tr>
+<td>Bijzonder overnachten</td>
+<td>Commercial investigation</td>
+<td>4/5</td>
+<td>Inspiratiefase, maar met boekingsbedoeling</td>
+</tr>
+<tr>
+<td>Duitsland (DE)</td>
+<td>Commercial investigation</td>
+<td>4/5</td>
+<td></td>
+</tr>
+<tr>
+<td>Hond</td>
+<td>Transactional</td>
+<td>4/5</td>
+<td>Harde filtereis</td>
+</tr>
+<tr>
+<td>Weekendje weg</td>
+<td>Commercial investigation</td>
+<td><strong>3/5</strong></td>
+<td>Bestemming én accommodatietype nog open. Veel breder dan het lijkt</td>
+</tr>
+<tr>
+<td>Heide</td>
+<td>Informational</td>
+<td>2/5</td>
+<td>Seizoensgebonden inspiratie</td>
+</tr>
+<tr>
+<td>Concurrent</td>
+<td>Navigational</td>
+<td>2/5</td>
+<td>Zoekt iemand anders</td>
+</tr>
+<tr>
+<td>Hunebedden / Natuur</td>
+<td>Informational</td>
+<td><strong>1/5</strong></td>
+<td>Dagjesmensen en schoolopdrachten</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Tegenspraak bij de opdracht.</strong> De briefing noemt "weekendje weg Drenthe" als kandidaat-hoofdlandingspagina en geeft "romantisch weekendje weg Drenthe" een 5/5. Dat tweede klopt. Het eerste niet: <strong>"weekendje weg drenthe" is een 3/5, geen 5/5</strong>, omdat de zoeker in die fase nog niet weet of hij een hotel, een camping, een bungalowpark of een huisje wil. Gecombineerd met een winbaarheid van 0,15 is dit de slechtste investering op de hele lijst — hoge kosten, laag rendement, en de klikken die u wél binnenhaalt, converteren slecht.</p>
+<h2>2.7 Top 15 op Opportunity Score</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Zoekopdracht</th>
+<th>Score</th>
+<th>Vert.</th>
+<th>Positie</th>
+<th>Cluster</th>
+<th>Intentie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>huis ter huynen</td>
+<td>90,1</td>
+<td>31</td>
+<td>3,9</td>
+<td>Merk</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>huis ter zeijen</td>
+<td>86,2</td>
+<td>12</td>
+<td>3,7</td>
+<td>Merk</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>romantisch weekendje weg drenthe</strong></td>
+<td><strong>83,9</strong></td>
+<td>95</td>
+<td>26,4</td>
+<td>Romantiek</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>huynen</td>
+<td>80,8</td>
+<td>5</td>
+<td>19,6</td>
+<td>Merk</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>hottub drenthe</strong></td>
+<td>78,5</td>
+<td>122</td>
+<td>39,6</td>
+<td>Hottub</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>huisje met hottub drenthe</strong></td>
+<td>78,2</td>
+<td>116</td>
+<td>41,5</td>
+<td>Hottub</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>romantisch overnachten drenthe</strong></td>
+<td>78,1</td>
+<td>100</td>
+<td>46,5</td>
+<td>Romantiek</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>8</td>
+<td>overnachten in veenhuizen</td>
+<td>77,4</td>
+<td>40</td>
+<td>15,2</td>
+<td>Locatie</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>weekendje drenthe met privé jacuzzi</strong></td>
+<td>77,1</td>
+<td>89</td>
+<td>41,4</td>
+<td>Hottub</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>10</td>
+<td>drentse hottub</td>
+<td>75,5</td>
+<td>3</td>
+<td>5,7</td>
+<td>Hottub</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>wellness huis drenthe</strong></td>
+<td>75,2</td>
+<td>82</td>
+<td>43,1</td>
+<td>Wellness</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>wellness weekend drenthe</strong></td>
+<td>75,2</td>
+<td>82</td>
+<td>45,2</td>
+<td>Wellness</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>13</td>
+<td>particulier vakantiehuis met jacuzzi drenthe</td>
+<td>75,0</td>
+<td>55</td>
+<td>49,7</td>
+<td>Hottub</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>14</td>
+<td>locatie vriendinnenweekend drenthe</td>
+<td>74,0</td>
+<td>9</td>
+<td>20,7</td>
+<td>Romantiek</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>wellness huisje drenthe</strong></td>
+<td>73,2</td>
+<td>128</td>
+<td>55,4</td>
+<td>Wellness</td>
+<td>5/5</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--analyse">ANALYSE</span> — vetgedrukt = niet-merkgebonden, met ≥80 vertoningen.</p>
+<h2>2.8 Quick wins — en waarom het er bijna geen zijn</h2>
+<p>De opdracht vraagt naar zoekwoorden op positie 8–20 met voldoende vertoningen en commerciële intentie. Dat is de juiste vraag. Het antwoord is alleen ontnuchterend:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Zoekopdracht</th>
+<th>Vert.</th>
+<th>Positie</th>
+<th>Cluster</th>
+<th>Bruikbaar?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>overnachten in veenhuizen</td>
+<td>40</td>
+<td>15,2</td>
+<td>Locatie</td>
+<td><strong>Ja</strong></td>
+</tr>
+<tr>
+<td>huynen</td>
+<td>5</td>
+<td>19,6</td>
+<td>Merk</td>
+<td>Ja (merk)</td>
+</tr>
+<tr>
+<td>arjan reinders</td>
+<td>4</td>
+<td>19,2</td>
+<td>Merk</td>
+<td>Nee (persoonsnaam)</td>
+</tr>
+<tr>
+<td>natuurhuisje zeijen</td>
+<td>3</td>
+<td>12,0</td>
+<td>Locatie</td>
+<td>Marginaal</td>
+</tr>
+<tr>
+<td>privates ferienhaus</td>
+<td>1</td>
+<td>10,0</td>
+<td>DE</td>
+<td>Nee</td>
+</tr>
+<tr>
+<td>drenthe spa</td>
+<td>1</td>
+<td>12,0</td>
+<td>Wellness</td>
+<td>Nee</td>
+</tr>
+<tr>
+<td>sauna drente</td>
+<td>1</td>
+<td>13,0</td>
+<td>Wellness</td>
+<td>Nee (typefout)</td>
+</tr>
+<tr>
+<td>lodge nederland</td>
+<td>1</td>
+<td>15,0</td>
+<td>Luxe</td>
+<td>Nee</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--analyse">ANALYSE</span> — filter: positie 8–20, boekingsnabijheid ≥3.</p>
+<p><strong>Er is precies één echte quick win: "overnachten in veenhuizen" (40 vertoningen, positie 15,2).</strong> De rest heeft 1 tot 5 vertoningen — statistisch ruis.</p>
+<p>Dit is belangrijk om vooraf te weten, want het bepaalt de verwachting voor de eerste maanden. <strong>De standaard-SEO-speelbal "pak de quick wins op positie 11–20" bestaat hier niet.</strong> Bijna alles wat commercieel interessant is, staat op positie 40+. Dat betekent: geen snelle winst in maand 1 en 2, maar herbouwwerk waarvan het rendement in maand 3 tot 6 zichtbaar wordt. Wie in oktober 2026 al klikken verwacht, wordt teleurgesteld — en zou dan ten onrechte kunnen concluderen dat het plan niet werkt.</p>
+<h2>2.9 Striking distance (positie 11–30)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Zoekopdracht</th>
+<th>Vert.</th>
+<th>Positie</th>
+<th>Actie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>romantisch weekendje weg drenthe</strong></td>
+<td>95</td>
+<td>26,4</td>
+<td>Prio 1 — zie deel 5</td>
+</tr>
+<tr>
+<td>overnachten in veenhuizen</td>
+<td>40</td>
+<td>15,2</td>
+<td>Prio 2 — <code>/overnachten-veenhuizen</code> versterken</td>
+</tr>
+<tr>
+<td>slapen in een hunebed</td>
+<td>28</td>
+<td>7,9</td>
+<td>Negeren — informatief, 1/5, wij hebben geen hunebed</td>
+</tr>
+<tr>
+<td>veenhuizen overnachten</td>
+<td>8</td>
+<td>24,1</td>
+<td>Meelift met prio 2</td>
+</tr>
+<tr>
+<td>wanneer bloeit de heide in drenthe</td>
+<td>14</td>
+<td>10,9</td>
+<td>Behouden — seizoensverkeer, zie deel 6</td>
+</tr>
+<tr>
+<td>huis ter zeijen</td>
+<td>12</td>
+<td>3,7</td>
+<td>Merk, al goed</td>
+</tr>
+<tr>
+<td>locatie vriendinnenweekend drenthe</td>
+<td>9</td>
+<td>20,7</td>
+<td>Kans — nieuwe H2 op romantiekpagina, niet een eigen pagina</td>
+</tr>
+<tr>
+<td>veentjesroute zeijen</td>
+<td>5</td>
+<td>22,4</td>
+<td>Meelift met wandelcontent</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--analyse">ANALYSE</span></p>
+<p>De striking-distance-lijst is dun: <strong>9 queries met samen 127 vertoningen.</strong> Ook dit onderstreept dat de site nog niet in de fase van fijnslijpen zit.</p>
+<h2>2.10 Hoge vertoningen, geen klikken — CTR-probleem of ranking-probleem?</h2>
+<p>De opdracht vraagt hier expliciet om onderscheid. Dat onderscheid is scherp te maken.</p>
+<p><strong>Ranking-probleem (positie &gt; 30) — 24 van de 25 grootste gevallen:</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Zoekopdracht</th>
+<th>Vert.</th>
+<th>Positie</th>
+<th>Diagnose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>weekendje weg drenthe</td>
+<td>310</td>
+<td>53,4</td>
+<td>Ranking. Bovendien onwinbaar (zie deel 3)</td>
+</tr>
+<tr>
+<td>weekend weg drenthe</td>
+<td>282</td>
+<td>46,6</td>
+<td>Ranking + onwinbaar</td>
+</tr>
+<tr>
+<td>luxe hotel drenthe</td>
+<td>168</td>
+<td>55,1</td>
+<td>Ranking + <strong>verkeerde intentie</strong> (hotel)</td>
+</tr>
+<tr>
+<td>boutique hotel drenthe</td>
+<td>161</td>
+<td>51,3</td>
+<td>Ranking + verkeerde intentie (hotel)</td>
+</tr>
+<tr>
+<td>wellness huisje drenthe</td>
+<td>128</td>
+<td>55,4</td>
+<td>Ranking — landingspagina bestaat, staat te laag</td>
+</tr>
+<tr>
+<td>hottub drenthe</td>
+<td>122</td>
+<td>39,6</td>
+<td>Ranking</td>
+</tr>
+<tr>
+<td>huisje met hottub drenthe</td>
+<td>116</td>
+<td>41,5</td>
+<td>Ranking</td>
+</tr>
+<tr>
+<td>romantisch overnachten drenthe</td>
+<td>100</td>
+<td>46,5</td>
+<td>Ranking</td>
+</tr>
+<tr>
+<td>weekendje drenthe met privé jacuzzi</td>
+<td>89</td>
+<td>41,4</td>
+<td>Ranking</td>
+</tr>
+<tr>
+<td>wellness drenthe</td>
+<td>88</td>
+<td>51,1</td>
+<td>Ranking + brede intentie</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Echt CTR-probleem (goede positie, nul klikken) — slechts drie gevallen, alle op paginaniveau:</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Vert.</th>
+<th>Positie</th>
+<th>Klikken</th>
+<th>Diagnose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/blog/kanovaren-drentsche-aa</code></td>
+<td>93</td>
+<td>9,8</td>
+<td><strong>0</strong></td>
+<td><strong>Echt CTR-probleem.</strong> Positie 10, 93 vertoningen, nul klikken. Verwacht bij deze positie: 2–4 klikken</td>
+</tr>
+<tr>
+<td><code>/blog/een-dag-in-norg</code></td>
+<td>41</td>
+<td>9,4</td>
+<td><strong>0</strong></td>
+<td><strong>Echt CTR-probleem</strong></td>
+</tr>
+<tr>
+<td><code>/de/ferienhaus-mit-whirlpool-drenthe</code></td>
+<td>15</td>
+<td>9,5</td>
+<td><strong>0</strong></td>
+<td>CTR-probleem, klein volume</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--gsc">GSC</span> <span class="src src--analyse">ANALYSE</span></p>
+<p><strong>Conclusie:</strong> van de 3.861 vertoningen in de query-export is naar schatting <strong>minder dan 5% toe te schrijven aan een CTR-probleem.</strong> De overige 95% is ranking. Daarom staat het CTR-plan (deel 7) in dit rapport bewust bij <span class="pri pri--p1">P1</span>/P2 en niet bij <span class="pri pri--p0">P0</span> — met één uitzondering: de homepage en de drie pagina's hierboven, waar het wél nu al loont.</p>
+<hr />
+</section>
+<section class="sec" id="3-competitor-benchmark"><header class="sec__head"><span class="sec__num">3</span><h2>Competitor Benchmark</h2></header>
+<p><strong>Methode-verantwoording:</strong> live Google-resultaten opgehaald in augustus 2026 <span class="src src--serp">SERP</span>. Ik heb de concurrentpagina's <em>niet</em> on-page kunnen uitmeten (netwerkbeperking, zie bronverantwoording). Wat hieronder staat over paginatype, positionering en URL-structuur is waarneming. Wat er staat over <em>waarom</em> zij hoger staan, is beargumenteerde hypothese en als zodanig gelabeld.</p>
+<h2>3.1 De belangrijkste bevinding: u concurreert niet met accommodaties</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Zoekopdracht</th>
+<th>Wie domineert de top 10</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>huisje met hottub drenthe</td>
+<td>uniekevakantieplekjes.nl, vakantiehuis-met-bubbelbad.com, liefsuithetnoorden.nl, drentsgenieten.nl, huisje-met-hottub.com, vakantiehuis-met-sauna.com</td>
+<td><strong>Portals &amp; affiliate-listings</strong></td>
+</tr>
+<tr>
+<td>wellness huisje drenthe</td>
+<td>luxevakantieplekjes.nl, drentsgenieten.nl, galekkeropvakantie.nl, vakantiehuis-met-sauna.com, hetgrotezand.nl + wellnesshuisdrenthe.nl</td>
+<td>Portals + 2 losse accommodaties</td>
+</tr>
+<tr>
+<td>weekendje weg drenthe</td>
+<td>hotelspecials.nl, weekendjeweg.nl, heerlijkehuisjes.com, kidsvakantiegids.nl + parken (Norgerberg, Timmerholt, Wildryck)</td>
+<td><strong>OTA's &amp; grote parken</strong></td>
+</tr>
+<tr>
+<td>romantisch weekendje weg drenthe</td>
+<td>hotelspecials.nl, drenthe.nl, leukekleinehotels.nl, vogue.nl, wandergreen.nl + westerburcht.nl</td>
+<td>Portals + 1 hotel</td>
+</tr>
+<tr>
+<td>luxe lodge drenthe</td>
+<td>glampings.nl, reisroutes.nl, checkoutsam.nl + berenkuil.nl, landclubruinen.nl, <strong>deviereiken.nl</strong></td>
+<td>Listicles + glampings</td>
+</tr>
+<tr>
+<td>bijzonder overnachten drenthe</td>
+<td>origineelovernachten.nl, hotelspecials.nl, drenthe.nl, bijzonderplekje.nl, naturescanner.nl, supertrips.nl, bijzondere-accommodaties.nl</td>
+<td><strong>Bijna 100% listicles</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--serp">SERP</span></p>
+<p><strong>Data:</strong> in vijf van de zes onderzochte SERP's bestaat de top 10 voor 60–100% uit portals, OTA's, affiliate-listings en redactionele listicles.
+<strong>Observatie:</strong> Google interpreteert deze zoekopdrachten als <strong>"toon mij een keuzelijst"</strong>, niet als "toon mij één accommodatie". Dat is een intentie-oordeel van Google, geen kwestie van pagina-kwaliteit.
+<strong>Hypothese:</strong> een site met twee verhuureenheden kan een lijstintentie per definitie niet beter bedienen dan een portal met tweehonderd. Dat is de fundamentele reden dat <code>/vakantiehuis-met-hottub-drenthe</code> op positie 49 staat — niet gebrek aan woorden of interne links.
+<strong>Actie:</strong> twee sporen. (a) Voor lijst-SERP's: zorg dat u <em>in</em> die lijsten staat in plaats van ertegen te vechten (zie 7.2 van dit deel en deel 7 van het rapport). (b) Voor uw eigen pagina's: richt op de long tail en de locatietermen waar de intentie wél "één accommodatie" is.
+<strong>KPI:</strong> vermelding in ≥6 relevante portals/listicles binnen 120 dagen; top-10 op ≥4 locatie- en long-tail-termen binnen 90 dagen.</p>
+<p><strong>Dit is de belangrijkste strategische correctie op de opdracht.</strong> De briefing gaat ervan uit dat we de top 10 van "huisje met hottub Drenthe" kunnen veroveren met een betere pagina. Op basis van de SERP-structuur acht ik dat voor het hoofdzoekwoord onwaarschijnlijk binnen de planningshorizon — en voor "weekendje weg drenthe" en "bijzonder overnachten drenthe" vrijwel uitgesloten. Wat wél kan: posities 8–15 pakken op de long tail (<code>weekendje drenthe met privé jacuzzi</code>, <code>particulier vakantiehuis met jacuzzi drenthe</code>, <code>huisje met sauna en jacuzzi drenthe</code>) en de locatiecluster domineren.</p>
+<h2>3.2 De relevante directe concurrent: De Vier Eiken</h2>
+<p>Van alle gevonden partijen is <strong>deviereiken.nl</strong> het beste vergelijkingsmateriaal: een echte accommodatie (geen portal) die met eigen lodges mét privé-sauna en hottub in meerdere commerciële SERP's staat <span class="src src--serp">SERP</span>.</p>
+<p><strong>Wat zij aantoonbaar anders doen</strong> <span class="src src--serp">SERP</span>:</p>
+<p>Zij hebben een <strong>URL-silo per zoekintentie</strong>, allemaal op accommodatieniveau:
+<code>/nl/natuurlodge</code> · <code>/nl/natuurhuisje</code> · <code>/nl/vakantiehuisje-in-de-natuur</code> · <code>/nl/huisje-huren</code> · <code>/nl/11-lodges</code> · <code>/nl/natuurlodge/vakantiehuis-8-personen</code> · <code>/natuurlodge/natuurlodge-wellness</code> · <code>/nl/vakantiehuis-met-korting</code></p>
+<p>Drie dingen vallen op, en alle drie zijn overdraagbaar:</p>
+<ol>
+<li><strong>Zij gebruiken de markttaal, niet hun merktaal.</strong> "natuurhuisje", "huisje huren", "vakantiehuisje" — precies de woorden die volgens uw eigen GSC-data 643 vertoningen genereren en die op uw site nergens voorkomen.</li>
+<li><strong>Zij hebben een pagina per lodge én per lodgetype.</strong> <code>/nl/natuurlodge/vakantiehuis-8-personen</code>, <code>/natuurlodge/natuurlodge-wellness</code>. Huis ter Huynen heeft géén enkele URL per lodge <span class="src src--code">CODE</span> — De Heide en De Eik bestaan alleen als secties op de homepage. Dat is een gat in zowel SEO (long tail) als CRO (keuze maken is een conversiestap).</li>
+<li><strong>Zij ranken met een titel die de accommodatie én de plaats noemt</strong> ("Bijzonder overnachten in Drenthe | De Vier Eiken"), terwijl uw titels de plaats Zeijen noemen — een dorp dat vrijwel niemand kent en waar volgens uw GSC-data 1 vertoning op binnenkomt <span class="src src--gsc">GSC</span>.</li>
+</ol>
+<p><strong>Waarom staan zij hoger dan Huis ter Huynen?</strong> [hypothese, niet geverifieerd]
+Vermoedelijk een combinatie van: (a) domeinleeftijd en backlinkprofiel — zij bestaan al jaren en worden genoemd op drents-friesewold.nl en vergelijkbare regiosites; (b) meer verhuureenheden, waardoor hun pagina's dichter bij de lijstintentie komen; (c) een breder URL-portfolio dat meer long tail afvangt; (d) echte reviews en boekingshistorie. Punt (a) en (d) zijn een kwestie van tijd en uitvoering; (b) is een gegeven dat u niet verandert; (c) is direct kopieerbaar.</p>
+<h2>3.3 Wat Huis ter Huynen aantoonbaar beter kan</h2>
+<p>Eerlijk, en beperkt tot wat uit de eigen bronnen blijkt <span class="src src--code">CODE</span>:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Voordeel</th>
+<th>Bewijs</th>
+<th>Hoe te verzilveren</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Privé-jacuzzi bij élke lodge, 24/7, 38 °C</strong></td>
+<td><span class="src src--code">CODE</span></td>
+<td>De meeste portalvermeldingen betreffen parken met gedeelde of gereserveerde wellness. "U deelt hem met niemand" is een echt onderscheid — nu begraven in bodytekst, moet in de title</td>
+</tr>
+<tr>
+<td><strong>Slechts twee lodges = totale privacy</strong></td>
+<td><span class="src src--code">CODE</span></td>
+<td>Concurrenten met 11 lodges kunnen dit niet claimen. Dit is uw sterkste differentiator en hij staat nergens in een title of meta description</td>
+</tr>
+<tr>
+<td><strong>Directe boeking zonder tussenpersoon</strong></td>
+<td><span class="src src--code">CODE</span></td>
+<td>Voor prijsbewuste vergelijkers een reden om úw site te kiezen boven de portal die hen doorstuurt</td>
+</tr>
+<tr>
+<td><strong>Sauna in De Heide</strong></td>
+<td><span class="src src--code">CODE</span></td>
+<td>197 vertoningen op sauna-termen, geen enkele pagina die het als kernpropositie voert</td>
+</tr>
+<tr>
+<td><strong>EV-laadpaal</strong></td>
+<td><span class="src src--code">CODE</span></td>
+<td>Nauwelijks concurrentie op; groeiende filtereis bij luxesegment</td>
+</tr>
+<tr>
+<td><strong>Nieuwbouw / opening 2027</strong></td>
+<td><span class="src src--code">CODE</span></td>
+<td>"Nieuw" is een verhaal dat portals en pers oppikken — zie deel 7, dit is uw beste backlinkhaak en hij is tijdelijk</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Wat u niet beter kunt</strong> — en waar u dus niet op moet inzetten: prijs (u bent premium), schaal, groepsaccommodatie (max 4 personen <span class="src src--code">CODE</span>), gezinsvakanties met kinderfaciliteiten, en reviewvolume (u heeft nog geen gasten gehad).</p>
+<hr />
+</section>
+<section class="sec" id="4-bestaande-pagina-s-actie-per-url"><header class="sec__head"><span class="sec__num">4</span><h2>Bestaande pagina&#x27;s — actie per URL</h2></header>
+<p>Alle 35 pagina's uit de export, gerangschikt op vertoningen. Categorieën: <strong>KEEP</strong> · <strong>OPTIMIZE</strong> · <strong>MERGE</strong> · <strong>REDIRECT</strong> · <strong>NOINDEX</strong>.</p>
+<h2>4.1 Commerciële landingspagina's</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Vert.</th>
+<th>Klik</th>
+<th>CTR</th>
+<th>Pos.</th>
+<th>Doelzoekwoord</th>
+<th>Actie</th>
+<th>Waarom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/wellness-vakantie-drenthe</code></td>
+<td>1.526</td>
+<td>0</td>
+<td>0%</td>
+<td>62,6</td>
+<td>wellness huisje drenthe (128)</td>
+<td><strong>OPTIMIZE — <span class="pri pri--p0">P0</span></strong></td>
+<td>Grootste pagina, slechtste positie, nul klikken. Retarget van "wellness vakantie" (geen vraag) naar "wellness huisje/huis" (210 vert.)</td>
+</tr>
+<tr>
+<td><code>/romantisch-weekend-weg-drenthe</code></td>
+<td>1.305</td>
+<td>0</td>
+<td>0%</td>
+<td>50,1</td>
+<td>romantisch weekendje weg drenthe (95)</td>
+<td><strong>OPTIMIZE — <span class="pri pri--p0">P0</span></strong></td>
+<td>Hoofdterm staat op 26,4 terwijl de pagina gemiddeld op 50 staat: de pagina rankt dus vooral op irrelevante brede termen. Focus verscherpen</td>
+</tr>
+<tr>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+<td>914</td>
+<td>2</td>
+<td>0,22%</td>
+<td>49,1</td>
+<td>huisje met jacuzzi drenthe (754 cluster)</td>
+<td><strong>OPTIMIZE — <span class="pri pri--p0">P0</span></strong></td>
+<td>"Jacuzzi" volledig afwezig in title/H1/URL. Grootste cluster van de site</td>
+</tr>
+<tr>
+<td><code>/luxe-lodge-drenthe</code></td>
+<td>593</td>
+<td>2</td>
+<td>0,34%</td>
+<td>49,2</td>
+<td>luxe vakantiehuis drenthe</td>
+<td><strong>OPTIMIZE — <span class="pri pri--p1">P1</span></strong></td>
+<td>"Lodge" heeft 27 vertoningen. Retarget naar "luxe vakantiehuis/huisje"</td>
+</tr>
+<tr>
+<td><code>/vakantiehuis-assen</code></td>
+<td>333</td>
+<td>6</td>
+<td>1,8%</td>
+<td>23,4</td>
+<td>vakantiehuis assen (27)</td>
+<td><strong>OPTIMIZE — <span class="pri pri--p1">P1</span></strong></td>
+<td>Beste commerciële positie van de site. Hoogste winbaarheid. Verdient meer interne links, niet meer tekst</td>
+</tr>
+<tr>
+<td><code>/overnachten-veenhuizen</code></td>
+<td>185</td>
+<td>0</td>
+<td>0%</td>
+<td>33,3</td>
+<td>overnachten in veenhuizen (40, pos 15,2!)</td>
+<td><strong>OPTIMIZE — <span class="pri pri--p1">P1</span></strong></td>
+<td>Query staat op 15,2 maar de pagina gemiddeld op 33,3 — mismatch. De pagina rankt op te veel bijzaken</td>
+</tr>
+<tr>
+<td><code>/vakantiehuis-drenthe-met-hond</code></td>
+<td>112</td>
+<td>0</td>
+<td>0%</td>
+<td>52,9</td>
+<td>hond-cluster (74)</td>
+<td><strong>BESLISSEN — <span class="pri pri--p2">P2</span></strong></td>
+<td>Zie 4.4. Propositie is "in overleg" — te zwak om mee te winnen</td>
+</tr>
+<tr>
+<td><code>/vakantiehuis-norg</code></td>
+<td>86</td>
+<td>2</td>
+<td>2,33%</td>
+<td>18,5</td>
+<td>vakantiehuis norg</td>
+<td><strong>KEEP</strong></td>
+<td>Goede positie, goede CTR, klein volume. Niet aankomen</td>
+</tr>
+<tr>
+<td><code>/wandelen-drentsche-aa</code></td>
+<td>37</td>
+<td>0</td>
+<td>0%</td>
+<td>42,2</td>
+<td>wandelen drentsche aa</td>
+<td><strong>MERGE — <span class="pri pri--p1">P1</span></strong></td>
+<td>Overlapt met <code>/wandelroutes-drenthe</code> <span class="src src--code">CODE</span>. Zie 4.3</td>
+</tr>
+<tr>
+<td><code>/bijzonder-overnachten-drenthe</code></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>bijzonder overnachten (180)</td>
+<td><strong>HEROVERWEGEN — <span class="pri pri--p2">P2</span></strong></td>
+<td>Staat in de code <span class="src src--code">CODE</span> maar haalt geen enkele vertoning. SERP is 100% listicles (winbaarheid 0,30). Zie 4.4</td>
+</tr>
+</tbody>
+</table></div>
+<h2>4.2 Informatie- &amp; natuurpagina's — uw sterkste bezit</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Vert.</th>
+<th>Klik</th>
+<th>CTR</th>
+<th>Pos.</th>
+<th>Actie</th>
+<th>Waarom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/hunebedden-drenthe</code></td>
+<td>568</td>
+<td>8</td>
+<td>1,41%</td>
+<td><strong>13,0</strong></td>
+<td><strong>KEEP + LINK — <span class="pri pri--p0">P0</span></strong></td>
+<td>Op één na grootste pagina, beste niet-merkpositie van de site. Boekingsintentie 1/5, dús: gebruik hem als link-donor, niet als conversiepagina</td>
+</tr>
+<tr>
+<td><code>/heide-drenthe</code></td>
+<td>261</td>
+<td>6</td>
+<td>2,3%</td>
+<td><strong>9,7</strong></td>
+<td><strong>KEEP + LINK — <span class="pri pri--p0">P0</span></strong></td>
+<td>Enige pagina in de top 10 met volume. Sterk seizoenspatroon (aug/sep)</td>
+</tr>
+<tr>
+<td><code>/omgeving</code></td>
+<td>187</td>
+<td>2</td>
+<td>1,07%</td>
+<td>30,1</td>
+<td>OPTIMIZE — <span class="pri pri--p2">P2</span></td>
+<td>Hub-pagina, verdient betere interne linkrol</td>
+</tr>
+<tr>
+<td><code>/blog/kanovaren-drentsche-aa</code></td>
+<td>93</td>
+<td>0</td>
+<td>0%</td>
+<td>9,8</td>
+<td><strong>OPTIMIZE (CTR) — <span class="pri pri--p1">P1</span></strong></td>
+<td>Een van de drie echte CTR-problemen. Positie 10, nul klikken</td>
+</tr>
+<tr>
+<td><code>/blog/een-dag-in-norg</code></td>
+<td>41</td>
+<td>0</td>
+<td>0%</td>
+<td>9,4</td>
+<td><strong>OPTIMIZE (CTR) — <span class="pri pri--p1">P1</span></strong></td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>/blog/e-bike-huren-in-drenthe</code></td>
+<td>51</td>
+<td>1</td>
+<td>1,96%</td>
+<td>12,7</td>
+<td>KEEP</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/blog/wilde-dieren-spotten-in-het-drents-friese-wold</code></td>
+<td>27</td>
+<td>3</td>
+<td><strong>11,11%</strong></td>
+<td>8,4</td>
+<td>KEEP</td>
+<td>Hoogste CTR van de site. Bewijs dat content op positie 8 wél klikt</td>
+</tr>
+<tr>
+<td><code>/blog/mooie-fietsroutes-rondom-zeijen…</code></td>
+<td>25</td>
+<td>2</td>
+<td>8%</td>
+<td>7,8</td>
+<td>KEEP</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>/blog/drentsche-aa-beekdallandschap</code></td>
+<td>19</td>
+<td>1</td>
+<td>5,26%</td>
+<td>12,6</td>
+<td>KEEP</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/blog/fietsvakantie-in-drenthe…</code></td>
+<td>16</td>
+<td>0</td>
+<td>0%</td>
+<td>11,9</td>
+<td>MERGE — <span class="pri pri--p2">P2</span></td>
+<td>Overlapt met de twee andere fietsartikelen</td>
+</tr>
+<tr>
+<td><code>/blog/fietsen-in-drenthe-is-misschien-wel…</code></td>
+<td>28</td>
+<td>1</td>
+<td>3,57%</td>
+<td>30,1</td>
+<td><strong>REDIRECT — <span class="pri pri--p1">P1</span></strong></td>
+<td>Slug van 250+ tekens. 301 naar <code>/blog/fietsen-in-drenthe</code></td>
+</tr>
+<tr>
+<td><code>/blog/vakantie-met-hond-in-drenthe</code></td>
+<td>27</td>
+<td>0</td>
+<td>0%</td>
+<td>15,1</td>
+<td>KEEP</td>
+<td>Volgt de beslissing bij 4.4</td>
+</tr>
+<tr>
+<td><code>/blog/waarom-zeijen</code></td>
+<td>2</td>
+<td>0</td>
+<td>0%</td>
+<td>8,5</td>
+<td>KEEP</td>
+<td>Merkverhaal</td>
+</tr>
+<tr>
+<td><code>/blog/prive-lodge-boeken-nederland-kosten</code></td>
+<td>10</td>
+<td>0</td>
+<td>0%</td>
+<td>6,4</td>
+<td><strong>KEEP + CTA — <span class="pri pri--p1">P1</span></strong></td>
+<td>Positie 6,4 op een prijs-/kostenzoekopdracht = late funnel. Verdient de sterkste CTA van alle blogs</td>
+</tr>
+</tbody>
+</table></div>
+<h2>4.3 Kannibalisatie</h2>
+<p>Drie echte gevallen, alle drie op te lossen door samen te voegen.</p>
+<p><strong>Geval 1 — Hottub: blog vs landingspagina</strong>
+<code>/blog/vakantiehuis-met-prive-hottub-in-drenthe-pure-luxe-rust-en-beleving</code> (53 vert., pos 60,9) versus <code>/vakantiehuis-met-hottub-drenthe</code> (914 vert., pos 49,1) <span class="src src--gsc">GSC</span>.
+Zelfde intentie (transactional), zelfde zoekwoord, twee URL's. De blog voegt geen informatie toe die de landingspagina mist.
+→ <strong>301 van de blog naar de landingspagina.</strong> De beste alinea's uit de blog eerst overzetten als extra H2.</p>
+<p><strong>Geval 2 — Wellness: blog vs landingspagina</strong>
+<code>/blog/wellness-in-drenthe</code> (7 vert., pos 63,7) versus <code>/wellness-vakantie-drenthe</code> (1.526 vert., pos 62,6) <span class="src src--gsc">GSC</span>.
+→ <strong>301 van de blog naar de landingspagina.</strong></p>
+<p><strong>Geval 3 — Wandelen: twee landingspagina's</strong>
+<code>/wandelen-drentsche-aa</code> (37 vert., pos 42,2) versus <code>/wandelroutes-drenthe</code> [CODE, staat in <code>LANDING_NAV</code>].
+Twee pagina's, één intentie ("waar wandel ik in Drenthe").
+→ <strong>301 van <code>/wandelen-drentsche-aa</code> naar <code>/wandelroutes-drenthe</code></strong>, met de Drentsche Aa-inhoud als eigen H2-sectie daarin.</p>
+<p><strong>Geen kannibalisatie, ondanks de schijn</strong> — belangrijk om níét op te lossen:
+- <code>/vakantiehuis-assen</code>, <code>/vakantiehuis-norg</code>, <code>/overnachten-veenhuizen</code>: verschillende plaatsnamen, verschillende lokale intentie, alle drie met eigen vertoningen. <strong>Laten staan.</strong>
+- <code>/vakantiehuis-met-hottub-drenthe</code> en <code>/wellness-vakantie-drenthe</code>: overlappen in faciliteit, maar de intentie verschilt echt (product-zoekopdracht versus ervaring-zoekopdracht) en beide clusters zijn groot genoeg. <strong>Twee pagina's houden</strong>, mits de wellnesspagina scherp op "huisje/huis" gaat targeten en de andere op "jacuzzi".
+- De vier <code>/de/</code>-pagina's: andere taal, geen kannibalisatie.</p>
+<h2>4.4 Twee pagina's waar u een besluit moet nemen</h2>
+<p><strong><code>/vakantiehuis-drenthe-met-hond</code></strong> — 112 vertoningen, positie 52,9, nul klikken. Cluster: 14 queries, 74 vertoningen, gewogen positie 72,9 (slechtste van de site) <span class="src src--gsc">GSC</span>.
+Uw propositie is "honden zijn in overleg welkom" <span class="src src--code">CODE</span>. In een SERP waar concurrenten omheinde tuinen adverteren — er wordt letterlijk gezocht op "huisje huren met omheinde tuin drenthe" (6 vert.) en "vakantie met hond omheinde tuin drenthe" (3 vert.) — wint "in overleg" niet.
+→ <strong>Kies:</strong> óf u maakt er een echte propositie van (omheinde tuin bij minimaal één lodge, hondenpakket, expliciet beleid) en dan verdient de pagina P2-investering; óf u laat de cluster los en zet de pagina op <code>noindex</code> met een korte hondenparagraaf op de lodgepagina's. <strong>Mijn advies: het tweede</strong>, tenzij u de omheinde tuin daadwerkelijk aanlegt. 74 vertoningen rechtvaardigen geen aparte pagina.</p>
+<p><strong><code>/bijzonder-overnachten-drenthe</code></strong> — staat in de codebase <span class="src src--code">CODE</span> maar komt in de hele pagina-export niet voor: <strong>nul vertoningen.</strong> De cluster heeft 180 vertoningen op gewogen positie 62,1, en de SERP bestaat vrijwel volledig uit listicles (origineelovernachten.nl, bijzonderplekje.nl, naturescanner.nl, supertrips.nl) <span class="src src--serp">SERP</span>.
+→ <strong>Niet verder investeren in de pagina.</strong> De juiste manier om deze 180 vertoningen te winnen is <em>in die listicles komen te staan</em> (deel 7.3), niet ertegen concurreren. Pagina laten staan als landingsbestemming vanuit die vermeldingen, maar geen contentbudget aan besteden.</p>
+<h2>4.5 De Duitse pagina's — een eerlijke tussenstand</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>URL</th>
+<th>Vert.</th>
+<th>Klik</th>
+<th>Pos.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/de</code></td>
+<td>192</td>
+<td>5</td>
+<td>32,6</td>
+</tr>
+<tr>
+<td><code>/de/romantisches-wochenende-drenthe</code></td>
+<td>19</td>
+<td>0</td>
+<td>71,8</td>
+</tr>
+<tr>
+<td><code>/de/ferienhaus-mit-whirlpool-drenthe</code></td>
+<td>15</td>
+<td>0</td>
+<td><strong>9,5</strong></td>
+</tr>
+<tr>
+<td><code>/de/wellness-urlaub-drenthe</code></td>
+<td>14</td>
+<td>1</td>
+<td>12,0</td>
+</tr>
+<tr>
+<td><code>/de/luxus-lodge-drenthe</code></td>
+<td>9</td>
+<td>0</td>
+<td>13,6</td>
+</tr>
+</tbody>
+</table></div>
+<p><span class="src src--gsc">GSC</span> — samen 249 vertoningen, 6 klikken.</p>
+<p><strong>Data:</strong> zoekopdrachten in het Duits leveren 64 vertoningen op queryniveau (13 queries, breed geteld op zoektaal) en 249 op paginaniveau, tegenover 3.861 respectievelijk 7.288 totaal.
+<strong>Observatie:</strong> drie van de vier DE-landingspagina's staan al in de top 15 — betere posities dan élke Nederlandse commerciële pagina. Maar het volume is minimaal.
+<strong>Hypothese:</strong> de Duitse SERP's zijn veel minder verzadigd (winbaarheid 0,75), maar Google toont de pagina's nog nauwelijks omdat het domein geen Duitse autoriteitssignalen heeft (geen <code>.de</code>-links, geen paginaniveau-hreflang [CODE, T6]).
+<strong>Actie:</strong> géén nieuwe Duitse content in de eerste 90 dagen. Wel de goedkope technische fix: <code>alternates.languages</code> op paginaniveau (T6). Herbeoordelen in maand 4 — als de posities dan houden en het volume groeit, is Duitsland een serieuze tweede markt voor 2027, want de Duitse gast boekt langer en verder vooruit.
+<strong>KPI:</strong> DE-vertoningen ≥600/maand in maand 6; anders parkeren.</p>
+<hr />
+</section>
+<section class="sec" id="5-de-8-prioritaire-landingspagina-s"><header class="sec__head"><span class="sec__num">5</span><h2>De 8 prioritaire landingspagina&#x27;s</h2></header>
+<p>Gerangschikt op verwachte omzetbijdrage, niet op zoekvolume. Twee zijn nieuw, zes zijn bestaand.</p>
+<hr />
+<h2>LP1 — Wellness huisje (<span class="pri pri--p0">P0</span>, hoogste prioriteit)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Huidige URL</strong></td>
+<td><code>/wellness-vakantie-drenthe</code> — 1.526 vert., 0 klikken, positie 62,6 <span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td><strong>Aanbevolen URL</strong></td>
+<td><strong>Ongewijzigd laten.</strong> Zie toelichting</td>
+</tr>
+<tr>
+<td><strong>Primaire zoekterm</strong></td>
+<td>wellness huisje drenthe (128 vert.)</td>
+</tr>
+<tr>
+<td><strong>Secundair</strong></td>
+<td>wellness huis drenthe (82) · wellness weekend drenthe (82) · wellness drenthe (88) · privé wellness drenthe (6) · prive sauna drenthe (13) · sauna met overnachting drenthe (82)</td>
+</tr>
+<tr>
+<td><strong>Zoekintentie</strong></td>
+<td>Commercial investigation → transactional · boekingsnabijheid 5/5</td>
+</tr>
+<tr>
+<td><strong>Conversiedoel</strong></td>
+<td>Beschikbaarheid bekijken voor een 2- of 3-nachtenverblijf</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Waarom de URL niet wijzigen:</strong> "wellness-vakantie" is niet de sterkste term, maar de pagina heeft 1.526 vertoningen aan history. Een 301 kost 4–8 weken herindexering en levert hooguit een marginale keywordwinst in de URL op — URL-keywords zijn een zwak signaal. <strong>Het rendement zit in de inhoud, niet in het pad.</strong> Wel: "huisje" en "huis" prominent in H1, title, intro en FAQ.</p>
+<p><strong>Aanbevolen H1:</strong> <code>Wellness huisje in Drenthe met privé-sauna en jacuzzi</code></p>
+<p><strong>SEO title (winnaar, zie deel 7 voor de varianten):</strong>
+<code>Wellness Huisje Drenthe | Privé Sauna &amp; Jacuzzi, Geen Gedeelde Spa</code></p>
+<p><strong>Meta description:</strong>
+<code>Een wellness huisje in Drenthe waar de sauna en jacuzzi alleen van u zijn. Twee vrijstaande lodges op de heide bij Zeijen, 24/7 op temperatuur. Vanaf €165 p.n.</code></p>
+<p><strong>Contentstructuur (H2's):</strong>
+1. <code>Privé wellness: geen openingstijden, geen onbekenden</code> — het kernonderscheid, direct onder de intro
+2. <code>Wat er in het huisje zit: sauna, jacuzzi en een terras dat niemand inkijkt</code> — concrete faciliteiten per lodge, met het eerlijke onderscheid dat de sauna in De Heide zit <span class="src src--code">CODE</span>
+3. <code>Een wellnessweekend in Drenthe: hoe zo'n dag eruitziet</code> — 8 uur wandelen → 17 uur sauna → 21 uur jacuzzi onder de sterren. Dit vangt "wellness weekend drenthe" (82 vert.)
+4. <code>Wellness in de winter: waarom januari en februari het mooist zijn</code> — seizoensanker, ondersteunt deel 11
+5. <code>Wat u in de buurt vindt</code> — 4 interne links, contextueel geplaatst</p>
+<p><strong>FAQ's (FAQPage-schema, bestaat al <span class="src src--code">CODE</span>):</strong>
+- Is de sauna privé of gedeeld? <em>(vangt "privé wellness drenthe", "prive sauna drenthe")</em>
+- Kan ik een wellnesshuisje boeken voor één nacht?
+- Is de jacuzzi ook in de winter in gebruik?
+- Wat is het verschil tussen De Heide en De Eik qua wellness?
+- Kan ik hier met twee stellen terecht? <em>(vangt "locatie vriendinnenweekend drenthe", pos 20,7)</em></p>
+<p><strong>USP's boven de fold:</strong> privé-sauna · jacuzzi 24/7 op 38 °C · slechts 2 lodges op het terrein · geen gedeelde faciliteiten · direct boeken zonder tussenpersoon</p>
+<p><strong>CTA:</strong> primair <code>Bekijk beschikbaarheid →</code> · secundair <code>Plan uw wellnessweekend →</code> na H2-3</p>
+<p><strong>Interne links IN:</strong> <code>/heide-drenthe</code> · <code>/hunebedden-drenthe</code> · <code>/blog/prive-lodge-boeken-nederland-kosten</code> · <code>/blog/wellness-in-drenthe</code> (na 301) · homepage · <code>/lodge-de-heide</code>
+<strong>Interne links UIT:</strong> <code>/vakantiehuis-met-hottub-drenthe</code> · <code>/lodge-de-heide</code> · <code>/romantisch-weekend-weg-drenthe</code> · <code>/wandelroutes-drenthe</code></p>
+<p><strong>KPI:</strong> positie &lt; 25 binnen 90 dagen, &lt; 15 binnen 180 dagen · eerste klikken binnen 60 dagen · CTR &gt; 1,5% bij positie &lt; 20</p>
+<hr />
+<h2>LP2 — Romantisch weekend (<span class="pri pri--p0">P0</span>)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Huidige URL</strong></td>
+<td><code>/romantisch-weekend-weg-drenthe</code> — 1.305 vert., 0 klikken, positie 50,1 <span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td><strong>Aanbevolen URL</strong></td>
+<td>Ongewijzigd</td>
+</tr>
+<tr>
+<td><strong>Primaire zoekterm</strong></td>
+<td>romantisch weekendje weg drenthe (95 vert., <strong>positie 26,4</strong>)</td>
+</tr>
+<tr>
+<td><strong>Secundair</strong></td>
+<td>romantisch overnachten drenthe (100) · romantisch huisje met jacuzzi drenthe (15) · weekendje twee personen drenthe (51) · weekendje drenthe met privé jacuzzi (89) · locatie vriendinnenweekend drenthe (9)</td>
+</tr>
+<tr>
+<td><strong>Zoekintentie</strong></td>
+<td>Transactional · 5/5</td>
+</tr>
+<tr>
+<td><strong>Conversiedoel</strong></td>
+<td>Weekendboeking (2 nachten), hoogste ADR van het jaar</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Waarom dit ondanks minder vertoningen boven LP1 had gekund:</strong> de hoofdterm staat op <strong>26,4</strong> — de enige commerciële term met volume die binnen bereik van pagina 1 ligt. Ik zet hem toch op gelijke hoogte met LP1 omdat LP1 driemaal zoveel vertoningen heeft. Beide zijn <span class="pri pri--p0">P0</span>; als u er maar één kunt doen, doe deze.</p>
+<p><strong>Kernprobleem:</strong> de pagina staat gemiddeld op 50,1 terwijl de hoofdterm op 26,4 staat. Dat betekent dat de pagina op tientallen brede, irrelevante termen wordt getoond en daar het gemiddelde mee omlaag trekt. <strong>De focus is te breed.</strong></p>
+<p><strong>Aanbevolen H1:</strong> <code>Romantisch weekendje weg in Drenthe — met z'n tweeën, privé jacuzzi</code></p>
+<p><strong>SEO title:</strong> <code>Romantisch Weekendje Weg Drenthe | Privé Jacuzzi voor Twee</code></p>
+<p><strong>Meta description:</strong>
+<code>Met z'n tweeën weg in Drenthe: een vrijstaande lodge met eigen jacuzzi en sauna, geen buren, geen receptie. Op de heide bij Zeijen. Vanaf €165 per nacht.</code></p>
+<p><strong>H2's:</strong>
+1. <code>Met z'n tweeën, en verder niemand</code> — privacy als romantisch argument
+2. <code>De jacuzzi 's avonds: het moment waar het weekend om draait</code> — het beeld dat converteert
+3. <code>Twee dagen Drenthe voor stellen: een voorstel</code> — vrijdagavond t/m zondag, concreet, met echte plaatsnamen <span class="src src--code">CODE</span>
+4. <code>Ook voor een vriendinnenweekend of met twee stellen</code> — vangt de 9 vertoningen op "locatie vriendinnenweekend drenthe" (pos 20,7) zonder een aparte pagina te bouwen
+5. <code>Valentijn, verjaardag of jubileum in Drenthe</code> — gelegenheidsanker, seizoensrelevant (zie deel 11)</p>
+<p><strong>FAQ's:</strong> Is de jacuzzi echt privé? · Kunnen we laat inchecken? · Is er een romantisch arrangement? · Kunnen we bloemen/champagne laten klaarzetten? · Hoe ver is het rijden vanuit de Randstad?</p>
+<p><strong>CTA:</strong> primair <code>Plan jullie weekend →</code> · sticky mobiel <code>Bekijk vrije weekenden →</code></p>
+<p><strong>Interne links IN:</strong> homepage · <code>/heide-drenthe</code> · <code>/wellness-vakantie-drenthe</code> · <code>/lodge-de-heide</code> · <code>/blog/prive-lodge-boeken-nederland-kosten</code>
+<strong>Interne links UIT:</strong> <code>/vakantiehuis-met-hottub-drenthe</code> · <code>/lodge-de-heide</code> · <code>/wandelroutes-drenthe</code></p>
+<p><strong>KPI:</strong> hoofdterm positie &lt; 15 binnen 90 dagen, <strong>top 10 binnen 180 dagen</strong> · eerste 10 organische klikken binnen 60 dagen</p>
+<hr />
+<h2>LP3 — Vakantiehuis met jacuzzi (<span class="pri pri--p0">P0</span>)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Huidige URL</strong></td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code> — 914 vert., 2 klikken, positie 49,1 <span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td><strong>Aanbevolen URL</strong></td>
+<td><strong>Ongewijzigd.</strong> Zie toelichting</td>
+</tr>
+<tr>
+<td><strong>Primaire zoekterm</strong></td>
+<td>huisje met jacuzzi drenthe (83) + hele jacuzzi-cluster (754)</td>
+</tr>
+<tr>
+<td><strong>Secundair</strong></td>
+<td>hottub drenthe (122) · huisje met hottub drenthe (116) · weekendje drenthe met privé jacuzzi (89) · vakantiehuis met jacuzzi drenthe (84) · vakantiehuisje met jacuzzi drenthe (82) · huisje met sauna en jacuzzi drenthe (76) · particulier vakantiehuis met jacuzzi drenthe (55)</td>
+</tr>
+<tr>
+<td><strong>Zoekintentie</strong></td>
+<td>Transactional · 5/5</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Waarom niet naar <code>/vakantiehuis-met-jacuzzi-drenthe</code> verhuizen</strong> — dit is een reële afweging en ik kies bewust: de URL bevat het minder gezochte woord, maar 914 vertoningen aan history opgeven voor een zwak rankingsignaal is een slechte ruil. Google behandelt jacuzzi/hottub als vrijwel synoniem. <strong>De winst zit in de zichtbare tekst — title, H1, intro, FAQ — want dáár beslist de zoeker of hij klikt.</strong> Als u over 12 maanden een domeinmigratie of herstructurering doet, neem de URL dan mee.</p>
+<p><strong>Aanbevolen H1:</strong> <code>Vakantiehuis met privé-jacuzzi in Drenthe</code></p>
+<p><strong>SEO title:</strong> <code>Vakantiehuis met Jacuzzi Drenthe | Privé Hottub bij Elke Lodge</code>
+<em>(beide woorden in één title — vangt beide zoekvarianten in de snippet)</em></p>
+<p><strong>Meta description:</strong>
+<code>Twee vrijstaande vakantiehuisjes in Drenthe, elk met een eigen jacuzzi op het terras. Geen gedeelde wellness, 24/7 op 38 °C. Op de heide bij Zeijen. Vanaf €165.</code></p>
+<p><strong>H2's:</strong>
+1. <code>Jacuzzi of hottub? Bij ons is het allebei privé</code> — vangt beide woorden natuurlijk, zonder stuffing
+2. <code>Twee huisjes, twee jacuzzi's, nul gedeelde faciliteiten</code>
+3. <code>Ook een sauna: het verschil tussen De Heide en De Eik</code> — vangt "huisje met sauna en jacuzzi drenthe" (76 vert.)
+4. <code>Particulier verhuurd, direct geboekt</code> — vangt "particulier vakantiehuis met jacuzzi drenthe" (55 vert.), een term met opvallend hoge intentie
+5. <code>De jacuzzi in de winter</code></p>
+<p><strong>FAQ's:</strong> Is de jacuzzi privé? · Wat is het verschil tussen een jacuzzi en een hottub? · Is de jacuzzi het hele jaar warm? · Zit er ook een sauna bij? · Boek ik rechtstreeks bij de eigenaar?</p>
+<p><strong>Interne links IN:</strong> homepage · <code>/wellness-vakantie-drenthe</code> · <code>/romantisch-weekend-weg-drenthe</code> · <code>/blog/vakantiehuis-met-prive-hottub…</code> (na 301) · beide lodgepagina's
+<strong>Interne links UIT:</strong> <code>/lodge-de-heide</code> · <code>/lodge-de-eik</code> · <code>/wellness-vakantie-drenthe</code></p>
+<p><strong>KPI:</strong> jacuzzi-cluster vertoningen +100% binnen 90 dagen · positie &lt; 25 binnen 120 dagen</p>
+<hr />
+<h2>LP4 — Lodge De Heide (NIEUW, <span class="pri pri--p1">P1</span>)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Aanbevolen URL</strong></td>
+<td><code>/lodge-de-heide</code></td>
+</tr>
+<tr>
+<td><strong>Primaire zoekterm</strong></td>
+<td>long tail: huisje met sauna en jacuzzi drenthe (76) · natuurhuisje zeijen (3, pos 12,0)</td>
+</tr>
+<tr>
+<td><strong>Zoekintentie</strong></td>
+<td>Transactional · 5/5</td>
+</tr>
+<tr>
+<td><strong>Conversiedoel</strong></td>
+<td>Lodgekeuze → beschikbaarheid → aanvraag</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Waarom deze pagina moet bestaan</strong> — twee onafhankelijke redenen:
+<strong>SEO:</strong> De Vier Eiken heeft een URL per lodge en per lodgetype <span class="src src--serp">SERP</span>; Huis ter Huynen heeft er nul <span class="src src--code">CODE</span>. Per-unit-pagina's vangen long tail ("huisje met sauna", "lodge voor 2 personen", "natuurhuisje zeijen") die de overzichtspagina's niet kunnen bedienen.
+<strong>CRO:</strong> dit is de belangrijkste reden. In de huidige funnel moet de bezoeker vanaf een themapagina rechtstreeks naar een aanvraagformulier springen <span class="src src--code">CODE</span>. <strong>Er is geen stap waarin hij een lodge kiest.</strong> Keuze maken is precies de stap die twijfel omzet in commitment. Nu ontbreekt hij volledig.</p>
+<p><strong>H1:</strong> <code>Lodge De Heide — met eigen sauna en jacuzzi op de heide</code>
+<strong>SEO title:</strong> <code>Lodge De Heide | Vakantiehuisje met Sauna &amp; Jacuzzi in Zeijen</code>
+<strong>H2's:</strong> <code>Wat er in de lodge zit</code> (volledige inventaris) · <code>De sauna en de jacuzzi</code> · <code>Voor wie deze lodge is</code> (2 personen, of 2+2) · <code>Het uitzicht en het terras</code> · <code>Prijzen en beschikbaarheid</code> · <code>De Heide of De Eik?</code> (vergelijking, met link naar de andere)
+<strong>CTA:</strong> <code>Bekijk beschikbaarheid voor De Heide →</code> — mét voorgeselecteerde lodge in de boekingsflow (zie deel 8)
+<strong>Interne links IN:</strong> alle commerciële pagina's, homepage
+<strong>Interne links UIT:</strong> <code>/lodge-de-eik</code>, <code>/wellness-vakantie-drenthe</code></p>
+<p><strong>KPI:</strong> ≥15% van alle landingspagina-sessies eindigt op een lodgepagina · aanvraagconversie op lodgepagina's ≥2× die van themapagina's</p>
+<hr />
+<h2>LP5 — Lodge De Eik (NIEUW, <span class="pri pri--p1">P1</span>)</h2>
+<p>Identiek van opzet aan LP4. <strong>URL:</strong> <code>/lodge-de-eik</code> · <strong>H1:</strong> <code>Lodge De Eik — onder de eiken, met buitenkeuken en jacuzzi</code> · <strong>SEO title:</strong> <code>Lodge De Eik | Vakantiehuisje met Jacuzzi en Buitenkeuken, Zeijen</code>
+Onderscheidende H2: <code>De buitenkeuken en de BBQ</code> [CODE — dit is het echte verschil met De Heide].
+<strong>Belangrijk:</strong> schrijf deze twee pagina's écht verschillend. Twee bijna identieke lodgepagina's zijn precies het kannibalisatieprobleem dat de site al heeft. Het verschil is concreet: De Heide heeft de sauna en het panoramisch uitzicht, De Eik heeft de buitenkeuken en de BBQ <span class="src src--code">CODE</span>.</p>
+<hr />
+<h2>LP6 — Luxe vakantiehuis (<span class="pri pri--p1">P1</span>)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Huidige URL</strong></td>
+<td><code>/luxe-lodge-drenthe</code> — 593 vert., 2 klikken, positie 49,2 <span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td><strong>Aanbevolen URL</strong></td>
+<td>Ongewijzigd</td>
+</tr>
+<tr>
+<td><strong>Primaire zoekterm</strong></td>
+<td>luxe vakantiehuis drenthe met jacuzzi (43)</td>
+</tr>
+<tr>
+<td><strong>Secundair</strong></td>
+<td>luxe hotel drenthe (168)<em> · boutique hotel drenthe (161)</em> · luxe lodge (14) · hotel drenthe luxe (9)</td>
+</tr>
+<tr>
+<td><strong>Zoekintentie</strong></td>
+<td>Commercial investigation · 4/5</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>* Let op de val:</strong> de twee grootste termen in deze cluster ("luxe hotel drenthe" 168, "boutique hotel drenthe" 161) bevatten het woord <strong>hotel</strong>. Huis ter Huynen is geen hotel <span class="src src--code">CODE</span>. In totaal is 475 vertoningen aan hotelverkeer in de dataset aanwezig. <strong>Ik adviseer nadrukkelijk om hier niet op te optimaliseren:</strong> u zou moeten claimen iets te zijn wat u niet bent, de SERP is hotelgedomineerd, en de klikker die tóch komt zoekt roomservice en een receptie.
+Wat wél kan: één eerlijke H2 — <code>Geen hotel, maar een eigen huis</code> — die het onderscheid uitlegt. Dat trekt de vergelijkende zoeker die bewust een alternatief voor een hotel zoekt, zonder dat u doet alsof.</p>
+<p><strong>H1:</strong> <code>Luxe vakantiehuis in Drenthe</code> · <strong>SEO title:</strong> <code>Luxe Vakantiehuis Drenthe | Privé Jacuzzi, Sauna &amp; Geen Buren</code>
+<strong>KPI:</strong> positie &lt; 30 binnen 120 dagen</p>
+<hr />
+<h2>LP7 — Vakantiehuis bij Assen (<span class="pri pri--p1">P1</span>)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Huidige URL</strong></td>
+<td><code>/vakantiehuis-assen</code> — 333 vert., 6 klikken, CTR 1,8%, <strong>positie 23,4</strong> <span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td><strong>Primaire zoekterm</strong></td>
+<td>vakantiehuis assen (27) · huisje huren assen (12) · vakantiehuisje assen (11) · ferienhaus assen (46)</td>
+</tr>
+<tr>
+<td><strong>Winbaarheid</strong></td>
+<td><strong>0,80 — hoogste van alle clusters</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Waarom deze pagina onderschat wordt:</strong> beste commerciële positie van de site, tweede CTR van de site, hoogste winbaarheid, en lokale intentie (4/5). Dit is de pagina met de kortste weg naar pagina 1.
+<strong>Wat er moet gebeuren is vooral géén nieuwe tekst.</strong> De pagina is inhoudelijk in orde; wat ontbreekt is interne autoriteit. <strong>Actie: 6 contextuele interne links erheen</strong> (zie deel 9) plus twee toevoegingen: een H2 <code>Hoe ver is het naar Assen?</code> met concrete reistijd en een H2 die het TT-circuit en de TT-week noemt — dat is de grootste vraagpiek van de regio en hij staat nu nergens op de site.
+Opvallend: "ferienhaus assen" heeft met 46 vertoningen méér volume dan de Nederlandse variant. Overweeg een DE-versie in maand 4 (zie 4.5).</p>
+<p><strong>KPI:</strong> top 10 op "vakantiehuis assen" binnen 90 dagen</p>
+<hr />
+<h2>LP8 — Overnachten bij Veenhuizen (<span class="pri pri--p1">P1</span>)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Huidige URL</strong></td>
+<td><code>/overnachten-veenhuizen</code> — 185 vert., 0 klikken, positie 33,3 <span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td><strong>Primaire zoekterm</strong></td>
+<td>overnachten in veenhuizen (40, <strong>positie 15,2</strong>)</td>
+</tr>
+<tr>
+<td><strong>Secundair</strong></td>
+<td>veenhuizen overnachten (8, pos 24,1) · overnachten veenhuizen (4)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>De enige echte quick win uit deel 2.8.</strong> De query staat op 15,2 maar de pagina gemiddeld op 33,3 — de pagina wordt dus ook getoond op veel bredere Veenhuizen-termen waar hij niet thuishoort ("hotel veenhuizen" 54 vert., "hotels veenhuizen" 6, "veenhuizen hotels" 5 — samen 65 vertoningen hotelintentie die u nooit wint).
+<strong>Actie:</strong> de pagina toespitsen op <em>overnachten in de omgeving van Veenhuizen</em> met eerlijke afstandsvermelding, en een sterke sectie over het Gevangenismuseum en het Unesco-verhaal. Niet proberen "hotel veenhuizen" te winnen.
+<strong>KPI:</strong> top 10 op "overnachten in veenhuizen" binnen 60 dagen — dit is de snelste meetbare winst van het hele plan.</p>
+<hr />
+<h2>Wat ik bewust NIET adviseer te bouwen</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Voorgestelde pagina</th>
+<th>Waarom niet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/weekendje-weg-drenthe</code></td>
+<td>718 vertoningen, maar winbaarheid 0,15: de SERP is van hotelspecials.nl, weekendjeweg.nl en heerlijkehuisjes.com <span class="src src--serp">SERP</span>. Boekingsnabijheid slechts 3/5. Hoogste kosten, laagste rendement van alle opties</td>
+</tr>
+<tr>
+<td>Aparte <code>/huisje-met-sauna-drenthe</code></td>
+<td>197 vertoningen sauna-cluster, maar dit kannibaliseert LP1 direct. Onderbrengen als H2 + FAQ in LP1</td>
+</tr>
+<tr>
+<td>Aparte <code>/prive-wellness-drenthe</code></td>
+<td>6 vertoningen. Te weinig voor een eigen URL</td>
+</tr>
+<tr>
+<td>Aparte <code>/vriendinnenweekend-drenthe</code></td>
+<td>9 vertoningen. Onderbrengen als H2 in LP2</td>
+</tr>
+<tr>
+<td>Nieuwe DE-pagina's</td>
+<td>Zie 4.5 — eerst de technische hreflang-fix, dan meten</td>
+</tr>
+<tr>
+<td><code>/bijzonder-overnachten-drenthe</code> uitbreiden</td>
+<td>Zie 4.4 — winbaarheid 0,30, dit win je via listicles</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+</section>
+<section class="sec" id="6-contentplan-6-maanden"><header class="sec__head"><span class="sec__num">6</span><h2>Contentplan — 6 maanden</h2></header>
+<p><strong>Uitgangspunt:</strong> maximaal 2–3 artikelen per maand. Elk artikel ondersteunt één cluster, linkt naar minimaal één commerciële pagina met beschrijvende ankertekst, en bevat minimaal één CTA.</p>
+<p><strong>Het belangrijkste principe voor deze site:</strong> uw blogs presteren aantoonbaar beter dan uw commerciële pagina's (CTR 3,31% versus 0,25%) <span class="src src--analyse">ANALYSE</span>. Content is hier geen bijzaak — het is uw enige bewezen kanaal naar de top 10. Maar dan moet elk artikel wél doorlinken, en dat gebeurt nu niet.</p>
+<p><strong>Timing-principe:</strong> content moet 8–12 weken vóór de vraagpiek live staan. Google heeft die tijd nodig om te indexeren en te positioneren. Een heideartikel dat in augustus verschijnt, is een jaar te laat.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Maand</th>
+<th>Artikel</th>
+<th>Cluster</th>
+<th>Ondersteunt</th>
+<th>Interne link naar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sep 2026</strong></td>
+<td>Wat kost een privé-lodge met jacuzzi in Nederland? <em>(uitbreiding van de bestaande post op pos 6,4)</em></td>
+<td>Hottub</td>
+<td>LP3</td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Wellnessweekend in Drenthe: hoe ziet zo'n weekend eruit?</td>
+<td>Wellness</td>
+<td>LP1</td>
+<td><code>/wellness-vakantie-drenthe</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Herfst op de Drentse heide: de mooiste wandelingen in oktober</td>
+<td>Natuur</td>
+<td>LP1, LP2</td>
+<td><code>/wandelroutes-drenthe</code>, <code>/wellness-vakantie-drenthe</code></td>
+</tr>
+<tr>
+<td><strong>Okt 2026</strong></td>
+<td>Jacuzzi in de winter: waarom december de mooiste maand is</td>
+<td>Hottub</td>
+<td>LP3</td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Romantisch weekendje weg: 8 plekken in Drenthe voor stellen</td>
+<td>Romantiek</td>
+<td>LP2</td>
+<td><code>/romantisch-weekend-weg-drenthe</code></td>
+</tr>
+<tr>
+<td><strong>Nov 2026</strong></td>
+<td>Kerst en oud &amp; nieuw in Drenthe: waar overnacht je?</td>
+<td>Seizoen</td>
+<td>LP2, LP3</td>
+<td>beide</td>
+</tr>
+<tr>
+<td></td>
+<td>Sauna of jacuzzi — wat kiest u? <em>(vangt "huisje met sauna en jacuzzi")</em></td>
+<td>Wellness</td>
+<td>LP1, LP3</td>
+<td>beide</td>
+</tr>
+<tr>
+<td><strong>Dec 2026</strong></td>
+<td>Valentijn in Drenthe: een weekend met z'n tweeën <em>(3 maanden vooruit gepubliceerd)</em></td>
+<td>Romantiek</td>
+<td>LP2</td>
+<td><code>/romantisch-weekend-weg-drenthe</code></td>
+</tr>
+<tr>
+<td></td>
+<td>De eerste gasten: hoe De Heide en De Eik eruit zijn geworden</td>
+<td>Merk</td>
+<td>LP4, LP5</td>
+<td>lodgepagina's</td>
+</tr>
+<tr>
+<td><strong>Jan 2027</strong></td>
+<td>Wellness in januari: waarom de stilste maand de beste is</td>
+<td>Wellness</td>
+<td>LP1</td>
+<td><code>/wellness-vakantie-drenthe</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Wandelen in de winter rond de Drentsche Aa</td>
+<td>Natuur</td>
+<td>LP1</td>
+<td><code>/wandelroutes-drenthe</code></td>
+</tr>
+<tr>
+<td><strong>Feb 2027</strong></td>
+<td>Wanneer bloeit de heide in Drenthe? <em>(actualiseren, staat al op pos 10,9)</em></td>
+<td>Heide</td>
+<td>LP1, LP2</td>
+<td>beide</td>
+</tr>
+<tr>
+<td></td>
+<td>Pasen en de meivakantie in Drenthe: wat is er te doen?</td>
+<td>Seizoen</td>
+<td>LP7</td>
+<td><code>/vakantiehuis-assen</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Fietsen in Drenthe vanuit Zeijen <em>(samenvoeging van 3 bestaande fietsartikelen)</em></td>
+<td>Natuur</td>
+<td>LP7</td>
+<td><code>/fietsen-in-drenthe</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Wat ik níét in dit plan zet, en waarom:</strong> geen artikelen over hunebedden (informational 1/5 — u heeft er al één die op positie 13 staat, dat volstaat), geen "10 dingen om te doen in Drenthe"-content (dat is portalterrein), en geen artikelen die alleen bestaan om een zoekwoord af te vangen. Bij twee lodges is uw contentcapaciteit beperkt; elk artikel dat geen commerciële pagina versterkt, is verloren budget.</p>
+<hr />
+</section>
+<section class="sec" id="7-ctr-plan"><header class="sec__head"><span class="sec__num">7</span><h2>CTR-plan</h2></header>
+<p><strong>Positionering vooraf:</strong> dit hoofdstuk is <span class="pri pri--p1">P1</span>, niet <span class="pri pri--p0">P0</span> — zie 2.10. Bij 92% van de vertoningen op positie 31+ verandert een betere title vrijwel niets. Er zijn vier plekken waar het nú wél loont, en die staan bovenaan.</p>
+<h2>7.1 Homepage (positie 8,49 — hier loont het direct)</h2>
+<p><strong>Huidig</strong> <span class="src src--code">CODE</span>: <code>Lodge Drenthe | Vakantiewoning met Hottub bij Assen – Huis ter Huynen</code>
+<strong>Probleem:</strong> begint met "Lodge Drenthe" (27 vertoningen in de hele dataset) en gebruikt "hottub" (249) in plaats van "jacuzzi" (754). De sterkste differentiator — twee lodges, dus totale privacy — ontbreekt.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Title</th>
+<th>Beoordeling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>Vakantiehuis met Jacuzzi in Drenthe \| Huis ter Huynen</code></td>
+<td>Sterke term, maar concurreert direct met LP3 — kannibalisatierisico</td>
+</tr>
+<tr>
+<td>B</td>
+<td><code>Huis ter Huynen \| Twee Lodges met Privé Jacuzzi op de Drentse Heide</code></td>
+<td>Merk voorop (goed voor entiteitsherkenning, zie 2.3), "twee lodges" als differentiator, "privé jacuzzi" als hook</td>
+</tr>
+<tr>
+<td>C</td>
+<td><code>Privé Jacuzzi &amp; Sauna in Drenthe \| Slechts 2 Lodges, Geen Buren</code></td>
+<td>Sterkste emotionele hook, maar geen merknaam — slecht voor merkopbouw</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Winnaar: B.</strong> Reden: de merkcluster staat op gemiddeld positie 15,3 <span class="src src--analyse">ANALYSE</span> — Google heeft "Huis ter Huynen" nog niet als entiteit vastgelegd. De homepage is de plek om dat te repareren, dus daar hoort de merknaam vooraan. Bovendien vermijdt B kannibalisatie met LP3, die de jacuzzi-term moet krijgen. De differentiator "twee lodges" doet het werk dat "Lodge Drenthe" nu niet doet.</p>
+<p><strong>Meta description (nieuw):</strong>
+<code>Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé jacuzzi en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.</code>
+<em>Reden voor "geen receptie, geen buren, geen gedeelde wellness": in een SERP vol parken en hotels is de negatie het sterkste onderscheid. Het beantwoordt precies de twijfel van iemand die net zes portalresultaten heeft gezien.</em></p>
+<h2>7.2 De drie echte CTR-problemen</h2>
+<p><strong><code>/blog/kanovaren-drentsche-aa</code></strong> — 93 vert., positie 9,8, <strong>0 klikken</strong> <span class="src src--gsc">GSC</span>
+Bij positie 10 is 0% CTR uitzonderlijk laag; verwacht is 2–4%. Hypothese: de title is beschrijvend maar niet nieuwsgierig-makend, en de zoeker wil praktische informatie (waar huur ik, wat kost het, mag het overal).
+→ <strong>Nieuwe title:</strong> <code>Kanoën op de Drentsche Aa: waar je start, wat het kost en wat je ziet</code>
+→ <strong>Meta:</strong> <code>De Drentsche Aa is het mooiste beekdal van Nederland — en je vaart er zo doorheen. Startpunten, verhuuradressen, prijzen en de route die wij zelf het mooist vinden.</code></p>
+<p><strong><code>/blog/een-dag-in-norg</code></strong> — 41 vert., positie 9,4, <strong>0 klikken</strong> <span class="src src--gsc">GSC</span>
+→ <strong>Nieuwe title:</strong> <code>Een dag in Norg: wat te doen, waar te eten en wat je niet moet missen</code></p>
+<p><strong><code>/de/ferienhaus-mit-whirlpool-drenthe</code></strong> — 15 vert., positie 9,5, <strong>0 klikken</strong> <span class="src src--gsc">GSC</span>
+→ Duitse zoekers reageren sterk op concreetheid. <strong>Nieuwe title:</strong> <code>Ferienhaus mit Whirlpool in Drenthe | Nur 2 Lodges, ab €165/Nacht</code></p>
+<h2>7.3 Titles voor de P0-landingspagina's (voorbereidend werk)</h2>
+<p>Deze wijzigingen leveren pas rendement op zodra de posities stijgen — maar ze moeten er staan vóórdat dat gebeurt, niet erna.</p>
+<p><strong>LP2 — Romantisch weekend</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>Romantisch Weekendje Weg in Drenthe \| Huis ter Huynen</code></td>
+</tr>
+<tr>
+<td>B</td>
+<td><code>Romantisch Weekend Drenthe – Luxe Lodge met Privé Jacuzzi</code></td>
+</tr>
+<tr>
+<td>C</td>
+<td><code>Romantisch Weekendje Weg Drenthe \| Privé Jacuzzi voor Twee</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Winnaar: C.</strong> Reden: bevat de exacte zoekopdracht (95 vert., "romantisch weekendje weg drenthe" — inclusief het verkleinwoord "weekendje" dat A en B missen), plus "voor twee", wat de belangrijkste onuitgesproken vraag beantwoordt in een SERP vol gezinsparken en hotels. Variant B verspilt ruimte aan "luxe lodge" (27 vert.).</p>
+<p><strong>LP1 — Wellness</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><code>Wellness Vakantie Drenthe \| Lodge met Hottub &amp; Sauna</code> <em>(huidig)</em></td>
+</tr>
+<tr>
+<td>B</td>
+<td><code>Wellness Huisje Drenthe \| Privé Sauna &amp; Jacuzzi, Geen Gedeelde Spa</code></td>
+</tr>
+<tr>
+<td>C</td>
+<td><code>Wellness in Drenthe \| Eigen Sauna en Jacuzzi, Alleen voor U</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Winnaar: B.</strong> Reden: "wellness huisje" is de grootste term in de cluster (128 vert.) en staat in A helemaal niet. "Geen gedeelde spa" is de directe tegenzet tegen de bungalowparken en wellnesshotels die deze SERP vullen — het beantwoordt de twijfel die de zoeker op dat moment heeft.</p>
+<p><strong>LP3 — Jacuzzi</strong></p>
+<p><strong>Winnaar:</strong> <code>Vakantiehuis met Jacuzzi Drenthe | Privé Hottub bij Elke Lodge</code>
+Reden: dit is de enige title die <strong>beide</strong> zoekvarianten bevat. Wie "hottub" typt ziet zijn woord, wie "jacuzzi" typt ook. "Bij elke lodge" communiceert impliciet dat er geen gedeelde voorziening is.</p>
+<h2>7.4 Meta descriptions — het principe</h2>
+<p>Er zit één patroon in alle winnende varianten hierboven, en dat is bewust: <strong>elke meta description bevat een negatie.</strong> "Geen gedeelde spa", "geen buren", "geen receptie", "geen tussenpersoon".</p>
+<p>De reden is de SERP zelf. Een zoeker die op "wellness huisje drenthe" zoekt, ziet zes portalresultaten met tientallen accommodaties in bungalowparken. Zijn onuitgesproken twijfel is: <em>"is die wellness echt van mij, of deel ik hem met vijftig anderen?"</em> Het resultaat dat die twijfel als eerste wegneemt, wint de klik — ook vanaf een lagere positie. Dat is de enige manier waarop een aanbieder met twee eenheden het wint van een portal met tweehonderd.</p>
+<hr />
+</section>
+<section class="sec" id="8-cta-cro-plan"><header class="sec__head"><span class="sec__num">8</span><h2>CTA- &amp; CRO-plan</h2></header>
+<h2>8.1 De funnel en waar hij lekt</h2>
+<pre><code>Google  →  Landingspagina  →  USP  →  Lodgekeuze  →  Beschikbaarheid  →  Prijs  →  Aanvraag  →  24u wachten  →  Boeking
+   ①            ②             ③          ④               ⑤             ⑥         ⑦          ⑧            ⑨
+</code></pre>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Lek</th>
+<th>Waar</th>
+<th>Bewijs</th>
+<th>Ernst</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L1</strong></td>
+<td>①→②</td>
+<td>92% van de vertoningen op positie 31+</td>
+<td><span class="src src--gsc">GSC</span></td>
+</tr>
+<tr>
+<td><strong>L2</strong></td>
+<td>②→④</td>
+<td><strong>Stap ④ bestaat niet.</strong> Er is geen pagina per lodge; de bezoeker springt van thema rechtstreeks naar een formulier</td>
+<td><span class="src src--code">CODE</span></td>
+</tr>
+<tr>
+<td><strong>L3</strong></td>
+<td>②→⑤</td>
+<td>Elke CTA linkt naar <code>/#reserveren</code> op de homepage — contextverlies, geen voorselectie van thema, lodge of datum</td>
+<td><span class="src src--code">CODE</span> <code>LandingTemplate.tsx</code></td>
+</tr>
+<tr>
+<td><strong>L4</strong></td>
+<td>⑥</td>
+<td>Geen prijs vóór de aanvraag: "De definitieve prijs wordt door ons bevestigd na je aanvraag", "Op aanvraag"</td>
+<td><span class="src src--code">CODE</span></td>
+</tr>
+<tr>
+<td><strong>L5</strong></td>
+<td>⑦→⑨</td>
+<td>Aanvraagmodel met 24 uur wachttijd in plaats van directe bevestiging</td>
+<td><span class="src src--code">CODE</span></td>
+</tr>
+<tr>
+<td><strong>L6</strong></td>
+<td>alle</td>
+<td>CTA-teksten zijn inconsistent: hero <code>Bekijk beschikbaarheid →</code>, sticky mobiel <code>Claim uw datum →</code>, eind-CTA <code>Bekijk beschikbaarheid</code>, formulier <code>Reserveringsaanvraag versturen →</code></td>
+<td><span class="src src--code">CODE</span></td>
+</tr>
+</tbody>
+</table></div>
+<h2>8.2 De primaire CTA — getoetst</h2>
+<p>De opdracht vermoedt "Bekijk beschikbaarheid". Dat vermoeden klopt, maar niet om de reden die u misschien denkt.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Kandidaat</th>
+<th>Belofte</th>
+<th>Oordeel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bekijk beschikbaarheid</strong></td>
+<td>Vrijblijvend kijken, geen commitment</td>
+<td><strong>Winnaar</strong></td>
+</tr>
+<tr>
+<td>Reserveer uw lodge</td>
+<td>Verplichting</td>
+<td>Te zwaar voor een eerste klik vanuit Google</td>
+</tr>
+<tr>
+<td>Plan uw verblijf</td>
+<td>Vaag</td>
+<td>Onduidelijk wat er gebeurt na de klik</td>
+</tr>
+<tr>
+<td>Bekijk vrije data</td>
+<td>Idem aan winnaar</td>
+<td>Iets minder gangbaar in NL</td>
+</tr>
+<tr>
+<td>Claim uw datum</td>
+<td>Urgentie + bezit</td>
+<td><strong>Alleen geschikt in de sticky bar</strong>, waar de bezoeker al scrollde</td>
+</tr>
+<tr>
+<td>Bekijk beschikbare weekenden</td>
+<td>Specifiek</td>
+<td>Goed als <em>secundaire</em> CTA op LP2</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Winnaar: <code>Bekijk beschikbaarheid →</code>.</strong> De doorslaggevende reden is uw eigen funnel: omdat er géén directe boeking is en er een aanvraag met 24 uur wachttijd volgt <span class="src src--code">CODE</span>, moet de eerste CTA juist <strong>zo licht mogelijk</strong> zijn. Een zware CTA ("Reserveer") gecombineerd met een zware volgende stap (aanvraag zonder prijs) is een dubbele drempel. Eerst laten kijken, dan pas vragen.</p>
+<p><strong>Belangrijke correctie op de huidige site:</strong> <code>Claim uw datum →</code> staat nu in de sticky mobiele balk <span class="src src--code">CODE</span> — de plek waar de bezoeker hem als <strong>eerste</strong> ziet op mobiel, vaak vóór enige uitleg. Dat is precies omgekeerd. Zet daar <code>Bekijk beschikbaarheid →</code> en bewaar "Claim uw datum" voor het moment ná de lodgekeuze.</p>
+<h2>8.3 CTA's per zoekintentie</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Intentie / pagina</th>
+<th>Primaire CTA</th>
+<th>Secundair</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wellness (LP1)</td>
+<td><code>Bekijk beschikbaarheid →</code></td>
+<td><code>Plan uw wellnessweekend →</code></td>
+</tr>
+<tr>
+<td>Romantiek (LP2)</td>
+<td><code>Bekijk vrije weekenden →</code></td>
+<td><code>Plan jullie weekend →</code></td>
+</tr>
+<tr>
+<td>Jacuzzi (LP3)</td>
+<td><code>Bekijk beschikbaarheid →</code></td>
+<td><code>Bekijk beide lodges →</code></td>
+</tr>
+<tr>
+<td>Lodgepagina's (LP4/5)</td>
+<td><code>Bekijk beschikbaarheid voor De Heide →</code></td>
+<td><code>Vergelijk met De Eik →</code></td>
+</tr>
+<tr>
+<td>Locatie (LP7/8)</td>
+<td><code>Bekijk beschikbaarheid →</code></td>
+<td><code>Bekijk de omgeving →</code></td>
+</tr>
+<tr>
+<td>Twijfelende bezoeker</td>
+<td><code>Welke lodge past bij u?</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Blog / informatief</td>
+<td><code>Slaap hier: bekijk de lodges →</code></td>
+<td>Nieuwsbrief</td>
+</tr>
+<tr>
+<td>Contact</td>
+<td><code>Stel uw vraag via WhatsApp</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Eén opmerking over de aanspreekvorm:</strong> de site wisselt nu tussen "u" en "je" — <code>LandingTemplate</code> gebruikt "Stel je vraag via WhatsApp" terwijl de eind-CTA "Boek uw vakantiehuis" zegt, en het boekingsformulier zegt "na je aanvraag" <span class="src src--code">CODE</span>. Kies er één. Voor een premium boutique-propositie met een gemiddelde nachtprijs van €165+ adviseer ik consequent <strong>"u"</strong>.</p>
+<h2>8.4 De vier CRO-ingrepen met de grootste omzetimpact</h2>
+<p><strong>CRO-A — Contextuele CTA-links (<span class="pri pri--p0">P0</span>, halve dag werk)</strong>
+<em>Data:</em> alle CTA's linken naar <code>/#reserveren</code> <span class="src src--code">CODE</span>. <em>Hypothese:</em> bezoekers verliezen bij de paginawissel hun context en een deel haakt af. <em>Actie:</em> geef de CTA een parameter mee (<code>/#reserveren?van=wellness&amp;lodge=heide</code>) en toon in de boekingssectie een regel die de context bevestigt: <em>"U bekijkt beschikbaarheid voor een wellnessverblijf in Lodge De Heide."</em> <em>KPI:</em> CTA-klik → formulierstart ≥60%.</p>
+<p><strong>CRO-B — Prijsindicatie vóór de aanvraag (<span class="pri pri--p0">P0</span>)</strong>
+<em>Data:</em> "Op aanvraag" en "De definitieve prijs wordt door ons bevestigd na je aanvraag" <span class="src src--code">CODE</span>. <em>Observatie:</em> de bezoeker moet zijn gegevens afstaan om te weten wat het kost. <em>Hypothese:</em> dit is het grootste conversielek in de funnel; prijsonzekerheid is in accommodatieboekingen de belangrijkste reden om af te haken. <em>Actie:</em> toon een indicatieve totaalprijs zodra data en lodge gekozen zijn, met de eerlijke toevoeging "definitieve prijs bevestigen wij binnen 24 uur". U hoeft het aanvraagmodel niet op te geven — u moet alleen de prijs niet meer achter het formulier verstoppen. <em>KPI:</em> formulierstart → verzonden aanvraag ≥55%.</p>
+<p><strong>CRO-C — De lodgekeuzestap (<span class="pri pri--p1">P1</span>)</strong>
+Zie LP4/LP5. <em>KPI:</em> ≥15% van de landingspagina-sessies raakt een lodgepagina.</p>
+<p><strong>CRO-D — Reactietijd verkorten (<span class="pri pri--p1">P1</span>, operationeel)</strong>
+<em>Data:</em> "U ontvangt binnen 24 uur een aanbod op maat" <span class="src src--code">CODE</span>. <em>Hypothese:</em> in de vakantiehuizenmarkt boekt een aanvrager binnen 24 uur vaak elders — zeker als hij bij drie aanbieders tegelijk aanvraagt. <em>Actie:</em> streef naar reactie binnen 2 uur tijdens kantooruren en communiceer dat ook ("meestal binnen 2 uur"). Dit is geen websitewijziging maar heeft waarschijnlijk meer omzetimpact dan enige SEO-actie in dit rapport. <em>KPI:</em> aanvraag → boeking ≥55%; mediane reactietijd &lt; 2 uur.</p>
+<h2>8.5 CTA-plaatsing per paginatype</h2>
+<p><strong>Landingspagina (LP1–LP3, LP6–LP8)</strong>
+1. Boven de fold — primaire CTA + prijs vanaf <em>(bestaat al <span class="src src--code">CODE</span>)</em>
+2. Direct onder de intro — USP-balk: privé jacuzzi · slechts 2 lodges · geen gedeelde wellness · direct boeken
+3. Na H2-2 — <strong>nieuw</strong>: inline CTA met contextuele tekst
+4. Na de FAQ — <strong>nieuw</strong>: lodgekeuzeblok (twee kaarten, De Heide / De Eik) → dit vult lek L2
+5. Eind-CTA — primair + WhatsApp <em>(bestaat al)</em>
+6. Sticky mobiel — <code>Bekijk beschikbaarheid →</code> <em>(tekst wijzigen)</em></p>
+<p><strong>Lodgepagina (LP4/LP5)</strong>
+Boven de fold <code>Bekijk beschikbaarheid voor deze lodge →</code> · na de inventaris een prijstabel per seizoen · onderaan een vergelijkingsblok met de andere lodge · sticky mobiel.</p>
+<p><strong>Blogartikel</strong> — dit is nu het grootste gemiste rendement, want de blogs zijn uw best presterende pagina's <span class="src src--analyse">ANALYSE</span>:
+1. Na de intro — één zin met contextuele link naar de relevante commerciële pagina
+2. Halverwege — inline blok: <em>"Slapen op de heide? Wij hebben twee lodges met privé jacuzzi. → Bekijk beschikbaarheid"</em>
+3. Onderaan — volledige CTA-sectie, dezelfde als op de landingspagina's
+4. Sticky mobiel — ook op blogs</p>
+<p><strong>Homepage</strong> — hero-CTA · USP-blok · lodgekeuze · beschikbaarheidskalender · nieuwsbrief (voor wie nog niet boekt).</p>
+<hr />
+</section>
+<section class="sec" id="9-interne-linkmatrix"><header class="sec__head"><span class="sec__num">9</span><h2>Interne linkmatrix</h2></header>
+<p><strong>Principe:</strong> hub-and-spoke in plaats van iedereen-linkt-naar-iedereen. Informatieve pagina's met goede posities zijn <strong>donoren</strong>; commerciële pagina's zijn <strong>ontvangers</strong>. Beschrijvende ankertekst, geen generieke labels.</p>
+<h2>9.1 De donoren (uw autoriteitsbron)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Bronpagina</th>
+<th>Pos.</th>
+<th>Vert.</th>
+<th>→ Doelpagina</th>
+<th>Ankertekst</th>
+<th>Reden</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/hunebedden-drenthe</code></td>
+<td>13,0</td>
+<td>568</td>
+<td><code>/wellness-vakantie-drenthe</code></td>
+<td>"een wellness huisje op de heide"</td>
+<td>Grootste zichtbaarheid van de site, geeft nu niets door</td>
+</tr>
+<tr>
+<td><code>/hunebedden-drenthe</code></td>
+<td>13,0</td>
+<td>568</td>
+<td><code>/lodge-de-heide</code></td>
+<td>"Lodge De Heide, op 15 minuten"</td>
+<td>Nabijheid = natuurlijke aanleiding</td>
+</tr>
+<tr>
+<td><code>/heide-drenthe</code></td>
+<td>9,7</td>
+<td>261</td>
+<td><code>/romantisch-weekend-weg-drenthe</code></td>
+<td>"een romantisch weekend tijdens de heidebloei"</td>
+<td>Beste positie van de site + seizoensintentie</td>
+</tr>
+<tr>
+<td><code>/heide-drenthe</code></td>
+<td>9,7</td>
+<td>261</td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+<td>"vakantiehuis met privé-jacuzzi aan de heide"</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/blog/kanovaren-drentsche-aa</code></td>
+<td>9,8</td>
+<td>93</td>
+<td><code>/wellness-vakantie-drenthe</code></td>
+<td>"de sauna in na een dag op het water"</td>
+<td>Natuurlijke thematische brug</td>
+</tr>
+<tr>
+<td><code>/blog/een-dag-in-norg</code></td>
+<td>9,4</td>
+<td>41</td>
+<td><code>/vakantiehuis-norg</code></td>
+<td>"overnachten vlak bij Norg"</td>
+<td>Lokale relevantie</td>
+</tr>
+<tr>
+<td><code>/blog/wilde-dieren-spotten…</code></td>
+<td>8,4</td>
+<td>27</td>
+<td><code>/wandelroutes-drenthe</code></td>
+<td>"wandelroutes waar u ze ziet"</td>
+<td>Hoogste CTR van de site</td>
+</tr>
+<tr>
+<td><code>/blog/mooie-fietsroutes-rondom-zeijen</code></td>
+<td>7,8</td>
+<td>25</td>
+<td><code>/vakantiehuis-assen</code></td>
+<td>"een vakantiehuis bij Assen als uitvalsbasis"</td>
+<td>Versterkt de best winbare pagina</td>
+</tr>
+<tr>
+<td><code>/blog/prive-lodge-boeken-nederland-kosten</code></td>
+<td>6,4</td>
+<td>10</td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+<td>"wat een lodge met jacuzzi bij ons kost"</td>
+<td>Positie 6,4 op een prijszoekopdracht = late funnel, sterkste conversiesignaal van de site</td>
+</tr>
+<tr>
+<td><code>/blog/drentsche-aa-beekdallandschap</code></td>
+<td>12,6</td>
+<td>19</td>
+<td><code>/wandelroutes-drenthe</code></td>
+<td>"wandelen langs de Drentsche Aa"</td>
+<td></td>
+</tr>
+<tr>
+<td><code>/blog/e-bike-huren-in-drenthe</code></td>
+<td>12,7</td>
+<td>51</td>
+<td><code>/fietsen-in-drenthe</code></td>
+<td>"fietsroutes vanuit Zeijen"</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h2>9.2 Tussen commerciële pagina's</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Bron</th>
+<th>→ Doel</th>
+<th>Ankertekst</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/wellness-vakantie-drenthe</code></td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+<td>"vakantiehuis met privé-jacuzzi"</td>
+</tr>
+<tr>
+<td><code>/wellness-vakantie-drenthe</code></td>
+<td><code>/lodge-de-heide</code></td>
+<td>"Lodge De Heide, met eigen sauna"</td>
+</tr>
+<tr>
+<td><code>/romantisch-weekend-weg-drenthe</code></td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+<td>"de jacuzzi op het terras"</td>
+</tr>
+<tr>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+<td><code>/lodge-de-heide</code> + <code>/lodge-de-eik</code></td>
+<td>"De Heide" / "De Eik"</td>
+</tr>
+<tr>
+<td><code>/vakantiehuis-assen</code></td>
+<td><code>/lodge-de-eik</code></td>
+<td>"onze ruimste lodge"</td>
+</tr>
+<tr>
+<td><code>/lodge-de-heide</code></td>
+<td><code>/lodge-de-eik</code></td>
+<td>"vergelijk met De Eik"</td>
+</tr>
+<tr>
+<td>Homepage</td>
+<td>alle drie de P0-pagina's</td>
+<td>thematisch</td>
+</tr>
+</tbody>
+</table></div>
+<h2>9.3 Wat er weg moet</h2>
+<p>Het generieke footerblok met 13 landingspaginalinks op élke pagina <span class="src src--code">CODE</span> <code>LANDING_NAV</code>: <strong>terugbrengen naar maximaal 6 links</strong>, en die 6 per paginatype laten verschillen. Nu ontvangt elke pagina evenveel interne links, waardoor geen enkele pagina eruit springt — precies de gelijkmatige positie-49-verdeling die we in 1.4 zagen. Een link die overal staat, telt nauwelijks; een link die contextueel in de tekst staat, telt wél.</p>
+<hr />
+</section>
+<section class="sec" id="10-2027-bezettings-omzetstrategie"><header class="sec__head"><span class="sec__num">10</span><h2>2027 Bezettings- &amp; omzetstrategie</h2></header>
+<h2>10.1 Het model</h2>
+<p><strong>Capaciteit 2027:</strong> 2 lodges × 365 nachten = <strong>730 lodge-nachten</strong> <span class="src src--code">CODE</span>.
+<strong>Vanafprijs:</strong> €165 per nacht <span class="src src--code">CODE</span>.</p>
+<p>Alle conversiepercentages hieronder zijn <strong><span class="src src--aanname">AANNAME</span></strong> — branchebandbreedtes voor kleinschalige, direct boekende accommodatiesites. Ze zijn expliciet als bandbreedte gegeven omdat u nog geen eigen funneldata heeft; zodra GA4 draait, moeten ze door uw eigen cijfers vervangen worden.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Funnelstap</th>
+<th>Realistische bandbreedte</th>
+<th>Gebruikt in model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vertoning → klik (CTR)</td>
+<td>2,0 – 5,0%</td>
+<td>3,5%</td>
+</tr>
+<tr>
+<td>Klik → sessie</td>
+<td>90 – 100%</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>Sessie → CTA-klik</td>
+<td>25 – 40%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>CTA-klik → beschikbaarheid bekeken</td>
+<td>60 – 80%</td>
+<td>70%</td>
+</tr>
+<tr>
+<td>Beschikbaarheid → aanvraag gestart</td>
+<td>25 – 40%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Gestart → aanvraag verzonden</td>
+<td>50 – 70%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Aanvraag → bevestigde boeking</td>
+<td>45 – 65%</td>
+<td>55%</td>
+</tr>
+<tr>
+<td><strong>Sessie → boeking (samengesteld)</strong></td>
+<td><strong>1,0 – 3,0%</strong></td>
+<td><strong>2,1%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h2>10.2 Drie scenario's voor 2027</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>Conservatief</th>
+<th><strong>Target</strong></th>
+<th>Stretch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bezetting</td>
+<td>50%</td>
+<td><strong>62%</strong></td>
+<td>72%</td>
+</tr>
+<tr>
+<td>Verhuurde nachten (van 730)</td>
+<td>365</td>
+<td><strong>453</strong></td>
+<td>526</td>
+</tr>
+<tr>
+<td>Gemiddelde nachtprijs (ADR)</td>
+<td>€185</td>
+<td><strong>€210</strong></td>
+<td>€235</td>
+</tr>
+<tr>
+<td><strong>Omzet 2027</strong></td>
+<td><strong>€67.500</strong></td>
+<td><strong>€95.100</strong></td>
+<td><strong>€123.600</strong></td>
+</tr>
+<tr>
+<td>Gem. verblijfsduur <span class="src src--aanname">AANNAME</span></td>
+<td>3,0 nachten</td>
+<td>3,0</td>
+<td>3,0</td>
+</tr>
+<tr>
+<td>Aantal boekingen</td>
+<td>122</td>
+<td>151</td>
+<td>175</td>
+</tr>
+<tr>
+<td>Aandeel organisch/direct</td>
+<td>30%</td>
+<td><strong>45%</strong></td>
+<td>55%</td>
+</tr>
+<tr>
+<td><strong>Boekingen uit organisch</strong></td>
+<td><strong>37</strong></td>
+<td><strong>68</strong></td>
+<td><strong>96</strong></td>
+</tr>
+<tr>
+<td>Benodigde organische sessies/jaar</td>
+<td>2.470</td>
+<td><strong>3.240</strong></td>
+<td>3.840</td>
+</tr>
+<tr>
+<td>Sessies per maand</td>
+<td>206</td>
+<td><strong>270</strong></td>
+<td>320</td>
+</tr>
+<tr>
+<td>Klikken per maand</td>
+<td>217</td>
+<td><strong>284</strong></td>
+<td>337</td>
+</tr>
+<tr>
+<td><strong>Benodigde vertoningen/maand</strong></td>
+<td><strong>6.200</strong></td>
+<td><strong>8.100</strong></td>
+<td><strong>9.600</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><em>(Vertoningen bij CTR 3,5%; bij het conservatieve scenario is gerekend met 2,5% CTR.)</em></p>
+<h2>10.3 Het 30.000-impressiesdoel — eerlijk antwoord</h2>
+<p><strong>Data:</strong> het target-scenario vraagt ~8.100 relevante vertoningen per maand. Uw huidige niveau is ~2.400 per maand [ANALYSE, op basis van 7.288 vertoningen / 3 maanden — meetperiode niet bevestigd].</p>
+<p><strong>Oordeel: 30.000 vertoningen per maand is haalbaar, maar het is het verkeerde doel.</strong></p>
+<p>Twee redenen.</p>
+<p><strong>Ten eerste is het 3,7× meer dan u nodig heeft.</strong> Bij 30.000 vertoningen en 3,5% CTR komen er 1.050 klikken per maand binnen. Bij 2,1% conversie zijn dat 22 boekingen per maand — 264 per jaar, terwijl uw hele capaciteit 151 boekingen is. U zou meer dan 100 boekingen per jaar moeten weigeren. Dat is geen luxeprobleem maar verkeerd besteed budget: elke euro die naar vertoning 10.000-en-verder gaat, had naar ADR-verhoging of conversie kunnen gaan.</p>
+<p><strong>Ten tweede stuurt het doel u de verkeerde kant op.</strong> De goedkoopste weg naar 30.000 vertoningen loopt via informatieve content — hunebedden, wandelroutes, "wat te doen in Drenthe". Die cluster heeft boekingsnabijheid 1/5 <span class="src src--analyse">ANALYSE</span>. U zou het cijfer halen en er geen nacht extra mee verkopen.</p>
+<p><strong>Beter doel:</strong> <strong>8.000–12.000 <em>commerciële</em> vertoningen per maand</strong> (clusters jacuzzi, wellness, romantiek, locatie) bij een CTR van ≥3,5%, met als bovenliggende KPI <strong>organisch toegeschreven nachten</strong>. Dat is meetbaar, het is genoeg, en het stuurt op omzet in plaats van op zichtbaarheid.</p>
+<p>Als u een totaalcijfer wilt om aan te refereren: 20.000–25.000 vertoningen per maand eind 2027 is een realistisch neveneffect van dit plan, waarvan dan ongeveer de helft commercieel. Maar stuur er niet op.</p>
+<h2>10.4 Forecast</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Moment</th>
+<th>Vertoningen/mnd</th>
+<th>CTR</th>
+<th>Klikken/mnd</th>
+<th>Positie (commercieel)</th>
+<th>Boekingen/mnd</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nu (aug 2026)</strong></td>
+<td>~2.400</td>
+<td>1,2%</td>
+<td>~28</td>
+<td>49,5</td>
+<td>0 (nog niet open)</td>
+</tr>
+<tr>
+<td><strong>90 dagen (nov 2026)</strong></td>
+<td>4.000 – 6.000</td>
+<td>1,8%</td>
+<td>70 – 110</td>
+<td>35 – 40</td>
+<td>0 · doel: eerste 2027-aanvragen</td>
+</tr>
+<tr>
+<td><strong>180 dagen (feb 2027)</strong></td>
+<td>8.000 – 12.000</td>
+<td>2,8%</td>
+<td>220 – 340</td>
+<td>22 – 28</td>
+<td>3 – 6</td>
+</tr>
+<tr>
+<td><strong>Eind 2027</strong></td>
+<td>18.000 – 25.000</td>
+<td>3,5%</td>
+<td>630 – 875</td>
+<td>12 – 18</td>
+<td>10 – 15</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Aannames:</strong> (a) de meetperiode van de export is 3 maanden — <em>moet bevestigd worden</em>; (b) de P0-acties worden binnen 30 dagen uitgevoerd; (c) er komen 2–3 artikelen per maand bij; (d) GBP wordt geverifieerd en actief onderhouden; (e) er komen vanaf januari 2027 echte reviews binnen. <strong>Valt (d) of (e) weg, dan schuift de hele curve 3–6 maanden op</strong> — reviews en GBP zijn voor lokale accommodatiezoekopdrachten geen bijzaak.</p>
+<p><strong>Belangrijke waarschuwing bij de eerste twee kolommen:</strong> verwacht in de eerste 60–90 dagen géén klikgroei. Zoals in 2.8 uitgelegd bestaat de quick-win-laag hier niet; de eerste maanden zijn herbouw, en de beweging wordt zichtbaar in de positie-metriek voordat hij zichtbaar wordt in klikken. Beoordeel het plan in november 2026 dus op <strong>positieverbetering</strong>, niet op verkeer.</p>
+<h2>10.5 Welke input ik nog nodig heb</h2>
+<p>Zonder deze gegevens blijft een deel van het model schatting:</p>
+<ol>
+<li><strong>Meetperiode van de GSC-export</strong> — verandert de hele forecast met een factor 3</li>
+<li><strong>Google Analytics / GA4-toegang</strong> — nu is er geen enkel zicht op sessies, CTA-kliks of formulierstarts. De hele CRO-kolom van het dashboard is nu onmeetbaar</li>
+<li><strong>Bestaat er een geverifieerd Google Business Profile?</strong> — zie 1.5</li>
+<li><strong>Werkelijke prijsstructuur per seizoen</strong> — het model gebruikt één ADR; in de praktijk verschilt december van maart aanzienlijk</li>
+<li><strong>Kostenstructuur per nacht</strong> — nodig om op winst te sturen in plaats van op omzet</li>
+<li><strong>Verwachte OTA-strategie</strong> — gaat u op Natuurhuisje/Booking? Dat bepaalt of het 45%-organische-aandeel realistisch is</li>
+<li><strong>Aantal beschikbare nachten in 2027</strong> — het model rekent met 365 dagen per lodge; eigen gebruik of onderhoud verlaagt dat</li>
+</ol>
+<hr />
+</section>
+<section class="sec" id="11-seizoenskalender-2027"><header class="sec__head"><span class="sec__num">11</span><h2>Seizoenskalender 2027</h2></header>
+<p><strong>Principe:</strong> content moet 8–12 weken vóór de vraagpiek live staan.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Maand</th>
+<th>Vraagthema</th>
+<th>Content live vanaf</th>
+<th>Prijsstrategie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Januari</td>
+<td>Wellness, winterstilte, nieuwjaar</td>
+<td><strong>november 2026</strong></td>
+<td>Laag seizoen — lange verblijven stimuleren (3+ nachten)</td>
+</tr>
+<tr>
+<td>Februari</td>
+<td><strong>Valentijn</strong> — hoogste ADR-kans van het eerste kwartaal</td>
+<td><strong>december 2026</strong></td>
+<td>Piektarief voor 12–16 feb, minimaal 2 nachten</td>
+</tr>
+<tr>
+<td>Maart</td>
+<td>Voorjaar, wandelen, krokusvakantie</td>
+<td>januari 2027</td>
+<td>Midden</td>
+</tr>
+<tr>
+<td>April</td>
+<td>Pasen, voorjaarsbloei</td>
+<td>februari 2027</td>
+<td>Piek in de paasweek</td>
+</tr>
+<tr>
+<td>Mei</td>
+<td>Hemelvaart, Pinksteren, meivakantie</td>
+<td>maart 2027</td>
+<td><strong>Hoogste piek van het voorjaar</strong> — minimaal 3 nachten</td>
+</tr>
+<tr>
+<td>Juni</td>
+<td>Zomer, fietsen, TT Assen (eind juni)</td>
+<td>april 2027</td>
+<td>Piek in de TT-week — dit is de grootste lokale vraagpiek en staat nu nergens op de site</td>
+</tr>
+<tr>
+<td>Juli</td>
+<td>Zomervakantie</td>
+<td>mei 2027</td>
+<td>Hoogseizoen, weekverblijven</td>
+</tr>
+<tr>
+<td>Augustus</td>
+<td><strong>Heidebloei</strong> — uw sterkste natuurlijke piek</td>
+<td><strong>juni 2027</strong></td>
+<td>Hoogseizoen. <code>/heide-drenthe</code> staat al op positie 9,7</td>
+</tr>
+<tr>
+<td>September</td>
+<td>Nazomer, heide, rust, wellness</td>
+<td>juli 2027</td>
+<td>Midden-hoog — beste marge/bezetting-verhouding</td>
+</tr>
+<tr>
+<td>Oktober</td>
+<td>Herfst, wellness, herfstvakantie</td>
+<td>augustus 2027</td>
+<td>Midden</td>
+</tr>
+<tr>
+<td>November</td>
+<td>Wellness, donkere dagen, weekendjes</td>
+<td>september 2027</td>
+<td>Laag — actief sturen op 2- en 3-nachtenpakketten</td>
+</tr>
+<tr>
+<td>December</td>
+<td>Kerst, oud &amp; nieuw, romantiek</td>
+<td><strong>oktober 2027</strong></td>
+<td>Piektarief kerst/oud&amp;nieuw, minimaal 3–4 nachten</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Twee opmerkingen bij deze kalender:</strong></p>
+<p>De heidebloei (augustus) is uw enige piek waar u nu al een top-10-positie heeft <span class="src src--gsc">GSC</span>. Behandel <code>/heide-drenthe</code> daarom als seizoensasset: actualiseer hem elk jaar in juni, met een actuele bloeiverwachting. "wanneer bloeit de heide in drenthe" staat op positie 10,9 — dat is met een jaarlijkse update naar de top 3 te brengen.</p>
+<p>De TT-week in Assen (eind juni) is de grootste vraagpiek in uw directe omgeving en komt op de hele site niet voor <span class="src src--code">CODE</span>. Dat is een gemiste kans op zowel bezetting als ADR — accommodaties binnen 25 km van het circuit rekenen die week aanzienlijk meer. Voeg het toe aan <code>/vakantiehuis-assen</code> (LP7).</p>
+<hr />
+</section>
+<section class="sec" id="12-90-dagenplan"><header class="sec__head"><span class="sec__num">12</span><h2>90-dagenplan</h2></header>
+<h2>Week 1 — Meten en repareren</h2>
+<ul>
+<li class="task">GSC opnieuw exporteren mét datumbereik; GA4 verifiëren of installeren</li>
+<li class="task">Controleren of er een geverifieerd Google Business Profile is; zo niet: aanmaken en verifiëren <em>(hoogste ROI-actie van het hele plan als hij ontbreekt)</em></li>
+<li class="task">Sticky mobiele CTA: <code>Claim uw datum</code> → <code>Bekijk beschikbaarheid</code></li>
+<li class="task">Aanspreekvorm uniformeren naar "u"</li>
+<li class="task"><code>noindex</code> op <code>/impressum</code>, <code>/datenschutz</code>, <code>/agb</code>, <code>/privacy</code>, <code>/terms</code>, <code>/welkom</code>; uit de sitemap</li>
+</ul>
+<h2>Week 2 — De drie 301's en de jacuzzi-correctie</h2>
+<ul>
+<li class="task">301: <code>/blog/vakantiehuis-met-prive-hottub…</code> → <code>/vakantiehuis-met-hottub-drenthe</code> (beste alinea's eerst overzetten)</li>
+<li class="task">301: <code>/blog/wellness-in-drenthe</code> → <code>/wellness-vakantie-drenthe</code></li>
+<li class="task">301: <code>/wandelen-drentsche-aa</code> → <code>/wandelroutes-drenthe</code></li>
+<li class="task">301: de 250-tekens-fietsslug → <code>/blog/fietsen-in-drenthe</code></li>
+<li class="task">"Jacuzzi" toevoegen aan title, H1, intro en FAQ van LP3</li>
+<li class="task">Homepage-title en meta description vervangen (variant B, 7.1)</li>
+</ul>
+<h2>Week 3–4 — LP1 en LP2 herbouwen</h2>
+<ul>
+<li class="task"><code>/wellness-vakantie-drenthe</code> volledig herschrijven volgens LP1</li>
+<li class="task"><code>/romantisch-weekend-weg-drenthe</code> volledig herschrijven volgens LP2</li>
+<li class="task">Titles/meta's van beide vervangen</li>
+<li class="task"><code>Offer</code>-schema met €165 toevoegen aan LodgingBusiness</li>
+</ul>
+<h2>Week 5–6 — Interne links en CRO-A</h2>
+<ul>
+<li class="task">Volledige linkmatrix uit deel 9 doorvoeren (11 donorlinks + 7 commerciële)</li>
+<li class="task">Footerblok terugbrengen van 13 naar 6 links, per paginatype verschillend</li>
+<li class="task">Contextuele CTA-parameters (CRO-A)</li>
+<li class="task">Blogs voorzien van inline CTA-blok halverwege + sticky CTA</li>
+</ul>
+<h2>Week 7–8 — Lodgepagina's</h2>
+<ul>
+<li class="task"><code>/lodge-de-heide</code> en <code>/lodge-de-eik</code> bouwen en publiceren</li>
+<li class="task">Lodgekeuzeblok toevoegen na de FAQ op LP1, LP2, LP3</li>
+<li class="task">Boekingsflow: lodge-voorselectie via parameter</li>
+</ul>
+<h2>Week 9–10 — Prijstransparantie (CRO-B)</h2>
+<ul>
+<li class="task">Indicatieve totaalprijs tonen zodra data + lodge gekozen zijn</li>
+<li class="task">Reactietijd-belofte herzien naar "meestal binnen 2 uur" (CRO-D)</li>
+<li class="task">CTR-titles voor de drie echte CTR-problemen (7.2)</li>
+</ul>
+<h2>Week 11–12 — Local &amp; meten</h2>
+<ul>
+<li class="task">GBP volledig invullen: foto's, faciliteiten, openingsdatum, Q&amp;A</li>
+<li class="task">Aanmelden bij drenthe.nl, marketingdrenthe, VVV Zeijen/Norg, origineelovernachten.nl, bijzonderplekje.nl, naturescanner.nl <em>(zie 7.3 — dit is hoe u de listicle-SERP's wint)</em></li>
+<li class="task">Eerste maanddashboard opleveren (deel 13)</li>
+<li class="task">LP6, LP7, LP8 optimaliseren</li>
+</ul>
+<hr />
+</section>
+<section class="sec" id="13-kpi-dashboard"><header class="sec__head"><span class="sec__num">13</span><h2>KPI-dashboard</h2></header>
+<p><strong>Leidende KPI's</strong> (hierop stuurt u): <strong>organisch toegeschreven nachten</strong> · <strong>aanvraag→boeking-ratio</strong> · <strong>ADR</strong>.
+<strong>Volgende KPI's</strong> (deze verklaren de leidende): alle andere.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Categorie</th>
+<th>KPI</th>
+<th>Nulmeting</th>
+<th>Doel 90 dgn</th>
+<th>Doel 2027</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SEO</strong></td>
+<td>Vertoningen/maand</td>
+<td>~2.400</td>
+<td>4.000–6.000</td>
+<td>18.000–25.000</td>
+</tr>
+<tr>
+<td></td>
+<td>Commerciële vertoningen/maand</td>
+<td>~1.700</td>
+<td>3.000</td>
+<td>8.000–12.000</td>
+</tr>
+<tr>
+<td></td>
+<td>Klikken/maand</td>
+<td>~28</td>
+<td>70–110</td>
+<td>630–875</td>
+</tr>
+<tr>
+<td></td>
+<td>CTR</td>
+<td>1,2%</td>
+<td>1,8%</td>
+<td>3,5%</td>
+</tr>
+<tr>
+<td></td>
+<td>Gew. gem. positie (commercieel)</td>
+<td>49,5</td>
+<td>35–40</td>
+<td>12–18</td>
+</tr>
+<tr>
+<td></td>
+<td>Keywords in top 10</td>
+<td>16 (waarvan 8 merk)</td>
+<td>25</td>
+<td>60</td>
+</tr>
+<tr>
+<td></td>
+<td>Keywords in top 20</td>
+<td>31</td>
+<td>45</td>
+<td>100</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Niet-merkgebonden klikken</strong></td>
+<td><strong>0</strong></td>
+<td><strong>&gt;40/mnd</strong></td>
+<td><strong>&gt;500/mnd</strong></td>
+</tr>
+<tr>
+<td><strong>CRO</strong></td>
+<td>Landingspagina → CTA-klik</td>
+<td>onbekend</td>
+<td>30%</td>
+<td>35%</td>
+</tr>
+<tr>
+<td></td>
+<td>CTA-klik → beschikbaarheid</td>
+<td>onbekend</td>
+<td>70%</td>
+<td>75%</td>
+</tr>
+<tr>
+<td></td>
+<td>Beschikbaarheid → aanvraagstart</td>
+<td>onbekend</td>
+<td>30%</td>
+<td>35%</td>
+</tr>
+<tr>
+<td></td>
+<td>Aanvraag verzonden</td>
+<td>onbekend</td>
+<td>55%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Sessie → boeking</strong></td>
+<td>onbekend</td>
+<td>1,5%</td>
+<td>2,1%</td>
+</tr>
+<tr>
+<td><strong>Revenue</strong></td>
+<td>Boekingen/maand (organisch)</td>
+<td>0</td>
+<td>—</td>
+<td>5–8</td>
+</tr>
+<tr>
+<td></td>
+<td>Nachten/maand</td>
+<td>0</td>
+<td>—</td>
+<td>38</td>
+</tr>
+<tr>
+<td></td>
+<td>Bezetting</td>
+<td>—</td>
+<td>—</td>
+<td>62%</td>
+</tr>
+<tr>
+<td></td>
+<td>ADR</td>
+<td>—</td>
+<td>—</td>
+<td>€210</td>
+</tr>
+<tr>
+<td></td>
+<td>Omzet 2027</td>
+<td>—</td>
+<td>—</td>
+<td>€95.100</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Omzet per organische bezoeker</strong></td>
+<td>—</td>
+<td>—</td>
+<td>€29</td>
+</tr>
+</tbody>
+</table></div>
+<p>De regel <strong>"niet-merkgebonden klikken"</strong> is de eerlijkste enkele graadmeter die u heeft. Hij staat nu op nul. Zolang hij op nul staat, werkt geen enkel ander cijfer in dit dashboard.</p>
+<hr />
+</section>
+<section class="sec" id="14-backlog"><header class="sec__head"><span class="sec__num">14</span><h2>Backlog</h2></header>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Prio</th>
+<th>Actie</th>
+<th>URL</th>
+<th>Impact</th>
+<th>Effort</th>
+<th>SEO-effect</th>
+<th>Conversie-effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>GBP verifiëren/aanmaken</td>
+<td>—</td>
+<td>5</td>
+<td>2</td>
+<td>Hoog (lokaal)</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>LP1 herbouwen</td>
+<td><code>/wellness-vakantie-drenthe</code></td>
+<td>5</td>
+<td>4</td>
+<td>Hoog</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>LP2 herbouwen</td>
+<td><code>/romantisch-weekend-weg-drenthe</code></td>
+<td>5</td>
+<td>4</td>
+<td>Hoog</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>Jacuzzi-correctie</td>
+<td><code>/vakantiehuis-met-hottub-drenthe</code></td>
+<td>4</td>
+<td>1</td>
+<td>Middel</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>Homepage title/meta</td>
+<td><code>/</code></td>
+<td>4</td>
+<td>1</td>
+<td>Middel</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>4× 301-redirect</td>
+<td>zie week 2</td>
+<td>3</td>
+<td>1</td>
+<td>Middel</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>Contextuele CTA's (CRO-A)</td>
+<td>alle LP's</td>
+<td>4</td>
+<td>2</td>
+<td>—</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p0">P0</span></strong></td>
+<td>Sticky CTA-tekst</td>
+<td>alle</td>
+<td>2</td>
+<td>0,5</td>
+<td>—</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td>Interne linkmatrix</td>
+<td>18 pagina's</td>
+<td>5</td>
+<td>3</td>
+<td>Hoog</td>
+<td>Laag</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td>Lodgepagina's bouwen</td>
+<td><code>/lodge-de-heide</code>, <code>/lodge-de-eik</code></td>
+<td>4</td>
+<td>4</td>
+<td>Middel</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td>Prijsindicatie (CRO-B)</td>
+<td>boekingsflow</td>
+<td>5</td>
+<td>3</td>
+<td>—</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td>Reactietijd &lt; 2 uur (CRO-D)</td>
+<td>operationeel</td>
+<td>5</td>
+<td>2</td>
+<td>—</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td><code>Offer</code>-schema</td>
+<td>alle</td>
+<td>3</td>
+<td>1</td>
+<td>Middel</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td>CTR-titles 3 pagina's</td>
+<td>zie 7.2</td>
+<td>3</td>
+<td>1</td>
+<td>Middel</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td>LP7 + LP8 optimaliseren</td>
+<td>Assen, Veenhuizen</td>
+<td>4</td>
+<td>2</td>
+<td>Hoog</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p1">P1</span></strong></td>
+<td>Blog-CTA's</td>
+<td>12 blogs</td>
+<td>4</td>
+<td>2</td>
+<td>—</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p2">P2</span></strong></td>
+<td>LP6 optimaliseren</td>
+<td><code>/luxe-lodge-drenthe</code></td>
+<td>3</td>
+<td>2</td>
+<td>Middel</td>
+<td>Laag</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p2">P2</span></strong></td>
+<td>Portal-/listicle-vermeldingen</td>
+<td>extern</td>
+<td>4</td>
+<td>3</td>
+<td>Hoog</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p2">P2</span></strong></td>
+<td>Contentplan uitvoeren</td>
+<td>blog</td>
+<td>4</td>
+<td>doorlopend</td>
+<td>Hoog</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p2">P2</span></strong></td>
+<td>Hond-cluster: besluit</td>
+<td><code>/vakantiehuis-drenthe-met-hond</code></td>
+<td>2</td>
+<td>1</td>
+<td>Laag</td>
+<td>Laag</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p2">P2</span></strong></td>
+<td><code>noindex</code> rechtspagina's</td>
+<td>6 URL's</td>
+<td>2</td>
+<td>0,5</td>
+<td>Laag</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p3">P3</span></strong></td>
+<td>DE-markt herbeoordelen</td>
+<td><code>/de/*</code></td>
+<td>3</td>
+<td>3</td>
+<td>Middel</td>
+<td>Middel</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p3">P3</span></strong></td>
+<td><code>aggregateRating</code> (na 5 reviews)</td>
+<td>alle</td>
+<td>4</td>
+<td>1</td>
+<td>Hoog</td>
+<td>Hoog</td>
+</tr>
+<tr>
+<td><strong><span class="pri pri--p3">P3</span></strong></td>
+<td><code>revalidate</code> naar 3600</td>
+<td>technisch</td>
+<td>1</td>
+<td>0,5</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p><em>Impact en effort op een schaal van 1–5.</em></p>
+<hr />
+</section>
+<section class="sec" id="15-de-10-acties-die-ik-als-eerste-zou-uitvoeren"><header class="sec__head"><span class="sec__num">15</span><h2>De 10 acties die ik als eerste zou uitvoeren</h2></header>
+<blockquote>
+<p><em>"Als ik morgen verantwoordelijk zou zijn voor de bezetting van Huis ter Huynen in 2027, wat zijn dan de 10 acties die ik als eerste zou uitvoeren?"</em></p>
+</blockquote>
+<ol>
+<li>
+<p><strong>Controleer of er een geverifieerd Google Business Profile is — en zo niet, maak hem vandaag aan.</strong> Voor een accommodatie met een fysiek adres is dit het zwaarstwegende lokale rankingsignaal dat bestaat, en het verklaart mede waarom zelfs uw eigen merknaam gemiddeld op positie 15,3 staat. Kosten: nul. Doorlooptijd: een uur plus verificatie.</p>
+</li>
+<li>
+<p><strong>Herbouw <code>/wellness-vakantie-drenthe</code> en richt hem op "wellness huisje".</strong> 1.526 vertoningen, positie 62,6, nul klikken — de grootste pagina van de site presteert het slechtst, en het woord waarop de markt zoekt staat er niet in.</p>
+</li>
+<li>
+<p><strong>Duw <code>/romantisch-weekend-weg-drenthe</code> naar pagina 1.</strong> De hoofdterm staat op 26,4 en dat is de enige commerciële term met volume die binnen bereik ligt. Dit is uw eerste realistische niet-merkgebonden klik.</p>
+</li>
+<li>
+<p><strong>Zet "jacuzzi" in de title, H1 en FAQ van de hottubpagina.</strong> Een uur werk voor de grootste vraagcluster die u heeft (754 versus 249 vertoningen). Laat de URL staan.</p>
+</li>
+<li>
+<p><strong>Repareer de CTA-paden.</strong> Elke landingspagina schiet de bezoeker nu naar een generieke homepage-sectie, waarmee de complete opbouw van de pagina verloren gaat. Geef context mee en bevestig die zichtbaar in de boekingssectie.</p>
+</li>
+<li>
+<p><strong>Toon een prijs vóór het formulier.</strong> "Op aanvraag" is op dit moment waarschijnlijk het duurste woord op de website. U mag het aanvraagmodel houden; u moet alleen de prijs niet meer verbergen.</p>
+</li>
+<li>
+<p><strong>Verkort de reactietijd van 24 uur naar 2 uur en zeg dat ook.</strong> Geen SEO-actie, wel vermoedelijk de hoogste omzetimpact per bestede euro in dit hele rapport. Een aanvrager die 24 uur wacht, heeft vaak al ergens anders geboekt.</p>
+</li>
+<li>
+<p><strong>Laat uw drie best rankende pagina's hun autoriteit doorgeven.</strong> <code>/hunebedden-drenthe</code> (568 vertoningen, positie 13), <code>/heide-drenthe</code> (261, positie 9,7) en de blogs op positie 8–10 zijn de enige pagina's die Google echt waardeert. Ze linken nu alleen generiek. Elf contextuele links, één middag werk.</p>
+</li>
+<li>
+<p><strong>Bouw <code>/lodge-de-heide</code> en <code>/lodge-de-eik</code>.</strong> Er is nu geen enkele stap waarin de bezoeker een lodge kiest — terwijl kiezen precies de stap is die twijfel omzet in een boeking. Bovendien vangt het long tail die uw themapagina's niet kunnen bedienen.</p>
+</li>
+<li>
+<p><strong>Kom in de listicles in plaats van ertegen te vechten.</strong> origineelovernachten.nl, bijzonderplekje.nl, naturescanner.nl, luxevakantieplekjes.nl, drenthe.nl: samen bezetten zij de top 10 van "bijzonder overnachten Drenthe", "wellness huisje Drenthe" en "huisje met hottub Drenthe". Die SERP's wint u niet met een betere pagina — die wint u door erin te staan. En "nieuwe boutique lodges, opening januari 2027" is precies het verhaal waar zij nu naar op zoek zijn. Dat venster sluit zodra u niet meer nieuw bent.</p>
+</li>
+</ol>
+<hr />
+<h2>Bijlage — Reproduceerbaarheid</h2>
+<p>De clustering, intentieclassificatie, positiebuckets en opportunity scores in dit rapport zijn berekend met een Python-script over de twee aangeleverde CSV-exports. De scorelogica staat volledig beschreven in 2.5; de clusterregels, intentietoewijzingen en relevantie-/winbaarheidsfactoren zijn expliciet en navolgbaar. Elk cijfer in dit rapport is herleidbaar tot <span class="src src--gsc">GSC</span>, <span class="src src--code">CODE</span> of een expliciet gemarkeerde <span class="src src--aanname">AANNAME</span>.</p>
+<p><strong>Waar dit rapport bewust géén antwoord op geeft</strong>, omdat de data het niet toelaat: externe zoekvolumes, backlinkprofielen (van u of van concurrenten), on-page-metingen van concurrentpagina's, en werkelijke conversiepercentages. Voor alle vier geldt: liever een gemarkeerd gat dan een plausibel klinkend getal.</p></section>
+  </main>
+</div>
+
+<footer class="foot">
+  Elk cijfer in dit rapport is herleidbaar tot Search Console, de sitecode of een expliciet gemarkeerde aanname.
+  Het analysescript en de brondata staan in <code>analyse/</code> in de repository.
+</footer>
