@@ -230,7 +230,7 @@ export default function LandingPageDE() {
             fontFamily: T.sans, fontSize: 11, fontWeight: 300,
             color: "rgba(255,255,255,.42)", marginTop: 24, letterSpacing: "0.3px",
           }}>
-            Eröffnung 1. Januar 2027 · bereits buchbar
+            Eröffnung 2027 · bereits buchbar
           </p>
         </div>
       </section>
@@ -611,7 +611,7 @@ export default function LandingPageDE() {
           />
           {googleReviews.length === 0 ? (
             <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, textAlign: "center", maxWidth: 560, margin: "0 auto", lineHeight: 1.8 }}>
-              Unsere ersten Gäste übernachten ab dem 1. Januar 2027. Sobald sie Huis ter Huynen
+              Unsere ersten Gäste übernachten 2027. Sobald sie Huis ter Huynen
               erlebt haben, erscheinen ihre Bewertungen hier — direkt von Google, ungefiltert und echt.
             </p>
           ) : (
@@ -771,7 +771,7 @@ export default function LandingPageDE() {
             color: "rgba(255,255,255,.9)", letterSpacing: "2.5px", textTransform: "uppercase",
             marginBottom: 14,
           }}>
-            Eröffnung 1. Januar 2027
+            Eröffnung 2027
           </div>
           <h2 style={{
             fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)",

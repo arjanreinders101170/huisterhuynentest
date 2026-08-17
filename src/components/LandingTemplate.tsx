@@ -89,7 +89,7 @@ const I18N = {
     faqTitle: "Veelgestelde vragen",
     ctaAvail: "Bekijk beschikbaarheid",
     ctaWa: "Stel je vraag via WhatsApp",
-    opening: "Opening 1 januari 2027 · al boekbaar",
+    opening: "Opening in 2027 · al boekbaar",
     footerMore: "Meer vakanties in Drenthe",
   },
   de: {
@@ -101,7 +101,7 @@ const I18N = {
     faqTitle: "Häufig gestellte Fragen",
     ctaAvail: "Verfügbarkeit prüfen",
     ctaWa: "Frage via WhatsApp stellen",
-    opening: "Eröffnung 1. Januar 2027 · bereits buchbar",
+    opening: "Eröffnung 2027 · bereits buchbar",
     footerMore: "Weitere Unterkünfte in Drenthe",
   },
 };

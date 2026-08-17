@@ -380,7 +380,7 @@ export function newsletterWelcomeEmail(opts: NewsletterWelcomeEmailOpts): string
     photoUrl: opts.photoUrl,
     photoAlt: "Huis ter Huynen — Lodge De Heide en Lodge De Eik in Zeijen, Drenthe",
     title: `Welkom${opts.firstName ? `, ${opts.firstName}` : ""}`,
-    intro: "Je staat op de lijst. We laten je als eerste weten zodra de boekingen open gaan voor onze opening op 1 januari 2027 &mdash; inclusief eventuele vroegboekvoordelen voor nieuwsbrief-abonnees.",
+    intro: "Je staat op de lijst. We laten je als eerste weten zodra de boekingen open gaan voor onze opening in 2027 &mdash; inclusief eventuele vroegboekvoordelen voor nieuwsbrief-abonnees.",
     blocks: [
       teaserBlock("🏡", "Twee privé lodges in Zeijen", "Lodge De Heide en Lodge De Eik, allebei volledig privé met een eigen terras, hottub en directe toegang tot de Drentse natuur."),
       teaserBlock("🌿", "Midden in de heide en het bos", "Wandelen en fietsen vanaf de voordeur, met de Drentsche Aa, het Dwingelderveld en de hunebedden op fiets- en rijafstand."),

@@ -424,13 +424,13 @@ export default function OmgevingPage() {
       <section style={{ background: T.green, padding: "72px 40px", textAlign: "center" as const }}>
         <div style={{ maxWidth: 560, margin: "0 auto" }}>
           <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase" as const, marginBottom: 16 }}>
-            Opening 1 januari 2027
+            Opening in 2027
           </div>
           <h2 style={{ fontFamily: T.serif, fontSize: "clamp(22px, 3.5vw, 34px)", color: "white", margin: "0 0 16px", fontWeight: 700 }}>
             Klaar voor een fietsvakantie in Drenthe?
           </h2>
           <p style={{ fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.68)", fontWeight: 300, margin: "0 0 32px", lineHeight: 1.75 }}>
-            De lodges openen 1 januari 2027. Schrijf u in voor de nieuwsbrief en ontvang als eerste de openingsaanbieding — inclusief vroegboekkorting.
+            De lodges openen in 2027. Schrijf u in voor de nieuwsbrief en ontvang als eerste de exacte openingsdatum en de openingsaanbieding — inclusief vroegboekkorting.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" as const }}>
             <Link href="/#nieuwsbrief" style={{ fontFamily: T.sans, fontSize: 14, fontWeight: 600, color: T.green, background: T.gold, padding: "14px 28px", borderRadius: 8, textDecoration: "none" }}>

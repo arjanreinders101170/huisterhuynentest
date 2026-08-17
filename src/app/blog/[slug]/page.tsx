@@ -256,11 +256,11 @@ export default async function ArtikelPagina(
             fontFamily: T.sans, fontSize: 11, fontWeight: 700,
             color: T.gold, letterSpacing: 1.5, textTransform: "uppercase" as const, marginBottom: 6,
           }}>
-            Opening 1 januari 2027
+            Opening in 2027
           </div>
           <p style={{ fontFamily: T.sans, fontSize: 14, color: T.text, margin: "0 0 14px", lineHeight: 1.6 }}>
-            De lodges zijn beschikbaar vanaf 1 januari 2027. Schrijf je in voor de
-            nieuwsbrief en ontvang als eerste de vroegboekkorting.
+            De lodges zijn beschikbaar in 2027. Schrijf je in voor de nieuwsbrief en
+            ontvang als eerste de openingsdatum en de vroegboekkorting.
           </p>
           <Link href="/#nieuwsbrief" style={{
             display: "inline-block", fontFamily: T.sans, fontSize: 13, fontWeight: 700,
@@ -301,7 +301,7 @@ export default async function ArtikelPagina(
             fontFamily: T.sans, fontSize: 11, fontWeight: 600,
             color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase" as const, marginBottom: 14,
           }}>
-            Opening 1 januari 2027
+            Opening in 2027
           </div>
           <h2 style={{
             fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 30px)",
