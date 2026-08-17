@@ -10,10 +10,14 @@ const cspHeader = [
   "style-src 'self' 'unsafe-inline'",
   // Google Fonts glyphs
   "font-src 'self' https://fonts.gstatic.com",
-  // Images: self, data URIs, blob URLs, Meta Pixel 1x1 tracking pixels, GTM resources
-  "img-src 'self' data: blob: https://www.facebook.com https://www.googletagmanager.com",
-  // API calls: own origin + Supabase + Meta CAPI/Pixel beacons + GTM telemetry
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com https://graph.facebook.com",
+  // Images: self, data URIs, blob URLs, Meta Pixel 1x1 tracking pixels, GTM resources,
+  // GA4 image-beacon fallback
+  "img-src 'self' data: blob: https://www.facebook.com https://www.googletagmanager.com https://*.google-analytics.com",
+  // API calls: own origin + Supabase + Meta CAPI/Pixel beacons + GTM telemetry.
+  // GA4 verstuurt zijn hits naar *.google-analytics.com (EU: region1.…) en
+  // *.analytics.google.com; zonder deze twee blokkeert de CSP elke meting.
+  // stats.g.doubleclick.net is bewust NIET toegestaan — pas nodig bij Google Signals/Ads.
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://connect.facebook.net https://www.facebook.com https://graph.facebook.com",
   // GTM noscript iframe fallback
   "frame-src https://www.googletagmanager.com",
   "object-src 'none'",
