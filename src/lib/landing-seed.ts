@@ -108,7 +108,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Vakantiehuis met Hottub in Drenthe | Privé Lodge bij Zeijen",
     meta_description:
       "Luxe vakantiehuis met privé-hottub in Drenthe. Twee lodges op de heide bij Zeijen, 20 min van Assen. Eigen hottub 24/7, wandelen & fietsen vanuit de deur.",
-    og_image: "/lodge-heide.jpg",
+    og_image: "",
     sort_order: 1,
   },
   {
@@ -251,7 +251,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Romantisch Weekend Weg in Drenthe | Privé Lodge met Hottub",
     meta_description:
       "Romantisch weekend weg in Drenthe? Verblijf in een privé lodge met hottub op de heide bij Zeijen. Rust, natuur en privacy voor koppels. Boek direct, 20 min van Assen.",
-    og_image: "/heide1.jpg",
+    og_image: "",
     sort_order: 3,
   },
   {
@@ -323,7 +323,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Wellness Vakantie in Drenthe | Lodge met Hottub & Sauna",
     meta_description:
       "Wellness vakantie in Drenthe: privé lodge met eigen hottub en sauna op de heide bij Zeijen. Stilte, natuur en comfort, 20 min van Assen. Vanaf €165 per nacht.",
-    og_image: "/lodge-eik.jpg",
+    og_image: "",
     sort_order: 4,
   },
   {
@@ -394,7 +394,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Vakantiehuis bij Assen | Luxe Lodge met Hottub in Zeijen",
     meta_description:
       "Vakantiehuis bij Assen? Luxe lodge met privé-hottub in Zeijen, 20 min van het centrum en het TT Circuit. Rust, natuur en de stad dichtbij. Vanaf €165 per nacht.",
-    og_image: "/lodge-heide.jpg",
+    og_image: "",
     sort_order: 5,
   },
   {
@@ -463,7 +463,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Vakantiehuis bij Norg | Luxe Lodge met Hottub in Zeijen",
     meta_description:
       "Vakantiehuis bij Norg? Luxe lodge met privé-hottub in Zeijen, vlak bij Norg. Bos, heide en fietsroutes voor de deur. Boek direct, vanaf €165 per nacht.",
-    og_image: "/wandel_drenthe.jpg",
+    og_image: "",
     sort_order: 6,
   },
   {
@@ -535,7 +535,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Bijzonder Overnachten in Drenthe | Boutique Lodge bij Zeijen",
     meta_description:
       "Bijzonder overnachten in Drenthe: twee boutique lodges met privé-hottub en sauna op de heide bij Zeijen. Volledig privé, 20 min van Assen. Vanaf €165 per nacht.",
-    og_image: "/heide2.jpg",
+    og_image: "",
     sort_order: 8,
   },
   {
@@ -606,7 +606,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Vakantiehuis Drenthe met Hond | Lodge met Hottub bij Zeijen",
     meta_description:
       "Vakantiehuis in Drenthe met hond? Twee lodges op de heide bij Zeijen, honden welkom in overleg. Wandelen vanuit de deur, privé-hottub. Vanaf €165 per nacht.",
-    og_image: "/wandel_drenthe.jpg",
+    og_image: "",
     sort_order: 9,
   },
   {
@@ -748,7 +748,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Ferienhaus mit Whirlpool in Drenthe | Private Lodge bei Zeijen",
     meta_description:
       "Ferienhaus mit privatem Whirlpool in Drenthe (NL). Zwei Boutique Lodges auf der Heide bei Zeijen, mit Whirlpool & Sauna. Ruhe, Natur und Luxus. Ab €165 pro Nacht.",
-    og_image: "/lodge-heide.jpg",
+    og_image: "",
     sort_order: 11,
   },
   {
@@ -1226,7 +1226,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Luxus Lodge in Drenthe | Boutique Aufenthalt mit Whirlpool bei Zeijen",
     meta_description:
       "Luxus Boutique Lodge in Drenthe, auf der Heide bei Zeijen. Zwei vollständig private Lodges mit Whirlpool und Sauna, 20 Min. von Assen. Ruhe, Raum und Komfort. Jetzt direkt buchen.",
-    og_image: "/lodge-eik.jpg",
+    og_image: "",
     sort_order: 13,
   },
   {
@@ -1298,7 +1298,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Wellness Urlaub in Drenthe | Lodge mit Whirlpool & Sauna",
     meta_description:
       "Wellness Urlaub in Drenthe: private Lodge mit eigenem Whirlpool und Sauna auf der Heide bei Zeijen. Stille, Natur und Komfort, 20 Min. von Assen. Ab €165 pro Nacht.",
-    og_image: "/lodge-heide.jpg",
+    og_image: "",
     sort_order: 14,
   },
   {
@@ -1370,7 +1370,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Romantisches Wochenende in Drenthe | Private Lodge mit Whirlpool",
     meta_description:
       "Romantisches Wochenende in Drenthe? Übernachten Sie in einer privaten Lodge mit Whirlpool auf der Heide bei Zeijen. Ruhe, Natur und Privatsphäre für Paare. Jetzt buchen.",
-    og_image: "/heide3.jpg",
+    og_image: "",
     sort_order: 15,
   },
 ];

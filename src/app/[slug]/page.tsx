@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, landingOgImageUrl } from "@/lib/site";
 import { getLandingPage, getServedLandingSlugs, recordToConfig } from "@/lib/landing";
 import { LandingTemplate, landingSchemas } from "@/components/LandingTemplate";
 
@@ -20,7 +20,7 @@ export async function generateMetadata(
   const rec = await getLandingPage(slug);
   if (!rec) return { title: "Niet gevonden" };
   const url = `${SITE_URL}/${rec.slug}`;
-  const ogImage = rec.og_image || rec.hero_image || "/lodge-heide.jpg";
+  const ogImage = landingOgImageUrl(rec);
   return {
     title: rec.meta_title || rec.h1,
     description: rec.meta_description,
@@ -30,13 +30,13 @@ export async function generateMetadata(
       description: rec.meta_description,
       url,
       type: "website",
-      images: [{ url: `${SITE_URL}${ogImage}`, width: 1200, height: 630, alt: rec.hero_image_alt }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: rec.hero_image_alt }],
     },
     twitter: {
       card: "summary_large_image",
       title: rec.meta_title || rec.h1,
       description: rec.meta_description,
-      images: [`${SITE_URL}${ogImage}`],
+      images: [ogImage],
     },
   };
 }
