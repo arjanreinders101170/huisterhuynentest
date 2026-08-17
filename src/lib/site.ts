@@ -18,6 +18,16 @@ export function blogOgImageUrl(post: { slug: string; og_image?: string | null })
     : `${SITE_URL}/api/og/blog?slug=${encodeURIComponent(post.slug)}`;
 }
 
+/** Absolute OG/social-image URL voor een landingspagina. Zelfde regel als bij de
+ *  blogs: een eigen foto in og_image wint, anders een gegenereerde kaart met de
+ *  eigen H1. Bewust géén terugval op hero_image of lodge-heide.jpg — die foto's
+ *  worden door meerdere pagina's gedeeld en leveren identieke previews op. */
+export function landingOgImageUrl(rec: { slug: string; og_image?: string | null }): string {
+  return rec.og_image
+    ? `${SITE_URL}${rec.og_image}`
+    : `${SITE_URL}/api/og/landing?slug=${encodeURIComponent(rec.slug)}`;
+}
+
 /** Starting price per night (both lodges). Single source for copy + Offer schema. */
 export const PRICE_FROM_EUR = 165;
 export const PRICE_FROM_LABEL = "Vanaf €165 per nacht";

@@ -13,6 +13,22 @@ export const metadata: Metadata = {
     description: "Reistips, verhalen en nieuws vanuit de Drentse heide.",
     url: "https://www.huisterhuynen.nl/blog",
     type: "website",
+    images: [
+      {
+        // Eigen gegenereerde kaart in plaats van de gedeelde lodge-heide.jpg
+        // die het hoofd-layout meegeeft.
+        url: "https://www.huisterhuynen.nl/api/og/blog",
+        width: 1200,
+        height: 630,
+        alt: "Blog & verhalen — Huis ter Huynen",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog & Verhalen — Huis ter Huynen",
+    description: "Reistips, verhalen en nieuws vanuit de Drentse heide.",
+    images: ["https://www.huisterhuynen.nl/api/og/blog"],
   },
 };
 

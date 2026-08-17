@@ -291,6 +291,16 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
         </div>
 
         <div>
+          <label style={lab}>
+            Social/OG-afbeelding — gebruikt bij delen op social media; zonder foto wordt per pagina een eigen kaart met de H1 gegenereerd
+          </label>
+          <select value={form.og_image} onChange={e => setForm(f => ({ ...f, og_image: e.target.value }))} style={inp}>
+            <option value="">Automatisch (kaart met paginatitel)</option>
+            {PUBLIC_IMAGES.map(img => <option key={img} value={img}>{img}</option>)}
+          </select>
+        </div>
+
+        <div>
           <label style={lab}>Intro (inleidende alinea)</label>
           <textarea value={form.intro} onChange={e => setForm(f => ({ ...f, intro: e.target.value }))}
             rows={3} style={{ ...inp, resize: "vertical" }} />

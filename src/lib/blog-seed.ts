@@ -69,7 +69,7 @@ Huis ter Huynen ligt in Zeijen, met het Zeijerveld, de Zeijerstrubben en het Bal
     categorie: "Reistips",
     leestijd: "7 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/rent_a_bike.jpg",
+    og_image: "",
   },
   {
     slug: "wandelroute-zeijen-veentjesroute",
@@ -102,7 +102,7 @@ Na een wandeling door de heide is er weinig dat zo goed voelt als even niets doe
     categorie: "Drenthe",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/wandel_drenthe.jpg",
+    og_image: "",
   },
   {
     slug: "drenthe-of-de-veluwe-natuurweekend",
@@ -143,7 +143,7 @@ Wie voor Drenthe kiest, vindt in Zeijen een rustige uitvalsbasis tussen Assen en
     categorie: "Reistips",
     leestijd: "6 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/heide2.jpg",
+    og_image: "",
   },
   {
     slug: "digitale-detox-drenthe",
@@ -180,7 +180,7 @@ Bij Huis ter Huynen in Zeijen liggen beide lodges, De Heide en De Eik, volledig 
     categorie: "Reistips",
     leestijd: "6 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/heide3.jpg",
+    og_image: "",
   },
   {
     slug: "drentsche-aa-beekdallandschap",
@@ -223,7 +223,7 @@ Vanuit Zeijen is de Drentsche Aa binnen een kwartier rijden of binnen een goede 
     categorie: "Drenthe",
     leestijd: "6 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/wandel_drenthe.jpg",
+    og_image: "",
     publish: true,
   },
   {
@@ -317,7 +317,7 @@ Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé 
     categorie: "Reistips",
     leestijd: "7 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/lodge-heide.jpg",
+    og_image: "",
     publish: true,
   },
   {
@@ -359,7 +359,7 @@ Bij Huis ter Huynen in Zeijen zijn honden van harte welkom in beide lodges, Lodg
     categorie: "Reistips",
     leestijd: "6 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/heide1.jpg",
+    og_image: "",
     publish: true,
   },
   {
@@ -395,7 +395,7 @@ Na een dag peddelen ben je vaak verrassend moe — een goede, ontspannen vermoei
     categorie: "Drenthe",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/wandel_drenthe.jpg",
+    og_image: "",
     publish: true,
   },
   {
@@ -433,7 +433,7 @@ Wie in Zeijen verblijft, heeft het voordeel dat de natuur al bij de voordeur beg
     categorie: "Reistips",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/rent_a_bike.jpg",
+    og_image: "",
     publish: true,
   },
   {
@@ -469,7 +469,7 @@ Zeijen ligt op slechts een korte afstand van Norg en is daarmee een uitstekende 
     categorie: "Drenthe",
     leestijd: "6 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/heide2.jpg",
+    og_image: "",
     publish: true,
   },
   {
@@ -589,7 +589,7 @@ De lodges openen op 1 januari 2027. Het najaar van 2027 — inclusief de heidepe
     categorie: "Seizoen",
     leestijd: "8 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/heide3.jpg",
+    og_image: "",
     publish: true,
   },
   {
@@ -647,7 +647,7 @@ Het duurt iets langer dan gehoopt. Maar de heide bloeit hier elk jaar opnieuw, e
     categorie: "Verhaal",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",
-    og_image: "/heide3.jpg",
+    og_image: "",
     publish: true,
   },
   {

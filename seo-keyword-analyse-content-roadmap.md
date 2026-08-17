@@ -609,7 +609,7 @@ Laag 3 (FAQ-conclusie):
 - [ ] **Google Business Profile aanmaken** — openingsdatum, alle foto-categorieën (exterieur, interieur, team, lobby, kamer), openingstijden, NAP exact als op site
 - [ ] **GSC Domain Property verifiëren** — dekt www + non-www, sitemap indienen
 - [ ] **GA4 sleutelgebeurtenissen markeren** — `generate_lead`, `begin_checkout`, `newsletter_subscribe`, `purchase` (mapping al aanwezig in codebase)
-- [ ] **OG-images per blog individualiseren** — nu delen alle blogs lodge-heide.jpg; slechte social CTR
+- [x] **OG-images per blog individualiseren** — elke blog en landingspagina heeft nu een eigen preview: een eigen foto, of anders een gegenereerde kaart met de eigen titel (`/api/og/blog`, `/api/og/landing`). Een foto is nog maar de preview van één pagina; lodge-heide.jpg blijft die van de homepage
 - [ ] **Bronfoto's comprimeren** — lodge-eik.jpg (3,5 MB!) en lodge-heide.jpg (3,3 MB) naar <400 KB; Next.js optimaliseert bij serven maar dit vertraagt TTI
 - [ ] **Sitemap uitbreiden** met alle nieuwe landingspagina's bij livegang
 
