@@ -313,7 +313,7 @@ Een privé lodge is qua prijs per nacht vaak vergelijkbaar met of iets hoger dan
 
 ## Twee privé lodges in Drenthe: Huis ter Huynen
 
-Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. De lodges openen per 1 januari 2027, en nieuwsbrief-abonnees krijgen als eerste bericht over beschikbaarheid en eventuele vroegboekvoordelen. Wie nieuwsgierig is naar de exacte tarieven, kan zich gratis aanmelden voor de nieuwsbrief en wordt zodra de boekingen open gaan als eerste geïnformeerd.`,
+Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. De lodges openen in de loop van 2027 — de exacte datum volgt zodra de oplevering rond is — en nieuwsbrief-abonnees krijgen als eerste bericht over beschikbaarheid en eventuele vroegboekvoordelen. Wie nieuwsgierig is naar de exacte tarieven, kan zich gratis aanmelden voor de nieuwsbrief en wordt zodra de boekingen open gaan als eerste geïnformeerd.`,
     categorie: "Reistips",
     leestijd: "7 minuten",
     auteur: "Arjan Reinders",
@@ -563,7 +563,7 @@ De zomer is voor buiten zijn. De herfst is voor buiten zijn én daarna lekker bi
 
 ## Volgend jaar rond deze tijd ben je welkom in de lodges
 
-Wij kijken zelf al maanden naar dit seizoen uit, want vanaf 1 januari 2027 openen onze twee lodges bij Huis ter Huynen in Zeijen hun deuren. Dat betekent dat je volgend jaar rond deze periode — augustus, september, oktober 2027, precies wanneer de heide op zijn mooist is — bij ons kunt overnachten.
+Wij kijken zelf al maanden naar dit seizoen uit, want in 2027 openen onze twee lodges bij Huis ter Huynen in Zeijen hun deuren. De oplevering vraagt wat meer tijd dan we gehoopt hadden, dus de exacte openingsdatum maken we bekend zodra die vaststaat. Wat daar niet van afhangt: volgend jaar rond deze periode — augustus, september, oktober 2027, precies wanneer de heide op zijn mooist is — kun je bij ons overnachten.
 
 Lodge De Heide en Lodge De Eik zijn allebei volledig privé: een eigen terras, een eigen hottub, geen receptie en geen gedeelde voorzieningen. Je komt aan, doet de deur achter je dicht en de heide begint bij wijze van spreken bij het tuinhek. Voor een herfstweekend is dat precies de goede opzet: 's ochtends de mist in, 's middags terug, en 's avonds de hottub in terwijl het buiten donker en stil wordt.
 
@@ -585,7 +585,7 @@ Ja. Buiten de herfstvakantieweek zelf zijn de heidegebieden en beekdalen doordew
 
 ### Wanneer kan ik in de herfst bij Huis ter Huynen overnachten?
 
-De lodges openen op 1 januari 2027. Het najaar van 2027 — inclusief de heideperiode en de herfstvakantie — is daarmee het eerste herfstseizoen waarin gasten welkom zijn. Via de nieuwsbrief hoor je als eerste wanneer deze data te boeken zijn.`,
+De lodges openen in de loop van 2027; de exacte openingsdatum volgt zodra de oplevering rond is. Het najaar van 2027 — inclusief de heideperiode en de herfstvakantie — is het eerste herfstseizoen waarin gasten welkom zijn. Via de nieuwsbrief hoor je als eerste wanneer deze data te boeken zijn.`,
     categorie: "Seizoen",
     leestijd: "8 minuten",
     auteur: "Arjan Reinders",
@@ -671,7 +671,7 @@ En dan is er nog het simpelste argument: restaurants, het dorpscafé aan de brin
 
 ## Vanaf wanneer je welkom bent
 
-Huis ter Huynen opent op 1 januari 2027. Vanaf dat moment kun je in Lodge De Heide of Lodge De Eik verblijven — inclusief de laadpaal op het terrein. Wie nu al aan het najaar denkt: het najaar van 2027, met de bloeiende heide in augustus, de kleuromslag in september en de herfstvakantie in oktober, is het eerste najaar waarin wij gasten ontvangen.
+Huis ter Huynen opent in 2027. De oplevering van de lodges vraagt iets meer tijd dan gepland, dus de exacte datum volgt zodra die vaststaat. Vanaf dat moment kun je in Lodge De Heide of Lodge De Eik verblijven — inclusief de laadstations op het terrein. Wie nu al aan het najaar denkt: het najaar van 2027, met de bloeiende heide in augustus, de kleuromslag in september en de herfstvakantie in oktober, is het eerste najaar waarin wij gasten ontvangen.
 
 Schrijf je in voor de nieuwsbrief om als eerste te horen wanneer die data opengaan. Inschrijvers krijgen bovendien de vroegboekkorting die alleen voor hen geldt.
 
@@ -695,7 +695,7 @@ Langs de A28 en in Assen zijn diverse snellaadlocaties te vinden. Vanuit de Rand
 
 ### Wanneer kan ik boeken?
 
-De lodges openen op 1 januari 2027. Via de nieuwsbrief hoor je als eerste wanneer de agenda voor 2027 opengaat, inclusief het najaar.`,
+De lodges openen in de loop van 2027; de exacte openingsdatum maken we bekend zodra de oplevering rond is. Via de nieuwsbrief hoor je als eerste wanneer de agenda opengaat, inclusief het najaar.`,
     categorie: "Reistips",
     leestijd: "7 minuten",
     auteur: "Arjan Reinders",
