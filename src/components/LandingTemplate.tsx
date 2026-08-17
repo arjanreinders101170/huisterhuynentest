@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SITE_URL, LANDING_NAV } from "@/lib/site";
+import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 
 /* ═══ Reusable SEO landing page ═══
  * Server component (no hydration). One config object drives content +
@@ -149,6 +150,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               {t.heroSub}
             </Link>
           </div>
+          <DirectBookingUSP locale={config.locale ?? "nl"} tone="onDark" size={12.5} style={{ marginTop: 18 }} />
           {config.priceFrom && (
             <div style={{ marginTop: 18, fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,.85)", letterSpacing: ".3px" }}>
               {config.priceFrom} · {t.priceLabel}
@@ -199,25 +201,9 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         </div>
       </section>
 
-      {/* Related internal links */}
-      {config.related.length > 0 && (
-        <section style={{ background: T.bg, padding: "56px 40px" }}>
-          <div style={{ maxWidth: 980, margin: "0 auto" }}>
-            <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.green, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20 }}>
-              {t.relatedLabel}
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              {config.related.map((r, i) => (
-                <Link key={i} href={r.href} style={{ fontFamily: T.sans, fontSize: 14, fontWeight: 500, color: T.green, background: T.card, border: `1px solid ${T.border}`, padding: "12px 20px", borderRadius: 10, textDecoration: "none" }}>
-                  {r.label} →
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* FAQ */}
+      {/* FAQ — staat bewust tussen de content en de boekings-CTA: eerst de
+          laatste bezwaren wegnemen, dan pas vragen om te reserveren. De
+          'ontdek ook'-links staan daarom ná de CTA. */}
       {config.faq.length > 0 && (
         <section style={{ background: "white", padding: "64px 40px" }}>
           <div style={{ maxWidth: 780, margin: "0 auto" }}>
@@ -263,8 +249,27 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               {t.ctaWa}
             </a>
           </div>
+          <DirectBookingUSP locale={config.locale ?? "nl"} tone="onDark" size={12.5} style={{ marginTop: 20 }} />
         </div>
       </section>
+
+      {/* Related internal links */}
+      {config.related.length > 0 && (
+        <section style={{ background: T.bg, padding: "56px 40px" }}>
+          <div style={{ maxWidth: 980, margin: "0 auto" }}>
+            <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.green, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20 }}>
+              {t.relatedLabel}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+              {config.related.map((r, i) => (
+                <Link key={i} href={r.href} style={{ fontFamily: T.sans, fontSize: 14, fontWeight: 500, color: T.green, background: T.card, border: `1px solid ${T.border}`, padding: "12px 20px", borderRadius: 10, textDecoration: "none" }}>
+                  {r.label} →
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.6)", padding: "44px 40px 32px" }}>

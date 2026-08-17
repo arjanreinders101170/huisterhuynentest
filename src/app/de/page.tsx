@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { DirectBookingUSP } from "@/components/DirectBookingUSP";
+import { BookingFaq } from "@/components/BookingFaq";
 
 const RequestFormDE = dynamic(() => import("@/components/RequestFormDE"), {
   ssr: false,
@@ -108,8 +110,11 @@ function BookingSection() {
             }} />
             Frühbucher erhalten Vorrang auf die Sommerwochenenden 2027
           </div>
+          <DirectBookingUSP locale="de" tone="onLight" size={13} style={{ marginTop: 18 }} />
         </div>
         <RequestFormDE />
+        {/* FAQ direkt am Formular: letzte Einwände klären, ohne wegzunavigieren. */}
+        <BookingFaq locale="de" />
       </div>
     </section>
   );
@@ -204,6 +209,9 @@ export default function LandingPageDE() {
               Aufenthalt anfragen
               <span aria-hidden style={{ fontSize: 18, lineHeight: 1 }}>→</span>
             </a>
+
+            {/* Direktbuchungs-USP — der Unterschied zu einer Buchungsplattform */}
+            <DirectBookingUSP locale="de" tone="onDark" size={12.5} />
 
             <div style={{
               display: "inline-flex", alignItems: "center", gap: 8,
@@ -443,6 +451,7 @@ export default function LandingPageDE() {
                   }}>
                     {lodge.name} anfragen
                   </a>
+                  <DirectBookingUSP locale="de" tone="onLight" size={11.5} style={{ marginTop: 12 }} />
                 </div>
               </div>
             ))}
@@ -753,6 +762,7 @@ export default function LandingPageDE() {
               Jetzt entdecken
             </a>
           </div>
+          <DirectBookingUSP locale="de" tone="onDark" size={12} style={{ marginTop: 20 }} />
         </div>
       </section>
 

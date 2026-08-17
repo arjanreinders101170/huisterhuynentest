@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { DirectBookingUSP } from "@/components/DirectBookingUSP";
+import { BookingFaq } from "@/components/BookingFaq";
 import { LANDING_NAV } from "@/lib/site";
 const RequestForm = dynamic(() => import("@/components/RequestForm"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Formulier laden...</div> });
 
@@ -119,6 +121,7 @@ function BookingSection() {
           <p style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, fontWeight: 300, margin: "20px auto 0", maxWidth: 560, lineHeight: 1.7 }}>
             Geef uw gewenste data door, dan reserveren wij die persoonlijk voor u. U ontvangt binnen 24 uur een aanbod op maat. Geen verplichtingen.
           </p>
+          <DirectBookingUSP tone="onLight" size={13} style={{ marginTop: 18 }} />
         </div>
         <RequestForm />
         <div style={{ textAlign: "center", marginTop: 32 }}>
@@ -136,6 +139,9 @@ function BookingSection() {
             Als vroegboeker heeft u de eerste keuze, populaire weekenden gaan snel
           </div>
         </div>
+        {/* FAQ direct onder het formulier: laatste bezwaren wegnemen
+            zonder dat iemand naar /faq hoeft weg te navigeren. */}
+        <BookingFaq />
       </div>
     </section>
   );
@@ -257,6 +263,9 @@ export default function LandingPage() {
               Bekijk beschikbare data
               <span aria-hidden style={{ fontSize: 18, lineHeight: 1 }}>→</span>
             </a>
+
+            {/* Direct-boeken USP — het verschil met een boekingssite */}
+            <DirectBookingUSP tone="onDark" size={12.5} />
 
             {/* Scarcity badge */}
             <div style={{
@@ -495,6 +504,7 @@ export default function LandingPage() {
                   }}>
                     Claim datum voor {lodge.name}
                   </a>
+                  <DirectBookingUSP tone="onLight" size={11.5} style={{ marginTop: 12 }} />
                 </div>
               </div>
             ))}
@@ -542,6 +552,7 @@ export default function LandingPage() {
             }}>
               Claim uw weekend als Eerste Gast →
             </a>
+            <DirectBookingUSP tone="onDark" size={12} />
             <div style={{
               fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.45)",
               letterSpacing: "0.3px",
@@ -792,15 +803,18 @@ export default function LandingPage() {
                 Weekenden in augustus en september zijn als eerste volgeboekt. Claim uw datum nu.
               </p>
             </div>
-            <a href="#reserveren" style={{
-              display: "inline-block", flexShrink: 0,
-              fontFamily: T.sans, fontSize: 13, fontWeight: 700,
-              color: "#1A2E24", background: T.gold,
-              padding: "12px 28px", borderRadius: 10,
-              textDecoration: "none", letterSpacing: "0.3px", whiteSpace: "nowrap",
-            }}>
-              Controleer beschikbaarheid →
-            </a>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, flexShrink: 0 }}>
+              <a href="#reserveren" style={{
+                display: "inline-block",
+                fontFamily: T.sans, fontSize: 13, fontWeight: 700,
+                color: "#1A2E24", background: T.gold,
+                padding: "12px 28px", borderRadius: 10,
+                textDecoration: "none", letterSpacing: "0.3px", whiteSpace: "nowrap",
+              }}>
+                Controleer beschikbaarheid →
+              </a>
+              <DirectBookingUSP tone="onDark" size={11} style={{ gap: "4px 12px" }} />
+            </div>
           </div>
         </div>
       </section>
@@ -1026,6 +1040,7 @@ export default function LandingPage() {
             }}>
               Claim uw datum nu →
             </a>
+            <DirectBookingUSP tone="onLight" size={12} style={{ marginTop: 14 }} />
           </div>
         </div>
       </section>
@@ -1056,6 +1071,7 @@ export default function LandingPage() {
               }}>
                 Claim uw datum als Eerste Gast →
               </a>
+              <DirectBookingUSP tone="onLight" size={12} style={{ marginTop: 14 }} />
             </div>
           ) : (
           <>
