@@ -9,6 +9,15 @@ export const PUBLIC_IMAGES = [
   "/borrel1.jpg", "/late_check_out.jpg",
 ];
 
+/** Absolute OG/social-image URL voor een blogartikel. Staat er een eigen foto in
+ *  og_image, dan wint die; anders wordt per artikel een eigen kaart gegenereerd
+ *  (/api/og/blog) in plaats van voor elk artikel dezelfde lodge-heide.jpg. */
+export function blogOgImageUrl(post: { slug: string; og_image?: string | null }): string {
+  return post.og_image
+    ? `${SITE_URL}${post.og_image}`
+    : `${SITE_URL}/api/og/blog?slug=${encodeURIComponent(post.slug)}`;
+}
+
 /** Starting price per night (both lodges). Single source for copy + Offer schema. */
 export const PRICE_FROM_EUR = 165;
 export const PRICE_FROM_LABEL = "Vanaf €165 per nacht";

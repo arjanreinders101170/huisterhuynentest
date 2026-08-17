@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, blogOgImageUrl } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -39,7 +39,7 @@ export async function generateMetadata(
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) return { title: "Niet gevonden" };
-  const ogImage = `${SITE_URL}${post.og_image || "/lodge-heide.jpg"}`;
+  const ogImage = blogOgImageUrl(post);
   return {
     title: post.titel,
     description: post.intro,
@@ -155,7 +155,7 @@ export default async function ArtikelPagina(
       url: "https://www.huisterhuynen.nl",
     },
     mainEntityOfPage: `https://www.huisterhuynen.nl/blog/${post.slug}`,
-    image: "https://www.huisterhuynen.nl/lodge-heide.jpg",
+    image: blogOgImageUrl(post),
     inLanguage: "nl-NL",
   };
 

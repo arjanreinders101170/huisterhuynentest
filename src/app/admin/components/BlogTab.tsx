@@ -297,10 +297,10 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
 
           <div>
             <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>
-              Social/OG-afbeelding <span style={{ color: C.light, fontWeight: 300 }}>— gebruikt bij delen op social media; standaard lodge-heide.jpg</span>
+              Social/OG-afbeelding <span style={{ color: C.light, fontWeight: 300 }}>— gebruikt bij delen op social media; zonder foto wordt per artikel een eigen kaart met de titel gegenereerd</span>
             </label>
             <select value={form.og_image} onChange={e => setForm(f => ({ ...f, og_image: e.target.value }))} style={inp}>
-              <option value="">Standaard (lodge-heide.jpg)</option>
+              <option value="">Automatisch (kaart met artikeltitel)</option>
               {PUBLIC_IMAGES.map(img => <option key={img} value={img}>{img}</option>)}
             </select>
           </div>
