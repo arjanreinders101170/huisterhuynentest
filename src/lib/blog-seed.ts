@@ -473,6 +473,126 @@ Zeijen ligt op slechts een korte afstand van Norg en is daarmee een uitstekende 
     publish: true,
   },
   {
+    slug: "herfst-in-drenthe-heide",
+    titel: "Herfst in Drenthe: waarom september en oktober de mooiste maanden op de heide zijn",
+    intro:
+      "Herfst in Drenthe is misschien wel het mooiste seizoen van de provincie: zodra de zomervakantie voorbij is kleurt de heide van paars naar brons, hangt er 's ochtends mist boven de vennen en heb je de paden vrijwel voor jezelf. Een gids door de heideperiodes — en voor wie volgend jaar rond deze tijd bij ons wil overnachten.",
+    inhoud: `De koffers zijn uitgepakt, de scholen beginnen weer en de drukte op de snelweg zakt weg. Voor veel mensen voelt eind augustus als het einde van iets. Op de Drentse heide is het precies andersom: hier begint dan pas het seizoen waar de vaste bezoekers het hele jaar op wachten.
+
+Wie Drenthe alleen in de zomervakantie kent, kent eigenlijk maar de helft. De heide is geen decor dat maandenlang hetzelfde blijft — het is een landschap dat elke paar weken van kleur, geur en geluid verandert. En de mooiste omslag valt precies nu: van eind augustus tot diep in oktober.
+
+## Het heidejaar in vier periodes
+
+Als je op één plek blijft en het landschap een jaar lang volgt, zie je hoe sterk de heide door de seizoenen beweegt. Grofweg zijn er vier periodes, en elke periode heeft zijn eigen publiek.
+
+### Half augustus tot begin september: de paarse piek
+
+Dit is het moment waar Drenthe om bekendstaat. De struikheide bloeit en kleurt de velden in een paars dat op foto's altijd net iets minder indruk maakt dan in het echt. Het is ook de periode waarin de heide het drukst bezocht wordt: de bekende gebieden zoals het Dwingelderveld trekken in deze weken veel dagjesmensen. Wil je de bloei zonder de drukte, wandel dan vroeg in de ochtend of kies een van de kleinere velden.
+
+### September: van paars naar brons
+
+Zodra de bloei voorbij is, gebeurt er iets waar veel minder over wordt geschreven — en wat volgens ons minstens zo mooi is. Het paars verkleurt langzaam naar roestbruin, koperrood en okergeel. Het licht wordt tegelijk zachter en lager, waardoor de heide er 's ochtends en in het laatste uur voor zonsondergang bijna oranje uitziet. Het is de beste maand van het jaar om te fotograferen, en de eerste maand waarin je op de meeste paden weer alleen loopt.
+
+### Oktober: mist, bos en paddenstoelen
+
+In oktober verschuift het zwaartepunt van de open heide naar de rand ervan. De ochtenden beginnen mistig, met dauw in de spinnenwebben tussen de heidestruiken en nevel boven de vennen. In de bosranden en op de overgang naar het zand verschijnen de paddenstoelen: vliegenzwammen, boleten, russula's. De bomen langs de zandpaden kleuren geel en roodbruin, waardoor je in één wandeling van goudbruine heide naar een herfstbos loopt. Dit is ook de maand van de burlende reeën en de trekvogels die boven de velden overkomen.
+
+### November tot maart: de kale schoonheid
+
+Na de bladval blijft er een heide over die veel mensen nooit zien: sober, grijsbruin, wijd open en ongelooflijk stil. Met rijp of een dun laagje sneeuw is dit misschien wel het meest indrukwekkende gezicht van het jaar. In de zomer komen mensen voor de kleur; in de winter komen ze voor de stilte.
+
+## Waarom de herfst op de heide anders voelt
+
+De herfst doet iets met de schaal van het landschap. Door de mist zie je soms maar honderd meter ver, waardoor een veld dat in de zomer eindeloos leek ineens intiem aanvoelt. Een uur later is de mist opgetrokken en kijk je weer kilometers ver.
+
+Ook het geluid verandert. De insecten zijn weg, de wandelaars zijn er niet, en wat overblijft is wind door de berken, een enkele buizerd en het knerpen van zand onder je schoenen. Dat is precies waarom veel mensen die één keer in september of oktober in Drenthe zijn geweest, daarna niet meer in de zomervakantie komen.
+
+En dan is er nog het praktische voordeel: parkeerplaatsen bij de natuurgebieden zijn leeg, restaurants hebben plek zonder reservering en de mooiste wandelroutes zijn van jou alleen.
+
+## De mooiste herfstplekken rond Zeijen
+
+Zeijen ligt midden tussen een aantal gebieden die in de herfst allemaal hun eigen sfeer hebben. Je hoeft er nauwelijks voor te rijden.
+
+### Het Zeijerveld en de Zeijerstrubben
+
+Direct bij het dorp. De strubben zijn oude, kromgegroeide eikenbosjes op de rand van de heide — in oktober het mooiste stukje bos in de wijde omgeving, met alle tinten geel en bruin tegelijk. Ideaal voor een korte ochtendwandeling van een uur voordat de rest van de dag begint.
+
+### Het Ballooërveld
+
+Een van de grootste aaneengesloten heidevelden van Noord-Drenthe, met karrensporen, grafheuvels en een weidsheid die je in de herfstmist bijna kwijtraakt. Op een heldere oktoberochtend is dit de plek waar de kleuromslag van paars naar brons het duidelijkst te zien is.
+
+### De Drentsche Aa
+
+Het beekdal is in de herfst op zijn best: de essen kleuren, de beek staat weer voller na de zomer en in de vroege ochtend hangt de mist laag boven het water. Kanovaren is dan voorbij, maar wandelen langs de Aa is nooit mooier dan in oktober.
+
+### Het Dwingelderveld
+
+Een klein half uur rijden, en het bekendste heidegebied van de provincie. In augustus is het er druk; vanaf half september heb je het grotendeels voor jezelf, inclusief de vennen en de schaapskudde.
+
+## Praktische tips voor een herfstwandeling
+
+### Ga vroeg de deur uit
+
+De mooiste anderhalf uur van de dag ligt tussen zonsopkomst en een uur daarna. In oktober betekent dat dat je niet eens vroeg hoeft op te staan: de zon komt dan pas rond half acht op.
+
+### Kies waterdichte schoenen
+
+Heidepaden blijven na een regenbui lang nat en de laagtes tussen de vennen kunnen drassig zijn. Stevige, waterdichte wandelschoenen maken het verschil tussen een fijne en een korte wandeling.
+
+### Laagjes, geen dikke jas
+
+Een ochtend die begint op zeven graden zit rond het middaguur zomaar op zestien. Drie dunne lagen werken beter dan één dikke.
+
+### Neem een thermosfles mee
+
+Tussen de heidevelden zit lang niet overal een horecagelegenheid. Warme koffie of thee onderweg maakt een mistige ochtend meteen een stuk aangenamer.
+
+### Honden aan de lijn
+
+Op vrijwel alle heidegebieden geldt een aanlijnplicht, onder meer vanwege de schaapskuddes en het wild. Er zijn losloopgebieden — check dat vooraf per terrein.
+
+## Herfstvakantie in Drenthe met kinderen
+
+De herfstvakantie is in Drenthe misschien wel het best bewaarde geheim van het jaar. Geen wachtrijen, geen volle parkeerterreinen, en toch genoeg te doen: paddenstoelen zoeken langs de bosrand, hunebedden bekijken (Drenthe heeft er 52 van de 54 in Nederland), het Hunebedcentrum in Borger of een regenachtige middag in een van de musea in Assen. En als het weer omslaat, is een uur binnen zitten met warme chocolademelk hier geen noodplan maar gewoon onderdeel van het seizoen.
+
+## Gezelligheid als het kouder wordt
+
+Er is een reden dat de herfst zo goed werkt voor een korte vakantie: het contrast. Een paar uur buiten in de kou, en daarna binnenkomen waar het warm is. Een dampende hottub op een terras terwijl het buiten schemert en er mist over de velden trekt. Drentse streekproducten, een borrel na de wandeling, en 's avonds vroeg donker zonder dat je het erg vindt.
+
+De zomer is voor buiten zijn. De herfst is voor buiten zijn én daarna lekker binnenkomen — en dat tweede deel maakt in dit seizoen minstens zoveel uit als het eerste.
+
+## Volgend jaar rond deze tijd ben je welkom in de lodges
+
+Wij kijken zelf al maanden naar dit seizoen uit, want vanaf 1 januari 2027 openen onze twee lodges bij Huis ter Huynen in Zeijen hun deuren. Dat betekent dat je volgend jaar rond deze periode — augustus, september, oktober 2027, precies wanneer de heide op zijn mooist is — bij ons kunt overnachten.
+
+Lodge De Heide en Lodge De Eik zijn allebei volledig privé: een eigen terras, een eigen hottub, geen receptie en geen gedeelde voorzieningen. Je komt aan, doet de deur achter je dicht en de heide begint bij wijze van spreken bij het tuinhek. Voor een herfstweekend is dat precies de goede opzet: 's ochtends de mist in, 's middags terug, en 's avonds de hottub in terwijl het buiten donker en stil wordt.
+
+De heideperiodes zijn de populairste weken van het jaar, en het openingsseizoen 2027 is bovendien beperkt in aantal. Schrijf je in voor de nieuwsbrief: inschrijvers krijgen als eerste bericht zodra de agenda voor het najaar van 2027 opengaat, inclusief de vroegboekkorting die alleen voor hen geldt.
+
+## Veelgestelde vragen over de herfst in Drenthe
+
+### Wanneer is de heide in Drenthe op zijn mooist?
+
+De bloei piekt van half augustus tot begin september, wanneer de heide paars kleurt. Daarna volgt de kleuromslag naar brons en koper, die tot in oktober doorloopt. Voor bloei kies je half augustus; voor kleur, mist en rust kies je september en oktober.
+
+### Wat is de beste maand voor een herfstvakantie in Drenthe?
+
+Oktober combineert het meeste: herfstkleuren in het bos, paddenstoelen, mistige ochtenden en nog volop wandelweer. September is warmer en droger en heeft nog wat kleur van de uitgebloeide heide.
+
+### Is het in de herfst rustig in Drenthe?
+
+Ja. Buiten de herfstvakantieweek zelf zijn de heidegebieden en beekdalen doordeweeks vrijwel leeg, en ook in het weekend is het aanzienlijk rustiger dan in de zomermaanden.
+
+### Wanneer kan ik in de herfst bij Huis ter Huynen overnachten?
+
+De lodges openen op 1 januari 2027. Het najaar van 2027 — inclusief de heideperiode en de herfstvakantie — is daarmee het eerste herfstseizoen waarin gasten welkom zijn. Via de nieuwsbrief hoor je als eerste wanneer deze data te boeken zijn.`,
+    categorie: "Seizoen",
+    leestijd: "8 minuten",
+    auteur: "Arjan Reinders",
+    og_image: "/heide3.jpg",
+    publish: true,
+  },
+  {
     slug: "zomerupdate-oplevering-lodges",
     titel: "De heide staat in bloei — en wij hebben wat meer tijd nodig",
     intro:

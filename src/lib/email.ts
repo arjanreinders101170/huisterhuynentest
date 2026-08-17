@@ -432,12 +432,100 @@ export function rejectionEmail(opts: RejectionEmailOpts): string {
   });
 }
 
+export type OfferMailOpts = {
+  firstName: string;
+  lodgeNaam: string;
+  photoUrl?: string;
+  /** bv. "4 september 2027 t/m 6 september 2027" */
+  periodeLabel: string;
+  totaal: number | null;
+  /** Leesbare vervaldatum, bv. "dinsdag 8 juni 2027". */
+  geldigTot: string;
+  /** Volledige bevestigingslink inclusief token. */
+  confirmUrl: string;
+  /** Resterende dagen tot en met de vervaldatum. */
+  dagenResterend: number;
+};
+
+/** Herinnering enkele dagen voordat het aanbod verloopt. */
+export function offerReminderEmail(opts: OfferMailOpts): string {
+  const bedrag = opts.totaal != null ? `&euro; ${opts.totaal.toFixed(2)}` : null;
+  const resterend = opts.dagenResterend === 1
+    ? "nog één dag"
+    : `nog ${opts.dagenResterend} dagen`;
+
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: `Lodge ${esc(opts.lodgeNaam)}`,
+    title: `Je aanbod staat nog klaar${opts.firstName ? `, ${esc(opts.firstName)}` : ""}`,
+    intro: `We hoorden nog niets van je — geen probleem, misschien moest je even overleggen. Je persoonlijke aanbod voor Lodge ${esc(opts.lodgeNaam)} staat ${resterend} voor je klaar.`,
+    blocks: [
+      infoBlock("Je verblijf", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}${bedrag ? ` &middot; ${bedrag}` : ""}`),
+      calloutBlock(
+        "Geldig tot en met " + esc(opts.geldigTot),
+        "Daarna geven we de datums weer vrij voor andere gasten. Lukt het niet om nu al te beslissen? Laat het ons weten, dan houden we het aanbod langer aan.",
+      ),
+      ctaButton(opts.confirmUrl, "Bevestig je reservering &#8594;", { prominent: true, marginBottom: 14 }),
+      smallNote("Liever eerst een vraag stellen? Reageer gewoon op deze mail."),
+    ],
+  });
+}
+
+/** Bericht dat het aanbod is verlopen. Nadrukkelijk een open deur, geen afwijzing. */
+export function offerExpiredEmail(opts: Omit<OfferMailOpts, "confirmUrl" | "dagenResterend"> & { siteUrl: string }): string {
+  return lodgeEmail({
+    photoUrl: opts.photoUrl,
+    photoAlt: `Lodge ${esc(opts.lodgeNaam)}`,
+    title: `Je aanbod is verlopen${opts.firstName ? `, ${esc(opts.firstName)}` : ""}`,
+    intro: `Het persoonlijke aanbod voor Lodge ${esc(opts.lodgeNaam)} was geldig tot en met ${esc(opts.geldigTot)}. We hebben de datums weer vrijgegeven, zodat andere gasten ze kunnen aanvragen.`,
+    blocks: [
+      infoBlock("Het ging om", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}`),
+      calloutBlock(
+        "Toch nog interesse?",
+        "Laat het ons gerust weten &mdash; reageer op deze mail of stuur een WhatsApp. Zijn de datums nog vrij, dan maken we het aanbod zo weer voor je in orde.",
+      ),
+      ctaButton(`${opts.siteUrl}/#reserveren`, "Bekijk beschikbaarheid &#8594;"),
+    ],
+  });
+}
+
+export type ExpiredSummaryRow = {
+  gastNaam: string;
+  gastEmail: string;
+  periodeLabel: string;
+  lodgeNaam: string;
+  totaal: number | null;
+};
+
+/** Dagelijks overzicht voor de host van de aanbiedingen die zijn verlopen. */
+export function expiredOffersSummaryEmail(rows: ExpiredSummaryRow[]): string {
+  const blocks = rows.map(r =>
+    detailsBlock(esc(r.gastNaam), [
+      { label: "Periode", value: esc(r.periodeLabel) },
+      { label: "Lodge", value: `Lodge ${esc(r.lodgeNaam)}` },
+      ...(r.totaal != null ? [{ label: "Offerte", value: `&euro; ${r.totaal.toFixed(2)}` }] : []),
+      { label: "E-mail", value: esc(r.gastEmail), href: `mailto:${esc(r.gastEmail)}` },
+    ]),
+  );
+
+  return lodgeEmail({
+    title: rows.length === 1 ? "Eén aanbod verlopen" : `${rows.length} aanbiedingen verlopen`,
+    intro: "De bedenktijd is verstreken. Deze gasten hebben bericht gekregen dat hun aanbod is verlopen; de datums staan weer vrij.",
+    blocks: [
+      ...blocks,
+      calloutBlock("Wil je er toch achteraan?", "Open de aanvraag in admin en stuur een nieuwe offerte &mdash; dat zet de status en de bedenktijd weer op nieuw."),
+    ],
+  });
+}
+
 export type OfferteRegel = { label: string; bedrag: number; soort: "toeslag" | "korting" | "belasting" | "verblijf" };
 
 export function buildOfferteHtmlV2(
   gastNaam: string, van: string, tot: string, personen: number,
   regels: OfferteRegel[], totaal: number, bericht: string,
   aanvraagId: string, appUrl: string, confirmToken: string,
+  /** Geldig t/m deze dag, als leesbare datum. Leeg = geen vervaldatum tonen. */
+  geldigTot?: string,
 ): string {
   const rows = regels.map((r, i) => {
     const isLast = i === regels.length - 1;
@@ -497,8 +585,19 @@ export function buildOfferteHtmlV2(
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
       <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Beste prijs garantie &mdash; altijd scherper dan boekingssites</td></tr>
       <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Persoonlijk afgestemd op jouw verblijf</td></tr>
-      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Geen verplichting &mdash; neem rustig de tijd</td></tr>
+      <tr><td style="padding:3px 0;font-family:Arial,sans-serif;font-size:13px;color:#2F4F3E;line-height:1.4;">&#10003;&ensp;Geen vooruitbetaling &mdash; je bevestigt in &eacute;&eacute;n klik</td></tr>
     </table>
+
+    ${geldigTot ? `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F9F4E8;border-radius:12px;margin-bottom:20px;">
+      <tr><td style="padding:14px 18px;" align="center">
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#2A2418;line-height:1.5;">
+          Dit aanbod is geldig tot en met <strong>${esc(geldigTot)}</strong>.<br/>
+          <span style="color:#8A7D6A;font-size:12px;">Daarna geven we de datums weer vrij. Meer tijd nodig? Laat het ons even weten.</span>
+        </p>
+      </td></tr>
+    </table>
+    ` : ""}
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
       <tr><td align="center">

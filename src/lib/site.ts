@@ -26,4 +26,7 @@ export const LANDING_NAV: { label: string; href: string }[] = [
   { label: "Vakantiehuis met hond", href: "/vakantiehuis-drenthe-met-hond" },
   { label: "Hunebedden Drenthe", href: "/hunebedden-drenthe" },
   { label: "Paarse heide Drenthe", href: "/heide-drenthe" },
+  { label: "Wandelroutes Drenthe", href: "/wandelroutes-drenthe" },
+  { label: "Fietsen in Drenthe", href: "/fietsen-in-drenthe" },
+  { label: "Fochteloërveen", href: "/fochteloerveen-drenthe" },
 ];

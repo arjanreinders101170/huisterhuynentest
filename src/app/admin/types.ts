@@ -27,11 +27,14 @@ export type BookingRequest = {
   prijs_verblijf: number | null; schoonmaak: number | null; toeristenbelasting: number | null;
   extra_regels: { label: string; bedrag: number; soort: string }[];
   totaal: number | null;
-  status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen"
+  status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen" | "verlopen"
     | "aanbetaling_verstuurd" | "aanbetaling_betaald" | "restbetaling_verstuurd" | "volledig_betaald";
   legacy_terugkeer_id: string | null;
   afwijs_reden?: string | null;
   afgewezen_op?: string | null;
+  offerte_vervalt_op?: string | null;
+  herinnering_verstuurd_op?: string | null;
+  verlopen_op?: string | null;
   guest?: { naam: string; email: string } | null;
 };
 export type FeeTemplate = {
