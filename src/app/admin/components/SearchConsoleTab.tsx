@@ -26,8 +26,11 @@ interface SyncLog {
   maand: string; gestart_op: string; gelukt: boolean;
   aantal_queries: number; aantal_pages: number; foutmelding: string | null;
 }
+type LegeReden = "tabellen_ontbreken" | "nog_geen_sync" | "sync_mislukt";
+
 interface Analyse {
   leeg: boolean;
+  reden?: LegeReden;
   maand?: string; vorigeMaand?: string | null; maanden?: string[];
   laatsteSync: SyncLog | null;
   totalen?: Totalen; totalenVorig?: Totalen | null;
@@ -95,22 +98,45 @@ export function SearchConsoleTab() {
 
   if (analyse.leeg) {
     const sync = analyse.laatsteSync;
+    const reden: LegeReden = analyse.reden ?? "nog_geen_sync";
+
+    // Elke situatie heeft een andere vervolgstap. Ze op één hoop gooien laat
+    // je raden of je nog moet wachten of dat er iets stuk is.
+    const uitleg: Record<LegeReden, { kop: string; tekst: React.ReactNode; stap: React.ReactNode }> = {
+      tabellen_ontbreken: {
+        kop: "De database-tabellen bestaan nog niet",
+        tekst: <>De migratie is nog niet uitgevoerd, dus er is nog nergens om de cijfers op te slaan.</>,
+        stap: <>Draai <code>migrations/2026_08_18_gsc_metrics.sql</code> op Supabase (SQL Editor → plakken → uitvoeren). Draai meteen ook <code>migrations/2026_08_18_marketing_task_status.sql</code> als dat nog niet is gebeurd — anders werkt het afvinken in het Marketing Dashboard ook niet.</>,
+      },
+      nog_geen_sync: {
+        kop: "Nog geen data opgehaald",
+        tekst: <>De tabellen staan klaar, maar de sync heeft nog niet gedraaid. Dat gebeurt automatisch op de 3e van elke maand.</>,
+        stap: <>Wacht op de eerstvolgende 3e, of haal nu meteen de historie op — Search Console bewaart zestien maanden. Dat vereist wel eerst een service-account; de stappen staan in de README onder &ldquo;Google Search Console&rdquo;.</>,
+      },
+      sync_mislukt: {
+        kop: "De laatste sync is niet gelukt",
+        tekst: <>Er is wel geprobeerd op te halen, maar het is misgegaan. De foutmelding staat hieronder.</>,
+        stap: <>Meestal ontbreekt een omgevingsvariabele of is het service-account nog niet als gebruiker aan de Search Console-property toegevoegd. Zie de README onder &ldquo;Google Search Console&rdquo;.</>,
+      },
+    };
+    const u = uitleg[reden];
+
     return (
       <div>
         <h2 style={{ fontSize: 20, fontWeight: 700, color: C.text, marginBottom: 4 }}>Search Console</h2>
         <p style={{ fontSize: 13, color: C.muted, marginBottom: 16 }}>Maandelijkse analyse van de zoekprestaties</p>
         <div style={{ ...kaart, borderLeft: `3px solid ${C.gold}` }}>
-          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>Nog geen data opgehaald</div>
-          <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.7, margin: 0 }}>
-            De maandelijkse sync draait op de 3e van elke maand. Om hem te laten werken moet er een
-            service-account op de Search Console-property staan en moeten <code>GSC_CLIENT_EMAIL</code>,{" "}
-            <code>GSC_PRIVATE_KEY</code> en <code>GSC_SITE_URL</code> zijn ingesteld. De stappen staan in
-            de README onder &ldquo;Search Console&rdquo;.
-          </p>
+          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>{u.kop}</div>
+          <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.7, margin: "0 0 12px" }}>{u.tekst}</p>
+          <div style={{ fontSize: 13, color: C.text, lineHeight: 1.7, padding: "10px 14px",
+            background: "#F9FAFB", border: `1px solid ${C.border}`, borderRadius: 8 }}>
+            <strong style={{ fontSize: 12, color: C.green }}>Volgende stap</strong>
+            <div style={{ marginTop: 4, color: C.muted }}>{u.stap}</div>
+          </div>
           {sync && !sync.gelukt && sync.foutmelding && (
             <div style={{ marginTop: 12, padding: "10px 12px", background: "#FEE2E2",
-              border: "1px solid #FCA5A5", borderRadius: 8, fontSize: 12, color: C.rood }}>
-              Laatste poging ({maandLabel(sync.maand)}) mislukte: {sync.foutmelding}
+              border: "1px solid #FCA5A5", borderRadius: 8, fontSize: 12, color: C.rood, lineHeight: 1.6 }}>
+              Laatste poging ({maandLabel(sync.maand)}, {new Date(sync.gestart_op).toLocaleDateString("nl-NL")}): {sync.foutmelding}
             </div>
           )}
         </div>
