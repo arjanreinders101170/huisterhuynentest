@@ -45,6 +45,17 @@ function vergelijkClusters(nu: ClusterCijfers[], vorig: ClusterCijfers[]): Clust
   });
 }
 
+/** PostgREST meldt een ontbrekende tabel via 42P01 of PGRST205. Dat betekent
+ *  hier iets anders dan "nog geen data": dan is de migratie nog niet gedraaid. */
+function tabelOntbreekt(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false;
+  return error.code === "42P01"
+    || error.code === "PGRST205"
+    || /does not exist|schema cache/i.test(error.message ?? "");
+}
+
+export type LegeReden = "tabellen_ontbreken" | "nog_geen_sync" | "sync_mislukt";
+
 export async function handleGscGet(table: string): Promise<NextResponse | null> {
   if (table !== "gsc_analyse") return null;
 
@@ -53,11 +64,17 @@ export async function handleGscGet(table: string): Promise<NextResponse | null> 
   // Welke maanden zijn er? Uit het synclog en niet uit gsc_metrics: die tabel
   // bevat honderden rijen per maand, dus een gelimiteerde select zou de oudste
   // maanden gaandeweg buiten beeld duwen naarmate er data bijkomt.
-  const { data: maandRijen } = await sb
+  const { data: maandRijen, error: maandFout } = await sb
     .from("gsc_sync_log")
     .select("maand")
     .eq("gelukt", true)
     .order("maand", { ascending: false });
+
+  if (tabelOntbreekt(maandFout)) {
+    return NextResponse.json({
+      data: { leeg: true, reden: "tabellen_ontbreken" as LegeReden, maanden: [], laatsteSync: null },
+    });
+  }
 
   const maanden = [...new Set((maandRijen ?? []).map(r => r.maand as string))].sort().reverse();
 
@@ -70,7 +87,13 @@ export async function handleGscGet(table: string): Promise<NextResponse | null> 
 
   if (maanden.length === 0) {
     return NextResponse.json({
-      data: { maanden: [], laatsteSync: laatsteSync ?? null, leeg: true },
+      data: {
+        leeg: true,
+        // Is er wel geprobeerd? Dat scheelt "nog niets gebeurd" van "het faalt".
+        reden: (laatsteSync ? "sync_mislukt" : "nog_geen_sync") as LegeReden,
+        maanden: [],
+        laatsteSync: laatsteSync ?? null,
+      },
     });
   }
 
