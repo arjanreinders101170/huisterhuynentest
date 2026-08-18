@@ -108,8 +108,8 @@ const jsonLd = {
   email: "lodge@huisterhuynen.nl",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Zuiderstraat 6",
-    postalCode: "9491 EC",
+    streetAddress: "Zuiderstraat 6 p",
+    postalCode: "9491 TH",
     addressLocality: "Zeijen",
     addressRegion: "Drenthe",
     addressCountry: "NL",

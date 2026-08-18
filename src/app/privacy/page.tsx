@@ -25,7 +25,7 @@ export default function PrivacyPage() {
             </button>.
           </p>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>5. Contact</h2>
-          <p>Huis ter Huynen · Zuiderstraat 6 · 9491 EC Zeijen · <a href="tel:+31642568603" style={{ color: C.gold }}>+31 6 42568603</a></p>
+          <p>Huis ter Huynen · Zuiderstraat 6 p · 9491 TH Zeijen · <a href="tel:+31642568603" style={{ color: C.gold }}>+31 6 42568603</a></p>
         </div>
         <div style={{ marginTop: 60, textAlign: "center", fontSize: 13 }}>
           <a href="/" style={{ color: C.gold, textDecoration: "none" }}>← Terug naar home</a>

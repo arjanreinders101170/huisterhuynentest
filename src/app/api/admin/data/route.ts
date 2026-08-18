@@ -9,7 +9,7 @@ import { handleContentGet, handleContentPost } from "./_content";
 import { handleBookingRequestsGet, handleBookingRequestsPost } from "./_booking-requests";
 import { handleDiscountCodesGet, handleDiscountCodesPost } from "./_discount-codes";
 import { handleMarketingGet, handleMarketingPost } from "./_marketing";
-import { handleGscGet, handleGscPost } from "./_gsc";
+import { handleGscGet, handleGscPost, handleGscReeksGet } from "./_gsc";
 
 export const runtime = "nodejs";
 
@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
       (await handleDiscountCodesGet(table)) ??
       (await handleMarketingGet(table)) ??
       (await handleGscGet(table)) ??
+      (await handleGscReeksGet(table)) ??
       (await handleMiscGet(table));
 
     return response ?? NextResponse.json({ error: "Onbekende tabel" }, { status: 400 });

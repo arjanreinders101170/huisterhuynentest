@@ -115,7 +115,7 @@ function BetaaldContent() {
         {/* Footer */}
         <div style={{ textAlign: "center", marginTop: 20 }}>
           <div style={{ display: "inline-block", width: 40, height: 1, background: T.gold }}></div>
-          <p style={{ fontSize: 11, color: T.muted, marginTop: 10 }}>Huis ter Huynen · Zuiderstraat 6 · Zeijen, Drenthe</p>
+          <p style={{ fontSize: 11, color: T.muted, marginTop: 10 }}>Huis ter Huynen · Zuiderstraat 6 p · Zeijen, Drenthe</p>
         </div>
 
       </div>
