@@ -151,8 +151,13 @@ nodig dat als gebruiker aan de property is toegevoegd:
    Instellingen → Gebruikers en machtigingen → voeg het e-mailadres van het
    service-account toe met rechten **Volledig**.
 4. Zet in Vercel de variabelen `GSC_CLIENT_EMAIL`, `GSC_PRIVATE_KEY` en
-   `GSC_SITE_URL`. De private key komt uit het veld `private_key` van de JSON;
-   laat de `\n`-tekens staan en zet de waarde tussen aanhalingstekens.
+   `GSC_SITE_URL`. De private key komt uit het veld `private_key` van de JSON.
+   Plak de waarde **zonder aanhalingstekens** in het Vercel-invoerveld — die
+   zijn alleen nodig in een `.env`-bestand, en in de webinterface worden ze
+   onderdeel van de sleutel waardoor het ondertekenen mislukt. De `\n`-tekens
+   mogen blijven staan; echte regeleindes werken ook.
+   Na het instellen is een nieuwe deploy nodig: Vercel geeft bestaande
+   deployments geen nieuwe omgevingsvariabelen.
 5. Haal eenmalig de historie op — Search Console bewaart zestien maanden:
 
 ```bash
