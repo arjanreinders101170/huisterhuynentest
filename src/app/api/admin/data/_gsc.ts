@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { GscConfigError } from "@/lib/gsc";
+import { syncMaanden } from "@/lib/gsc-sync";
 import {
   clusterCijfers, totalen, vindKansen, forecastVoor,
   type GscRij, type ClusterCijfers,
@@ -127,4 +129,36 @@ export async function handleGscGet(table: string): Promise<NextResponse | null> 
       },
     },
   });
+}
+
+/** Handmatig ophalen vanuit de admin. Draait dezelfde logica als de cron, maar
+ *  op de admin-sessie in plaats van CRON_SECRET — zodat de eigenaar geen
+ *  terminal nodig heeft om zijn eigen cijfers binnen te halen. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function handleGscPost(action: string, body: Record<string, unknown>, _request: NextRequest): Promise<NextResponse | null> {
+  if (action !== "sync_gsc") return null;
+
+  const gevraagd = Number(body.maanden ?? 1);
+  const aantal = Number.isFinite(gevraagd) ? Math.min(Math.max(Math.trunc(gevraagd), 1), 16) : 1;
+
+  try {
+    const gedaan = await syncMaanden({ aantal, force: body.force === true });
+    const opgehaald = gedaan.filter(r => !r.overgeslagen);
+    return NextResponse.json({
+      success: true,
+      gedaan,
+      samenvatting: opgehaald.length === 0
+        ? "Alle gevraagde maanden waren al binnen."
+        : `${opgehaald.length} ${opgehaald.length === 1 ? "maand" : "maanden"} opgehaald.`,
+    });
+  } catch (err) {
+    if (err instanceof GscConfigError) {
+      return NextResponse.json({ error: err.message }, { status: 503 });
+    }
+    console.error("Handmatige GSC-sync mislukt:", err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Ophalen mislukt" },
+      { status: 500 },
+    );
+  }
 }
