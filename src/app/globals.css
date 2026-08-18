@@ -48,5 +48,11 @@
 .hth-sticky-cta-spacer { display: none; }
 @media (max-width: 768px) {
   .hth-sticky-cta { display: flex; }
-  .hth-sticky-cta-spacer { display: block; height: 66px; }
+  .hth-sticky-cta-spacer { display: block; height: 92px; }
 }
+
+/* Compacte FAQ bij het boekingsformulier (<details> zonder browsermarker) */
+.hth-faq summary { cursor: pointer; list-style: none; }
+.hth-faq summary::-webkit-details-marker { display: none; }
+.hth-faq .hth-faq-plus { transition: transform 0.2s ease; }
+.hth-faq details[open] .hth-faq-plus { transform: rotate(45deg); }
