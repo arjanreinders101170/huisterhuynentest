@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { BlogPost } from "../types";
 import { PUBLIC_IMAGES } from "@/lib/site";
+import { MAX_SLUG_LENGTH, slugify, slugLengteFout } from "@/lib/slug";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -11,13 +12,6 @@ const C = {
 
 const EMPTY_POST = { id: "", slug: "", titel: "", intro: "", inhoud: "", categorie: "Verhaal", leestijd: "4 minuten", auteur: "Arjan Reinders", og_image: "", geplande_publicatie: "" };
 
-export function slugify(s: string): string {
-  return s.toLowerCase().trim()
-    .replace(/[àáâãä]/g, "a").replace(/[èéêë]/g, "e")
-    .replace(/[ìíîï]/g, "i").replace(/[òóôõö]/g, "o")
-    .replace(/[ùúûü]/g, "u").replace(/[ç]/g, "c")
-    .replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
-}
 
 // ISO timestamp uit DB → <input type="datetime-local"> string in lokale tijd.
 export function isoToLocalInput(iso: string | null | undefined): string {
@@ -81,6 +75,8 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
   const save = async (publishAfter = false) => {
     if (!form.titel || !form.inhoud) { setMsg("Titel en inhoud zijn verplicht"); return; }
     if (!form.slug) form.slug = slugify(form.titel);
+    const slugFout = slugLengteFout(form.slug);
+    if (slugFout) { setMsg(slugFout); return; }
     if (publishAfter && form.geplande_publicatie && new Date(form.geplande_publicatie).getTime() > Date.now()) {
       if (!confirm(`Er staat een geplande publicatie op ${fmtPlanned(form.geplande_publicatie)}. Direct publiceren wist deze planning. Doorgaan?`)) return;
     }
@@ -265,7 +261,16 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
               <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>URL slug *</label>
               <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: slugify(e.target.value) }))}
                 placeholder="bijv. fietspaden-drenthe" style={inp} />
-              <div style={{ fontSize: 10, color: C.muted, marginTop: 3 }}>/blog/{form.slug || "..."}</div>
+              <div style={{
+                fontSize: 10,
+                color: form.slug.length > MAX_SLUG_LENGTH ? "#B91C1C" : C.muted,
+                marginTop: 3,
+              }}>
+                /blog/{form.slug || "..."}
+                {form.slug.length > MAX_SLUG_LENGTH
+                  ? ` — ${form.slug.length}/${MAX_SLUG_LENGTH} tekens, te lang voor de zoekresultaten`
+                  : ""}
+              </div>
             </div>
           </div>
 

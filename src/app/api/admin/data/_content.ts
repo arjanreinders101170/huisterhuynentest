@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, type LandingSectionData } from "@/lib/landing-seed";
 import { SEED_BLOG_POSTS } from "@/lib/blog-seed";
+import { slugLengteFout } from "@/lib/slug";
 
 function buildLandingFields(body: Record<string, unknown>) {
   const sectionsRaw = body.sections;
@@ -68,10 +69,13 @@ export async function handleContentPost(action: string, body: Record<string, unk
     case "create_blog_post": {
       const { slug, titel, intro, inhoud, categorie, leestijd, auteur, og_image, geplande_publicatie } = body;
       if (!slug || !titel || !inhoud) return NextResponse.json({ error: "Slug, titel en inhoud zijn verplicht" }, { status: 400 });
+      const nieuweSlug = String(slug).toLowerCase().trim().replace(/\s+/g, "-");
+      const slugFout = slugLengteFout(nieuweSlug);
+      if (slugFout) return NextResponse.json({ error: slugFout }, { status: 400 });
       const planned = parsePlannedDate(geplande_publicatie);
       if (planned === "invalid") return NextResponse.json({ error: "Ongeldige plan-datum" }, { status: 400 });
       const { data, error } = await getSupabase().from("blog_posts").insert({
-        slug: String(slug).toLowerCase().trim().replace(/\s+/g, "-"),
+        slug: nieuweSlug,
         titel, intro, inhoud,
         categorie: categorie || "Verhaal",
         leestijd: leestijd || "4 minuten",
@@ -86,10 +90,13 @@ export async function handleContentPost(action: string, body: Record<string, unk
     case "update_blog_post": {
       const { id, slug, titel, intro, inhoud, categorie, leestijd, auteur, og_image, geplande_publicatie } = body;
       if (!id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
+      const gewijzigdeSlug = String(slug).toLowerCase().trim().replace(/\s+/g, "-");
+      const slugFout = slugLengteFout(gewijzigdeSlug);
+      if (slugFout) return NextResponse.json({ error: slugFout }, { status: 400 });
       const planned = parsePlannedDate(geplande_publicatie);
       if (planned === "invalid") return NextResponse.json({ error: "Ongeldige plan-datum" }, { status: 400 });
       const { error } = await getSupabase().from("blog_posts").update({
-        slug: String(slug).toLowerCase().trim().replace(/\s+/g, "-"),
+        slug: gewijzigdeSlug,
         titel, intro, inhoud, categorie, leestijd, auteur,
         og_image: og_image || null,
         geplande_publicatie: planned,
@@ -117,6 +124,8 @@ export async function handleContentPost(action: string, body: Record<string, unk
     case "create_landing_page": {
       const fields = buildLandingFields(body);
       if (!fields.slug || !fields.h1) return NextResponse.json({ error: "Slug en H1 zijn verplicht" }, { status: 400 });
+      const slugFout = slugLengteFout(fields.slug);
+      if (slugFout) return NextResponse.json({ error: slugFout }, { status: 400 });
       const { data, error } = await getSupabase().from("landing_pages").insert({
         ...fields,
         gepubliceerd: false,
@@ -129,6 +138,8 @@ export async function handleContentPost(action: string, body: Record<string, unk
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
       const fields = buildLandingFields(body);
       if (!fields.slug || !fields.h1) return NextResponse.json({ error: "Slug en H1 zijn verplicht" }, { status: 400 });
+      const slugFout = slugLengteFout(fields.slug);
+      if (slugFout) return NextResponse.json({ error: slugFout }, { status: 400 });
       const { error } = await getSupabase().from("landing_pages").update({
         ...fields,
         updated_at: new Date().toISOString(),

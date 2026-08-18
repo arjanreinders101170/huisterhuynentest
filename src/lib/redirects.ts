@@ -16,6 +16,12 @@ export interface SeoRedirect {
   reden: string;
 }
 
+/** De oorspronkelijke fietsslug — een volledige alinea als URL. Staat apart
+ *  zodat de migratie die het artikel hernoemt en deze redirect dezelfde tekst
+ *  gebruiken. */
+export const LANGE_FIETSSLUG =
+  "fietsen-in-drenthe-is-misschien-wel-de-mooiste-manier-om-de-provincie-echt-te-beleven-uitgestrekte-heidevelden-eeuwenoude-bossen-kronkelende-beekdalen-karakteristieke-brinkdorpen-en-kilometers-autoluwe-fietspaden-maken-drenthe-tot-een-waar-paradijs-voor-fietsers";
+
 export const SEO_REDIRECTS: SeoRedirect[] = [
   {
     from: "/landing",
@@ -38,6 +44,12 @@ export const SEO_REDIRECTS: SeoRedirect[] = [
     to: "/wellness-vakantie-drenthe",
     reden:
       "Kannibalisatie: blog 7 vertoningen op positie 63,7 tegen de landingspagina met 1.526 op 62,6. Inhoud is overgezet naar de landingspagina.",
+  },
+  {
+    from: `/blog/${LANGE_FIETSSLUG}`,
+    to: "/blog/fietsen-in-drenthe",
+    reden:
+      "Slug van 250+ tekens: werd afgekapt in de SERP en oogde als spam (28 vertoningen, positie 30,1). Het artikel staat nu op de korte slug.",
   },
   {
     from: "/wandelen-drentsche-aa",

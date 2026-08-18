@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { LandingPageRow, LandingSection } from "../types";
-import { slugify } from "./BlogTab";
+import { slugify } from "@/lib/slug";
 import { PUBLIC_IMAGES } from "@/lib/site";
 
 type LandingSectionForm = { eyebrow: string; heading: string; bodyText: string; bulletsText: string };
