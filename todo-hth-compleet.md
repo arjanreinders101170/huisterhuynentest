@@ -1,5 +1,5 @@
 # Huis ter Huynen — Complete To Do Lijst
-**Bijgewerkt: 27 mei 2026**
+**Bijgewerkt: 18 augustus 2026**
 
 ---
 
@@ -163,14 +163,16 @@
 | 76 | Sticky mobiele CTA (Bekijk beschikbaarheid + WhatsApp) | ✅ PR #135 |
 | 77 | Interne links naar landingspagina's in footers (homepage + landingpagina's) | ✅ PR #135 |
 | 78 | Google Search Console: domein-property + sitemap ingediend + indexering aangevraagd | ✅ |
+| 88 | Unieke social-preview per pagina: eigen foto óf gegenereerde kaart met de eigen titel (`/api/og/blog`, `/api/og/landing`) — geen gedeelde `lodge-heide.jpg` meer | ✅ PR #178 |
+| 89 | Analytics-runbook `ANALYTICS_SETUP.md` geschreven + CSP laat GA4-hits door (`connect-src`) | ✅ PR #178 |
 
 ### Open — met prioriteit
 | # | Item | Prioriteit | Toelichting |
 |---|------|-----------|-------------|
 | 79 | **Interieurfoto's lodges** (woonkamer, hottub, badkamer, slaapkamer) maken + op site verwerken | **Hoog** | Grootste resterende conversie-blokker voor de luxe-positionering. Optie A: JPG's aanleveren in `public/`, ik verwerk ze. Optie B: galerij-veld in de admin zodat je ze zelf toevoegt |
 | 80 | PR #135 mergen (sticky CTA + footer-links) | Hoog | Operationeel — daarna staan de interne links live |
-| 81 | GA4 activeren: `NEXT_PUBLIC_GA4_ID` in Vercel + events als sleutelgebeurtenis markeren | Hoog | Voorwaarde voor het dashboard |
-| 82 | Looker Studio managementdashboard (Fase 6) | Middel | Pas zinvol na enkele dagen GA4-data |
+| 81 | GA4 activeren: `NEXT_PUBLIC_GA4_ID` in Vercel + events als sleutelgebeurtenis markeren | Hoog | **Geparkeerd — recept ligt klaar.** Stap voor stap in `ANALYTICS_SETUP.md` (blok A Search Console · B GA4 · C controle, ~60 min), en als afvinkbare webpagina: https://claude.ai/code/artifact/37782299-de40-4153-a9aa-f279a04c290d · De CSP-blokkade is al weg (PR #178) · Vergeet de twee instellingen niet die **niet** met terugwerkende kracht werken: bewaartermijn op 14 maanden en `mollie.com` als ongewenste verwijzing · Blok A is mogelijk al gedaan via #78 — even verifiëren |
+| 82 | Looker Studio managementdashboard (Fase 6) | Middel | Pas zinvol na enkele dagen GA4-data. Volgt op #81; dan bouwrecept per grafiek (velden, filters, blends) laten schrijven. Begin met 2 pagina's — verkeer + Search Console; conversie en kosten pas als er boekingen doorheen lopen |
 | 83 | Resterende landingspagina's: `/lodge-de-heide` + `/lodge-de-eik` (Offer-schema €165) · natuur/activiteit (fietsen, wandelroutes, heide, zeijerstrubben, ballooerveld, dwingelderveld, hunebedden) · Duitse set | Middel | Nu eenvoudig via de admin toe te voegen |
 | 84 | Blogcontent: 2 per week (104-onderwerpenplan uit `content-strategie.md` + uitvoeringsplan) | Hoog | Volume + autoriteit; instroom op informatieve zoektermen |
 | 85 | Directory-listings: VVV Drenthe (#59), Visit Drenthe (#60), Tripadvisor (#61), ANWB (#65), wandel-/fietssites (#66) | Hoog | Backlinks + lokale autoriteit → versnelt indexering ("Gevonden – niet geïndexeerd") |
