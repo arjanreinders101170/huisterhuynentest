@@ -165,6 +165,11 @@ curl -H "Authorization: Bearer $CRON_SECRET" \
   "https://www.huisterhuynen.nl/api/cron/gsc-sync?maanden=16"
 ```
 
+Maanden die al met succes zijn opgehaald worden overgeslagen. Raakt de aanroep
+de tijdslimiet van de functie, roep hem dan gewoon opnieuw aan: hij gaat verder
+waar hij gebleven was. Met `&force=1` wordt alles alsnog opnieuw opgehaald,
+bijvoorbeeld als Search Console cijfers achteraf heeft gecorrigeerd.
+
 Zolang de variabelen ontbreken geeft de sync een nette 503 en toont de tab wat
 er nog moet gebeuren, in plaats van stil te falen.
 

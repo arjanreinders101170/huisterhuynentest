@@ -28,8 +28,22 @@ async function schrijfMaand(maand: string, queries: GscRow[], pages: GscRow[]): 
   }
 }
 
+/** Is deze maand al eerder met succes opgehaald? */
+async function alGesynct(maand: string): Promise<boolean> {
+  const { data } = await getSupabase()
+    .from("gsc_sync_log")
+    .select("id")
+    .eq("maand", maand)
+    .eq("gelukt", true)
+    .limit(1)
+    .maybeSingle();
+  return data !== null;
+}
+
+interface SyncResultaat { maand: string; queries: number; pages: number; overgeslagen?: true }
+
 /** Synchroniseert één maand en legt de uitkomst vast in het log. */
-async function syncMaand(datumInMaand: Date): Promise<{ maand: string; queries: number; pages: number }> {
+async function syncMaand(datumInMaand: Date): Promise<SyncResultaat> {
   const { maand } = maandGrenzen(datumInMaand);
   const sb = getSupabase();
   const { data: logRij } = await sb
@@ -75,14 +89,28 @@ export async function GET(request: NextRequest) {
   const gevraagd = Number(request.nextUrl.searchParams.get("maanden") ?? "1");
   const aantal = Number.isFinite(gevraagd) ? Math.min(Math.max(Math.trunc(gevraagd), 1), 16) : 1;
 
-  const gedaan: { maand: string; queries: number; pages: number }[] = [];
+  // Een backfill van zestien maanden kan de tijdslimiet van de functie raken.
+  // Daarom slaan we maanden over die al met succes zijn opgehaald: opnieuw
+  // aanroepen gaat dan verder waar de vorige run strandde, in plaats van
+  // alles over te doen. Met ?force=1 wordt toch alles opnieuw opgehaald,
+  // bijvoorbeeld als Search Console cijfers heeft nagecorrigeerd.
+  const force = request.nextUrl.searchParams.get("force") === "1";
+
+  const gedaan: SyncResultaat[] = [];
   const nu = new Date();
   try {
     // Oudste eerst, zodat een afgebroken run een aaneengesloten reeks achterlaat.
     // i = aantal levert de oudste maand op, i = 1 de vorige volledige maand.
     for (let i = aantal; i >= 1; i--) {
       const peil = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth() - (i - 1), 1));
-      gedaan.push(await syncMaand(vorigeMaand(peil)));
+      const doelMaand = vorigeMaand(peil);
+      const { maand } = maandGrenzen(doelMaand);
+
+      if (!force && await alGesynct(maand)) {
+        gedaan.push({ maand, queries: 0, pages: 0, overgeslagen: true });
+        continue;
+      }
+      gedaan.push(await syncMaand(doelMaand));
     }
   } catch (err) {
     if (err instanceof GscConfigError) {
