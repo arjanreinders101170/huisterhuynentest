@@ -59,6 +59,15 @@ const nextConfig: NextConfig = {
         destination: "/wellness-vakantie-drenthe",
         permanent: true,
       },
+      // De oude fietsslug was een volledige alinea (250+ tekens): wordt in de SERP
+      // afgekapt en oogt als spam. Het artikel zelf staat nu op /blog/fietsen-in-drenthe
+      // (zie migrations/2026_08_18_fietsslug_inkorten.sql).
+      {
+        source:
+          "/blog/fietsen-in-drenthe-is-misschien-wel-de-mooiste-manier-om-de-provincie-echt-te-beleven-uitgestrekte-heidevelden-eeuwenoude-bossen-kronkelende-beekdalen-karakteristieke-brinkdorpen-en-kilometers-autoluwe-fietspaden-maken-drenthe-tot-een-waar-paradijs-voor-fietsers",
+        destination: "/blog/fietsen-in-drenthe",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

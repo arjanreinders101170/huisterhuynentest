@@ -40,18 +40,22 @@ const PRICE_DE = "Ab €165 pro Nacht";
 
 export const SEED_LANDING_PAGES: LandingPageRecord[] = [
   {
+    // De URL blijft bewust /vakantiehuis-met-hottub-drenthe: die 914 vertoningen
+    // aan history zijn meer waard dan het zoekwoord in het pad. De winst zit in
+    // de zichtbare tekst — title, H1, intro en FAQ zeggen daarom "jacuzzi"
+    // (754 vertoningen) waar de pagina eerst alleen "hottub" (249) zei.
     slug: "vakantiehuis-met-hottub-drenthe",
-    breadcrumb: "Vakantiehuis met hottub Drenthe",
-    eyebrow: "Privé hottub · Zeijen · Drenthe",
-    h1: "Vakantiehuis met privé-hottub in Drenthe",
+    breadcrumb: "Vakantiehuis met jacuzzi Drenthe",
+    eyebrow: "Privé jacuzzi · Zeijen · Drenthe",
+    h1: "Vakantiehuis met privé-jacuzzi in Drenthe",
     hero_sub:
-      "Twee luxe lodges op de Drentse heide bij Zeijen, elk met een eigen hottub op het terras. Wandel vanuit de deur de natuur in en keer terug naar warm, bruisend water onder de sterren.",
+      "Twee luxe lodges op de Drentse heide bij Zeijen, elk met een eigen jacuzzi op het terras. Wandel vanuit de deur de natuur in en keer terug naar warm, bruisend water onder de sterren.",
     hero_image: "/lodge-heide.jpg",
     hero_image_alt:
-      "Vakantiehuis met privé-hottub op het terras van Lodge De Heide, omgeven door de Drentse heide in Zeijen",
+      "Vakantiehuis met privé-jacuzzi op het terras van Lodge De Heide, omgeven door de Drentse heide in Zeijen",
     price_from: PRICE,
     intro:
-      "Een vakantiehuis met hottub in Drenthe is meer dan een extraatje — het is het moment waarop een weekend echt tot rust komt. Bij Huis ter Huynen heeft elke lodge een eigen privé-hottub, volledig afgeschermd en het hele jaar door op temperatuur. Geen gedeelde wellness, geen buren: alleen u, het bruisende water en het uitzicht over heide en bos.",
+      "Een vakantiehuis met jacuzzi in Drenthe is meer dan een extraatje — het is het moment waarop een weekend echt tot rust komt. Bij Huis ter Huynen heeft elke lodge een eigen jacuzzi op het terras: volledig afgeschermd, het hele jaar door op 38 °C en van niemand anders. Of u het nu een jacuzzi of een hottub noemt — het is dezelfde privébadkuip in de buitenlucht. Geen gedeelde wellness, geen buren: alleen u, het bruisende water en het uitzicht over heide en bos.",
     sections: [
       {
         eyebrow: "De ervaring",
@@ -91,10 +95,13 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       },
     ],
     faq: [
-      "Heeft elke lodge een eigen privé-hottub? :: Ja. Zowel Lodge De Heide als Lodge De Eik heeft een eigen, afgeschermde hottub op het terras. U deelt hem met niemand buiten uw eigen gezelschap.",
-      "Is de hottub het hele jaar door beschikbaar? :: Ja, de hottub is 24/7 beschikbaar en staat standaard ingesteld op 38 °C — ook in de winter, wanneer een hottub in de besneeuwde natuur op zijn allermooist is.",
+      "Is de jacuzzi privé? :: Ja. Zowel Lodge De Heide als Lodge De Eik heeft een eigen, afgeschermde jacuzzi op het terras. U deelt hem met niemand buiten uw eigen gezelschap — er is geen gedeelde wellnessruimte op het terrein.",
+      "Wat is het verschil tussen een jacuzzi en een hottub? :: In de praktijk niets: beide woorden worden gebruikt voor een bad met warm, bruisend water in de buitenlucht. Bij Huis ter Huynen staat bij elke lodge zo'n bad op het eigen terras, met massagestralen en verwarmd water.",
+      "Is de jacuzzi het hele jaar warm? :: Ja, de jacuzzi is 24/7 beschikbaar en staat standaard ingesteld op 38 °C — ook in de winter, wanneer een jacuzzi in de besneeuwde natuur op zijn allermooist is.",
+      "Zit er ook een sauna bij? :: Lodge De Heide heeft naast de privé-jacuzzi een eigen sauna en panoramisch uitzicht over het bos. Lodge De Eik heeft geen sauna, maar wel een buitenkeuken met BBQ onder de eiken.",
       "Voor hoeveel personen is het vakantiehuis geschikt? :: Elke lodge is geschikt voor maximaal vier personen. Ideaal voor koppels, een klein gezin of twee stellen die samen weg willen.",
       "Hoe ver ligt het vakantiehuis van Assen? :: Huis ter Huynen ligt in Zeijen, op ongeveer 20 minuten rijden van Assen en op een kwartier van het Nationaal Park Drentsche Aa.",
+      "Boek ik rechtstreeks bij de eigenaar? :: Ja. Huis ter Huynen wordt particulier verhuurd en u boekt rechtstreeks bij ons — geen tussenpartij, geen boekingskosten. Wij reageren binnen 24 uur persoonlijk op uw aanvraag.",
     ].join("\n"),
     related: [
       "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
@@ -102,12 +109,12 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Fietsen & wandelen in de omgeving :: /omgeving",
       "Paarse heide Drenthe :: /heide-drenthe",
     ].join("\n"),
-    cta_title: "Boek uw vakantiehuis met hottub in Drenthe",
+    cta_title: "Boek uw vakantiehuis met jacuzzi in Drenthe",
     cta_body:
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbare data of stel uw vraag rechtstreeks — wij reageren binnen 24 uur persoonlijk.",
-    meta_title: "Vakantiehuis met Hottub in Drenthe | Privé Lodge bij Zeijen",
+    meta_title: "Vakantiehuis met Jacuzzi Drenthe | Privé Hottub bij Elke Lodge",
     meta_description:
-      "Luxe vakantiehuis met privé-hottub in Drenthe. Twee lodges op de heide bij Zeijen, 20 min van Assen. Eigen hottub 24/7, wandelen & fietsen vanuit de deur.",
+      "Twee vrijstaande vakantiehuisjes in Drenthe, elk met een eigen jacuzzi op het terras. Geen gedeelde wellness, 24/7 op 38 °C. Op de heide bij Zeijen. Vanaf €165.",
     og_image: "",
     sort_order: 1,
   },

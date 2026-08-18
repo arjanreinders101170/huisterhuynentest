@@ -11,12 +11,21 @@ const C = {
 
 const EMPTY_POST = { id: "", slug: "", titel: "", intro: "", inhoud: "", categorie: "Verhaal", leestijd: "4 minuten", auteur: "Arjan Reinders", og_image: "", geplande_publicatie: "" };
 
+/** Maximale sluglengte. Een slug die uit een hele alinea bestaat wordt in de
+ *  SERP afgekapt en oogt als spam — zie de fietsslug van 250+ tekens die met
+ *  een 301 is ingekort. Afkappen gebeurt op een woordgrens. */
+export const MAX_SLUG_LENGTH = 70;
+
 export function slugify(s: string): string {
-  return s.toLowerCase().trim()
+  const slug = s.toLowerCase().trim()
     .replace(/[àáâãä]/g, "a").replace(/[èéêë]/g, "e")
     .replace(/[ìíîï]/g, "i").replace(/[òóôõö]/g, "o")
     .replace(/[ùúûü]/g, "u").replace(/[ç]/g, "c")
     .replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
+  if (slug.length <= MAX_SLUG_LENGTH) return slug;
+  const cut = slug.slice(0, MAX_SLUG_LENGTH);
+  const lastDash = cut.lastIndexOf("-");
+  return (lastDash > 0 ? cut.slice(0, lastDash) : cut).replace(/-+$/, "");
 }
 
 // ISO timestamp uit DB → <input type="datetime-local"> string in lokale tijd.
@@ -265,7 +274,9 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
               <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>URL slug *</label>
               <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: slugify(e.target.value) }))}
                 placeholder="bijv. fietspaden-drenthe" style={inp} />
-              <div style={{ fontSize: 10, color: C.muted, marginTop: 3 }}>/blog/{form.slug || "..."}</div>
+              <div style={{ fontSize: 10, color: C.muted, marginTop: 3 }}>
+                /blog/{form.slug || "..."} · max. {MAX_SLUG_LENGTH} tekens
+              </div>
             </div>
           </div>
 
