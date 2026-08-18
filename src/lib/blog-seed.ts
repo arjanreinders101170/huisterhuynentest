@@ -227,48 +227,6 @@ Vanuit Zeijen is de Drentsche Aa binnen een kwartier rijden of binnen een goede 
     publish: true,
   },
   {
-    slug: "wellness-in-drenthe",
-    titel: "Wellness in Drenthe: sauna's, dagspa's en natuur-retreats",
-    intro:
-      "Drenthe ontwikkelt zich steeds meer tot een wellnessbestemming: van dagspa's met buitensauna's tot vakantieadressen met een eigen hottub op het terras. In dit artikel lees je wat de regio te bieden heeft en hoe je er een echt ontspannen weekend van maakt.",
-    inhoud: `Even helemaal niets — dat is wat de meeste mensen zoeken als ze aan een wellnessweekend denken. Geen agenda, geen telefoon, alleen warmte, rust en de natuur om je heen. Drenthe leent zich daar uitstekend voor: de provincie combineert uitgestrekte natuurgebieden met een groeiend aanbod aan sauna's, dagspa's en vakantieverblijven met eigen wellnessvoorzieningen. In dit artikel zetten we de mogelijkheden op een rij en geven we tips om er een geslaagd wellnessweekend van te maken.
-
-## Waarom Drenthe een goede wellnessbestemming is
-
-Wellness draait om twee dingen: warmte en rust. Drenthe heeft beide in overvloed. De provincie is dunbevolkt, het landschap is groen en stil, en de lucht is — zeker buiten de bebouwde kom — opvallend schoon. Die combinatie van natuurlijke rust met warmtebehandelingen zoals sauna, stoombad en hottub versterkt elkaar: na een sessie in de sauna een korte wandeling door de heide maken, of vanuit een hottub op je terras uitkijken over het bos, geeft een ontspanningservaring die je in een drukke stad niet snel evenaart.
-
-## Dagspa's en sauna's in de regio
-
-In en rond Drenthe vind je verschillende dagspa's en saunacomplexen, vaak met een combinatie van binnen- en buitensauna's, stoomcabines, verwarmde baden en relaxruimtes. Veel van deze locaties zijn ingericht met natuurlijke materialen — hout, natuursteen, uitzicht op groen — passend bij de rustige sfeer van de omgeving. Een dagje sauna is een fijne aanvulling op een verblijf in de regio: ideaal voor een regenachtige dag, of als rustpunt tussen twee actieve dagen met wandelen of fietsen.
-
-## De opkomst van de privé hottub
-
-Een opvallende trend in de vakantiemarkt is de privé hottub: een eigen buitenbad met verwarmd water, vaak op het terras van een vakantiewoning. Het grote voordeel ten opzichte van een dagspa is dat je geen reistijd hebt en geen rekening houdt met andere bezoekers — je stapt zo van de bank het water in, op elk moment van de dag of avond dat het jou uitkomt. Voor wellness in de avond, na een dag wandelen of fietsen, is dat een verschil dat je meteen voelt: geen aankleden en wegrijden, gewoon nog even buiten zitten met uitzicht op de sterren.
-
-## Een wellnessweekend samenstellen
-
-Het mooie van wellness in Drenthe is dat je het makkelijk kunt combineren met andere activiteiten. Een geslaagd schema voor een weekend zou er zo uit kunnen zien: 's ochtends een rustige wandeling door de heide of langs de Drentsche Aa, 's middags een bezoek aan een dagspa of gewoon tijd op je eigen terras, en 's avonds de hottub — eventueel met een glas wijn en uitzicht op de zonsondergang. Door actieve momenten af te wisselen met momenten van pure rust, voorkom je dat een wellnessweekend toch weer "vol" aanvoelt.
-
-## Praktische tips voor een ontspannen wellnessweekend
-
-**Plan minder dan je denkt.** De grootste valkuil van een wellnessweekend is te veel willen doen. Kies één activiteit per dagdeel en laat de rest open.
-
-**Drink voldoende water.** Sauna's en hottubs zijn ontspannend, maar ook uitdrogend. Zorg dat je tussen sessies door voldoende water drinkt.
-
-**Combineer warmte met buitenlucht.** Afwisseling tussen warmte en frisse lucht — bijvoorbeeld een korte wandeling tussen twee saunasessies, of even buiten zitten na de hottub — versterkt het ontspannen effect.
-
-**Laat je telefoon zoveel mogelijk liggen.** Wellness en schermtijd gaan slecht samen. Een paar uur zonder meldingen maakt het verschil tussen "ontspannen" en "echt ontspannen".
-
-## Overnachten met je eigen hottub bij Huis ter Huynen
-
-Bij Huis ter Huynen in Zeijen hoef je niet te kiezen tussen wellness en de natuur — je hebt beide tegelijk. Lodge De Heide en Lodge De Eik zijn allebei volledig privé en hebben elk een eigen terras met hottub, midden tussen de heide en het bos. Overdag wandelen of fietsen door het Zeijerveld, de Zeijerstrubben of langs de Drentsche Aa, en 's avonds terug naar je eigen plek voor een ontspannen moment in de hottub — zonder te hoeven reizen, plannen of delen met andere gasten. Voor wie op zoek is naar een écht wellnessweekend, is dat precies het soort rust dat je zoekt.`,
-    categorie: "Reistips",
-    leestijd: "7 minuten",
-    auteur: "Arjan Reinders",
-    og_image: "/welness_drenthe.jpg",
-    publish: true,
-  },
-  {
     slug: "prive-lodge-boeken-nederland-kosten",
     titel: "Privé lodge boeken in Nederland: wat kost het?",
     intro:

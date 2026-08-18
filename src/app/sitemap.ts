@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { getSupabase } from "@/lib/supabase";
 import { getServedLandingSlugs } from "@/lib/landing";
+import { REDIRECTED_BLOG_SLUGS } from "@/lib/redirects";
 
 const SITE_URL = "https://www.huisterhuynen.nl";
 
@@ -98,12 +99,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .order("gepubliceerd_op", { ascending: false });
 
     if (data) {
-      blogPosts = data.map((post) => ({
-        url: `${SITE_URL}/blog/${post.slug}`,
-        lastModified: post.gepubliceerd_op ? new Date(post.gepubliceerd_op) : lastModified,
-        changeFrequency: "monthly" as const,
-        priority: 0.7,
-      }));
+      // 301'd blogs horen niet meer in de sitemap: anders blijft Google ze
+      // crawlen en blijft de kannibalisatie in de index staan.
+      blogPosts = data
+        .filter((post) => !REDIRECTED_BLOG_SLUGS.has(post.slug))
+        .map((post) => ({
+          url: `${SITE_URL}/blog/${post.slug}`,
+          lastModified: post.gepubliceerd_op ? new Date(post.gepubliceerd_op) : lastModified,
+          changeFrequency: "monthly" as const,
+          priority: 0.7,
+        }));
     }
   } catch {
     // Static pages still served if Supabase is unavailable during build

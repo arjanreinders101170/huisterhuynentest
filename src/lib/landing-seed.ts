@@ -299,6 +299,29 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
       },
       {
+        // Overgezet uit /blog/wellness-in-drenthe (301 → deze pagina).
+        eyebrow: "Kiezen",
+        heading: "Dagspa of privé-hottub — wat past bij uw weekend?",
+        body: [
+          "In en rond Drenthe vindt u verschillende dagspa's en saunacomplexen, vaak met binnen- én buitensauna's, stoomcabines, verwarmde baden en relaxruimtes. Veel ervan zijn ingericht met hout, natuursteen en uitzicht op groen — een fijne aanvulling op uw verblijf, zeker op een regenachtige dag of als rustpunt tussen twee actieve dagen door.",
+          "Het verschil met een eigen hottub zit in de drempel. Bij een dagspa hoort reistijd, een openingstijd en gezelschap van andere bezoekers; bij een privé-hottub op uw eigen terras stapt u zo van de bank het water in, op elk moment van de dag of avond. Juist 's avonds, na een dag wandelen of fietsen, voelt u dat verschil meteen: geen aankleden en wegrijden, gewoon buiten blijven met zicht op de sterren.",
+        ],
+      },
+      {
+        // Overgezet uit /blog/wellness-in-drenthe (301 → deze pagina).
+        eyebrow: "Praktisch",
+        heading: "Zo houdt u een wellnessweekend écht ontspannen",
+        body: [
+          "De grootste valkuil van een wellnessweekend is te veel willen. Vier eenvoudige gewoontes maken het verschil tussen \"ontspannen\" en \"echt ontspannen\".",
+        ],
+        bullets: [
+          "Plan minder dan u denkt: één activiteit per dagdeel, de rest laat u open.",
+          "Drink voldoende water — sauna en hottub ontspannen, maar drogen ook uit.",
+          "Wissel warmte af met buitenlucht: een korte wandeling tussen twee sessies versterkt het effect.",
+          "Laat de telefoon liggen. Een paar uur zonder meldingen doet meer dan een extra behandeling.",
+        ],
+      },
+      {
         eyebrow: "De omgeving",
         heading: "Stilte, heide en water binnen handbereik",
         body: [
@@ -310,6 +333,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Heeft de lodge een eigen sauna? :: Lodge De Heide beschikt over een eigen privé-sauna. Beide lodges hebben een privé-hottub op het terras, 24/7 beschikbaar.",
       "Is dit geschikt voor een wellnessweekend met z'n tweeën? :: Zeker. De lodges zijn volledig privé en ideaal voor koppels die rust en verwennerij zoeken, zonder de drukte van een groot wellnessresort.",
       "Zijn er ook wellnesscentra in de omgeving? :: Ja. In Assen (20 min) en de wijdere regio vindt u verschillende wellnesscentra en spa's, zoals Spa Hof van Saksen, voor een dag extra verwennerij.",
+      "Wat is het verschil tussen een dagspa en een privé-hottub? :: Bij een dagspa hoort reistijd, een openingstijd en gezelschap van andere bezoekers. Uw privé-hottub staat op uw eigen terras, is 24/7 op temperatuur en deelt u met niemand — ideaal voor het wellnessmoment aan het eind van de dag.",
       "Wat is de beste periode voor een wellness vakantie in Drenthe? :: Elk seizoen werkt: de paarse heide in de nazomer, de herfstkleuren, of juist de winter, wanneer de hottub in de besneeuwde stilte op zijn mooist is.",
     ].join("\n"),
     related: [
@@ -943,6 +967,21 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
       },
       {
+        // Samengevoegd vanuit /wandelen-drentsche-aa (301 → deze pagina).
+        eyebrow: "Beekdal",
+        heading: "Wandelen langs de Drentsche Aa",
+        body: [
+          "Het Nationaal Park Drentsche Aa ligt op een kwartier rijden en verdient een eigen dag. Het is een van de laatste beken van Nederland die nog natuurlijk meandert: de loop is nooit rechtgetrokken, dus het water volgt nog altijd zijn eigen bochten en zandbanken. Daaromheen liggen essen — hoger gelegen akkers die al eeuwen bewerkt worden — afgewisseld met hooilanden, broekbosjes en heideresten op de flanken van het dal.",
+          "Voor wandelaars betekent dat afwisseling op kleine schaal: open weiland, dan een schaduwrijk pad langs het water, even later een es met uitzicht over het hele dal. Routes van een uur tot een halve dag zijn er in overvloed, en wie meer wil lopen volgt een deel van het Drentsche Aa-pad dat het hele stroomgebied doorkruist.",
+        ],
+        bullets: [
+          "Boswachterspad Oudemolense Diep — 7 km, ± 2 uur, met vlonderpaden langs het water en kans op de ijsvogel.",
+          "Startpunten in Schipborg, Anloo, Gasteren en Loon — elk met eigen toegang tot het beekdal, alle vier binnen twintig minuten rijden.",
+          "Voorjaar: hooilanden vol dotterbloemen, orchideeën en pinksterbloemen. Vroeg in de ochtend de grootste kans op reeën en reigers.",
+          "Winter: kale essen en mist boven het water — het stilste seizoen van het beekdal.",
+        ],
+      },
+      {
         eyebrow: "Kiezen",
         heading: "Welke route past bij uw dag?",
         body: [
@@ -972,10 +1011,12 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Welke wandelroutes starten bij de lodge? :: Vanaf de brink van Zeijen, op een paar minuten lopen, starten vier gemarkeerde routes: de Veentjesroute (7,5 km), Weg van Zeijen (11 km), De Zeijerlaar (14 km) en de Knapzakroute Zeijen–Peest (17 km, splitsbaar in 7 of 11 km).",
       "Wat is de mooiste wandelroute in Drenthe voor beginners? :: De Veentjesroute van 7,5 km is makkelijk, goed gemarkeerd en in ongeveer twee uur te lopen. Ook het Boswachterspad Oudemolense Diep (7 km) in het Nationaal Park Drentsche Aa is prima te doen en heeft vlonderpaden langs het water.",
       "Kan ik met mijn hond wandelen in de omgeving? :: Ja. Honden zijn op vrijwel alle routes welkom, meestal aangelijnd vanwege broedvogels en schaapskuddes. In de lodges zijn honden in overleg ook welkom.",
+      "Waar kan ik wandelen langs de Drentsche Aa? :: Het Nationaal Park Drentsche Aa ligt op een kwartier rijden. Het Boswachterspad Oudemolense Diep (7 km) is de mooiste korte route; startpunten in Schipborg, Anloo, Gasteren en Loon geven toegang tot rondjes van een uur tot een halve dag.",
       "Wanneer is de heide op de routes paars? :: Doorgaans van half augustus tot begin september. Het Ballooërveld (12 min) en het Dwingelderveld (25 min) zijn dan de mooiste bestemmingen.",
       "Hoe kan ik direct boeken? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp — zonder tussenpersoon en met persoonlijke bevestiging binnen 24 uur.",
     ].join("\n"),
     related: [
+      "De Drentsche Aa: het beekdallandschap :: /blog/drentsche-aa-beekdallandschap",
       "Fietsen in Drenthe :: /fietsen-in-drenthe",
       "Fochteloërveen :: /fochteloerveen-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
@@ -987,7 +1028,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
     meta_title: "Wandelroutes in Drenthe | De Mooiste Routes rond Zeijen",
     meta_description:
-      "De mooiste wandelroutes in Drenthe: vier routes vanaf de brink in Zeijen (7,5–17 km) en de beste natuurgebieden binnen 30 minuten. Overnacht in een lodge met hottub.",
+      "De mooiste wandelroutes in Drenthe: vier routes vanaf de brink in Zeijen (7,5–17 km), wandelen langs de Drentsche Aa en de beste natuurgebieden binnen 30 minuten.",
     og_image: "/wandel_drenthe.jpg",
     sort_order: 16,
   },

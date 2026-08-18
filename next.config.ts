@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SEO_REDIRECTS } from "./src/lib/redirects";
 
 const cspHeader = [
   "default-src 'self'",
@@ -48,18 +49,15 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [
-      {
-        source: "/landing",
-        destination: "/",
-        permanent: true,
-      },
-      {
-        source: "/wellness-vakantie-drenthe-ontspannen-in-een-luxe-vakantiehuis-met-hottub",
-        destination: "/wellness-vakantie-drenthe",
-        permanent: true,
-      },
-    ];
+    // Bron: src/lib/redirects.ts — dezelfde lijst filtert de sitemap en de
+    // overzichtspagina's, zodat een 301'd pad nergens meer opduikt.
+    // Expliciet 301 in plaats van `permanent: true` (dat levert een 308 op):
+    // 301 is de status die in de SEO-analyse staat en die elke crawler kent.
+    return SEO_REDIRECTS.map(({ from, to }) => ({
+      source: from,
+      destination: to,
+      statusCode: 301,
+    }));
   },
   async rewrites() {
     return [
