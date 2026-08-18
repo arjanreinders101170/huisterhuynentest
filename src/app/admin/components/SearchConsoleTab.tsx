@@ -49,6 +49,14 @@ const KANS_CONFIG: Record<Kans["soort"], { label: string; color: string; bg: str
 const MAAND_NAMEN = ["januari","februari","maart","april","mei","juni",
   "juli","augustus","september","oktober","november","december"];
 
+/** Datum én tijd. Alleen de datum maakt twee pogingen op dezelfde dag
+ *  ononderscheidbaar, precies wanneer je wil weten of een fout nieuw is. */
+function momentLabel(iso: string): string {
+  return new Date(iso).toLocaleString("nl-NL", {
+    day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+  });
+}
+
 function maandLabel(iso?: string | null): string {
   if (!iso) return "—";
   const [jaar, maand] = iso.split("-");
@@ -136,7 +144,7 @@ export function SearchConsoleTab() {
           {sync && !sync.gelukt && sync.foutmelding && (
             <div style={{ marginTop: 12, padding: "10px 12px", background: "#FEE2E2",
               border: "1px solid #FCA5A5", borderRadius: 8, fontSize: 12, color: C.rood, lineHeight: 1.6 }}>
-              Laatste poging ({maandLabel(sync.maand)}, {new Date(sync.gestart_op).toLocaleDateString("nl-NL")}): {sync.foutmelding}
+              Laatste poging ({maandLabel(sync.maand)}, {momentLabel(sync.gestart_op)}): {sync.foutmelding}
             </div>
           )}
         </div>
@@ -169,7 +177,7 @@ export function SearchConsoleTab() {
           {maandLabel(analyse.maand)}
           {analyse.vorigeMaand && <> — vergeleken met {maandLabel(analyse.vorigeMaand)}</>}
           {analyse.laatsteSync && (
-            <> · laatst opgehaald {new Date(analyse.laatsteSync.gestart_op).toLocaleDateString("nl-NL")}</>
+            <> · laatst opgehaald {momentLabel(analyse.laatsteSync.gestart_op)}</>
           )}
         </p>
       </div>
