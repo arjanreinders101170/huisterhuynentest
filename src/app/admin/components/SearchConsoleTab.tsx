@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { GscTrend, type Reeks } from "./GscTrend";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -79,6 +80,7 @@ function Delta({ waarde, eenheid = "", omgekeerd = false }: { waarde: number | n
 
 export function SearchConsoleTab() {
   const [analyse, setAnalyse] = useState<Analyse | null>(null);
+  const [reeks, setReeks] = useState<Reeks | null>(null);
   const [fout, setFout] = useState<string | null>(null);
   const [bezig, setBezig] = useState<null | "maand" | "historie">(null);
   const [syncMelding, setSyncMelding] = useState<{ tekst: string; gelukt: boolean } | null>(null);
@@ -87,7 +89,19 @@ export function SearchConsoleTab() {
     try {
       const res = await fetch("/api/admin/data?table=gsc_analyse");
       const json = await res.json();
-      if (json.error) setFout(json.error); else { setAnalyse(json.data); setFout(null); }
+      if (json.error) { setFout(json.error); return; }
+      setAnalyse(json.data);
+      setFout(null);
+
+      // De reeks is een tweede, zwaardere query; die mag de rest niet ophouden
+      // en een fout hier hoort de analyse niet onderuit te halen.
+      if (!json.data?.leeg) {
+        try {
+          const r = await fetch("/api/admin/data?table=gsc_reeks");
+          const rj = await r.json();
+          if (!rj.error) setReeks(rj.data);
+        } catch { /* grafiek blijft dan gewoon weg */ }
+      }
     } catch {
       setFout("Kon de analyse niet laden.");
     }
@@ -277,6 +291,8 @@ export function SearchConsoleTab() {
           dat is de eerlijkste graadmeter die er is.
         </div>
       )}
+
+      {reeks && <GscTrend reeks={reeks} />}
 
       {/* Voortgang tegen de forecast */}
       <div style={{ ...kaart, marginBottom: 20 }}>
