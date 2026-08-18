@@ -39,8 +39,8 @@ const COLORS = {
 
 const COMPANY = {
   naam: "Huis ter Huynen",
-  adres: "Zuiderstraat 6",
-  postcode: "9491 EC",
+  adres: "Zuiderstraat 6 p",
+  postcode: "9491 TH",
   plaats: "Zeijen, Drenthe",
   land: "Nederland",
   telefoon: "+31 6 42568603",

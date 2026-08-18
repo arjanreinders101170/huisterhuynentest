@@ -205,7 +205,7 @@ export function lodgeEmail(opts: LodgeEmailOpts): string {
 
   <tr><td align="center" style="padding:24px 0 0;">
     <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background:#B49A5E;"></td></tr></table>
-    <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">${LODGE_NAME} &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
+    <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">${LODGE_NAME} &middot; Zuiderstraat 6 p &middot; Zeijen, Drenthe</p>
   </td></tr>
 
 </table>
@@ -241,7 +241,7 @@ export function emailWrap(content: string): string {
         </td></tr>
         <tr><td align="center" style="padding:24px 0 0;">
           <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:40px;height:1px;background-color:#B49A5E;"></td></tr></table>
-          <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">${LODGE_NAME} &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe</p>
+          <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">${LODGE_NAME} &middot; Zuiderstraat 6 p &middot; Zeijen, Drenthe</p>
         </td></tr>
       </table>
     </td></tr>
@@ -285,7 +285,7 @@ export function welcomeEmail(opts: WelcomeEmailOpts): string {
         "Tips, route en extra's regelen via de app",
       ]),
     ],
-    footer: `<strong style="color:#2A2418;">Route:</strong> A28 → afslag Zeijen → Zuiderstraat 6<br/>Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`,
+    footer: `<strong style="color:#2A2418;">Route:</strong> A28 → afslag Zeijen → Zuiderstraat 6 p<br/>Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`,
   });
 }
 

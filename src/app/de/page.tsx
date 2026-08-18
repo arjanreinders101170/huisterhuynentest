@@ -831,7 +831,7 @@ export default function LandingPageDE() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 300, lineHeight: 1.6 }}>
-                  Zuiderstraat 6<br />9491 EC Zeijen, Drenthe
+                  Zuiderstraat 6 p<br />9491 TH Zeijen, Drenthe
                 </div>
                 <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 400,

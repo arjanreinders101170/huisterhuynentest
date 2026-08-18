@@ -130,7 +130,7 @@ export default function ConciergeLockedPage() {
         <div style={{ marginTop: 40, textAlign: "center" as const }}>
           <div style={{ width: 40, height: 1, background: "#B49A5E", opacity: 0.4, margin: "0 auto 16px" }} />
           <p style={{ fontSize: 11, color: "#8A7D6A", fontWeight: 300 }}>
-            Huis ter Huynen · Zuiderstraat 6 · Zeijen
+            Huis ter Huynen · Zuiderstraat 6 p · Zeijen
           </p>
         </div>
       </div>

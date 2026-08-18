@@ -107,7 +107,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
       {/* Contact */}
       <h2 style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 600, color: T.text, margin: "28px 0 14px" }}>{t.info.contact}</h2>
       {[
-        { l: t.info.address, v: "Zuiderstraat 6, Zeijen" },
+        { l: t.info.address, v: "Zuiderstraat 6 p, Zeijen" },
         { l: t.info.phone,   v: "+31 6 42568603" },
         { l: t.info.email,   v: "info@huisterhuynen.nl" },
       ].map((x, i) => (

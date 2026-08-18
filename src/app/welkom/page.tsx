@@ -122,7 +122,7 @@ export default async function WelkomPage({ searchParams }: Props) {
               Zeijen, Drenthe
             </p>
             <p style={{ fontSize: 13, color: "#8A7D6A", fontWeight: 300, lineHeight: 1.6, margin: "0 0 14px" }}>
-              Zuiderstraat 6 in Zeijen. Navigeer naar de lodge en parkeer gratis op eigen terrein.
+              Zuiderstraat 6 p in Zeijen. Navigeer naar de lodge en parkeer gratis op eigen terrein.
             </p>
             <a
               href={mapsUrl}
@@ -262,7 +262,7 @@ export default async function WelkomPage({ searchParams }: Props) {
         }}>
           <div style={{ width: 40, height: 1, background: "#B49A5E", opacity: 0.4, margin: "0 auto 16px" }} />
           <p style={{ fontSize: 11, color: "#8A7D6A", fontWeight: 300 }}>
-            Huis ter Huynen · Zuiderstraat 6 · Zeijen
+            Huis ter Huynen · Zuiderstraat 6 p · Zeijen
           </p>
         </div>
       </div>

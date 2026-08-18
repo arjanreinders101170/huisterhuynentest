@@ -297,7 +297,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           {/* Adres + snelle links */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
             <div style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 300, lineHeight: 1.6 }}>
-              Huis ter Huynen · Zuiderstraat 6, 9491 EC Zeijen, Drenthe
+              Huis ter Huynen · Zuiderstraat 6 p, 9491 TH Zeijen, Drenthe
             </div>
             <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
               {[
