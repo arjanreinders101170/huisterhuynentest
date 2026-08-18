@@ -57,7 +57,15 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
     const data = await res.json();
     await reload();
     setImporting(false);
-    setMsg(data.error ? data.error : `${data.imported ?? 0} conceptartikel(en) geïmporteerd.`);
+    if (data.error) { setMsg(data.error); return; }
+    const extra = [
+      data.hernoemd ? `${data.hernoemd} artikel(en) naar een kortere URL verplaatst` : "",
+      data.geretireerd ? `${data.geretireerd} artikel(en) gedepubliceerd wegens een 301` : "",
+    ].filter(Boolean);
+    setMsg(
+      `${data.imported ?? 0} conceptartikel(en) geïmporteerd.` +
+      (extra.length ? ` ${extra.join(", ")}.` : ""),
+    );
   };
 
   const startNew = () => { setForm(EMPTY_POST); setMsg(""); setPreview(false); setView("edit"); };

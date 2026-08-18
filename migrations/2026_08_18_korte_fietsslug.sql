@@ -11,6 +11,9 @@
 -- Idempotent: draait hij opnieuw, dan bestaat de oude slug niet meer en gebeurt
 -- er niets. De not-exists-clausule voorkomt bovendien een botsing als er al een
 -- artikel op de korte slug staat.
+--
+-- Alternatief: de admin-knop "Importeer conceptartikelen" hernoemt het artikel
+-- ook, met dezelfde controle op een bestaande korte slug.
 
 update blog_posts
 set slug = 'fietsen-in-drenthe',

@@ -4,6 +4,12 @@ import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, type LandingSectionData } from "@/lib/landing-seed";
 import { SEED_BLOG_POSTS } from "@/lib/blog-seed";
 import { slugLengteFout } from "@/lib/slug";
+import {
+  KORTE_FIETSSLUG,
+  LANGE_FIETSSLUG,
+  REDIRECTED_BLOG_SLUGS,
+  REDIRECTED_LANDING_SLUGS,
+} from "@/lib/redirects";
 
 function buildLandingFields(body: Record<string, unknown>) {
   const sectionsRaw = body.sections;
@@ -38,6 +44,42 @@ function parsePlannedDate(value: unknown): string | null | "invalid" {
   const d = new Date(String(value));
   if (Number.isNaN(d.getTime())) return "invalid";
   return d.toISOString();
+}
+
+/** Zet de database gelijk met de redirects uit src/lib/redirects.ts:
+ *  het fietsartikel verhuist naar zijn korte slug en artikelen die naar een
+ *  landingspagina 301'en worden gedepubliceerd. Verwijdert niets — de inhoud
+ *  blijft staan, alleen niet meer als gepubliceerd artikel.
+ *  Draait bij elke seed-import, dus meerdere keren uitvoeren is veilig. */
+async function ruimGeredirecteBlogsOp(): Promise<{ hernoemd: number; geretireerd: number }> {
+  const sb = getSupabase();
+  const nu = new Date().toISOString();
+
+  // Eerst hernoemen: daarna valt de korte slug buiten de redirect-lijst en
+  // blijft het artikel dus gewoon gepubliceerd.
+  let hernoemd = 0;
+  const { data: kortBestaat } = await sb
+    .from("blog_posts")
+    .select("id")
+    .eq("slug", KORTE_FIETSSLUG)
+    .maybeSingle();
+  if (!kortBestaat) {
+    const { data } = await sb
+      .from("blog_posts")
+      .update({ slug: KORTE_FIETSSLUG, updated_at: nu })
+      .eq("slug", LANGE_FIETSSLUG)
+      .select("id");
+    hernoemd = data?.length ?? 0;
+  }
+
+  const { data: geretireerd } = await sb
+    .from("blog_posts")
+    .update({ gepubliceerd: false, updated_at: nu })
+    .in("slug", [...REDIRECTED_BLOG_SLUGS])
+    .eq("gepubliceerd", true)
+    .select("slug");
+
+  return { hernoemd, geretireerd: geretireerd?.length ?? 0 };
 }
 
 export async function handleContentGet(table: string): Promise<NextResponse | null> {
@@ -181,10 +223,13 @@ export async function handleContentPost(action: string, body: Record<string, unk
         gepubliceerd: !!p.publish,
         gepubliceerd_op: p.publish ? new Date().toISOString() : null,
       }));
-      if (toInsert.length === 0) return NextResponse.json({ success: true, imported: 0 });
-      const { error } = await sb.from("blog_posts").insert(toInsert);
-      if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-      return NextResponse.json({ success: true, imported: toInsert.length });
+      if (toInsert.length > 0) {
+        const { error } = await sb.from("blog_posts").insert(toInsert);
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+      const opgeruimd = await ruimGeredirecteBlogsOp();
+      revalidatePath("/blog");
+      return NextResponse.json({ success: true, imported: toInsert.length, ...opgeruimd });
     }
     case "import_landing_seed": {
       const sb = getSupabase();
@@ -211,8 +256,21 @@ export async function handleContentPost(action: string, body: Record<string, unk
       }));
       const { error } = await sb.from("landing_pages").upsert(toUpsert, { onConflict: "slug" });
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      // Landingspagina's die naar een andere pagina 301'en horen niet meer
+      // gepubliceerd te staan. De import is het moment waarop de database weer
+      // gelijkloopt met de code; de inhoud blijft bewaard.
+      const { data: geretireerd } = await sb
+        .from("landing_pages")
+        .update({ gepubliceerd: false, updated_at: new Date().toISOString() })
+        .in("slug", [...REDIRECTED_LANDING_SLUGS])
+        .eq("gepubliceerd", true)
+        .select("slug");
       revalidatePath("/", "layout");
-      return NextResponse.json({ success: true, imported: toUpsert.length });
+      return NextResponse.json({
+        success: true,
+        imported: toUpsert.length,
+        geretireerd: geretireerd?.length ?? 0,
+      });
     }
     default:
       return null;

@@ -22,6 +22,9 @@ export interface SeoRedirect {
 export const LANGE_FIETSSLUG =
   "fietsen-in-drenthe-is-misschien-wel-de-mooiste-manier-om-de-provincie-echt-te-beleven-uitgestrekte-heidevelden-eeuwenoude-bossen-kronkelende-beekdalen-karakteristieke-brinkdorpen-en-kilometers-autoluwe-fietspaden-maken-drenthe-tot-een-waar-paradijs-voor-fietsers";
 
+/** De korte slug waar dat fietsartikel naartoe verhuist. */
+export const KORTE_FIETSSLUG = "fietsen-in-drenthe";
+
 export const SEO_REDIRECTS: SeoRedirect[] = [
   {
     from: "/landing",
@@ -47,7 +50,7 @@ export const SEO_REDIRECTS: SeoRedirect[] = [
   },
   {
     from: `/blog/${LANGE_FIETSSLUG}`,
-    to: "/blog/fietsen-in-drenthe",
+    to: `/blog/${KORTE_FIETSSLUG}`,
     reden:
       "Slug van 250+ tekens: werd afgekapt in de SERP en oogde als spam (28 vertoningen, positie 30,1). Het artikel staat nu op de korte slug.",
   },

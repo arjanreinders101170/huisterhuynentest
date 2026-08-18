@@ -6,6 +6,9 @@
 -- blogoverzicht of de sitemap opduiken als de code-filters ooit wijzigen.
 -- De inhoud blijft bewaard (niets wordt verwijderd) — alleen gepubliceerd = false.
 -- Idempotent: opnieuw draaien verandert niets.
+--
+-- Alternatief: de admin-knop "Importeer standaardpagina's" (landingspagina's)
+-- en "Importeer conceptartikelen" (blog) doen sinds deze wijziging hetzelfde.
 
 -- s26-6: blog over de privé-hottub → /vakantiehuis-met-hottub-drenthe
 -- s26-7: blog over wellness → /wellness-vakantie-drenthe
