@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -8,7 +8,7 @@ const C = {
 };
 
 type Priority = "kritiek" | "hoog" | "midden" | "laag";
-type Category = "LP" | "Blog" | "Lokaal" | "CRO" | "Email" | "Analytics" | "Social" | "Betaald";
+type Category = "LP" | "Blog" | "Lokaal" | "CRO" | "Email" | "Analytics" | "Social" | "Betaald" | "Techniek" | "Revenue";
 
 interface Task {
   id: string;
@@ -48,6 +48,8 @@ const CAT_CONFIG: Record<Category, { label: string; color: string; bg: string }>
   Analytics: { label: "Analytics",      color: "#374151", bg: "#F3F4F6" },
   Social:    { label: "Social",         color: "#155E75", bg: "#CFFAFE" },
   Betaald:   { label: "Betaald",        color: "#7C2D12", bg: "#FFEDD5" },
+  Techniek:  { label: "Techniek",       color: "#3730A3", bg: "#E0E7FF" },
+  Revenue:   { label: "Revenue",        color: "#134E4A", bg: "#CCFBF1" },
 };
 
 const MONTHS: Month[] = [
@@ -126,213 +128,263 @@ const MONTHS: Month[] = [
   {
     id: "sep-2026",
     label: "September 2026",
-    sublabel: "Herfst & cultuur",
-    phase: "Pre-Opening — Herfstseizoen opbouw",
+    sublabel: "Fundament: meten, repareren, herbouwen",
+    phase: "Pre-opening",
     tasks: [
-      { id: "se1",  title: "LP #10 bouwen: /vakantiehuis-norg", category: "LP", priority: "hoog", keyword: "vakantiehuis norg" },
-      { id: "se2",  title: "LP #11 bouwen: /overnachten-veenhuizen", category: "LP", priority: "hoog", keyword: "overnachten veenhuizen" },
-      { id: "se3",  title: "Blog 25: Herfst in Drenthe — sept en okt zijn de mooiste maanden", category: "Blog", priority: "hoog", keyword: "herfst drenthe" },
-      { id: "se4",  title: "Blog 26: Veenhuizen — van strafkolonie tot UNESCO-werelderfgoed", category: "Blog", priority: "hoog", keyword: "overnachten veenhuizen" },
-      { id: "se5",  title: "Blog 27: De 52 hunebedden van Drenthe — route en geschiedenis", category: "Blog", priority: "midden", keyword: "hunebedden drenthe" },
-      { id: "se6",  title: "Blog 28: Paddenstoelen spotten in de Drentse bossen", category: "Blog", priority: "midden", keyword: "paddenstoelen drenthe" },
-      { id: "se7",  title: "Blog 29: Drents Museum Assen — wat moet je gezien hebben?", category: "Blog", priority: "midden", keyword: "drents museum assen" },
-      { id: "se8",  title: "Blog 30: Herfstwandelingen rond Zeijen en Norg", category: "Blog", priority: "hoog", keyword: "herfstwandeling drenthe" },
-      { id: "se9",  title: "Blog 31: Wellnessweekend in de herfst", category: "Blog", priority: "hoog", keyword: "wellness weekend drenthe" },
-      { id: "se10", title: "Blog 32: Wat kost een luxe vakantiehuis in Drenthe? (eerlijk overzicht)", category: "Blog", priority: "hoog", keyword: "luxe vakantiehuis drenthe prijs" },
-      { id: "se11", title: "ANWB listing aanmaken", category: "Lokaal", priority: "hoog" },
-      { id: "se12", title: "Gastheer-foto + persoonlijke intro toevoegen op website", category: "CRO", priority: "hoog", note: "Luxe verblijven worden gekocht op persoonlijk vertrouwen" },
-      { id: "se13", title: "Review-automatisering bouwen (email 14d na vertrek + Google Review link)", category: "Email", priority: "hoog", note: "Klaar voor dag 1 na opening" },
-      { id: "se14", title: "Email 4 (nieuwsbrief): herfst-teaser + 'opening nadert'", category: "Email", priority: "hoog" },
-      { id: "se15", title: "Eerste maandelijkse SEO-check: GSC posities + GA4 top-pagina's", category: "Analytics", priority: "hoog" },
-      { id: "se16", title: "Resterende NL LP's vertalen naar DE (/vakantiehuis-assen, /vakantiehuis-norg, /overnachten-veenhuizen, /vakantiehuis-drenthe-met-hond, /bijzonder-overnachten-drenthe, /hunebedden-drenthe)", category: "LP", priority: "midden", note: "Eerst evalueren of de eerste 4 DE-pagina's (whirlpool, luxus lodge, wellness, romantisches wochenende) verkeer opleveren; /heide-drenthe (lila Heide) heeft prioriteit boven deze 6" },
+      { id: "s26-1",  title: "Google Business Profile verifiëren of aanmaken", category: "Lokaal", priority: "kritiek", note: "Hoogste ROI-actie van het hele plan als er nog geen geverifieerd profiel is. De merkcluster staat op gemiddeld positie 15,3 — Google heeft 'Huis ter Huynen' nog niet als entiteit vastgelegd." },
+      { id: "s26-2",  title: "GSC opnieuw exporteren mét zichtbaar datumbereik", category: "Analytics", priority: "kritiek", note: "De meetperiode van de huidige export is onbekend. Zonder die periode klopt de forecast met een factor 3 niet." },
+      { id: "s26-3",  title: "GA4 verifiëren of installeren + sleutelgebeurtenissen markeren", category: "Analytics", priority: "kritiek", note: "De volledige CRO-kolom van het dashboard is nu onmeetbaar: geen zicht op sessies, CTA-kliks of formulierstarts." },
+      { id: "s26-4",  title: "Sticky mobiele CTA: 'Claim uw datum' → 'Bekijk beschikbaarheid'", category: "CRO", priority: "kritiek", note: "Op mobiel is dit de eerste CTA die de bezoeker ziet, vaak vóór enige uitleg. Een zware CTA vóór een zware volgende stap (aanvraag zonder prijs) is een dubbele drempel." },
+      { id: "s26-5",  title: "Aanspreekvorm uniformeren naar 'u'", category: "CRO", priority: "hoog", note: "De site wisselt nu tussen 'u' en 'je' binnen één pagina: 'Stel je vraag via WhatsApp' naast 'Boek uw vakantiehuis'." },
+      { id: "s26-6",  title: "301: blog privé-hottub → /vakantiehuis-met-hottub-drenthe", category: "Techniek", priority: "kritiek", note: "Kannibalisatie: blog 53 vertoningen op positie 60,9 tegen landingspagina 914 op 49,1. Zelfde intentie, zelfde zoekwoord. Beste alinea's eerst overzetten." },
+      { id: "s26-7",  title: "301: /blog/wellness-in-drenthe → /wellness-vakantie-drenthe", category: "Techniek", priority: "kritiek", note: "Kannibalisatie: 7 vertoningen op positie 63,7 tegen 1.526 op 62,6." },
+      { id: "s26-8",  title: "301: /wandelen-drentsche-aa → /wandelroutes-drenthe", category: "Techniek", priority: "hoog", note: "Twee landingspagina's voor één intentie. Drentsche Aa-inhoud als eigen H2 meenemen." },
+      { id: "s26-9",  title: "301: fietsslug van 250+ tekens → /blog/fietsen-in-drenthe", category: "Techniek", priority: "hoog", note: "De huidige URL is een volledige alinea. Wordt afgekapt in de SERP en oogt als spam. 28 vertoningen, positie 30,1." },
+      { id: "s26-10", title: "'Jacuzzi' toevoegen aan title, H1, intro en FAQ van /vakantiehuis-met-hottub-drenthe", category: "LP", priority: "kritiek", keyword: "huisje met jacuzzi drenthe", note: "Jacuzzi-zoekopdrachten: 754 vertoningen. Hottub: 249. De site zegt overal 'hottub'. URL laten staan — die 914 vertoningen aan history zijn meer waard dan een keyword in het pad." },
+      { id: "s26-11", title: "Homepage-title en meta description vervangen", category: "LP", priority: "kritiek", keyword: "huis ter huynen", note: "Nu: 'Lodge Drenthe | Vakantiewoning met Hottub bij Assen'. 'Lodge' heeft 27 vertoningen in de hele dataset. Nieuw: merknaam voorop plus 'twee lodges' als differentiator." },
+      { id: "s26-12", title: "/wellness-vakantie-drenthe herbouwen, retarget naar 'wellness huisje'", category: "LP", priority: "kritiek", keyword: "wellness huisje drenthe", note: "1.526 vertoningen, positie 62,6, nul klikken. Grootste pagina van de site, slechtste positie. 'Wellness huisje' (128 vertoningen) komt in de huidige title niet voor." },
+      { id: "s26-13", title: "/romantisch-weekend-weg-drenthe herbouwen en focus verscherpen", category: "LP", priority: "kritiek", keyword: "romantisch weekendje weg drenthe", note: "Hoofdterm staat op 26,4 — de enige commerciële term met volume binnen bereik van pagina 1. Pagina staat gemiddeld op 50,1: te breed, rankt op tientallen irrelevante termen." },
+      { id: "s26-14", title: "Offer-schema met vanafprijs €165 toevoegen aan LodgingBusiness", category: "Techniek", priority: "hoog", note: "Nu staat er alleen priceRange '€€€'. De echte prijs staat wel in de tekst maar niet machineleesbaar — blokkeert prijs-rich-results." },
+      { id: "s26-15", title: "noindex op /impressum, /datenschutz, /agb, /privacy, /terms, /welkom", category: "Techniek", priority: "midden", note: "Rechtspagina's worden geïndexeerd en staan in de sitemap. /welkom is een gastpagina met priority 0,4." },
+      { id: "s26-16", title: "Blog: 'Wat kost een privé-lodge met jacuzzi in Nederland?' uitbreiden", category: "Blog", priority: "hoog", keyword: "privé lodge nederland kosten", note: "Staat al op positie 6,4 op een prijszoekopdracht — late funnel, sterkste conversiesignaal van de site. Verdient de sterkste CTA van alle blogs." },
+      { id: "s26-17", title: "Blog: 'Wellnessweekend in Drenthe — hoe ziet zo'n weekend eruit?'", category: "Blog", priority: "hoog", keyword: "wellness weekend drenthe" },
+      { id: "s26-18", title: "Blog: 'Herfst op de Drentse heide — de mooiste wandelingen in oktober'", category: "Blog", priority: "midden", keyword: "wandelen drenthe herfst" },
     ],
   },
   {
     id: "okt-2026",
     label: "Oktober 2026",
-    sublabel: "Beslissing & vergelijking",
-    phase: "Pre-Opening — Vergelijkingscontent + boekingsdrempel verlagen",
+    sublabel: "Interne autoriteit & lodgepagina's",
+    phase: "Pre-opening",
     tasks: [
-      { id: "ok1",  title: "LP #12 bouwen: /fietsen-in-drenthe (verkeersmagneet)", category: "LP", priority: "hoog", keyword: "fietsen in drenthe" },
-      { id: "ok2",  title: "LP #13 bouwen: /wandelroutes-drenthe (verkeersmagneet)", category: "LP", priority: "hoog", keyword: "wandelroutes drenthe" },
-      { id: "ok3",  title: "LP #14 bouwen: /bijzonder-overnachten-drenthe", category: "LP", priority: "hoog", keyword: "bijzonder overnachten drenthe" },
-      { id: "ok4",  title: "LP #15 bouwen: /weekend-weg-drenthe", category: "LP", priority: "hoog", keyword: "weekend weg drenthe" },
-      { id: "ok5",  title: "Blog 33: Bijzonder overnachten in Drenthe — 8 verblijven vergeleken", category: "Blog", priority: "kritiek", keyword: "bijzonder overnachten drenthe" },
-      { id: "ok6",  title: "Blog 34: Direct boeken of via Booking.com? Dit scheelt het echt", category: "Blog", priority: "hoog", keyword: "direct boeken vakantiehuis" },
-      { id: "ok7",  title: "Blog 35: Stilteregio Drenthe — de stilste plekken van Nederland", category: "Blog", priority: "hoog", keyword: "stilte nederland vakantie" },
-      { id: "ok8",  title: "Blog 36: Weekend weg met vriendinnen in Drenthe", category: "Blog", priority: "midden", keyword: "weekend weg vriendinnen" },
-      { id: "ok9",  title: "Blog 37: UNESCO Geopark de Hondsrug", category: "Blog", priority: "midden", keyword: "geopark hondsrug" },
-      { id: "ok10", title: "Blog 38: Kamp Westerbork bezoeken — praktische gids", category: "Blog", priority: "midden", keyword: "kamp westerbork bezoeken" },
-      { id: "ok11", title: "Blog 39: Mountainbiken in Drenthe — de beste MTB-routes", category: "Blog", priority: "midden", keyword: "mtb routes drenthe" },
-      { id: "ok12", title: "Blog 40: Lodge de Eik vs. Lodge de Heide — welke past bij jou?", category: "Blog", priority: "hoog", keyword: "lodge drenthe boeken vergelijken" },
-      { id: "ok13", title: "Reisblogger-outreach starten (uitnodiging gratis verblijf voor artikel)", category: "Lokaal", priority: "midden", note: "Doel: 1 DA30+ backlink vóór opening" },
-      { id: "ok14", title: "Persericht schrijven voor RTV Drenthe / regionale media", category: "Lokaal", priority: "hoog", note: "Opening 1 jan 2027 als haak" },
-      { id: "ok15", title: "Direct boeken USP zichtbaar maken bij elke CTA", category: "CRO", priority: "hoog", note: "'Geen commissie. Beste prijs. Persoonlijk bevestigd.'" },
-      { id: "ok16", title: "FAQ-blok verplaatsen dichter bij boekingsformulier", category: "CRO", priority: "midden" },
-      { id: "ok17", title: "Email 5 (nieuwsbrief): 'Opening over 3 maanden' + vroegboekvoordeel aankondiging", category: "Email", priority: "kritiek" },
+      { id: "o26-1",  title: "Interne linkmatrix doorvoeren: 11 links vanuit de best rankende pagina's", category: "Techniek", priority: "kritiek", note: "/hunebedden-drenthe (568 vertoningen, positie 13), /heide-drenthe (261, positie 9,7) en de blogs op positie 8–10 zijn de enige pagina's die Google waardeert. Ze geven die autoriteit nu alleen generiek door." },
+      { id: "o26-2",  title: "Footerblok terugbrengen van 13 naar 6 links, per paginatype verschillend", category: "Techniek", priority: "hoog", note: "Elke pagina linkt nu naar bijna elke andere. Daardoor springt geen enkele pagina eruit — dat verklaart mede de gelijkmatige positie-49-verdeling." },
+      { id: "o26-3",  title: "Contextuele CTA-parameters: /#reserveren?van=wellness&lodge=heide", category: "CRO", priority: "kritiek", note: "Elke landingspagina-CTA springt nu naar een generieke homepage-sectie. De bezoeker verliest zijn context én de complete opbouw van de pagina." },
+      { id: "o26-4",  title: "Blogs: inline CTA halverwege + sticky CTA toevoegen", category: "CRO", priority: "hoog", note: "Blogs halen CTR 3,31% tegen 0,25% voor de commerciële pagina's. Ze zijn het best presterende kanaal en linken nu nauwelijks door." },
+      { id: "o26-5",  title: "/lodge-de-heide bouwen", category: "LP", priority: "kritiek", keyword: "huisje met sauna en jacuzzi drenthe", note: "Er is nu geen enkele stap waarin de bezoeker een lodge kiest — terwijl kiezen precies de stap is die twijfel omzet in commitment. Onderscheid: sauna en panoramisch uitzicht." },
+      { id: "o26-6",  title: "/lodge-de-eik bouwen", category: "LP", priority: "kritiek", keyword: "vakantiehuisje jacuzzi zeijen", note: "Écht anders schrijven dan De Heide: buitenkeuken en BBQ zijn hier het onderscheid. Twee bijna identieke lodgepagina's zijn precies het kannibalisatieprobleem dat de site al heeft." },
+      { id: "o26-7",  title: "Lodgekeuzeblok na de FAQ op de drie P0-landingspagina's", category: "CRO", priority: "hoog" },
+      { id: "o26-8",  title: "Boekingsflow: lodge voorselecteren via parameter", category: "CRO", priority: "hoog" },
+      { id: "o26-9",  title: "Blog: 'Jacuzzi in de winter — waarom december de mooiste maand is'", category: "Blog", priority: "hoog", keyword: "hottub winter" },
+      { id: "o26-10", title: "Blog: 'Romantisch weekendje weg — 8 plekken in Drenthe voor stellen'", category: "Blog", priority: "hoog", keyword: "romantisch overnachten drenthe" },
+      { id: "o26-11", title: "/luxe-lodge-drenthe retargeten naar 'luxe vakantiehuis'", category: "LP", priority: "midden", keyword: "luxe vakantiehuis drenthe met jacuzzi", note: "593 vertoningen op positie 49,2. Let op de val: de twee grootste termen in deze cluster bevatten 'hotel' — daar niet op optimaliseren, Huis ter Huynen is geen hotel." },
+      { id: "o26-12", title: "Maandrapportage inrichten: GSC + GA4 in één overzicht", category: "Analytics", priority: "midden" },
     ],
   },
   {
     id: "nov-2026",
     label: "November 2026",
-    sublabel: "Voorpret opening",
-    phase: "Pre-Opening — Laatste maand voor lancering",
+    sublabel: "Prijstransparantie & lokale zichtbaarheid",
+    phase: "Pre-opening",
     tasks: [
-      { id: "no1",  title: "LP #16 bouwen: /zeijerstrubben (KD=1, jij kunt #1 worden)", category: "LP", priority: "hoog", keyword: "zeijerstrubben wandelen" },
-      { id: "no2",  title: "LP #17 bouwen: /ballooerveld", category: "LP", priority: "hoog", keyword: "ballooerveld schaapskudde" },
-      { id: "no3",  title: "LP #18 bouwen: /vakantiehuis-drenthe-met-hond", category: "LP", priority: "midden", keyword: "vakantiehuis drenthe hond" },
-      { id: "no4",  title: "Blog 41: Winter in Drenthe — overnachten in de natuur als het vriest", category: "Blog", priority: "hoog", keyword: "winter drenthe" },
-      { id: "no5",  title: "Blog 42: Kerst vieren in een lodge in Drenthe", category: "Blog", priority: "hoog", keyword: "kerst weekend drenthe" },
-      { id: "no6",  title: "Blog 43: Oud & nieuw weg in Drenthe — rust in plaats van vuurwerk", category: "Blog", priority: "midden", keyword: "oud en nieuw weg nederland" },
-      { id: "no7",  title: "Blog 44: Sterren kijken in Drenthe — minste lichtvervuiling NL", category: "Blog", priority: "hoog", keyword: "sterrenhemel drenthe" },
-      { id: "no8",  title: "Blog 45: De perfecte winterdag vanuit je lodge (uur-voor-uur)", category: "Blog", priority: "hoog", keyword: "winterweekend drenthe" },
-      { id: "no9",  title: "Blog 46: Cadeau-idee: verblijf weggeven (cadeaubon)", category: "Blog", priority: "hoog", keyword: "overnachting cadeau drenthe" },
-      { id: "no10", title: "Blog 47: Inpaklijst voor een winterweekend in de natuur", category: "Blog", priority: "midden", keyword: "inpaklijst weekend weg" },
-      { id: "no11", title: "Blog 48: Romantisch winterweekend met privé hottub in de sneeuw", category: "Blog", priority: "kritiek", keyword: "romantisch winterweekend hottub" },
-      { id: "no12", title: "Instagram + Facebook profiel volledig inrichten (12 startfoto's)", category: "Social", priority: "hoog", note: "Lodge + natuur + sfeer + eigenaar" },
-      { id: "no13", title: "Zoover + Vakantiebeoordeling listing aanmaken", category: "Lokaal", priority: "midden" },
-      { id: "no14", title: "Email 6: 'Opening over 6 weken' + vroegboekvoordeel activeren voor lijst", category: "Email", priority: "kritiek" },
-      { id: "no15", title: "Bron-images comprimeren: lodge-eik.jpg en lodge-heide.jpg naar <400 KB", category: "CRO", priority: "hoog", note: "Nu 3,3–3,5 MB — vertraagt laadtijd op mobiel" },
-      { id: "no16", title: "Persericht sturen naar RTV Drenthe, regionale kranten, reisbloggers", category: "Lokaal", priority: "hoog" },
-      { id: "no17", title: "aggregateRating in schema klaarzetten (activeer zodra 5+ echte reviews)", category: "Analytics", priority: "midden" },
+      { id: "n26-1",  title: "Indicatieve totaalprijs tonen zodra data en lodge gekozen zijn", category: "CRO", priority: "kritiek", note: "'Op aanvraag' is waarschijnlijk het duurste woord op de website. Het aanvraagmodel mag blijven — de prijs mag alleen niet meer achter het formulier verstopt zitten." },
+      { id: "n26-2",  title: "Reactietijd naar < 2 uur en dat ook communiceren", category: "CRO", priority: "kritiek", note: "Nu 'binnen 24 uur'. Een aanvrager die 24 uur wacht, heeft vaak al elders geboekt. Geen websitewijziging, wel vermoedelijk de hoogste omzetimpact per bestede euro." },
+      { id: "n26-3",  title: "CTR-titles voor de drie échte CTR-problemen", category: "LP", priority: "hoog", note: "/blog/kanovaren-drentsche-aa (93 vertoningen, positie 9,8, nul klikken), /blog/een-dag-in-norg (41, 9,4, nul) en /de/ferienhaus-mit-whirlpool-drenthe (15, 9,5, nul). Dit zijn de enige pagina's waar de snippet het probleem is en niet de positie." },
+      { id: "n26-4",  title: "/vakantiehuis-assen versterken + TT-week toevoegen", category: "LP", priority: "hoog", keyword: "vakantiehuis assen", note: "Beste commerciële positie van de site (23,4) en hoogste winbaarheid (0,80). Wat ontbreekt is interne autoriteit, niet tekst. De TT-week is de grootste vraagpiek van de regio en staat nergens op de site." },
+      { id: "n26-5",  title: "/overnachten-veenhuizen toespitsen op overnachten, niet op hotels", category: "LP", priority: "hoog", keyword: "overnachten in veenhuizen", note: "De enige echte quick win: query staat op 15,2, pagina gemiddeld op 33,3. De pagina wordt ook getoond op 65 vertoningen hotelintentie die nooit gewonnen worden." },
+      { id: "n26-6",  title: "Aanmelden bij de listicles die de SERP's bezetten", category: "Lokaal", priority: "kritiek", note: "origineelovernachten.nl, bijzonderplekje.nl, naturescanner.nl, luxevakantieplekjes.nl, drenthe.nl. Vijf van de zes commerciële SERP's bestaan voor 60–100% uit portals — die win je door erin te staan, niet ertegen. 'Nieuwe lodges, opening januari 2027' is precies hun verhaal, en dat venster sluit." },
+      { id: "n26-7",  title: "GBP volledig invullen: foto's, faciliteiten, openingsdatum, Q&A", category: "Lokaal", priority: "hoog" },
+      { id: "n26-8",  title: "Blog: 'Kerst en oud & nieuw in Drenthe — waar overnacht je?'", category: "Blog", priority: "hoog", keyword: "kerst drenthe overnachten" },
+      { id: "n26-9",  title: "Blog: 'Sauna of jacuzzi — wat kiest u?'", category: "Blog", priority: "hoog", keyword: "huisje met sauna en jacuzzi drenthe" },
+      { id: "n26-10", title: "Eerste maanddashboard opleveren", category: "Analytics", priority: "hoog", note: "Beoordeel op positieverbetering, niet op verkeer. De quick-win-laag bestaat hier niet: bijna alles commercieels staat op positie 40+, dus klikgroei komt pas in maand 3–6." },
+      { id: "n26-11", title: "Besluit hondcluster: echte propositie of loslaten", category: "CRO", priority: "midden", note: "Cluster staat op positie 72,9, de slechtste van de site, met 74 vertoningen. 'Honden in overleg welkom' wint geen SERP van concurrenten die omheinde tuinen adverteren. Advies: loslaten tenzij de omheinde tuin er echt komt." },
+      { id: "n26-12", title: "hreflang op paginaniveau toevoegen (nu alleen in de sitemap)", category: "Techniek", priority: "midden" },
     ],
   },
   {
     id: "dec-2026",
     label: "December 2026",
     sublabel: "🎉 Opening 1 januari 2027",
-    phase: "Opening — Lancering & eerste gasten",
+    phase: "Opening",
     tasks: [
-      { id: "de1",  title: "Opening-blog live: 'Huis ter Huynen opent — dit kun je verwachten'", category: "Blog", priority: "kritiek", keyword: "boutique lodge drenthe" },
-      { id: "de2",  title: "Blog 50: Een kijkje in Lodge de Heide", category: "Blog", priority: "kritiek", keyword: "lodge de heide drenthe" },
-      { id: "de3",  title: "Blog 51: Een kijkje in Lodge de Eik", category: "Blog", priority: "kritiek", keyword: "lodge de eik drenthe" },
-      { id: "de4",  title: "Blog 52: Zo werkt direct boeken bij Huis ter Huynen", category: "Blog", priority: "hoog", keyword: "direct boeken zonder booking.com" },
-      { id: "de5",  title: "Blog 53: Onze 5 favoriete plekken in de omgeving van Zeijen", category: "Blog", priority: "hoog", keyword: "omgeving zeijen" },
-      { id: "de6",  title: "Blog 54: Duurzaam op vakantie — EV-laden en natuur bij de lodge", category: "Blog", priority: "midden", keyword: "duurzaam vakantiehuis drenthe" },
-      { id: "de7",  title: "Blog 55: Vroegboekvoordeel 2027 — wat het je oplevert", category: "Blog", priority: "hoog", keyword: "vroegboekkorting drenthe" },
-      { id: "de8",  title: "Blog 56: Veelgestelde vragen over je verblijf — eerlijk beantwoord", category: "Blog", priority: "hoog", keyword: "vakantiehuis drenthe faq" },
-      { id: "de9",  title: "LP #19 bouwen: /directe-boeking (geen-OTA USP-pagina)", category: "LP", priority: "hoog", keyword: "direct boeken voordeel" },
-      { id: "de10", title: "GBP: openingstijden activeren, eerste foto's + openingsbericht", category: "Lokaal", priority: "kritiek" },
-      { id: "de11", title: "Email opening: 'We zijn open!' sturen naar volledige aanmeldlijst", category: "Email", priority: "kritiek" },
-      { id: "de12", title: "Eerste gasten vragen om review (dag 3 van verblijf of bij checkout)", category: "Lokaal", priority: "kritiek" },
-      { id: "de13", title: "Review-automatisering activeren (email 14d na vertrek)", category: "Email", priority: "kritiek" },
-      { id: "de14", title: "Sitemap bijwerken met alle live landingspagina's", category: "Analytics", priority: "hoog" },
-      { id: "de15", title: "Instagram: dagelijkse Stories week 1 (opening-countdown en eerste gasten)", category: "Social", priority: "hoog" },
+      { id: "d26-1", title: "Blog: Valentijn-artikel publiceren", category: "Blog", priority: "kritiek", keyword: "romantisch weekendje weg drenthe", note: "Drie maanden vóór de piek live. Google heeft 8–12 weken nodig om te indexeren en te positioneren." },
+      { id: "d26-2", title: "Blog: 'De eerste gasten — hoe De Heide en De Eik zijn geworden'", category: "Blog", priority: "hoog" },
+      { id: "d26-3", title: "Nieuwsbrief: opening en eerste beschikbaarheid", category: "Email", priority: "kritiek" },
+      { id: "d26-4", title: "Prijsstrategie kerst en oud & nieuw vaststellen", category: "Revenue", priority: "kritiek", note: "Piektarief, minimaal 3–4 nachten." },
+      { id: "d26-5", title: "Boekingsflow eindtest vóór 1 januari", category: "CRO", priority: "kritiek" },
+      { id: "d26-6", title: "GBP-status op 'geopend' zetten", category: "Lokaal", priority: "hoog" },
+      { id: "d26-7", title: "Nulmeting vastleggen vóór opening", category: "Analytics", priority: "hoog", note: "Vertoningen, CTR, gewogen positie en het aantal niet-merkgebonden klikken (staat nu op nul)." },
+      { id: "d26-8", title: "Valentijn-tarief instellen voor 12–16 februari", category: "Revenue", priority: "hoog" },
     ],
   },
   {
     id: "jan-2027",
     label: "Januari 2027",
-    sublabel: "Laagseizoen vullen + retentie",
-    phase: "Post-Opening — Consolidatie",
+    sublabel: "Wellness, winterstilte, eerste gasten",
+    phase: "Groei 2027",
     tasks: [
-      { id: "ja1",  title: "LP #20 bouwen (DE): /de/luxus-lodge-drenthe", category: "LP", priority: "hoog", keyword: "luxus lodge drenthe" },
-      { id: "ja2",  title: "Blog 57: Januari in Drenthe — waarom de stilte nu het mooist is", category: "Blog", priority: "hoog", keyword: "januari weekend weg" },
-      { id: "ja3",  title: "Blog 58: Nieuwjaarsvoornemen: vaker de natuur in", category: "Blog", priority: "midden", keyword: "natuur weekend nederland" },
-      { id: "ja4",  title: "Blog 59: De beste winterwandelingen rond de Drentsche Aa", category: "Blog", priority: "hoog", keyword: "winterwandeling drentsche aa" },
-      { id: "ja5",  title: "Blog 60: Wat eet en drink je lokaal in Drenthe — streekproducten", category: "Blog", priority: "midden", keyword: "streekproducten drenthe" },
-      { id: "ja6",  title: "Blog 61: Workation in Drenthe — werken vanuit een lodge", category: "Blog", priority: "midden", keyword: "workation nederland" },
-      { id: "ja7",  title: "Blog 62: Hoe wij de privé hottub het hele jaar warm houden", category: "Blog", priority: "hoog", keyword: "privé hottub" },
-      { id: "ja8",  title: "Blog 63: Verjaardag vieren in een vakantiehuis met privé hottub", category: "Blog", priority: "hoog", keyword: "verjaardag weekend weg" },
-      { id: "ja9",  title: "Blog 64: De geschiedenis van Zeijen als brinkdorp", category: "Blog", priority: "midden", keyword: "zeijen" },
-      { id: "ja10", title: "Retentie-email sturen naar eerste gasten (herboek-aanbieding)", category: "Email", priority: "hoog" },
-      { id: "ja11", title: "Eerste SEO-audit: welke LP's ranken? Top-3 verdiepen.", category: "Analytics", priority: "kritiek", note: "6 weken na live = eerste data zichtbaar in GSC" },
-      { id: "ja12", title: "Google Ads A/B test starten (klein budget €5–10/dag op hottub-keyword)", category: "Betaald", priority: "midden", note: "Alleen starten als organisch bewijs beschikbaar is" },
-      { id: "ja13", title: "Eerste kwartaalbrief versturen (lente-aankondiging)", category: "Email", priority: "hoog" },
-      { id: "ja14", title: "Zoover + Tripadvisor: reageer op alle reviews (ook als er 0 zijn)", category: "Lokaal", priority: "hoog" },
+      { id: "j27-1", title: "Eerste bezettingsrapportage: nachten, ADR, bron per boeking", category: "Revenue", priority: "kritiek" },
+      { id: "j27-2", title: "Reviewverzoek automatiseren: 14 dagen na vertrek", category: "CRO", priority: "kritiek", note: "Reviews zijn geen bijzaak voor lokale accommodatiezoekopdrachten. Zonder reviews schuift de hele groeicurve 3–6 maanden op." },
+      { id: "j27-3", title: "Eerste Google-reviews naar het GBP leiden", category: "Lokaal", priority: "kritiek" },
+      { id: "j27-4", title: "Blog: 'Wellness in januari — waarom de stilste maand de beste is'", category: "Blog", priority: "hoog", keyword: "wellness huisje drenthe" },
+      { id: "j27-5", title: "Blog: 'Wandelen in de winter rond de Drentsche Aa'", category: "Blog", priority: "midden" },
+      { id: "j27-6", title: "Funnel meten nu er echte sessies zijn: sessie → CTA → aanvraag → boeking", category: "Analytics", priority: "hoog", note: "Vervang de aannames uit het rapport door eigen cijfers. Doel samengesteld: 1,5% sessie → boeking." },
+      { id: "j27-7", title: "Tarieven maart en april vaststellen", category: "Revenue", priority: "hoog" },
     ],
   },
   {
     id: "feb-2027",
     label: "Februari 2027",
-    sublabel: "Valentijn + voorjaar",
-    phase: "Post-Opening — Seizoenspieken benutten",
+    sublabel: "Valentijn — hoogste ADR-kans van Q1",
+    phase: "Groei 2027",
     tasks: [
-      { id: "fe1",  title: "Blog 65: Valentijn in Drenthe — romantisch weekend met privé hottub (LIVE VÓÓR 1 FEB)", category: "Blog", priority: "kritiek", keyword: "valentijn weekend weg", note: "Zoekpiek is eind januari — te laat is te laat" },
-      { id: "fe2",  title: "Blog 66: Het ultieme romantische arrangement zelf samenstellen", category: "Blog", priority: "hoog", keyword: "romantisch arrangement drenthe" },
-      { id: "fe3",  title: "Blog 67: Voorjaar in Drenthe — wanneer ontwaakt de natuur?", category: "Blog", priority: "hoog", keyword: "voorjaar drenthe" },
-      { id: "fe4",  title: "Blog 68: Vogels spotten langs de Drentsche Aa", category: "Blog", priority: "midden", keyword: "vogels kijken drenthe" },
-      { id: "fe5",  title: "Blog 69: Wellnessarrangement — sauna + hottub + massage in de buurt", category: "Blog", priority: "hoog", keyword: "wellnessarrangement drenthe" },
-      { id: "fe6",  title: "Blog 70: Een weekend zonder telefoon — zo doe je het echt", category: "Blog", priority: "hoog", keyword: "digitale detox weekend" },
-      { id: "fe7",  title: "Blog 71: Vakantiehuis voor 2 personen in Drenthe", category: "Blog", priority: "hoog", keyword: "vakantiehuis 2 personen drenthe" },
-      { id: "fe8",  title: "Blog 72: De mooiste zonsondergangen op de Drentse heide", category: "Blog", priority: "midden", keyword: "zonsondergang heide drenthe" },
-      { id: "fe9",  title: "Email Valentijn-campagne: aanbod voor lopende nieuwsbrieflijst", category: "Email", priority: "kritiek" },
-      { id: "fe10", title: "aggregateRating in schema activeren (als 5+ echte reviews beschikbaar)", category: "Analytics", priority: "hoog" },
-      { id: "fe11", title: "LP (DE) #21: /de/wellness-urlaub-drenthe", category: "LP", priority: "midden", keyword: "wellnessurlaub drenthe niederlande" },
+      { id: "f27-1", title: "Valentijn-piektarief actief, minimaal 2 nachten", category: "Revenue", priority: "kritiek" },
+      { id: "f27-2", title: "aggregateRating-schema toevoegen zodra er ≥5 echte reviews zijn", category: "Techniek", priority: "hoog", note: "Sterren in de SERP zijn de sterkste CTR-hefboom die er is. Nooit eerder toevoegen, nooit verzinnen." },
+      { id: "f27-3", title: "'Wanneer bloeit de heide in Drenthe' actualiseren", category: "Blog", priority: "hoog", keyword: "wanneer bloeit de heide in drenthe", note: "Staat op positie 10,9. Met een jaarlijkse update met actuele bloeiverwachting naar de top 3 te brengen." },
+      { id: "f27-4", title: "Blog: Pasen en meivakantie in Drenthe", category: "Blog", priority: "hoog", note: "Drie maanden vóór de piek." },
+      { id: "f27-5", title: "Drie fietsartikelen samenvoegen tot één sterke gids", category: "Blog", priority: "midden" },
+      { id: "f27-6", title: "180-dagen evaluatie tegen de forecast", category: "Analytics", priority: "hoog", note: "Doel op dit punt: 8.000–12.000 vertoningen per maand, CTR 2,8%, commerciële positie 22–28." },
     ],
   },
   {
     id: "mrt-2027",
     label: "Maart 2027",
-    sublabel: "Fiets- & wandelseizoen",
-    phase: "Post-Opening — Lente aanloop",
+    sublabel: "Voorjaar & voorbereiding TT",
+    phase: "Groei 2027",
     tasks: [
-      { id: "mr1",  title: "Blog 73: Fietsen in Drenthe — complete knooppuntengids 2027", category: "Blog", priority: "kritiek", keyword: "fietsen in drenthe" },
-      { id: "mr2",  title: "Blog 74: Wandelroutes Drenthe — 15 routes vergeleken", category: "Blog", priority: "kritiek", keyword: "wandelroutes drenthe" },
-      { id: "mr3",  title: "Blog 75: Met kinderen op pad in Drenthe — 8 leuke tochten", category: "Blog", priority: "hoog", keyword: "kinderen drenthe activiteiten" },
-      { id: "mr4",  title: "Blog 76: Hondsrug fietsroute — 45 km over de stuwwal", category: "Blog", priority: "hoog", keyword: "hondsrug fietsroute" },
-      { id: "mr5",  title: "Blog 77: Lente op de heide — van kaal naar eerste kleur", category: "Blog", priority: "hoog", keyword: "heide drenthe lente" },
-      { id: "mr6",  title: "Blog 78: Picknickplekken in de Drentse natuur (met GPS-pins)", category: "Blog", priority: "midden", keyword: "picknick drenthe" },
-      { id: "mr7",  title: "Blog 79: Vakantiehuis met sauna in Drenthe", category: "Blog", priority: "hoog", keyword: "vakantiehuis met sauna drenthe" },
-      { id: "mr8",  title: "Blog 80: Een lang weekend Drenthe — 3-dagenroute", category: "Blog", priority: "hoog", keyword: "lang weekend drenthe" },
-      { id: "mr9",  title: "Instagram Reels: heide-omgeving in voorjaar (3 Reels)", category: "Social", priority: "midden" },
-      { id: "mr10", title: "Lente kwartaalbrief sturen: zomerboekingen activeren", category: "Email", priority: "hoog" },
-      { id: "mr11", title: "SEO-check: welke artikelen converteren? Optimaliseer top-3 CTA's", category: "Analytics", priority: "hoog" },
-      { id: "mr12", title: "Google Ads review: CPA en ROAS in orde? Budget aanpassen", category: "Betaald", priority: "midden" },
+      { id: "m27-1", title: "Blog: TT Assen — waar overnacht je tijdens de TT-week?", category: "Blog", priority: "hoog", keyword: "overnachten tt assen", note: "Grootste vraagpiek van de regio, drie maanden vooruit gepubliceerd." },
+      { id: "m27-2", title: "TT-week tarief instellen", category: "Revenue", priority: "kritiek", note: "Accommodaties binnen 25 km van het circuit rekenen die week aanzienlijk meer." },
+      { id: "m27-3", title: "VVV Drenthe en Marketing Drenthe actualiseren", category: "Lokaal", priority: "hoog" },
+      { id: "m27-4", title: "Blog: voorjaarswandelingen vanuit Zeijen", category: "Blog", priority: "midden" },
+      { id: "m27-5", title: "A/B-test op de primaire CTA", category: "CRO", priority: "hoog", note: "Toets 'Bekijk beschikbaarheid' tegen 'Bekijk vrije weekenden' op de romantiekpagina." },
+      { id: "m27-6", title: "Maanddashboard", category: "Analytics", priority: "midden" },
     ],
   },
   {
     id: "apr-2027",
     label: "April 2027",
-    sublabel: "Pasen, meivakantie & TT",
-    phase: "Post-Opening — Druk voorseizoen",
+    sublabel: "Pasen & voorjaarsbloei",
+    phase: "Groei 2027",
     tasks: [
-      { id: "ap1",  title: "Blog 81: Paasweekend in Drenthe — 5 originele ideeën (LIVE VÓÓR PASEN)", category: "Blog", priority: "hoog", keyword: "paasweekend drenthe" },
-      { id: "ap2",  title: "Blog 82: Meivakantie in Drenthe met het gezin", category: "Blog", priority: "hoog", keyword: "meivakantie drenthe" },
-      { id: "ap3",  title: "Blog 83: TT Assen 2027 — overnachten tijdens het MotoGP-weekend", category: "Blog", priority: "hoog", keyword: "overnachten tt assen" },
-      { id: "ap4",  title: "Blog 84: Bloesem en lammetjes — lente-activiteiten in Drenthe", category: "Blog", priority: "midden", keyword: "lente drenthe activiteiten" },
-      { id: "ap5",  title: "Blog 85: De mooiste terrassen rond Zeijen en Norg", category: "Blog", priority: "midden", keyword: "terras drenthe" },
-      { id: "ap6",  title: "Blog 86: Fietsen langs de hunebedden — Hunebedenroute compleet", category: "Blog", priority: "midden", keyword: "hunebedenroute fietsen" },
-      { id: "ap7",  title: "Blog 87: Vakantiehuis Assen — waarom Zeijen de slimste keuze is", category: "Blog", priority: "hoog", keyword: "vakantiehuis assen" },
-      { id: "ap8",  title: "Blog 88: Een midweek weg in Drenthe — rustiger én voordeliger", category: "Blog", priority: "midden", keyword: "midweek drenthe" },
-      { id: "ap9",  title: "Zomer-email campagne: 'Heide bloeit al snel — boek je zomerweekend'", category: "Email", priority: "hoog" },
-      { id: "ap10", title: "Capaciteitscheck: zijn de zomermaanden voldoende gevuld?", category: "Analytics", priority: "hoog" },
+      { id: "a27-1", title: "Paastarief en minimumverblijf instellen", category: "Revenue", priority: "kritiek" },
+      { id: "a27-2", title: "Heide-content actualiseren voor het seizoen", category: "Blog", priority: "hoog", note: "Vier maanden vóór de augustuspiek. /heide-drenthe staat al op positie 9,7 — dit is uw enige piek met een top-10-positie." },
+      { id: "a27-3", title: "Seizoensbrief voorjaar naar de nieuwsbrieflijst", category: "Email", priority: "hoog" },
+      { id: "a27-4", title: "Lokale samenwerkingen: fietsverhuur, restaurants, wellness in de buurt", category: "Lokaal", priority: "midden" },
+      { id: "a27-5", title: "Maanddashboard", category: "Analytics", priority: "midden" },
     ],
   },
   {
     id: "mei-2027",
     label: "Mei 2027",
-    sublabel: "Evergreen update + zomeraanloop",
-    phase: "Post-Opening — Zomerpiek en SEO-consolidatie",
+    sublabel: "Hemelvaart & Pinksteren — voorjaarspiek",
+    phase: "Groei 2027",
     tasks: [
-      { id: "me1",  title: "Evergreen update: 'Bloeiende heide Drenthe 2027' (jaarlijkse herziening)", category: "Blog", priority: "kritiek", keyword: "paarse heide drenthe", note: "Datum + info bijwerken vóór aug piek" },
-      { id: "me2",  title: "Blog 82: Zomervakantie in Drenthe 2027 — complete planningsgids", category: "Blog", priority: "hoog", keyword: "zomervakantie drenthe" },
-      { id: "me3",  title: "Blog 83: Drenthe bij slecht weer — 10 leuke uitjes", category: "Blog", priority: "midden", keyword: "drenthe slecht weer" },
-      { id: "me4",  title: "Blog 84: Wandelen in het Dwingelderveld", category: "Blog", priority: "midden", keyword: "wandelen dwingelderveld" },
-      { id: "me5",  title: "Blog 85: Vakantiehuis Norg — natuur, bos en rust", category: "Blog", priority: "hoog", keyword: "vakantiehuis norg" },
-      { id: "me6",  title: "Blog 86: Romantisch verblijf plannen — checklist voor koppels", category: "Blog", priority: "hoog", keyword: "romantisch weekend checklist" },
-      { id: "me7",  title: "6-maanden SEO-audit: top-10 rankende artikelen analyseren en verdiepen", category: "Analytics", priority: "kritiek", note: "Meest impactvolle maandelijkse taak na 6 maanden live" },
-      { id: "me8",  title: "Top-3 converterende LP's: CTA + copy optimaliseren op basis van data", category: "CRO", priority: "kritiek" },
-      { id: "me9",  title: "Zomer kwartaalbrief: heidebloei preview + resterende beschikbaarheid", category: "Email", priority: "hoog" },
-      { id: "me10", title: "Betaalde campagne evalueren: ROAS ≥ 3? Doorrijden. Minder? Pauzeren.", category: "Betaald", priority: "hoog" },
+      { id: "my27-1", title: "Piektarief mei, minimaal 3 nachten", category: "Revenue", priority: "kritiek" },
+      { id: "my27-2", title: "Zomer- en fietscontent live zetten", category: "Blog", priority: "hoog" },
+      { id: "my27-3", title: "Halfjaarevaluatie: bezetting, ADR, aandeel organische boekingen", category: "Analytics", priority: "hoog", note: "Leidende KPI's: organisch toegeschreven nachten, aanvraag→boeking-ratio, ADR." },
+      { id: "my27-4", title: "Herhaalgasten-actie voor het najaar", category: "Email", priority: "midden" },
+    ],
+  },
+  {
+    id: "jun-2027",
+    label: "Juni 2027",
+    sublabel: "Zomer, fietsen & TT-week",
+    phase: "Groei 2027",
+    tasks: [
+      { id: "jn27-1", title: "TT-week piektarief actief", category: "Revenue", priority: "kritiek" },
+      { id: "jn27-2", title: "Heide-artikel live vóór 1 juli, met actuele bloeiverwachting", category: "Blog", priority: "kritiek", keyword: "wanneer bloeit de heide in drenthe" },
+      { id: "jn27-3", title: "Seizoensbrief zomer", category: "Email", priority: "hoog" },
+      { id: "jn27-4", title: "Maanddashboard", category: "Analytics", priority: "midden" },
+    ],
+  },
+  {
+    id: "jul-2027",
+    label: "Juli 2027",
+    sublabel: "Hoogseizoen",
+    phase: "Groei 2027",
+    tasks: [
+      { id: "jl27-1", title: "Hoogseizoentarief, sturen op weekverblijven", category: "Revenue", priority: "hoog" },
+      { id: "jl27-2", title: "Nazomer- en septembercontent vooruit publiceren", category: "Blog", priority: "hoog" },
+      { id: "jl27-3", title: "Reviewverzoeken opvoeren nu de bezetting piekt", category: "CRO", priority: "midden" },
+      { id: "jl27-4", title: "Maanddashboard", category: "Analytics", priority: "midden" },
+    ],
+  },
+  {
+    id: "aug-2027",
+    label: "Augustus 2027",
+    sublabel: "Heidebloei — sterkste natuurlijke piek",
+    phase: "Groei 2027",
+    tasks: [
+      { id: "au27-1", title: "Heidebloei-piektarief actief", category: "Revenue", priority: "kritiek" },
+      { id: "au27-2", title: "Heide-content wekelijks actueel houden tijdens de bloei", category: "Blog", priority: "kritiek" },
+      { id: "au27-3", title: "Heide-PR richting regionale media en reisredacties", category: "Lokaal", priority: "hoog" },
+      { id: "au27-4", title: "Maanddashboard", category: "Analytics", priority: "midden" },
+    ],
+  },
+  {
+    id: "sep-2027",
+    label: "September 2027",
+    sublabel: "Nazomer — beste marge/bezetting-verhouding",
+    phase: "Groei 2027",
+    tasks: [
+      { id: "s27-1", title: "Nazomertarief: midden-hoog vasthouden", category: "Revenue", priority: "hoog" },
+      { id: "s27-2", title: "Herfst- en wellnesscontent live", category: "Blog", priority: "hoog" },
+      { id: "s27-3", title: "Twaalfmaands evaluatie tegen de forecast", category: "Analytics", priority: "hoog", note: "Doel eind 2027: 18.000–25.000 vertoningen per maand, CTR 3,5%, commerciële positie 12–18." },
+      { id: "s27-4", title: "Seizoensbrief najaar", category: "Email", priority: "hoog" },
+    ],
+  },
+  {
+    id: "okt-2027",
+    label: "Oktober 2027",
+    sublabel: "Herfst & wellness",
+    phase: "Groei 2027",
+    tasks: [
+      { id: "o27-1", title: "Kerst- en oud & nieuw-content live", category: "Blog", priority: "hoog", note: "Drie maanden vóór de piek." },
+      { id: "o27-2", title: "Kersttarief instellen, minimaal 3–4 nachten", category: "Revenue", priority: "kritiek" },
+      { id: "o27-3", title: "Conversie-optimalisatie op basis van negen maanden echte funneldata", category: "CRO", priority: "hoog" },
+      { id: "o27-4", title: "Maanddashboard", category: "Analytics", priority: "midden" },
+    ],
+  },
+  {
+    id: "nov-2027",
+    label: "November 2027",
+    sublabel: "Laagseizoen — sturen op verblijfsduur",
+    phase: "Groei 2027",
+    tasks: [
+      { id: "n27-1", title: "Laagseizoen: actief sturen op 2- en 3-nachtenpakketten", category: "Revenue", priority: "hoog" },
+      { id: "n27-2", title: "Wellness- en wintercontent live", category: "Blog", priority: "hoog" },
+      { id: "n27-3", title: "Citaties en NAP-consistentie controleren", category: "Lokaal", priority: "midden" },
+      { id: "n27-4", title: "Jaarplan 2028 voorbereiden", category: "Analytics", priority: "hoog" },
+    ],
+  },
+  {
+    id: "dec-2027",
+    label: "December 2027",
+    sublabel: "Kerst, winter & jaarevaluatie",
+    phase: "Groei 2027",
+    tasks: [
+      { id: "d27-1", title: "Kerst- en oud & nieuw-piektarief actief", category: "Revenue", priority: "kritiek" },
+      { id: "d27-2", title: "Jaarevaluatie 2027: bezetting, ADR, omzet per organische bezoeker", category: "Analytics", priority: "kritiek", note: "Targetscenario: 62% bezetting, 453 nachten, ADR €210, €95.100 omzet, 45% organisch/direct." },
+      { id: "d27-3", title: "Valentijn 2028 vooruit publiceren", category: "Blog", priority: "hoog" },
+      { id: "d27-4", title: "Doelen 2028 vaststellen", category: "Revenue", priority: "hoog" },
     ],
   },
 ];
 
-const STORAGE_KEY = "hth_marketing_done_v1";
+/** Oude opslagplek. De voortgang staat nu in de database (marketing_task_status),
+ *  zodat afvinken niet meer per browser is. Deze sleutel wordt bij de eerste keer
+ *  laden nog één keer uitgelezen om bestaande vinkjes over te zetten. */
+const LEGACY_STORAGE_KEY = "hth_marketing_done_v1";
 
-function loadDone(): Set<string> {
-  if (typeof window === "undefined") return new Set();
+function readLegacyDone(): string[] {
+  if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch { return new Set(); }
+    const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === "string") : [];
+  } catch { return []; }
 }
 
-function saveDone(done: Set<string>) {
+async function postAction(payload: Record<string, unknown>): Promise<boolean> {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...done]));
-  } catch {}
+    const res = await fetch("/api/admin/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    return res.ok && !data.error;
+  } catch { return false; }
 }
 
 export function MarketingTab() {
@@ -342,28 +394,92 @@ export function MarketingTab() {
   const [filterPrio, setFilterPrio] = useState<Priority | "alle">("alle");
   const [showOnlyOpen, setShowOnlyOpen] = useState(false);
   const [previewTask, setPreviewTask] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  // Spiegelt `done` zodat bulkToggle bij een fout exact kan terugdraaien
+  // zonder van `done` af te hangen (en dus zonder telkens nieuw te zijn).
+  const doneRef = useRef(done);
+  useEffect(() => { doneRef.current = done; }, [done]);
 
   useEffect(() => {
-    setDone(loadDone());
+    let cancelled = false;
+
+    (async () => {
+      let ids: string[] = [];
+      try {
+        const res = await fetch("/api/admin/data?table=marketing_tasks");
+        const data = await res.json();
+        if (Array.isArray(data.data)) ids = data.data;
+      } catch {
+        // Netwerkfout: val terug op wat er lokaal nog staat, zodat het scherm
+        // niet ten onrechte alles als open toont.
+        ids = readLegacyDone();
+      }
+
+      // Eenmalige overzet: vinkjes die alleen nog in deze browser staan.
+      const legacy = readLegacyDone().filter(id => !ids.includes(id));
+      if (legacy.length > 0 && await postAction({ action: "bulk_marketing_tasks", ids: legacy, done: true })) {
+        ids = [...ids, ...legacy];
+      }
+
+      if (cancelled) return;
+      setDone(new Set(ids));
+      setLoading(false);
+    })();
+
     // Open de huidige kalendermaand standaard
     const now = new Date();
     const monthMap: Record<string, string> = {
-      "2026-6": "jun-2026", "2026-7": "jul-2026", "2026-8": "aug-2026",
-      "2026-9": "sep-2026", "2026-10": "okt-2026", "2026-11": "nov-2026",
-      "2026-12": "dec-2026", "2027-1": "jan-2027", "2027-2": "feb-2027",
-      "2027-3": "mrt-2027", "2027-4": "apr-2027", "2027-5": "mei-2027",
+      "2026-6": "jun-2026",  "2026-7": "jul-2026",  "2026-8": "aug-2026",
+      "2026-9": "sep-2026",  "2026-10": "okt-2026", "2026-11": "nov-2026",
+      "2026-12": "dec-2026", "2027-1": "jan-2027",  "2027-2": "feb-2027",
+      "2027-3": "mrt-2027",  "2027-4": "apr-2027",  "2027-5": "mei-2027",
+      "2027-6": "jun-2027",  "2027-7": "jul-2027",  "2027-8": "aug-2027",
+      "2027-9": "sep-2027",  "2027-10": "okt-2027", "2027-11": "nov-2027",
+      "2027-12": "dec-2027",
     };
     const key = `${now.getFullYear()}-${now.getMonth() + 1}`;
-    setActiveMonth(monthMap[key] ?? "jun-2026");
+    setActiveMonth(monthMap[key] ?? MONTHS[0].id);
+
+    return () => { cancelled = true; };
   }, []);
 
-  const toggle = useCallback((id: string) => {
+  const toggle = useCallback(async (id: string) => {
+    let markAsDone = false;
     setDone(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      saveDone(next);
+      if (next.has(id)) next.delete(id); else { next.add(id); markAsDone = true; }
       return next;
     });
+    setSaveError(null);
+
+    const ok = await postAction({ action: "toggle_marketing_task", id, done: markAsDone });
+    if (!ok) {
+      // Opslaan mislukt: zet het vinkje terug, anders toont het scherm iets
+      // anders dan er in de database staat.
+      setDone(prev => {
+        const next = new Set(prev);
+        if (markAsDone) next.delete(id); else next.add(id);
+        return next;
+      });
+      setSaveError("Opslaan mislukt — controleer je verbinding en probeer opnieuw.");
+    }
+  }, []);
+
+  const bulkToggle = useCallback(async (ids: string[], markAsDone: boolean) => {
+    if (ids.length === 0) return;
+    const before = doneRef.current;
+    setDone(prev => {
+      const next = new Set(prev);
+      ids.forEach(id => { if (markAsDone) next.add(id); else next.delete(id); });
+      return next;
+    });
+    setSaveError(null);
+
+    if (!(await postAction({ action: "bulk_marketing_tasks", ids, done: markAsDone }))) {
+      setDone(before);
+      setSaveError("Opslaan mislukt — controleer je verbinding en probeer opnieuw.");
+    }
   }, []);
 
   const totalTasks = MONTHS.reduce((s, m) => s + m.tasks.length, 0);
@@ -396,8 +512,41 @@ export function MarketingTab() {
           Marketing Dashboard
         </h2>
         <p style={{ fontSize: 13, color: C.muted, marginBottom: 16 }}>
-          SEO · Content · CRO · Lokale SEO · Email — juni 2026 t/m mei 2027
+          SEO · Content · CRO · Lokale SEO · Revenue — juni 2026 t/m december 2027
         </p>
+
+        {/* Waar dit plan op gebaseerd is — de vier cijfers die de prioriteiten bepalen.
+            De volledige analyse staat in seo-cro-revenue-plan-2027.md in de repo. */}
+        <div style={{
+          background: "#FFF9ED", border: `1px solid ${C.gold}44`, borderLeft: `3px solid ${C.gold}`,
+          borderRadius: 10, padding: "14px 18px", marginBottom: 16,
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 8 }}>
+            Waarom deze volgorde — Search Console, augustus 2026
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
+            {[
+              { v: "92,3%", l: "van de vertoningen staat op positie 31 of lager" },
+              { v: "0", l: "niet-merkgebonden klikken — alle 8 zijn merknaam" },
+              { v: "754 / 249", l: "vertoningen op 'jacuzzi' tegen 'hottub'" },
+              { v: "0,25%", l: "CTR commerciële pagina's, tegen 3,31% voor de blogs" },
+            ].map((k, i) => (
+              <div key={i}>
+                <div style={{ fontSize: 17, fontWeight: 700, color: C.green, lineHeight: 1.2 }}>{k.v}</div>
+                <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.45, marginTop: 2 }}>{k.l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: C.muted, marginTop: 10, lineHeight: 1.55 }}>
+            Dit is een ranking-probleem, geen CTR-probleem: bij positie 50 verandert een betere title niets.
+            Daarom eerst consolideren en interne autoriteit bundelen, en pas daarna titels fijnslijpen.
+            De volledige analyse — keyword-opportunity-map, concurrentiebenchmark, omzetscenario's — staat in{" "}
+            <code style={{ background: "#00000008", padding: "1px 5px", borderRadius: 4, fontSize: 10.5 }}>
+              seo-cro-revenue-plan-2027.md
+            </code>{" "}
+            in de repository.
+          </div>
+        </div>
 
         {/* Totale voortgang */}
         <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "16px 20px" }}>
@@ -412,7 +561,17 @@ export function MarketingTab() {
               transition: "width 0.4s ease",
             }} />
           </div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 6 }}>{pct}% compleet</div>
+          <div style={{ fontSize: 12, color: C.muted, marginTop: 6 }}>
+            {loading ? "Voortgang laden…" : `${pct}% compleet`}
+          </div>
+          {saveError && (
+            <div role="alert" style={{
+              marginTop: 10, fontSize: 12, color: "#991B1B", background: "#FEE2E2",
+              border: "1px solid #FCA5A5", borderRadius: 8, padding: "8px 12px",
+            }}>
+              {saveError}
+            </div>
+          )}
         </div>
       </div>
 
@@ -645,21 +804,13 @@ export function MarketingTab() {
           {/* Bulk-acties */}
           <div style={{ display: "flex", gap: 8, marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
             <button
-              onClick={() => {
-                const next = new Set(done);
-                filteredTasks.forEach(t => next.add(t.id));
-                setDone(next); saveDone(next);
-              }}
+              onClick={() => bulkToggle(filteredTasks.map(t => t.id), true)}
               style={{ ...btn, background: C.card, color: C.text, fontSize: 12 }}
             >
               Alles afvinken (zichtbaar)
             </button>
             <button
-              onClick={() => {
-                const next = new Set(done);
-                filteredTasks.forEach(t => next.delete(t.id));
-                setDone(next); saveDone(next);
-              }}
+              onClick={() => bulkToggle(filteredTasks.map(t => t.id), false)}
               style={{ ...btn, background: C.card, color: C.muted, fontSize: 12 }}
             >
               Selectie herstellen
@@ -703,7 +854,7 @@ export function MarketingTab() {
             <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>Tips</div>
             <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.6 }}>
               • Klik op een taak om hem af te vinken<br />
-              • Status wordt lokaal opgeslagen (blijft staan na vernieuwen)<br />
+              • Voortgang staat in de database — ook zichtbaar op een andere computer<br />
               • Filter op categorie of prioriteit voor focus<br />
               • "Alleen open" toont uitsluitend niet-afgevinkte taken<br />
               • Voortgangsbalk per maand en totaal is realtime

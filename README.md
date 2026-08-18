@@ -134,3 +134,36 @@ public/
 1. Ga naar [mollie.com](https://mollie.com)
 2. Dashboard → Developers → API Keys
 3. Gebruik de **test** key (`test_...`) voor testen
+
+### Google Search Console
+
+Voedt de maandelijkse analyse in **admin → Marketing → Search Console**. De cron
+haalt op de 3e van elke maand de vorige volledige kalendermaand op, zodat de
+meetperiode altijd vaststaat.
+
+De Search Console API accepteert geen API-sleutel — er is een service-account
+nodig dat als gebruiker aan de property is toegevoegd:
+
+1. Maak in [Google Cloud Console](https://console.cloud.google.com) een project
+   en zet de **Google Search Console API** aan.
+2. IAM & Beheer → Serviceaccounts → maak er een aan en download de JSON-sleutel.
+3. Open [Search Console](https://search.google.com/search-console) →
+   Instellingen → Gebruikers en machtigingen → voeg het e-mailadres van het
+   service-account toe met rechten **Volledig**.
+4. Zet in Vercel de variabelen `GSC_CLIENT_EMAIL`, `GSC_PRIVATE_KEY` en
+   `GSC_SITE_URL`. De private key komt uit het veld `private_key` van de JSON;
+   laat de `\n`-tekens staan en zet de waarde tussen aanhalingstekens.
+5. Haal eenmalig de historie op — Search Console bewaart zestien maanden:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" \
+  "https://www.huisterhuynen.nl/api/cron/gsc-sync?maanden=16"
+```
+
+Zolang de variabelen ontbreken geeft de sync een nette 503 en toont de tab wat
+er nog moet gebeuren, in plaats van stil te falen.
+
+De rekenregels achter de analyse — clustering, boekingsintentie, winbaarheid —
+staan in `src/lib/gsc-analyse.ts` en zijn dezelfde als in
+`seo-cro-revenue-plan-2027.md`, zodat de maandcijfers vergelijkbaar blijven met
+het rapport.

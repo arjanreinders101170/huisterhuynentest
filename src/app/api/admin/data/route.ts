@@ -8,6 +8,8 @@ import { handlePricingGet, handlePricingPost } from "./_pricing";
 import { handleContentGet, handleContentPost } from "./_content";
 import { handleBookingRequestsGet, handleBookingRequestsPost } from "./_booking-requests";
 import { handleDiscountCodesGet, handleDiscountCodesPost } from "./_discount-codes";
+import { handleMarketingGet, handleMarketingPost } from "./_marketing";
+import { handleGscGet } from "./_gsc";
 
 export const runtime = "nodejs";
 
@@ -27,6 +29,8 @@ export async function GET(request: NextRequest) {
       (await handleContentGet(table)) ??
       (await handleBookingRequestsGet(table)) ??
       (await handleDiscountCodesGet(table)) ??
+      (await handleMarketingGet(table)) ??
+      (await handleGscGet(table)) ??
       (await handleMiscGet(table));
 
     return response ?? NextResponse.json({ error: "Onbekende tabel" }, { status: 400 });
@@ -92,6 +96,7 @@ export async function POST(request: NextRequest) {
       (await handleContentPost(action, body, request)) ??
       (await handleBookingRequestsPost(action, body, request)) ??
       (await handleDiscountCodesPost(action, body, request)) ??
+      (await handleMarketingPost(action, body, request)) ??
       (await handleMiscPost(action, body));
 
     return response ?? NextResponse.json({ error: "Onbekende actie" }, { status: 400 });
