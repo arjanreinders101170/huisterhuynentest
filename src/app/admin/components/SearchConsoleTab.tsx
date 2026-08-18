@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -80,22 +80,91 @@ function Delta({ waarde, eenheid = "", omgekeerd = false }: { waarde: number | n
 export function SearchConsoleTab() {
   const [analyse, setAnalyse] = useState<Analyse | null>(null);
   const [fout, setFout] = useState<string | null>(null);
+  const [bezig, setBezig] = useState<null | "maand" | "historie">(null);
+  const [syncMelding, setSyncMelding] = useState<{ tekst: string; gelukt: boolean } | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/admin/data?table=gsc_analyse");
-        const json = await res.json();
-        if (json.error) setFout(json.error); else setAnalyse(json.data);
-      } catch {
-        setFout("Kon de analyse niet laden.");
-      }
-    })();
+  const laden = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/data?table=gsc_analyse");
+      const json = await res.json();
+      if (json.error) setFout(json.error); else { setAnalyse(json.data); setFout(null); }
+    } catch {
+      setFout("Kon de analyse niet laden.");
+    }
   }, []);
+
+  useEffect(() => { laden(); }, [laden]);
+
+  /** Haalt de data nu op, op de admin-sessie. Zestien maanden kan de
+   *  tijdslimiet raken; al opgehaalde maanden worden overgeslagen, dus
+   *  nogmaals klikken gaat verder waar het stopte. */
+  const ophalen = useCallback(async (maanden: number, soort: "maand" | "historie") => {
+    setBezig(soort);
+    setSyncMelding(null);
+    try {
+      const res = await fetch("/api/admin/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "sync_gsc", maanden }),
+      });
+      const json = await res.json();
+      if (json.error) {
+        setSyncMelding({ tekst: json.error, gelukt: false });
+      } else {
+        setSyncMelding({ tekst: json.samenvatting ?? "Opgehaald.", gelukt: true });
+        await laden();
+      }
+    } catch {
+      setSyncMelding({
+        tekst: "Het ophalen duurde te lang of viel weg. Klik nogmaals — al opgehaalde maanden worden overgeslagen.",
+        gelukt: false,
+      });
+    } finally {
+      setBezig(null);
+    }
+  }, [laden]);
 
   const kaart: React.CSSProperties = {
     background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "18px 20px",
   };
+
+  const knop = (primair: boolean): React.CSSProperties => ({
+    padding: "9px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600,
+    fontFamily: "inherit", cursor: bezig ? "not-allowed" : "pointer",
+    border: `1px solid ${primair ? C.green : C.border}`,
+    background: primair ? C.green : C.card,
+    color: primair ? "#fff" : C.text,
+    opacity: bezig ? 0.6 : 1,
+  });
+
+  const OphaalKnoppen = () => (
+    <div>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+        <button onClick={() => ophalen(1, "maand")} disabled={bezig !== null} style={knop(true)}>
+          {bezig === "maand" ? "Bezig met ophalen…" : "Nu ophalen (vorige maand)"}
+        </button>
+        <button onClick={() => ophalen(16, "historie")} disabled={bezig !== null} style={knop(false)}>
+          {bezig === "historie" ? "Bezig met ophalen…" : "Volledige historie (16 maanden)"}
+        </button>
+      </div>
+      {bezig === "historie" && (
+        <div style={{ fontSize: 12, color: C.muted, marginTop: 8 }}>
+          Zestien maanden kan een paar minuten duren. Valt het weg, klik dan nogmaals —
+          al opgehaalde maanden worden overgeslagen.
+        </div>
+      )}
+      {syncMelding && (
+        <div style={{
+          marginTop: 10, padding: "9px 12px", borderRadius: 8, fontSize: 12, lineHeight: 1.6,
+          background: syncMelding.gelukt ? "#D1FAE5" : "#FEE2E2",
+          border: `1px solid ${syncMelding.gelukt ? "#6EE7B7" : "#FCA5A5"}`,
+          color: syncMelding.gelukt ? C.groen : C.rood,
+        }}>
+          {syncMelding.tekst}
+        </div>
+      )}
+    </div>
+  );
 
   if (fout) {
     return <div style={{ ...kaart, color: C.rood }}>{fout}</div>;
@@ -141,6 +210,9 @@ export function SearchConsoleTab() {
             <strong style={{ fontSize: 12, color: C.green }}>Volgende stap</strong>
             <div style={{ marginTop: 4, color: C.muted }}>{u.stap}</div>
           </div>
+          {reden !== "tabellen_ontbreken" && (
+            <div style={{ marginTop: 14 }}><OphaalKnoppen /></div>
+          )}
           {sync && !sync.gelukt && sync.foutmelding && (
             <div style={{ marginTop: 12, padding: "10px 12px", background: "#FEE2E2",
               border: "1px solid #FCA5A5", borderRadius: 8, fontSize: 12, color: C.rood, lineHeight: 1.6 }}>
@@ -181,6 +253,8 @@ export function SearchConsoleTab() {
           )}
         </p>
       </div>
+
+      <div style={{ ...kaart, marginBottom: 20 }}><OphaalKnoppen /></div>
 
       {/* Kopregel */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12, marginBottom: 20 }}>
