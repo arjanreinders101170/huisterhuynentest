@@ -192,7 +192,7 @@
 
 Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin onder **Marketing → Groei & bezetting**.
 
-**Het doel is 70% bezetting het hele jaar door.** Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
+**Break-even ligt op 20% jaarbezetting** — 12 nachten en 5 boekingen per maand over beide lodges, bij € 2.000 aan hypotheek en vaste lasten. **Het doel is 70%**, en dat verschil is ruim € 60.000 per jaar. Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
 
 ### Afgerond ✅
 | # | Item | Status |
@@ -225,6 +225,8 @@ Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin o
 | 107 | Minimumverblijf-regels instellen die geen onverkoopbare gaten achterlaten | **Hoog** | Goed voor 5 tot 8% jaarbezetting en het kost niets |
 | 108 | Prijs en beschikbaarheid zichtbaar zonder formulier | **Hoog** | De grootste conversiehefboom die geen geld kost |
 | 109 | E-maillijst als last-minute-kanaal inrichten | Middel | Het enige kanaal waarmee je een specifieke week kunt vullen. Doel: 1.000 abonnees eind 2028 |
+| 110 | **Werkelijke vaste lasten per jaar aanleveren** | **Hoog** | Break-even is nu gerekend met € 2.000/maand netto. Met de echte cijfers (hypotheek, verzekering, onderhoud, boekhouding, reservering groot onderhoud) wordt de ondergrens exact in plaats van indicatief |
+| 111 | Basisprijs en toeslagen vastzetten in `pricing_config` voor 2027 | **Hoog** | Het model rekent met € 165 basis en de standaardtoeslagen (weekend +15%, vakantie NL +25%, TT +50%). Zolang die niet in de database staan, draait de prijsmotor op nul |
 | 98 | Fotograaf selecteren, shotlist en stylingbudget vastleggen (#79) | **Hoog** | De shoot zelf staat in februari 2027; dit is het voorwerk zodat die maand alleen nog uitvoeren is |
 | 99 | Drie P0-landingspagina's herbouwen (wellness, romantiek, jacuzzi) | **Hoog** | Samen 3.745 vertoningen en 2 klikken |
 | 100 | 6 artikelen per maand, sep t/m dec | **Hoog** | Rijpen precies op tijd voor het voorjaar van 2027 |

@@ -39,6 +39,8 @@ Er is één blinde vlek die u moet kennen: **er draait nog geen GA4** [CODE]. El
 
 **Maar zet het doel niet op 370.** Daar zit geen enkele marge in, en drie dingen vragen om marge: de conversie begint lager zolang er geen reviews en geen interieurbeeld zijn, verkeer valt nooit precies in de maanden waarin u het nodig heeft, en bezoek dat vandaag niet boekt bouwt wel de e-maillijst waarmee u volgend jaar de lage maanden vult. **Ruim twee keer de minimale behoefte is een verdedigbaar doel — en dat is precies 10.000 bezoekers per jáár, ± 830 per maand.**
 
+**En de ondergrens.** Met € 2.000 per maand aan hypotheek en vaste lasten ligt break-even op **20% jaarbezetting** — twaalf nachten en vijf boekingen per maand over twee lodges, en daar zijn ± 147 bezoekers per maand voor nodig. Doorgerekend op de kalender van 2027 met de echte tarieven (€ 165 basis, € 190 weekend, € 206 vakantie, € 248 TT). **Het doel van 70% is dus geen overleven maar verdienen: het verschil is ruim € 60.000 per jaar.** Zie deel 2.
+
 **Wat de bezetting werkelijk bepaalt, is geen marketingvraag.** Bij 512 nachten is verkeer niet de beperkende factor. Dit zijn ze, op volgorde:
 
 1. **Doordeweeks verkopen.** Verkoopt u alleen weekenden, dan is uw plafond **43%** — vrijdag, zaterdag en zondag zijn drie van de zeven dagen. Voor 70% moeten er **231 doordeweekse nachten per jaar** verkocht worden, oftewel 55% doordeweekse bezetting [ANALYSE]. Dit is de belangrijkste opdracht van het hele plan, en er is geen advertentie die hem oplost.
@@ -111,11 +113,100 @@ Het model vraagt 4.450 per jaar. Het doel zet ik op **10.000 per jaar, ± 830 pe
 2. **Verkeer valt niet waar u het nodig heeft.** Zoekverkeer komt wanneer mensen zoeken, niet wanneer u een gat in week 46 heeft. Voor die specifieke week heeft u een e-maillijst en retargeting nodig — en de omvang daarvan is een functie van het cumulatieve verkeer, niet van het verkeer deze maand.
 3. **Niet-boekend bezoek is niet waardeloos.** Het bouwt de lijst, de naamsbekendheid en de autoriteit waarop de commerciële pagina's meeliften.
 
-Bij 10.000 per jaar zit u dus met een dekking van ruim twee keer op het slechtste scenario en ruim vier keer op het beste. Dat is een gezond doel. **10.000 per máánd is een ander doel** — daarover deel 3.
+Bij 10.000 per jaar zit u dus met een dekking van ruim twee keer op het slechtste scenario en ruim vier keer op het beste. Dat is een gezond doel. **10.000 per máánd is een ander doel** — daarover deel 4.
 
 ---
 
-# 2. Waar u nu staat
+# 2. De ondergrens — dekking van hypotheek en vaste lasten
+
+**Uitgangspunt:** € 2.000 per maand moet er binnenkomen voor beide woningen samen, om hypotheek en vaste lasten te dekken. Dat is € 24.000 per jaar. Hieronder wat dat betekent in nachten.
+
+## 2.1 De tarieven waarmee gerekend is
+
+Rechtstreeks uit de prijsmotor: basisprijs uit `pricing_config`, toeslagen uit `DEFAULT_SURCHARGES` in `TarievenTab.tsx` [CODE]. Per nacht wint de duurste periode, precies zoals `computeStayPrice()` het doet.
+
+| Nachtsoort | Toeslag | Tarief |
+|---|---:|---:|
+| Doordeweeks, laagseizoen | — | **€ 165** |
+| Weekend (vr t/m zo) | +15% | **€ 190** |
+| Feestdag NL of DE | +15% | € 190 |
+| Schoolvakantie DE (Niedersachsen/NRW) | +20% | € 198 |
+| Schoolvakantie NL | +25% | **€ 206** |
+| TT Assen | +50% | **€ 248** |
+
+Daarnaast: schoonmaak € 75 per boeking en toeristenbelasting € 1,50 per persoon per nacht [CODE]. De toeristenbelasting telt hieronder **niet** mee — dat is doorstroom naar de gemeente Tynaarlo en geen omzet.
+
+## 2.2 Hoe er gerekend is
+
+Twee dingen maken het verschil tussen een cijfer dat klopt en een cijfer dat vleit:
+
+**Er wordt in blokken verkocht, niet in losse nachten.** Een weekend is vrijdag plus zaterdag, een midweek dinsdag tot en met donderdag, een vakantieweek zeven nachten. Rekenen met "de twaalf duurste nachten van de maand" zou een antwoord geven dat u nooit kunt verkopen.
+
+**Elke maand moet zichzelf dragen.** November kan niet worden opgehaald met de opbrengst van augustus, want de hypotheek loopt door.
+
+**Variabele kosten die eraf gaan** [AANNAME]: € 18 per nacht aan gas, water en stroom — de jacuzzi is daarin de grootverbruiker — en € 55 werkelijke schoonmaakkosten per wissel tegen de € 75 die u doorberekent.
+
+## 2.3 De uitkomst per maand
+
+| Maand | Beschikbaar | Nachten nodig | Boekingen | Bezetting | Verblijfsomzet | Gem. tarief |
+|---|---:|---:|---:|---:|---:|---:|
+| januari | 62 | 12 | 5 | 19% | € 2.475 | € 206 |
+| februari | 56 | 12 | 5 | 21% | € 2.458 | € 205 |
+| maart | 62 | 12 | 6 | 19% | € 2.277 | € 190 |
+| april | 60 | 12 | 5 | 20% | € 2.409 | € 201 |
+| mei | 62 | 14 | 2 | 23% | € 2.888 | € 206 |
+| juni | 60 | 10 | 5 | 17% | € 2.128 | € 213 |
+| juli | 62 | 13 | 5 | 21% | € 2.681 | € 206 |
+| augustus | 62 | 13 | 5 | 21% | € 2.681 | € 206 |
+| september | 60 | 12 | 6 | 20% | € 2.277 | € 190 |
+| oktober | 62 | 12 | 5 | 19% | € 2.458 | € 205 |
+| november | 60 | 12 | 6 | 20% | € 2.277 | € 190 |
+| december | 62 | 12 | 5 | 19% | € 2.409 | € 201 |
+| **Jaar** | **730** | **146** | **60** | **20%** | **€ 29.420** | **€ 202** |
+
+**Het antwoord: 20% jaarbezetting. Twaalf nachten en vijf boekingen per maand, over twee lodges samen.**
+
+Juni valt het laagst (17%) door de TT-week: die weken leveren € 248 per nacht op, dus u heeft er minder van nodig. Maart, september en november vallen het hoogst omdat daar geen enkele toeslag geldt behalve het weekend — daar verkoopt u tegen € 190 en heeft u er dus meer nodig.
+
+## 2.4 Wat dat betekent voor de weekenden
+
+Twaalf nachten per maand klinkt bescheiden. Maar als u die vrijwel allemaal in het weekend verkoopt — en dat is wat er bij lage bezetting gebeurt — dan zijn dat **zes weekendboekingen per maand op ongeveer negen beschikbare weekendplekken** (4,3 weekenden × 2 lodges).
+
+**Break-even betekent dus: twee derde van al uw weekenden vol.** Dat is geen bescheiden opgave voor een accommodatie zonder reviews en zonder interieurfoto's. Het is precies de reden dat fase 1 in het plan een bewijsjaar heet en geen bezettingsjaar.
+
+## 2.5 De ladder van break-even naar het doel
+
+Naarmate de kalender voller wordt daalt het gemiddelde tarief: de dure weekenden en vakantieweken gaan het eerst weg, de doordeweekse basisnachten van € 165 blijven het langst liggen.
+
+| Bezetting | Nachten | Boekingen | Gem. tarief | Verblijfsomzet | Ná vaste lasten |
+|---:|---:|---:|---:|---:|---:|
+| **20%** | 146 | 60 | € 202 | € 29.420 | **€ 4.800** ← break-even |
+| 30% | 220 | 98 | € 201 | € 44.319 | € 18.300 |
+| 40% | 294 | 134 | € 198 | € 58.212 | € 31.600 |
+| 50% | 366 | 158 | € 192 | € 70.092 | € 42.700 |
+| 60% | 438 | 182 | € 187 | € 81.972 | € 53.700 |
+| **70%** | 513 | 207 | € 184 | € 94.347 | **€ 65.300** ← doel |
+
+## 2.6 Wat dit met het hele plan doet
+
+**Het doel van 70% is geen overleven maar verdienen.** Het verschil tussen break-even en 70% is **ruim € 60.000 per jaar**. Dat is waar het marketingplan over gaat.
+
+**En de bezoekersvraag wordt daarmee bijna triviaal.** Bij 20% bezetting zijn er 60 boekingen per jaar nodig, waarvan ± 28 via de eigen site. Langs dezelfde trechter als in deel 1 zijn dat **1.760 bezoekers per jaar — ongeveer 147 per maand.**
+
+| | Bezoekers per maand |
+|---|---:|
+| De lichten blijven aan (20% bezetting) | **± 147** |
+| De kalender vol (70% bezetting) | **± 370** |
+| Het doel, met marge | **830** |
+| Waar we het gesprek mee begonnen | 10.000 |
+
+**Het marketingbudget in perspectief.** € 550 per maand is 27,5% van uw dekkingsbehoefte — dat klinkt fors. Maar het is het gereedschap waarmee u van 20% naar 70% gaat, en dat verschil is € 60.000 per jaar. Elke euro marketing moet dus ongeveer € 9 aan extra resultaat opleveren om zichzelf terug te verdienen. Bij één extra boeking van drie nachten à € 190 per maand — één boeking — bent u er al.
+
+**Eén waarschuwing bij de € 2.000.** Ik heb aangenomen dat dit een *netto* behoefte is: geld dat overblijft ná de variabele kosten van een verhuurde nacht. Bedoelt u er bruto verblijfsomzet mee, dan ligt de lat lager — dan volstaat 17% in plaats van 20%. Bedoelt u er ook nog verzekering, onderhoud, boekhouding en een reservering voor groot onderhoud mee, dan is de dekkingsbehoefte hoger dan € 2.000 en schuift break-even naar boven. **Als u me de werkelijke jaarlijkse vaste lasten geeft, wordt dit cijfer exact in plaats van indicatief.**
+
+---
+
+# 3. Waar u nu staat
 
 | Meting | Stand | Bron |
 |---|---|---|
@@ -142,11 +233,11 @@ Daar bouwt dit plan op: **eerst winnen waar u kunt winnen, en de commerciële pa
 
 ---
 
-# 3. Wat de bezetting werkelijk bepaalt
+# 4. Wat de bezetting werkelijk bepaalt
 
 Bij 512 nachten per jaar is verkeer niet de beperkende factor. Dit zijn de zeven hefbomen op volgorde van invloed op de jaarbezetting — en "meer bezoekers" staat bewust onderaan.
 
-## 3.1 Doordeweeks verkopen — de harde randvoorwaarde
+## 4.1 Doordeweeks verkopen — de harde randvoorwaarde
 
 Dit is het cijfer dat bepaalt of maximale bezetting überhaupt haalbaar is, en het staat volledig los van marketing.
 
@@ -169,7 +260,7 @@ Het doordeweekse publiek is een ánder publiek: 55-plussers, thuiswerkers, honde
 - **Minimumverblijf-regels** die voorkomen dat een 2-nachts weekendboeking een onverkoopbaar gat van vijf nachten achterlaat
 - **Duitse gasten**: hun vakanties vallen anders dan de Nederlandse. Dit is de belangrijkste reden dat de Duitse set in het plan staat — niet extra volume, maar volume in de juiste weken
 
-## 3.2 De overige zes
+## 4.2 De overige zes
 
 | # | Hefboom | Effect | Waarom |
 |---|---|---|---|
@@ -180,7 +271,7 @@ Het doordeweekse publiek is een ánder publiek: 55-plussers, thuiswerkers, honde
 | 6 | **Boekingssites voor restcapaciteit** | vult wat u zelf niet vult | 15 tot 18% commissie is een prima prijs voor een nacht die anders leeg blijft, en een slechte prijs voor een nacht die u zelf ook had verkocht. Blokkeer de weken waarop u zelf vraag heeft, zet de rest erop. |
 | 7 | **Meer bezoekers** | 370/mnd is al genoeg | Bewust onderaan. Verkeer is bij twee lodges niet de beperkende factor; de zes punten hierboven zijn dat wel. |
 
-## 3.3 En 10.000 bezoekers per maand dan?
+## 4.3 En 10.000 bezoekers per maand dan?
 
 Dat blijft een zinvol doel, maar voor iets anders dan bezetting.
 
@@ -192,7 +283,7 @@ Daarnaast is het de goedkoopste lanceerbasis voor een derde lodge of een tweede 
 
 ---
 
-# 4. Waar het verkeer vandaan komt
+# 5. Waar het verkeer vandaan komt
 
 Als verhouding en niet als absoluut getal, zodat dezelfde mix klopt bij 830 bezoekers per maand én bij 10.000. Geen enkel kanaal mag zo groot worden dat het geheel omvalt als het wegvalt.
 
@@ -218,7 +309,7 @@ Als verhouding en niet als absoluut getal, zodat dezelfde mix klopt bij 830 bezo
 
 ---
 
-# 5. De ladder
+# 6. De ladder
 
 Elke fase heeft nu twee doelen: een **bezettingsdoel** — dat is het echte doel — en een **verkeersdoel**, dat is wat ervoor nodig is.
 
@@ -284,11 +375,11 @@ Doel bereikt. Wat daarboven ligt bestaat uit losse nachten tussen boekingen in, 
 
 ## Fase 4 — Prijsmacht · 2029 en verder · optioneel
 
-Pas hier is 10.000 bezoekers per máánd zinvol — zie deel 3.3. Alleen doen als er ook een derde lodge of een tweede product komt.
+Pas hier is 10.000 bezoekers per máánd zinvol — zie deel 4.3. Alleen doen als er ook een derde lodge of een tweede product komt.
 
 ---
 
-# 6. Het marketingbudget
+# 7. Het marketingbudget
 
 Vier scenario's over 24 maanden. **Vergelijk ze op de bezettingskolom, niet op de bezoekerskolom** — daar gaat het tenslotte om.
 
@@ -353,7 +444,7 @@ Gemiddeld: € 150 per maand — precies de post uit de tabel hierboven. Maar de
 
 ---
 
-# 7. Waar we het in gaan zetten — per kanaal
+# 8. Waar we het in gaan zetten — per kanaal
 
 Bedragen hieronder horen bij het scenario **Bezetting** (€ 550/mnd).
 
@@ -446,13 +537,13 @@ Samen dekken die twee het budget bijna vier keer. En dan is de ADR-verhoging die
 
 ---
 
-# 8. Wat er deze week al gebouwd is
+# 9. Wat er deze week al gebouwd is
 
 Drie dingen die het plan uitvoerbaar en beoordeelbaar maken. Ze staan live in de code.
 
 **1. Herkomstmeting op elke aanvraag.** Elke aanvraag draagt nu het kanaal waaruit hij kwam — utm-parameters, klik-ID's van Google en Meta, en het verwijzende domein, zowel van het eerste bezoek als van de laatste klik vóór de aanvraag. Het kanaal wordt op de server afgeleid, zodat er één vocabulaire in de database staat. Klik-ID's winnen bewust van de verwijzer: een advertentieklik komt via google.nl binnen en zou anders als organisch verkeer geboekt worden — precies de fout die een budget onbeoordeelbaar maakt.
 
-**Dit is de voorwaarde onder deel 6.** Zonder deze meting is "verhoog Google Ads naar € 600" een gok.
+**Dit is de voorwaarde onder deel 7.** Zonder deze meting is "verhoog Google Ads naar € 600" een gok.
 
 **2. Snellere indexering.** Een RSS-feed op `/blog/rss.xml` — nieuwsbrieftools, Flipboard, Feedly en automatiseringen kunnen daar op aansluiten zonder dat er iets handmatig gedeeld hoeft te worden. En IndexNow-meldingen bij elke publicatie: Bing, Yandex en Seznam indexeren daardoor binnen uren in plaats van weken. Voor seizoenscontent is dat het verschil tussen op tijd en te laat.
 
@@ -460,7 +551,7 @@ Drie dingen die het plan uitvoerbaar en beoordeelbaar maken. Ze staan live in de
 
 ---
 
-# 9. Besluiten
+# 10. Besluiten
 
 ## Genomen — 19 augustus 2026
 
@@ -468,11 +559,11 @@ Drie dingen die het plan uitvoerbaar en beoordeelbaar maken. Ze staan live in de
 |---|---|---|
 | **Het doel zelf** | **Maximale bezetting het hele jaar door** — geen bezoekersaantal | Het hele plan is hierop herbouwd. Bezoekers zijn nu een afgeleide: ± 370 per maand volstaat, doel 830 voor de marge. Zie deel 1. |
 | **Fotografie** | **Q1 2027**, met een video-impressie erachteraan | De shoot staat in februari, de video in maart — aansluitend, op dezelfde styling, zodat er geen tweede reis- en stylingdag nodig is. Dit is de juiste keuze en niet alleen een uitstel: vóór de oplevering valt er geen interieur te fotograferen. |
-| **Boekingssites** | **Ja** — Natuurhuisje en Airbnb, ná de fotoshoot | Natuurhuisje in maart, Airbnb in april. Beide voor restcapaciteit, niet als hoofdkanaal. Zie deel 7. |
+| **Boekingssites** | **Ja** — Natuurhuisje en Airbnb, ná de fotoshoot | Natuurhuisje in maart, Airbnb in april. Beide voor restcapaciteit, niet als hoofdkanaal. Zie deel 8. |
 
 **Wat het bezettingsdoel verandert aan het budget.** Het advies gaat van € 26.200 naar **€ 15.400** — scenario *Bezetting*, € 550 per maand plus € 2.200 eenmalig. Het verschil van € 10.800 zat in verkeer dat bij twee lodges niet te verzilveren is. Wat ervoor terugkomt is budget voor conversie, reviews en de dalmaanden, en een advertentiebudget dat alleen aanstaat in de maanden waarin het een nacht kan redden.
 
-**Wat de fotobeslissing kost, eerlijk gezegd.** Het beeldwerk verschuift vijf maanden, en daarmee verschuift ook alles wat eraan hangt: Pinterest op volume, Meta met video, en vooral de conversie op de landingspagina's. Dat raakt de *conversie*, niet het *verkeer* — de bezoekersladder in deel 5 is contentgedreven en blijft staan. Maar reken erop dat de trechter pas vanaf maart 2027 op zijn beoogde niveau werkt, en beoordeel de maanden daarvóór dus niet op boekingen.
+**Wat de fotobeslissing kost, eerlijk gezegd.** Het beeldwerk verschuift vijf maanden, en daarmee verschuift ook alles wat eraan hangt: Pinterest op volume, Meta met video, en vooral de conversie op de landingspagina's. Dat raakt de *conversie*, niet het *verkeer* — de bezoekersladder in deel 6 is contentgedreven en blijft staan. Maar reken erop dat de trechter pas vanaf maart 2027 op zijn beoogde niveau werkt, en beoordeel de maanden daarvóór dus niet op boekingen.
 
 **Er is één ding dat het gat gedeeltelijk dicht.** De lodges zijn tussen oplevering en de shoot al wel te zien. Maak in januari zelf een serie werkfoto's met een telefoon — niet voor de landingspagina's, wel voor het Google Bedrijfsprofiel, de nieuwsbrief en "achter de schermen" op social. Dat is gratis, het houdt het profiel levend in de maand waarin u opent, en het kost een uur.
 
@@ -487,7 +578,7 @@ Drie dingen die het plan uitvoerbaar en beoordeelbaar maken. Ze staan live in de
 
 ---
 
-# 10. Hoe we het bijhouden
+# 11. Hoe we het bijhouden
 
 De hoofd-KPI is **bezetting**, niet verkeer. Verkeer is een vroege indicator: het beweegt maanden eerder, maar het is niet waar u op afgerekend wordt.
 

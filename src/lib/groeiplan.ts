@@ -122,6 +122,76 @@ export const DOORDEWEEKSE_BEZETTING_NODIG = DOORDEWEEKS_NODIG / DOORDEWEEKSE_NAC
 /** Waar u op uitkomt als u uitsluitend weekenden verkoopt. */
 export const WEEKENDPLAFOND = WEEKENDNACHTEN / NACHTEN_BESCHIKBAAR;
 
+
+/* ── De ondergrens: dekking van hypotheek en vaste lasten ────────────────── */
+
+/** Wat er maandelijks binnen moet komen om hypotheek en vaste lasten te dekken. */
+export const VASTE_LASTEN_PER_MAAND = 2_000;
+
+/**
+ * Tarieven zoals de prijsmotor ze berekent (pricing_config + sync-pricing).
+ * Basisprijs € 165, toeslagen uit DEFAULT_SURCHARGES in TarievenTab.
+ * Per nacht wint de duurste periode.
+ */
+export const BASISPRIJS = 165;
+export const TOESLAGEN: { label: string; pct: number }[] = [
+  { label: "Doordeweeks, laagseizoen", pct: 0 },
+  { label: "Weekend (vr t/m zo)", pct: 15 },
+  { label: "Feestdag NL of DE", pct: 15 },
+  { label: "Schoolvakantie DE (NI/NW)", pct: 20 },
+  { label: "Schoolvakantie NL", pct: 25 },
+  { label: "TT Assen", pct: 50 },
+];
+export const nachtprijs = (pct: number) => Math.round(BASISPRIJS * (1 + pct / 100));
+
+/**
+ * Break-even, doorgerekend op de kalender van 2027 met de werkelijke tarieven.
+ *
+ * Er is gerekend in verkoopbare blokken — weekenden van twee nachten, midweken
+ * van drie, vakantieweken van zeven — en niet in losse nachten, want die
+ * bestaan niet. Per maand alleen de voorraad van díe maand: november moet in
+ * november verdiend worden.
+ *
+ * Variabele kosten: € 18 per nacht aan gas, water en stroom (de jacuzzi is de
+ * grootverbruiker) en € 55 schoonmaak per wissel tegen € 75 die u doorberekent.
+ * Toeristenbelasting telt niet mee — dat is doorstroom naar de gemeente.
+ */
+export const BREAKEVEN = {
+  bezetting: 0.20,
+  nachtenPerMaand: 12,
+  boekingenPerMaand: 5,
+  nachtenPerJaar: 146,
+  boekingenPerJaar: 60,
+  omzetPerJaar: 29_420,
+  gemiddeldTarief: 202,
+  /** Bezoekers per maand die daarbij horen, langs dezelfde trechter als het doel. */
+  bezoekersPerMaand: 147,
+};
+
+export interface LadderTrede {
+  bezetting: number;
+  nachten: number;
+  boekingen: number;
+  adr: number;
+  omzet: number;
+  /** Verblijfsomzet minus variabele kosten, minus € 24.000 vaste lasten. */
+  resultaat: number;
+}
+
+/**
+ * Wat elke bezettingsgraad overhoudt. Het gemiddelde tarief daalt naarmate de
+ * kalender voller wordt: de dure weekenden en vakantieweken gaan het eerst weg,
+ * de doordeweekse basisnachten blijven het langst liggen.
+ */
+export const LADDER: LadderTrede[] = [
+  { bezetting: 0.20, nachten: 146, boekingen: 60,  adr: 202, omzet: 29_420, resultaat: 4_800 },
+  { bezetting: 0.30, nachten: 220, boekingen: 98,  adr: 201, omzet: 44_319, resultaat: 18_300 },
+  { bezetting: 0.40, nachten: 294, boekingen: 134, adr: 198, omzet: 58_212, resultaat: 31_600 },
+  { bezetting: 0.50, nachten: 366, boekingen: 158, adr: 192, omzet: 70_092, resultaat: 42_700 },
+  { bezetting: 0.60, nachten: 438, boekingen: 182, adr: 187, omzet: 81_972, resultaat: 53_700 },
+  { bezetting: 0.70, nachten: 513, boekingen: 207, adr: 184, omzet: 94_347, resultaat: 65_300 },
+];
+
 /* ── Mijlpalen ───────────────────────────────────────────────────────────── */
 
 export interface Mijlpaal {

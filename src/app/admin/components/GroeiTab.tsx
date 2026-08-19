@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   BEZETTINGSDOEL, NACHTEN_BESCHIKBAAR, MAANDEN, JAAR,
+  VASTE_LASTEN_PER_MAAND, BREAKEVEN, LADDER, BASISPRIJS, TOESLAGEN, nachtprijs,
   GEMIDDELDE_VERBLIJFSDUUR, BEZOEKERS_PER_MAAND_MINIMAAL,
   DOEL_BEZOEKERS_JAAR, DOEL_BEZOEKERS_MAAND, STRETCH_BEZOEKERS_MAAND,
   WEEKENDPLAFOND, DOORDEWEEKS_NODIG, DOORDEWEEKSE_BEZETTING_NODIG,
@@ -157,6 +158,100 @@ export function GroeiTab() {
           voor iets anders: dat koopt geen bezetting meer — die zit dan aan het plafond — maar
           overvraag, en overvraag is prijsmacht.
         </div>
+      </Kaart>
+
+      {/* ── De ondergrens ── */}
+      <Kaart
+        titel="De ondergrens — dekking van hypotheek en vaste lasten"
+        sub={`${euro(VASTE_LASTEN_PER_MAAND)} per maand moet binnenkomen voor beide lodges samen. Doorgerekend op de kalender van 2027 met de werkelijke tarieven uit de prijsmotor.`}
+      >
+        <div style={{ display: "flex", gap: 28, flexWrap: "wrap", marginBottom: 18 }}>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Break-even</div>
+            <div style={{ fontSize: 30, fontWeight: 700, color: C.gold, lineHeight: 1.2 }}>{pct(BREAKEVEN.bezetting)}</div>
+            <div style={{ fontSize: 12, color: C.muted }}>jaarbezetting</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Per maand</div>
+            <div style={{ fontSize: 30, fontWeight: 700, color: C.text, lineHeight: 1.2 }}>{BREAKEVEN.nachtenPerMaand}</div>
+            <div style={{ fontSize: 12, color: C.muted }}>nachten · {BREAKEVEN.boekingenPerMaand} boekingen</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Gemiddeld tarief</div>
+            <div style={{ fontSize: 30, fontWeight: 700, color: C.text, lineHeight: 1.2 }}>{euro(BREAKEVEN.gemiddeldTarief)}</div>
+            <div style={{ fontSize: 12, color: C.muted }}>per nacht</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Bezoekers nodig</div>
+            <div style={{ fontSize: 30, fontWeight: 700, color: C.green, lineHeight: 1.2 }}>{BREAKEVEN.bezoekersPerMaand}</div>
+            <div style={{ fontSize: 12, color: C.muted }}>per maand</div>
+          </div>
+        </div>
+
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, marginBottom: 16 }}>
+          <thead>
+            <tr style={{ textAlign: "left", color: C.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>
+              <th style={{ padding: "6px 0", fontWeight: 600 }}>Bezetting</th>
+              <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Nachten</th>
+              <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Boekingen</th>
+              <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Gem. tarief</th>
+              <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Omzet</th>
+              <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Ná vaste lasten</th>
+            </tr>
+          </thead>
+          <tbody>
+            {LADDER.map(t => {
+              const isDoel = Math.abs(t.bezetting - BEZETTINGSDOEL) < 0.01;
+              const isBreak = Math.abs(t.bezetting - BREAKEVEN.bezetting) < 0.01;
+              return (
+                <tr key={t.bezetting} style={{
+                  borderTop: `1px solid ${C.border}`,
+                  background: isDoel ? "#F0F5F2" : isBreak ? "#FAFAF7" : "transparent",
+                  fontWeight: isDoel || isBreak ? 600 : 400,
+                }}>
+                  <td style={{ padding: "9px 0", color: C.text }}>
+                    {pct(t.bezetting)}
+                    {isBreak && <span style={{ marginLeft: 8, fontSize: 10, color: C.gold }}>break-even</span>}
+                    {isDoel && <span style={{ marginLeft: 8, fontSize: 10, color: C.green }}>doel</span>}
+                  </td>
+                  <td style={{ padding: "9px 0", textAlign: "right", color: C.text }}>{t.nachten}</td>
+                  <td style={{ padding: "9px 0", textAlign: "right", color: C.muted }}>{t.boekingen}</td>
+                  <td style={{ padding: "9px 0", textAlign: "right", color: C.muted }}>{euro(t.adr)}</td>
+                  <td style={{ padding: "9px 0", textAlign: "right", color: C.text }}>{euro(t.omzet)}</td>
+                  <td style={{ padding: "9px 0", textAlign: "right", color: t.resultaat > 0 ? C.groen : C.rood }}>
+                    {euro(t.resultaat)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 14 }}>
+          {TOESLAGEN.map(t => (
+            <div key={t.label} style={{ fontSize: 11 }}>
+              <div style={{ color: C.muted }}>{t.label}</div>
+              <div style={{ fontWeight: 700, color: C.text, fontSize: 14 }}>{euro(nachtprijs(t.pct))}</div>
+            </div>
+          ))}
+        </div>
+
+        <p style={{
+          margin: 0, fontSize: 12, color: C.text, lineHeight: 1.7,
+          padding: "12px 14px", background: "#FAFAF7", borderLeft: `3px solid ${C.gold}`, borderRadius: "0 8px 8px 0",
+        }}>
+          <strong>Wat dit betekent.</strong> De lichten blijven aan bij {pct(BREAKEVEN.bezetting)} bezetting —
+          {" "}{BREAKEVEN.nachtenPerMaand} nachten en {BREAKEVEN.boekingenPerMaand} boekingen per maand over
+          twee lodges, en daar zijn ongeveer {BREAKEVEN.bezoekersPerMaand} bezoekers per maand voor nodig.
+          Het doel van {pct(BEZETTINGSDOEL)} is dus geen overleven maar verdienen: het verschil tussen
+          break-even en {pct(BEZETTINGSDOEL)} is ruim {euro(60_000)} per jaar. Het marketingbudget van
+          {" "}{euro(550)} per maand is precies het gereedschap om dat verschil te overbruggen.
+          <br /><br />
+          Basisprijs {euro(BASISPRIJS)} per nacht; per nacht wint de duurste toeslag. Aannames in de
+          variabele kosten: {euro(18)} per nacht aan gas, water en stroom, en {euro(55)} schoonmaak per
+          wissel tegen {euro(75)} die u doorberekent. Toeristenbelasting telt niet mee — dat is
+          doorstroom naar de gemeente.
+        </p>
       </Kaart>
 
       {/* ── Het maandmodel ── */}
