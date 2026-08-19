@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { APP_URL_FALLBACK, WIFI_SSID, WIFI_PASSWORD } from "@/data/lodge";
+import { APP_URL_FALLBACK, WIFI_SSID } from "@/data/lodge";
+import { getSupabase } from "@/lib/supabase";
+import { wifiPassword } from "@/lib/wifi";
 
 export const metadata: Metadata = {
+  // Deze pagina hangt aan een persoonlijke welkomstlink en hoort niet in
+  // zoekresultaten thuis.
+  robots: { index: false, follow: false },
   title: "Welkom – Huis ter Huynen",
   description: "Alles wat je moet weten voor je verblijf",
 };
@@ -10,9 +15,30 @@ type Props = {
   searchParams: Promise<{ s?: string }>;
 };
 
+/* Alleen een lopend, niet-afgesloten verblijf mag het wifi-wachtwoord zien.
+ * Zonder deze check stond het wachtwoord op een pagina die iedereen zonder
+ * token kon opvragen. Faalt de lookup, dan tonen we het simpelweg niet. */
+async function heeftGeldigVerblijf(token: string): Promise<boolean> {
+  if (!token) return false;
+  try {
+    const { data } = await getSupabase()
+      .from("stays")
+      .select("status, check_out")
+      .eq("token", token)
+      .maybeSingle();
+    if (!data || data.status === "vertrokken") return false;
+    const checkOut = new Date(data.check_out as string);
+    checkOut.setHours(23, 59, 59);
+    return Date.now() <= checkOut.getTime();
+  } catch {
+    return false;
+  }
+}
+
 export default async function WelkomPage({ searchParams }: Props) {
   const params = await searchParams;
   const token = typeof params.s === "string" ? params.s : "";
+  const isGast = await heeftGeldigVerblijf(token);
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
   // QR encodes the token so a guest scanning gets the personalized app
   const appLink = token ? `${appUrl}?s=${encodeURIComponent(token)}` : appUrl;
@@ -157,7 +183,12 @@ export default async function WelkomPage({ searchParams }: Props) {
             </div>
             {[
               { emoji: "🔑", text: "Deur open je via de app — geen sleutel nodig" },
-              { emoji: "📶", text: `Wifi: ${WIFI_SSID} · wachtwoord: ${WIFI_PASSWORD}` },
+              {
+                emoji: "📶",
+                text: isGast
+                  ? `Wifi: ${WIFI_SSID} · wachtwoord: ${wifiPassword()}`
+                  : `Wifi: ${WIFI_SSID} · het wachtwoord vind je onder 'Verblijf' in de app`,
+              },
               { emoji: "🅿️", text: "Gratis parkeren op eigen terrein" },
               { emoji: "🐕", text: "Huisdieren welkom (overleg vooraf)" },
               { emoji: "🤫", text: "Rust na 22:00 — geniet van de stilte" },

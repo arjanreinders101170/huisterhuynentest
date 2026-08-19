@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { buildHostKnowledge, PROFILE_HINTS_NL, PROFILE_HINTS_DE } from "@/data/host-knowledge";
-import { lodgeName, WIFI_SSID, WIFI_PASSWORD } from "@/data/lodge";
+import { lodgeName, WIFI_SSID } from "@/data/lodge";
+import { wifiPassword } from "@/lib/wifi";
 
 export const runtime = "nodejs";
 
@@ -139,7 +140,7 @@ const FALLBACKS_NL: Record<string, string> = {
   uitje: "Kano op de Hunze (2-3 uur), Museumdorp Orvelte of een dagje WILDLANDS. 🛶",
   stil: "Zeijerstrubben (3 min) is het stilste bos hier in de buurt. 🤫",
   deur: "Open de deur via 'Verblijf' in de app — je persoonlijke toegangscode staat daar.",
-  wifi: `Wifi: ${WIFI_SSID} · wachtwoord: ${WIFI_PASSWORD}.`,
+  wifi: "Het wifi-wachtwoord staat onder 'Verblijf' in de app — open die met de link uit je welkomstmail.",
   late: "Late check-out tot 15:00 (€25) — vraag aan via 'Extra's' in de app.",
   default: "Probeer iets specifieker — wandelen, eten, kinderen, wellness, fietsen? Of WhatsApp de gastheer op +31 6 42568603.",
 };
@@ -155,12 +156,12 @@ const FALLBACKS_DE: Record<string, string> = {
   uitje: "Kanu auf der Hunze (2-3 Std.), Museumsdorf Orvelte oder ein Tag bei WILDLANDS. 🛶",
   stil: "Zeijerstrubben (3 Min.) ist der ruhigste Wald in der Nähe. 🤫",
   deur: "Tür öffnen über 'Aufenthalt' in der App — Dein persönlicher Code steht dort.",
-  wifi: `WLAN: ${WIFI_SSID} · Passwort: ${WIFI_PASSWORD}.`,
+  wifi: "Das WLAN-Passwort steht unter 'Aufenthalt' in der App — öffne sie mit dem Link aus Deiner Willkommensmail.",
   late: "Late Check-out bis 15:00 (€25) — über 'Extras' in der App buchen.",
   default: "Etwas konkreter? Wandern, Essen, Kinder, Wellness, Rad? Oder WhatsApp den Gastgeber: +31 6 42568603.",
 };
 
-function fallbackReply(text: string, lang: "nl" | "de"): string {
+function fallbackReply(text: string, lang: "nl" | "de", hasStay = false): string {
   const fb = lang === "de" ? FALLBACKS_DE : FALLBACKS_NL;
   const t = text.toLowerCase();
   if (t.match(/wander|wandel|natur|bos|wald|rustig|ruhig/)) return fb.wandel;
@@ -174,7 +175,13 @@ function fallbackReply(text: string, lang: "nl" | "de"): string {
   if (t.match(/uitje|dagje|ausflug|leuk|niets/)) return fb.uitje;
   if (t.match(/stil|rust|ruhig|leise/)) return fb.stil;
   if (t.match(/deur|t[üu]r|toegang|zugang|code/)) return fb.deur;
-  if (t.match(/wifi|wlan|internet/)) return fb.wifi;
+  if (t.match(/wifi|wlan|internet/)) {
+    // Alleen een geverifieerde gast krijgt het wachtwoord zelf te zien.
+    if (!hasStay) return fb.wifi;
+    return lang === "de"
+      ? `WLAN: ${WIFI_SSID} · Passwort: ${wifiPassword()}.`
+      : `Wifi: ${WIFI_SSID} · wachtwoord: ${wifiPassword()}.`;
+  }
   if (t.match(/late|sp[äa]t|check.?out|checkout/)) return fb.late;
   return fb.default;
 }
@@ -234,10 +241,11 @@ export async function POST(request: NextRequest) {
   const lastUserMsg = messages[messages.length - 1]?.content || "";
 
   if (!apiKey || apiKey.length < 20) {
-    return NextResponse.json({ reply: fallbackReply(lastUserMsg, lang) });
+    return NextResponse.json({ reply: fallbackReply(lastUserMsg, lang, stayInfo !== null) });
   }
 
-  const knowledge = buildHostKnowledge(lang);
+  const hasStay = stayInfo !== null;
+  const knowledge = buildHostKnowledge(lang, hasStay);
   const stayCtx = stayInfo ? buildStayContext(stayInfo, lang) : null;
   const profileHint = profile && profile !== "skipped"
     ? (lang === "de" ? PROFILE_HINTS_DE[profile] : PROFILE_HINTS_NL[profile]) || null
@@ -275,7 +283,7 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       console.error(`OpenAI error: ${response.status}`);
-      return NextResponse.json({ reply: fallbackReply(lastUserMsg, lang) });
+      return NextResponse.json({ reply: fallbackReply(lastUserMsg, lang, hasStay) });
     }
 
     const data = await response.json();
@@ -285,6 +293,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ reply });
   } catch (err) {
     console.error("Chat error:", err);
-    return NextResponse.json({ reply: fallbackReply(lastUserMsg, lang) });
+    return NextResponse.json({ reply: fallbackReply(lastUserMsg, lang, hasStay) });
   }
 }

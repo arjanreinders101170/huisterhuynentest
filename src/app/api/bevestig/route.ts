@@ -2,6 +2,7 @@ import {
   esc, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist,
   teaserBlock, detailsBlock,
 } from "@/lib/email";
+import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
@@ -65,6 +66,25 @@ async function notifyOwnerOfConflict(a: LoadedAanvraag, conflict: Period): Promi
   }
 }
 
+/**
+ * Fail-closed vergelijking van de confirm-token.
+ *
+ * De vorige vorm — `if (rij.confirm_token && rij.confirm_token !== token)` —
+ * sloeg de controle volledig over zodra de kolom NULL was. En NULL is de
+ * standaard: alleen `send_offerte_v2` vult hem, dus elke aanvraag die nog
+ * geen offerte had gekregen was zonder token op te vragen én te bevestigen.
+ *
+ * Nu geldt: geen token in de rij of geen token in de link = geen toegang.
+ */
+function tokenKlopt(opgeslagen: unknown, meegestuurd: string | null): boolean {
+  if (typeof opgeslagen !== "string" || !opgeslagen) return false;
+  if (!meegestuurd) return false;
+  const a = Buffer.from(opgeslagen);
+  const b = Buffer.from(meegestuurd);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
 /** Verlopen: door de cron afgehandeld, of de vervaldatum is net gepasseerd. */
 function isExpired(a: LoadedAanvraag): boolean {
   if (a.rawStatus === "verlopen") return true;
@@ -97,7 +117,7 @@ function fmtDate(iso: string): string {
 async function loadFromBookingRequests(id: string, token: string | null): Promise<LoadedAanvraag | null> {
   const { data, error } = await getSupabase().from("booking_requests").select("*").eq("id", id).maybeSingle();
   if (error || !data) return null;
-  if (data.confirm_token && data.confirm_token !== token) return null;
+  if (!tokenKlopt(data.confirm_token, token)) return null;
 
   // Gast info: eerst van guests-tabel (via guest_id), anders direct uit kolommen
   let gastNaam = data.gast_naam || "";
@@ -135,7 +155,7 @@ async function loadFromBookingRequests(id: string, token: string | null): Promis
 async function loadFromLegacy(id: string, token: string | null): Promise<LoadedAanvraag | null> {
   const { data, error } = await getSupabase().from("terugkeer_aanvragen").select("*").eq("id", id).maybeSingle();
   if (error || !data) return null;
-  if (data.confirm_token && data.confirm_token !== token) return null;
+  if (!tokenKlopt(data.confirm_token, token)) return null;
 
   let gastNaam = "";
   let gastEmail = "";

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { getProduct, calcFietsTotal } from "@/lib/products";
-import { checkoutSchema } from "@/lib/schemas";
+import { checkoutSchema, fietsMetadataSchema } from "@/lib/schemas";
 import { esc } from "@/lib/email";
 
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
@@ -65,12 +65,12 @@ export async function POST(request: NextRequest) {
     let productName: string;
 
     if (productId === "fiets") {
-      // Dynamic pricing for bike rental
-      const fietsen = metadata?.fietsen as Record<string, number> | undefined;
-      const dagen = metadata?.dagen as number | undefined;
-      if (!fietsen || !dagen) {
+      // Dynamic pricing for bike rental — invoer echt valideren, niet casten.
+      const fiets = fietsMetadataSchema.safeParse(metadata);
+      if (!fiets.success) {
         return NextResponse.json({ error: "Fietskeuze en dagen zijn verplicht" }, { status: 400 });
       }
+      const { fietsen, dagen } = fiets.data;
       amount = await calcFietsTotal(fietsen, dagen);
       productName = "Fietsverhuur";
       if (amount <= 0) {
@@ -84,6 +84,13 @@ export async function POST(request: NextRequest) {
       }
       amount = product.prijs;
       productName = product.naam;
+    }
+
+    /* Laatste zeef vóór er een betaallink ontstaat. Geen enkel product bij
+     * ons kost minder dan een euro, dus een lager bedrag betekent altijd dat
+     * er iets mis is met de invoer — ongeacht via welk pad. */
+    if (!Number.isFinite(amount) || amount < 1) {
+      return NextResponse.json({ error: "Ongeldig bedrag" }, { status: 400 });
     }
 
     const mollieKey = process.env.MOLLIE_API_KEY;

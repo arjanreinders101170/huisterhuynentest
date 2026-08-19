@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { WIFI_SSID, WIFI_PASSWORD, lodgeName } from "@/data/lodge";
+import { WIFI_SSID, lodgeName } from "@/data/lodge";
+import { wifiPassword } from "@/lib/wifi";
 import { STAY_COOKIE_NAME, buildStayCookie } from "@/lib/stay-auth-edge";
 
 export const runtime = "nodejs";
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
         check_out: stay.check_out,
         door_code: stay.door_code,
         wifi_ssid: WIFI_SSID,
-        wifi_password: WIFI_PASSWORD,
+        wifi_password: wifiPassword(),
         status: stay.status,
       },
       guest: {

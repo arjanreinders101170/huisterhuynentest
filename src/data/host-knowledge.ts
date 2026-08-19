@@ -9,7 +9,8 @@
 import { DATA } from "./categories";
 import { DATA_DE } from "@/i18n/categories-de";
 import type { Category } from "./tokens";
-import { LODGE_NAMES, WIFI_SSID, WIFI_PASSWORD } from "./lodge";
+import { LODGE_NAMES, WIFI_SSID } from "./lodge";
+import { wifiPassword } from "@/lib/wifi";
 
 type Lang = "nl" | "de";
 
@@ -40,25 +41,29 @@ function compactCategory(key: string, cat: Category, lang: Lang): string {
   return `${cat.title.toUpperCase()}\n${lines}`;
 }
 
-const HEADER_NL = `LODGE-FEITEN:
+/* De wifi-regel gaat alleen mee bij een geverifieerd verblijf. Zonder
+ * stay-token praat de chatbot met een willekeurige bezoeker, en die hoort
+ * het wachtwoord niet te kunnen uitvragen — ook niet via prompt-injectie. */
+const wifiRegel = (label: string, includeWifi: boolean) =>
+  includeWifi ? `\n- ${label}: ${WIFI_SSID} / ${wifiPassword()}.` : "";
+
+const HEADER_NL = (includeWifi: boolean) => `LODGE-FEITEN:
 - Adres: Zuiderstraat 6 p, Zeijen (Drenthe). A28 afslag Zeijen.
 - Twee lodges: ${LODGE_NAMES.lodge_1} en ${LODGE_NAMES.lodge_2}.
 - Check-in 15:00, check-out 11:00. Late check-out tot 15:00 op aanvraag (€25).
-- Honden welkom (€25 schoonmaak). Laadpaal op terrein.
-- Wifi: ${WIFI_SSID} / ${WIFI_PASSWORD}.
+- Honden welkom (€25 schoonmaak). Laadpaal op terrein.${wifiRegel("Wifi", includeWifi)}
 - Contact: WhatsApp +31 6 42568603.`;
 
-const HEADER_DE = `LODGE-FAKTEN:
+const HEADER_DE = (includeWifi: boolean) => `LODGE-FAKTEN:
 - Adresse: Zuiderstraat 6 p, Zeijen (Drenthe). A28 Ausfahrt Zeijen.
 - Zwei Lodges: ${LODGE_NAMES.lodge_1} und ${LODGE_NAMES.lodge_2}.
 - Check-in 15:00, Check-out 11:00. Späterer Check-out bis 15:00 auf Anfrage (€25).
-- Hunde willkommen (€25 Reinigung). Ladesäule vor Ort.
-- WLAN: ${WIFI_SSID} / ${WIFI_PASSWORD}.
+- Hunde willkommen (€25 Reinigung). Ladesäule vor Ort.${wifiRegel("WLAN", includeWifi)}
 - Kontakt: WhatsApp +31 6 42568603.`;
 
-export function buildHostKnowledge(lang: Lang): string {
+export function buildHostKnowledge(lang: Lang, includeWifi = false): string {
   const data = lang === "de" ? DATA_DE : DATA;
-  const header = lang === "de" ? HEADER_DE : HEADER_NL;
+  const header = lang === "de" ? HEADER_DE(includeWifi) : HEADER_NL(includeWifi);
   const order: Array<keyof typeof data> = ["natuur", "eten", "actief", "kinderen", "cultuur", "ontspanning"];
   const sections = order
     .filter(k => data[k as string])

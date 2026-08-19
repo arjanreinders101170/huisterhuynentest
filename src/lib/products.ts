@@ -38,6 +38,12 @@ export async function getProduct(id: string): Promise<Product | null> {
 }
 
 export async function calcFietsTotal(fietsen: Record<string, number>, dagen: number): Promise<number> {
+  /* Deze functie rekent met wat de aanroeper aanlevert, dus controleert ze
+   * het zelf ook: een fractionele of negatieve `dagen` schaalde de prijs
+   * anders lineair naar nul. De route valideert al met een Zod-schema; dit
+   * beschermt elke toekomstige aanroeper die dat vergeet. */
+  if (!Number.isInteger(dagen) || dagen < 1 || dagen > 30) return 0;
+
   const products = await getProducts();
   const fietsPrices = Object.fromEntries(
     products.filter(p => p.categorie === "fiets").map(p => [p.id, p.prijs])
@@ -46,7 +52,7 @@ export async function calcFietsTotal(fietsen: Record<string, number>, dagen: num
   let total = 0;
   const isWeek = dagen >= 7;
   for (const [id, qty] of Object.entries(fietsen)) {
-    if (qty <= 0) continue;
+    if (!Number.isInteger(qty) || qty <= 0 || qty > 10) continue;
     const dagPrijs = fietsPrices[id];
     if (!dagPrijs) continue;
     const weekPrijs = dagPrijs * 5; // week = 5x dag

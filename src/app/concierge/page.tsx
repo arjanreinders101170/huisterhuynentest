@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Route, ChatMsg, DoorStatus, GuestProfile, Weather } from "@/data/tokens";
-import { WIFI_PASSWORD } from "@/data/lodge";
 import { T } from "@/data/tokens";
 import { DATA, CATEGORY_KEYS, UPSELLS } from "@/data/categories";
 import { DATA_DE, UPSELLS_DE } from "@/i18n/categories-de";
@@ -31,6 +30,9 @@ type StaySession = {
   check_in: string;
   check_out: string;
   door_code: string;
+  /* Server-side geleverd door /api/stay na tokenvalidatie — staat bewust
+   * niet meer in de client-bundle. */
+  wifi_password: string;
   naam: string;
   greeted: boolean; // user tapped "Ja, dat klopt"
 };
@@ -117,6 +119,7 @@ function AppInner() {
           check_in: d.stay.check_in,
           check_out: d.stay.check_out,
           door_code: d.stay.door_code,
+          wifi_password: d.stay.wifi_password || "",
           naam: d.guest?.naam || "",
           greeted: false,
         };
@@ -288,7 +291,8 @@ function AppInner() {
 
   /* ═══ WIFI ═══ */
   const copyWifi = () => {
-    navigator.clipboard?.writeText(WIFI_PASSWORD);
+    if (!stay?.wifi_password) return;
+    navigator.clipboard?.writeText(stay.wifi_password);
     setWifiCopied(true);
     setTimeout(() => setWifiCopied(false), 2000);
   };
@@ -349,6 +353,7 @@ function AppInner() {
               onCopyWifi={copyWifi}
               onNavigate={(r: Route) => setRoute(r)}
               doorCode={stay?.door_code}
+              wifiPassword={stay?.wifi_password}
             />
           )}
           {route === "chat" && (
