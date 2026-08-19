@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
+import { getAttribution } from "@/lib/tracking/attribution";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
@@ -418,6 +419,7 @@ export default function BookingCalendar() {
           huisdieren: huisdieren ? "ja" : "nee",
           promoCode: promoResult?.valid ? promoCode.trim().toUpperCase() : undefined,
           _meta: { event_id: metaEventId },
+          _attr: getAttribution(),
         }),
       });
 

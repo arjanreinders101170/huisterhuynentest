@@ -88,6 +88,10 @@ export const metadata: Metadata = {
       de: `${SITE_URL}/de`,
       "x-default": SITE_URL,
     },
+    // Feedlezers en automatiseringen zoeken de feed via deze link in de <head>.
+    types: {
+      "application/rss+xml": `${SITE_URL}/blog/rss.xml`,
+    },
   },
   manifest: "/manifest.json",
   icons: {

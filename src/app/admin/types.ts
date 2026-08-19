@@ -30,6 +30,17 @@ export type BookingRequest = {
   status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen" | "verlopen"
     | "aanbetaling_verstuurd" | "aanbetaling_betaald" | "restbetaling_verstuurd" | "volledig_betaald";
   legacy_terugkeer_id: string | null;
+  /* Herkomst — zie migrations/2026_08_19_aanvraag_attributie.sql */
+  kanaal?: string | null;
+  eerste_kanaal?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_term?: string | null;
+  utm_content?: string | null;
+  referrer?: string | null;
+  landing_page?: string | null;
+  eerste_bezoek_op?: string | null;
   afwijs_reden?: string | null;
   afgewezen_op?: string | null;
   offerte_vervalt_op?: string | null;

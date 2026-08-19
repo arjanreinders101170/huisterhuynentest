@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { meldAan } from "@/lib/indexnow";
 
 export const runtime = "nodejs";
 
@@ -39,8 +40,14 @@ export async function GET(request: NextRequest) {
 
   if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
 
+  // Zoekmachines direct op de hoogte brengen. Een artikel dat pas over twee
+  // weken gecrawld wordt, mist de vraagpiek waarvoor het geschreven is.
+  const indexnow = await meldAan(["/blog", ...due.map(p => `/blog/${p.slug}`)]);
+  console.log(`[publish-posts] IndexNow: ${JSON.stringify(indexnow)}`);
+
   return NextResponse.json({
     published: due.length,
     posts: due.map(p => ({ slug: p.slug, titel: p.titel })),
+    indexnow,
   });
 }

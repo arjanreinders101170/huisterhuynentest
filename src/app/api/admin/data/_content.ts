@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, type LandingSectionData } from "@/lib/landing-seed";
 import { SEED_BLOG_POSTS } from "@/lib/blog-seed";
+import { meldAan } from "@/lib/indexnow";
 
 function buildLandingFields(body: Record<string, unknown>) {
   const sectionsRaw = body.sections;
@@ -101,12 +102,16 @@ export async function handleContentPost(action: string, body: Record<string, unk
     case "publish_blog_post": {
       if (!body.id) return NextResponse.json({ error: "ID verplicht" }, { status: 400 });
       const gepubliceerd = body.gepubliceerd === true || body.gepubliceerd === "true";
+      const { data: post } = await getSupabase().from("blog_posts").select("slug").eq("id", body.id).single();
       await getSupabase().from("blog_posts").update({
         gepubliceerd,
         gepubliceerd_op: gepubliceerd ? new Date().toISOString().slice(0, 10) : null,
         geplande_publicatie: null,
         updated_at: new Date().toISOString(),
       }).eq("id", body.id);
+      // Alleen bij publiceren melden: een teruggetrokken artikel hoeft niet
+      // met voorrang opnieuw gecrawld te worden.
+      if (gepubliceerd && post?.slug) await meldAan(["/blog", `/blog/${post.slug}`]);
       return NextResponse.json({ success: true });
     }
     case "delete_blog_post": {
@@ -146,7 +151,10 @@ export async function handleContentPost(action: string, body: Record<string, unk
         updated_at: new Date().toISOString(),
       }).eq("id", body.id);
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-      if (existing?.slug) revalidatePath(`/${existing.slug}`);
+      if (existing?.slug) {
+        revalidatePath(`/${existing.slug}`);
+        if (gepubliceerd) await meldAan([`/${existing.slug}`]);
+      }
       return NextResponse.json({ success: true });
     }
     case "delete_landing_page": {
