@@ -2,7 +2,7 @@
 
 **Opgesteld:** 19 augustus 2026 · **Herzien:** 19 augustus 2026, nadat het doel scherp werd gesteld: **maximale bezetting het hele jaar door**, niet een bezoekersaantal.
 **Opdracht:** hoeveel bezoekers zijn er nodig om de lodges vol te krijgen, en wat kost dat aan marketing?
-**Leesbare versie:** https://claude.ai/code/artifact/39ae5e71-3cf0-4a59-8ee7-3d4bce74912b
+**Leesbare versie:** https://claude.ai/code/artifact/39ae5e71-3cf0-4a59-8ee7-3d4bce74912b ("Vol het jaar rond")
 
 ---
 
