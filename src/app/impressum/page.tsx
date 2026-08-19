@@ -40,8 +40,8 @@ export default function ImpressumPage() {
           <h2 style={S.h2}>Standort der Unterkunft</h2>
           <p style={S.p}>
             Huis ter Huynen — Boutique Lodge<br />
-            Zuiderstraat 6<br />
-            9491 EC Zeijen, Niederlande
+            Zuiderstraat 6 p<br />
+            9491 TH Zeijen, Niederlande
           </p>
 
           <h2 style={S.h2}>Registereintrag</h2>

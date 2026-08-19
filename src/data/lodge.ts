@@ -5,7 +5,7 @@
 export const WIFI_SSID = "HuynenGast";
 export const WIFI_PASSWORD = process.env.NEXT_PUBLIC_WIFI_PASSWORD ?? "";
 
-export const ADDRESS_STREET = "Zuiderstraat 6";
+export const ADDRESS_STREET = "Zuiderstraat 6 p";
 export const ADDRESS_CITY = "Zeijen";
 export const ADDRESS_REGION = "Drenthe";
 export const PHONE_RAW = "+31642568603";

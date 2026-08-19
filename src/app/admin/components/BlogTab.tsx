@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { BlogPost } from "../types";
 import { PUBLIC_IMAGES } from "@/lib/site";
-import { MAX_SLUG_LENGTH, slugify, slugLengteFout } from "@/lib/slug";
+import { MAX_SLUG_LENGTH, kortSlugIn, slugify, slugLengteFout } from "@/lib/slug";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -82,7 +82,7 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
 
   const save = async (publishAfter = false) => {
     if (!form.titel || !form.inhoud) { setMsg("Titel en inhoud zijn verplicht"); return; }
-    if (!form.slug) form.slug = slugify(form.titel);
+    if (!form.slug) form.slug = kortSlugIn(slugify(form.titel));
     const slugFout = slugLengteFout(form.slug);
     if (slugFout) { setMsg(slugFout); return; }
     if (publishAfter && form.geplande_publicatie && new Date(form.geplande_publicatie).getTime() > Date.now()) {
@@ -262,7 +262,7 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
               <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Titel *</label>
               <input value={form.titel} onChange={e => {
                 const titel = e.target.value;
-                setForm(f => ({ ...f, titel, slug: f.slug || slugify(titel) }));
+                setForm(f => ({ ...f, titel, slug: f.slug || kortSlugIn(slugify(titel)) }));
               }} placeholder="Bijv. De 10 mooiste fietspaden in Drenthe" style={inp} />
             </div>
             <div>
@@ -277,7 +277,7 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
                 /blog/{form.slug || "..."}
                 {form.slug.length > MAX_SLUG_LENGTH
                   ? ` — ${form.slug.length}/${MAX_SLUG_LENGTH} tekens, te lang voor de zoekresultaten`
-                  : ""}
+                  : ` · max. ${MAX_SLUG_LENGTH} tekens`}
               </div>
             </div>
           </div>

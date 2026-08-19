@@ -52,7 +52,7 @@ function emailWrap(content: string): string {
             <td style="width:40px;height:1px;background-color:#B49A5E;opacity:0.4;"></td>
           </tr></table>
           <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#8A7D6A;">
-            ${LODGE_NAME} &middot; Zuiderstraat 6 &middot; Zeijen, Drenthe
+            ${LODGE_NAME} &middot; Zuiderstraat 6 p &middot; Zeijen, Drenthe
           </p>
         </td></tr>
       </table>

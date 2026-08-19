@@ -17,8 +17,9 @@ export interface SeoRedirect {
 }
 
 /** De oorspronkelijke fietsslug — een volledige alinea als URL. Staat apart
- *  zodat de migratie die het artikel hernoemt en deze redirect dezelfde tekst
- *  gebruiken. */
+ *  zodat de seed-import die het artikel hernoemt en deze redirect dezelfde
+ *  tekst gebruiken (de hernoeming zit ook in
+ *  migrations/2026_08_18_fietsslug_inkorten.sql). */
 export const LANGE_FIETSSLUG =
   "fietsen-in-drenthe-is-misschien-wel-de-mooiste-manier-om-de-provincie-echt-te-beleven-uitgestrekte-heidevelden-eeuwenoude-bossen-kronkelende-beekdalen-karakteristieke-brinkdorpen-en-kilometers-autoluwe-fietspaden-maken-drenthe-tot-een-waar-paradijs-voor-fietsers";
 

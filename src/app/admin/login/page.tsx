@@ -130,7 +130,7 @@ function LoginForm() {
         </div>
 
         <p style={{ fontSize: 11, color: "#B4AFA5", marginTop: 24 }}>
-          Huis ter Huynen · Zuiderstraat 6 · Zeijen, Drenthe
+          Huis ter Huynen · Zuiderstraat 6 p · Zeijen, Drenthe
         </p>
       </div>
     </div>

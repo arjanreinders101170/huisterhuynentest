@@ -26,6 +26,39 @@ async function haalMaand(maand: string, dimensie: "query" | "page"): Promise<Gsc
   }));
 }
 
+/** Supabase levert standaard maximaal 1000 rijen per verzoek. Zestien maanden
+ *  zijn er meer, dus doorbladeren tot alles binnen is. */
+async function haalAlleQueries(): Promise<Map<string, GscRij[]>> {
+  const perMaand = new Map<string, GscRij[]>();
+  const PAGINA = 1000;
+
+  for (let van = 0; ; van += PAGINA) {
+    const { data, error } = await getSupabase()
+      .from("gsc_metrics")
+      .select("maand, sleutel, klikken, vertoningen, positie")
+      .eq("dimensie", "query")
+      .order("maand", { ascending: true })
+      .range(van, van + PAGINA - 1);
+
+    if (error || !data || data.length === 0) break;
+
+    for (const r of data as (MetricRij & { maand: string })[]) {
+      const rij: GscRij = {
+        sleutel: r.sleutel,
+        klikken: Number(r.klikken),
+        vertoningen: Number(r.vertoningen),
+        positie: Number(r.positie),
+      };
+      const lijst = perMaand.get(r.maand);
+      if (lijst) lijst.push(rij); else perMaand.set(r.maand, [rij]);
+    }
+
+    if (data.length < PAGINA) break;
+  }
+
+  return perMaand;
+}
+
 export interface ClusterVerschil extends ClusterCijfers {
   positieVorig: number | null;
   positieVerschil: number | null;   // positief = gestegen (lager positienummer)
@@ -161,4 +194,43 @@ export async function handleGscPost(action: string, body: Record<string, unknown
       { status: 500 },
     );
   }
+}
+
+/** Maandreeks voor de grafiek: totalen plus een uitsplitsing per cluster, zodat
+ *  je seizoenspatroon en trend ziet in plaats van alleen het laatste stapje. */
+export async function handleGscReeksGet(table: string): Promise<NextResponse | null> {
+  if (table !== "gsc_reeks") return null;
+
+  const perMaand = await haalAlleQueries();
+  const maanden = [...perMaand.keys()].sort();
+
+  const totaal = maanden.map(maand => {
+    const t = totalen(perMaand.get(maand)!);
+    return {
+      maand,
+      vertoningen: t.vertoningen,
+      klikken: t.klikken,
+      nietMerkKlikken: t.nietMerkKlikken,
+      positie: t.positie,
+    };
+  });
+
+  // Alleen clusters die ergens in de reeks voorkomen, gesorteerd op totale vraag.
+  const clusterTotalen = new Map<string, number>();
+  const perCluster: Record<string, { maand: string; vertoningen: number; klikken: number; positie: number }[]> = {};
+
+  for (const maand of maanden) {
+    for (const c of clusterCijfers(perMaand.get(maand)!)) {
+      clusterTotalen.set(c.cluster, (clusterTotalen.get(c.cluster) ?? 0) + c.vertoningen);
+      (perCluster[c.cluster] ??= []).push({
+        maand, vertoningen: c.vertoningen, klikken: c.klikken, positie: c.positie,
+      });
+    }
+  }
+
+  const clusters = [...clusterTotalen.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([naam]) => naam);
+
+  return NextResponse.json({ data: { maanden, totaal, clusters, perCluster } });
 }

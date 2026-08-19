@@ -26,12 +26,17 @@ const SITE_URL = "https://www.huisterhuynen.nl";
 const OG_IMAGE = `${SITE_URL}/lodge-heide.jpg`;
 
 export const metadata: Metadata = {
+  // Merknaam voorop: de merkcluster staat gemiddeld op positie 15,3 — Google heeft
+  // "Huis ter Huynen" nog niet als entiteit vastgelegd, en de homepage is de plek
+  // om dat te repareren. "Lodge Drenthe" stond er eerst voorop, goed voor 27
+  // vertoningen in de hele dataset; "jacuzzi" (754) verving "hottub" (249) en
+  // "twee lodges" is de differentiator die geen enkele concurrent kan claimen.
   title: {
-    default: "Lodge Drenthe | Vakantiewoning met Hottub bij Assen – Huis ter Huynen",
+    default: "Huis ter Huynen | Twee Lodges met Privé Jacuzzi op de Drentse Heide",
     template: "%s – Huis ter Huynen",
   },
   description:
-    "Romantisch weekend weg in Drenthe? Huis ter Huynen biedt 2 luxe lodges op de heide bij Zeijen, 20 min van Assen. Privé hottub, wandelen & fietsen vanuit de deur. Gezellig & sfeervol – boek uw vakantie chalet!",
+    "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé jacuzzi en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
   keywords: [
     "lodge Drenthe",
     "vakantiewoning Drenthe",
@@ -57,9 +62,9 @@ export const metadata: Metadata = {
     locale: "nl_NL",
     url: SITE_URL,
     siteName: "Huis ter Huynen",
-    title: "Lodge Drenthe | Vakantiewoning met Hottub bij Assen – Huis ter Huynen",
+    title: "Huis ter Huynen | Twee Lodges met Privé Jacuzzi op de Drentse Heide",
     description:
-      "Romantisch weekend weg in Drenthe? 2 luxe lodges op de heide bij Zeijen, 20 min van Assen. Privé hottub, wandelen & fietsen vanuit de deur. Gezellig & sfeervol.",
+      "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé jacuzzi en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
     images: [
       {
         url: OG_IMAGE,
@@ -71,9 +76,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lodge Drenthe | Vakantiewoning met Hottub bij Assen – Huis ter Huynen",
+    title: "Huis ter Huynen | Twee Lodges met Privé Jacuzzi op de Drentse Heide",
     description:
-      "Romantisch weekend weg in Drenthe? 2 luxe lodges op de heide bij Zeijen, 20 min van Assen. Privé hottub, wandelen & fietsen vanuit de deur.",
+      "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé jacuzzi en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
     images: [OG_IMAGE],
   },
   alternates: {
@@ -108,8 +113,8 @@ const jsonLd = {
   email: "lodge@huisterhuynen.nl",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Zuiderstraat 6",
-    postalCode: "9491 EC",
+    streetAddress: "Zuiderstraat 6 p",
+    postalCode: "9491 TH",
     addressLocality: "Zeijen",
     addressRegion: "Drenthe",
     addressCountry: "NL",
