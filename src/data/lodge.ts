@@ -3,7 +3,9 @@
  * Door codes and stay tokens DO rotate — see stays table.
  */
 export const WIFI_SSID = "HuynenGast";
-export const WIFI_PASSWORD = process.env.NEXT_PUBLIC_WIFI_PASSWORD ?? "";
+/* Het wifi-wachtwoord staat bewust NIET hier: dit bestand wordt ook door
+ * client-componenten geïmporteerd, en alles wat hier staat komt in de
+ * publieke bundle terecht. Zie src/lib/wifi.ts (server-only). */
 
 export const ADDRESS_STREET = "Zuiderstraat 6 p";
 export const ADDRESS_CITY = "Zeijen";

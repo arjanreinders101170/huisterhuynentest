@@ -1,4 +1,5 @@
 import { getSupabase } from "@/lib/supabase";
+import { LODGE_NAMES } from "@/data/lodge";
 
 /* Beschikbaarheid van een lodge, uit twee bronnen tegelijk:
  * de externe agenda (Booking.com) en de eigen bevestigde reserveringen.
@@ -19,13 +20,22 @@ export const BLOCKING_STATUSES = [
   "volledig_betaald",
 ] as const;
 
-const ICAL_URLS: Record<string, string> = {
-  lodge_1: process.env.ICAL_LODGE_1 || "https://ical.booking.com/v1/export?t=4ba3994f-bd1d-4b5a-9219-c1022a71b8bc",
-  lodge_2: process.env.ICAL_LODGE_2 || "https://ical.booking.com/v1/export?t=aef0f4b7-7ef2-4acc-a558-f8c8cc8f70a6",
+/* Capability-URL's: het token ín de URL is het enige bewijs van toegang tot
+ * de Booking.com-agenda. Ze stonden hier als hardcoded fallback, en daarmee
+ * in de git-historie van elke clone, fork en CI-run. Alleen env-vars nu — een
+ * ontbrekende waarde levert een lege agenda op, geen stille terugval. */
+const ICAL_URLS: Record<string, string | undefined> = {
+  lodge_1: process.env.ICAL_LODGE_1,
+  lodge_2: process.env.ICAL_LODGE_2,
 };
 
-export function hasIcalUrl(lodge: string): boolean {
-  return !!ICAL_URLS[lodge];
+/* Bewust losgekoppeld van ICAL_URLS: of een lodge bestaat is een andere vraag
+ * dan of we zijn externe agenda kunnen ophalen. Zonder die scheiding zou een
+ * niet-ingevulde ICAL_LODGE_1 de beschikbaarheidskalender met een 400
+ * afserveren, terwijl we prima kunnen terugvallen op onze eigen
+ * bevestigde reserveringen. */
+export function isKnownLodge(lodge: string): boolean {
+  return Object.prototype.hasOwnProperty.call(LODGE_NAMES, lodge);
 }
 
 function formatDate(raw: string): string {

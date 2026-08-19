@@ -31,6 +31,17 @@ export const reviewSchema = z.object({
   email: z.string().email().optional(),
 });
 
+/* Fietsverhuur is het enige product met een dynamische prijs, en die wordt
+ * berekend uit velden die de browser meestuurt. Zonder dit schema kwamen ze
+ * ongecontroleerd binnen via `metadata` (z.record(…, z.unknown())): een
+ * `dagen` van 0.01 leverde dan een Mollie-betaallink van een paar cent op.
+ * De cast `as number` in de route hielp daar niet tegen — die bestaat alleen
+ * tijdens het compileren. */
+export const fietsMetadataSchema = z.object({
+  fietsen: z.record(z.string().max(50), z.number().int().min(0).max(10)),
+  dagen: z.number().int().min(1).max(30),
+});
+
 export const checkoutSchema = z.object({
   productId: z.string().min(1).max(50),
   gastNaam: z.string().min(1).max(100),

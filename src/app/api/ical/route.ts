@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchIcalPeriods, confirmedPeriods, hasIcalUrl } from "@/lib/availability";
+import { fetchIcalPeriods, confirmedPeriods, isKnownLodge } from "@/lib/availability";
 
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   const lodge = request.nextUrl.searchParams.get("lodge");
-  if (!lodge || !hasIcalUrl(lodge)) {
+  if (!lodge || !isKnownLodge(lodge)) {
     return NextResponse.json({ error: "Ongeldige lodge" }, { status: 400 });
   }
 

@@ -132,9 +132,17 @@ export async function computeStayPrice(input: StayPriceInput): Promise<StayPrice
 /** Helper voor dual-write — vangt fouten af zodat hoofdflow nooit breekt op nieuwe tabel. */
 export async function safeInsertBookingRequest(row: Record<string, unknown>): Promise<string | null> {
   try {
+    /* Elke aanvraag krijgt meteen een confirm-token, zodat de kolom nooit
+     * NULL is. /api/bevestig weigert rijen zonder token, en deze regel zorgt
+     * dat dat een bewuste keuze blijft in plaats van een gevolg van welk
+     * insert-pad de rij toevallig aanmaakte. `send_offerte_v2` vervangt de
+     * waarde zodra de host de offerte verstuurt. */
+    const { randomBytes } = await import("crypto");
+    const rowMetToken = { confirm_token: randomBytes(32).toString("hex"), ...row };
+
     const { data, error } = await getSupabase()
       .from("booking_requests")
-      .insert(row)
+      .insert(rowMetToken)
       .select("id")
       .single();
     if (error) {
