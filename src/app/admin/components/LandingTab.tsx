@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { LandingPageRow, LandingSection } from "../types";
-import { slugify } from "./BlogTab";
+import { slugify } from "@/lib/slug";
 import { PUBLIC_IMAGES } from "@/lib/site";
 
 type LandingSectionForm = { eyebrow: string; heading: string; bodyText: string; bulletsText: string };
@@ -114,7 +114,7 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
   };
 
   const importSeed = async () => {
-    if (!confirm("Alle standaard-landingspagina's importeren en herstellen? Bestaande pagina's met dezelfde slug worden bijgewerkt met de standaard-inhoud. Uw handmatige aanpassingen aan seed-pagina's worden overschreven.")) return;
+    if (!confirm("Alle standaard-landingspagina's importeren en herstellen? Bestaande pagina's met dezelfde slug worden bijgewerkt met de standaard-inhoud. Uw handmatige aanpassingen aan seed-pagina's worden overschreven. Pagina's die naar een andere pagina 301'en worden gedepubliceerd (de inhoud blijft bewaard).")) return;
     setImporting(true);
     const res = await fetch("/api/admin/data", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -123,7 +123,11 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
     const data = await res.json();
     await reload();
     setImporting(false);
-    setMsg(data.error ? data.error : `${data.imported ?? 0} pagina('s) geïmporteerd.`);
+    if (data.error) { setMsg(data.error); return; }
+    setMsg(
+      `${data.imported ?? 0} pagina('s) geïmporteerd.` +
+      (data.geretireerd ? ` ${data.geretireerd} pagina('s) gedepubliceerd wegens een 301.` : ""),
+    );
   };
 
   const addSection = () => setForm(f => ({ ...f, sections: [...f.sections, { eyebrow: "", heading: "", bodyText: "", bulletsText: "" }] }));

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SEO_REDIRECTS } from "./src/lib/redirects";
 
 const cspHeader = [
   "default-src 'self'",
@@ -48,27 +49,15 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [
-      {
-        source: "/landing",
-        destination: "/",
-        permanent: true,
-      },
-      {
-        source: "/wellness-vakantie-drenthe-ontspannen-in-een-luxe-vakantiehuis-met-hottub",
-        destination: "/wellness-vakantie-drenthe",
-        permanent: true,
-      },
-      // De oude fietsslug was een volledige alinea (250+ tekens): wordt in de SERP
-      // afgekapt en oogt als spam. Het artikel zelf staat nu op /blog/fietsen-in-drenthe
-      // (zie migrations/2026_08_18_fietsslug_inkorten.sql).
-      {
-        source:
-          "/blog/fietsen-in-drenthe-is-misschien-wel-de-mooiste-manier-om-de-provincie-echt-te-beleven-uitgestrekte-heidevelden-eeuwenoude-bossen-kronkelende-beekdalen-karakteristieke-brinkdorpen-en-kilometers-autoluwe-fietspaden-maken-drenthe-tot-een-waar-paradijs-voor-fietsers",
-        destination: "/blog/fietsen-in-drenthe",
-        permanent: true,
-      },
-    ];
+    // Bron: src/lib/redirects.ts — dezelfde lijst filtert de sitemap en de
+    // overzichtspagina's, zodat een 301'd pad nergens meer opduikt.
+    // Expliciet 301 in plaats van `permanent: true` (dat levert een 308 op):
+    // 301 is de status die in de SEO-analyse staat en die elke crawler kent.
+    return SEO_REDIRECTS.map(({ from, to }) => ({
+      source: from,
+      destination: to,
+      statusCode: 301,
+    }));
   },
   async rewrites() {
     return [

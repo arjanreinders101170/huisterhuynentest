@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { BlogPost } from "../types";
 import { PUBLIC_IMAGES } from "@/lib/site";
+import { MAX_SLUG_LENGTH, kortSlugIn, slugify, slugLengteFout } from "@/lib/slug";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -11,22 +12,6 @@ const C = {
 
 const EMPTY_POST = { id: "", slug: "", titel: "", intro: "", inhoud: "", categorie: "Verhaal", leestijd: "4 minuten", auteur: "Arjan Reinders", og_image: "", geplande_publicatie: "" };
 
-/** Maximale sluglengte. Een slug die uit een hele alinea bestaat wordt in de
- *  SERP afgekapt en oogt als spam — zie de fietsslug van 250+ tekens die met
- *  een 301 is ingekort. Afkappen gebeurt op een woordgrens. */
-export const MAX_SLUG_LENGTH = 70;
-
-export function slugify(s: string): string {
-  const slug = s.toLowerCase().trim()
-    .replace(/[àáâãä]/g, "a").replace(/[èéêë]/g, "e")
-    .replace(/[ìíîï]/g, "i").replace(/[òóôõö]/g, "o")
-    .replace(/[ùúûü]/g, "u").replace(/[ç]/g, "c")
-    .replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-");
-  if (slug.length <= MAX_SLUG_LENGTH) return slug;
-  const cut = slug.slice(0, MAX_SLUG_LENGTH);
-  const lastDash = cut.lastIndexOf("-");
-  return (lastDash > 0 ? cut.slice(0, lastDash) : cut).replace(/-+$/, "");
-}
 
 // ISO timestamp uit DB → <input type="datetime-local"> string in lokale tijd.
 export function isoToLocalInput(iso: string | null | undefined): string {
@@ -72,7 +57,15 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
     const data = await res.json();
     await reload();
     setImporting(false);
-    setMsg(data.error ? data.error : `${data.imported ?? 0} conceptartikel(en) geïmporteerd.`);
+    if (data.error) { setMsg(data.error); return; }
+    const extra = [
+      data.hernoemd ? `${data.hernoemd} artikel(en) naar een kortere URL verplaatst` : "",
+      data.geretireerd ? `${data.geretireerd} artikel(en) gedepubliceerd wegens een 301` : "",
+    ].filter(Boolean);
+    setMsg(
+      `${data.imported ?? 0} conceptartikel(en) geïmporteerd.` +
+      (extra.length ? ` ${extra.join(", ")}.` : ""),
+    );
   };
 
   const startNew = () => { setForm(EMPTY_POST); setMsg(""); setPreview(false); setView("edit"); };
@@ -89,7 +82,9 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
 
   const save = async (publishAfter = false) => {
     if (!form.titel || !form.inhoud) { setMsg("Titel en inhoud zijn verplicht"); return; }
-    if (!form.slug) form.slug = slugify(form.titel);
+    if (!form.slug) form.slug = kortSlugIn(slugify(form.titel));
+    const slugFout = slugLengteFout(form.slug);
+    if (slugFout) { setMsg(slugFout); return; }
     if (publishAfter && form.geplande_publicatie && new Date(form.geplande_publicatie).getTime() > Date.now()) {
       if (!confirm(`Er staat een geplande publicatie op ${fmtPlanned(form.geplande_publicatie)}. Direct publiceren wist deze planning. Doorgaan?`)) return;
     }
@@ -267,15 +262,22 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
               <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>Titel *</label>
               <input value={form.titel} onChange={e => {
                 const titel = e.target.value;
-                setForm(f => ({ ...f, titel, slug: f.slug || slugify(titel) }));
+                setForm(f => ({ ...f, titel, slug: f.slug || kortSlugIn(slugify(titel)) }));
               }} placeholder="Bijv. De 10 mooiste fietspaden in Drenthe" style={inp} />
             </div>
             <div>
               <label style={{ display: "block", fontSize: 11, color: C.muted, marginBottom: 4 }}>URL slug *</label>
               <input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: slugify(e.target.value) }))}
                 placeholder="bijv. fietspaden-drenthe" style={inp} />
-              <div style={{ fontSize: 10, color: C.muted, marginTop: 3 }}>
-                /blog/{form.slug || "..."} · max. {MAX_SLUG_LENGTH} tekens
+              <div style={{
+                fontSize: 10,
+                color: form.slug.length > MAX_SLUG_LENGTH ? "#B91C1C" : C.muted,
+                marginTop: 3,
+              }}>
+                /blog/{form.slug || "..."}
+                {form.slug.length > MAX_SLUG_LENGTH
+                  ? ` — ${form.slug.length}/${MAX_SLUG_LENGTH} tekens, te lang voor de zoekresultaten`
+                  : ` · max. ${MAX_SLUG_LENGTH} tekens`}
               </div>
             </div>
           </div>
