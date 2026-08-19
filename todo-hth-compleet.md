@@ -117,13 +117,13 @@
 | 59 | VVV Drenthe aanmelden | Nu | Gratis plaatsing via `vvvdrenthe.nl/aanbieders` |
 | 60 | Visit Drenthe aanmelden | Nu | Officieel provinciaal toerisme — contact opnemen voor gratis vermelding |
 | 61 | Tripadvisor basisprofiel aanmaken | Nu | Gratis, reviews worden er al op gezocht |
-| 62 | Natuurhuisje.nl profiel aanmaken | Oktober/november 2026 | Exacte doelgroep (natuur, rust) — ±15% commissie, gratis listing |
-| 63 | Airbnb profiel aanmaken | Oktober/november 2026 | Internationaal bereik, koppels/gezinnen |
+| 62 | Natuurhuisje.nl profiel aanmaken | **Maart 2027** | Besloten 19 aug: ná de fotoshoot. Exacte doelgroep (natuur, rust) — ±15% commissie, gratis listing. Alleen restcapaciteit erop |
+| 63 | Airbnb profiel aanmaken | **April 2027** | Besloten 19 aug: een maand ná Natuurhuisje, met de lessen uit die listing erin. Internationaal bereik, koppels/gezinnen |
 | 64 | Persbericht opstellen + versturen | November 2026 | Naar Dagblad van het Noorden, RTV Drenthe, Asser Courant bij opening |
 | 65 | ANWB verblijfsaccommodatie aanmelden | November 2026 | Gratis vermelding via `anwb.nl/campings/inschrijven` |
 | 66 | Wandel-/fietswebsites benaderen voor vermelding | Voor opening | `wandelknooppunt.nl`, `fietsknooppunt.nl` — lodge als uitvalsbasis |
 | 67 | 1–2 reisbloggers uitnodigen (ruil: gratis nacht) | Na opening | Backlink + bereik via travel blogs — zoek op "Drenthe reisblog" |
-| 68 | Pinterest account aanmaken | Voor opening | Pinboards met Drenthe-foto's → verkeer naar blog |
+| 68 | Pinterest account aanmaken | Voor opening | Pinboards met Drenthe-foto's → verkeer naar blog. Start met natuur- en buitenbeeld; interieurpins volgen in maart 2027 |
 | 69 | ✅ Schema markup gecontroleerd & uitgebreid | Gedaan | FAQPage + BreadcrumbList + LodgingBusiness + BlogPosting + landing-schemas live |
 
 ---
@@ -169,7 +169,7 @@
 ### Open — met prioriteit
 | # | Item | Prioriteit | Toelichting |
 |---|------|-----------|-------------|
-| 79 | **Interieurfoto's lodges** (woonkamer, hottub, badkamer, slaapkamer) maken + op site verwerken | **Hoog** | Grootste resterende conversie-blokker voor de luxe-positionering. Optie A: JPG's aanleveren in `public/`, ik verwerk ze. Optie B: galerij-veld in de admin zodat je ze zelf toevoegt |
+| 79 | **Interieurfoto's lodges** (woonkamer, hottub, badkamer, slaapkamer) maken + op site verwerken | **Hoog** | **Ingepland: februari 2027** (besloten 19 aug) — eerder kan niet, de lodges zijn dan pas opgeleverd. Video-impressie volgt in maart. Optie A: JPG's aanleveren in `public/`, ik verwerk ze. Optie B: galerij-veld in de admin zodat je ze zelf toevoegt |
 | 80 | PR #135 mergen (sticky CTA + footer-links) | Hoog | Operationeel — daarna staan de interne links live |
 | 81 | GA4 activeren: `NEXT_PUBLIC_GA4_ID` in Vercel + events als sleutelgebeurtenis markeren | Hoog | **Geparkeerd — recept ligt klaar.** Stap voor stap in `ANALYTICS_SETUP.md` (blok A Search Console · B GA4 · C controle, ~60 min), en als afvinkbare webpagina: https://claude.ai/code/artifact/37782299-de40-4153-a9aa-f279a04c290d · De CSP-blokkade is al weg (PR #178) · Vergeet de twee instellingen niet die **niet** met terugwerkende kracht werken: bewaartermijn op 14 maanden en `mollie.com` als ongewenste verwijzing · Blok A is mogelijk al gedaan via #78 — even verifiëren |
 | 82 | Looker Studio managementdashboard (Fase 6) | Middel | Pas zinvol na enkele dagen GA4-data. Volgt op #81; dan bouwrecept per grafiek (velden, filters, blends) laten schrijven. Begin met 2 pagina's — verkeer + Search Console; conversie en kosten pas als er boekingen doorheen lopen |
@@ -188,37 +188,53 @@
 
 ---
 
-## Groei naar 10.000 bezoekers — sprint augustus 2026
+## Maximale bezetting — sprint augustus 2026
 
-Volledig plan met budget: `groeiplan-10000-bezoekers.md`. Voortgang live in de admin onder **Marketing → Groei naar 10.000**.
+Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin onder **Marketing → Groei & bezetting**.
+
+**Break-even ligt op 22% jaarbezetting** — 13 nachten en ruim 5 boekingen per maand over beide lodges, bij € 27.500 vaste lasten per jaar (€ 2.000/mnd financiering + € 3.500/jr parkkosten). Stroom en water gaan op de meter en zijn dus variabel: € 12 per nacht in de zomer, € 28 in de winter. **Het doel is 70%**, en het verschil tussen 22% en het blokplafond van 68% is ruim € 54.000 per jaar. Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
 
 ### Afgerond ✅
 | # | Item | Status |
 |---|------|--------|
-| 90 | Groeiplan naar 10.000 bezoekers, inclusief kanaalmix, 5-fasenladder en drie budgetscenario's | ✅ |
+| 90 | Groeiplan herbouwd rond bezetting: maandmodel van bezetting → nachten → boekingen → bezoekers, kanaalmix, fasenladder en vier budgetscenario's | ✅ |
 | 91 | Herkomstmeting op elke aanvraag: utm-parameters, gclid/fbclid, verwijzer, eerste én laatste contactmoment; kanaal server-side afgeleid | ✅ |
 | 92 | Kanaal zichtbaar per aanvraag in de admin (met campagne en landingspagina in de tooltip) | ✅ |
 | 93 | RSS-feed op `/blog/rss.xml` + `<link rel="alternate">` in de head | ✅ |
 | 94 | IndexNow: sleutelbestand in `public/`, melding bij publicatie van blog, landingspagina en de publicatie-cron | ✅ |
-| 95 | Admin-tab "Groei naar 10.000": stand uit Search Console, mijlpalen, kanaalmix, budgetscenario's, werkelijke herkomst per kanaal | ✅ |
+| 95 | Admin-tab "Groei & bezetting": de rekensom, het maandmodel, de doordeweekse randvoorwaarde, de zeven bezettingshefbomen, mijlpalen, kanaalmix, budgetscenario's en de werkelijke herkomst per kanaal | ✅ |
+
+### Genomen beslissingen — 19 augustus 2026
+| # | Vraag | Besluit |
+|---|-------|---------|
+| J | Wanneer plannen we de fotoshoot? | **Q1 2027** — shoot in februari, video-impressie in maart, aansluitend op dezelfde styling. Staat op de marketingkalender (`j27-8`, `j27-9`, `f27-7`, `f27-8`, `m27-7`) |
+| K | Gaan we op Natuurhuisje en Airbnb? | **Ja, ná de fotoshoot** — Natuurhuisje maart 2027 (`m27-9`), Airbnb april 2027 (`a27-6`), beide alleen voor restcapaciteit. Kanaalvergelijking in april (`a27-7`) |
 
 ### Openstaande beslissingen (voor Arjan) — blokkeren de start
 | # | Vraag | Impact |
 |---|-------|--------|
-| H | 10.000 per **jaar** of per **maand**? | Bepaalt of het budget ± € 7.000 of ± € 26.200 is |
-| I | Welk budgetscenario: Zuinig (€ 300/mnd), Doelgericht (€ 1.000/mnd, advies) of Versnellen (€ 1.875/mnd)? | Bepaalt of contentproductie wordt uitbesteed |
-| J | Wanneer plannen we de fotoshoot? | Alles hierna hangt eraan — dit is de eerste uitgave |
-| K | Gaan we op Natuurhuisje en Airbnb, en zo ja alleen voor restcapaciteit? | Bepaalt of 45% eigen kanalen realistisch is |
+| H | Welk budgetscenario: **Bezetting** (€ 550/mnd, advies), Zuinig (€ 300), Doelgericht (€ 1.000) of Versnellen (€ 1.875)? | Bepaalt of contentproductie wordt uitbesteed. Bezetting haalt 70% voor € 15.400 over 24 maanden |
+| I | Hoe ziet een midweek er bij ons uit — pakket, prijs, doelgroep? | Doordeweeks is 55% van de opgave. Zonder doordeweekse propositie is het plafond 43% jaarbezetting |
 
 ### Open — fase 0 (sep – dec 2026), doel 400 bezoekers/mnd
 | # | Item | Prioriteit | Toelichting |
 |---|------|-----------|-------------|
 | 96 | Migratie `2026_08_19_aanvraag_attributie.sql` draaien in Supabase | **Hoog** | Zonder deze migratie blijft het kanaal leeg op nieuwe aanvragen |
-| 97 | GA4 activeren (#81) | **Hoog** | Vervangt de Search Console-proxy door een echt sessiecijfer; zonder dit is het plan half meetbaar |
-| 98 | Interieur- & sfeerfotografie (#79) | **Hoog** | Voorwaarde voor Pinterest, Meta, landingspagina's én gidsvermeldingen |
+| 97 | GA4 activeren (#81) | **Kritiek** | Nu de belangrijkste openstaande actie. Elk conversiepercentage in het plan is een branche-aanname; bij 0,8% in plaats van 1,6% is er twee keer zoveel verkeer nodig. GA4 lost dat op |
+| 106 | **Doordeweekse propositie uitwerken** — pakket, prijs, doelgroep, teksten | **Hoog** | 55% doordeweekse bezetting is de opgave; alleen weekenden verkopen geeft een plafond van 43%. Moet in januari verkoopbaar zijn |
+| 107 | Minimumverblijf-regels instellen die geen onverkoopbare gaten achterlaten | **Hoog** | Goed voor 5 tot 8% jaarbezetting en het kost niets |
+| 108 | Prijs en beschikbaarheid zichtbaar zonder formulier | **Hoog** | De grootste conversiehefboom die geen geld kost |
+| 109 | E-maillijst als last-minute-kanaal inrichten | Middel | Het enige kanaal waarmee je een specifieke week kunt vullen. Doel: 1.000 abonnees eind 2028 |
+| 110 | Resterende vaste lasten aanleveren: verzekering, onderhoud, reservering groot onderhoud, boekhouding, internet | **Hoog** | Financiering (€ 24.000) en parkkosten (€ 3.500) staan erin. De rest schat ik op € 3.000–5.000/jr; dat tilt break-even van 22% naar ± 25% |
+| 112 | Meterstanden bijhouden per verhuurde nacht | Middel | De energiekosten (€ 12 zomer – € 28 winter per nacht) zijn nu schattingen. Na één winter met echte standen wordt de hele ondergrens exact |
+| 113 | **Minimumverblijf 3 nachten in nov t/m feb instellen** | **Hoog** | De jacuzzi opwarmen kost hetzelfde bij 2 of 4 nachten. Verdeelt de opwarmpiek over meer omzet — en voorkomt losse gaten |
+| 114 | Flexibele aankomstdagen + last-minute-kanaal | **Hoog** | Alleen hele weekenden en midweken verkopen geeft een plafond van 68%. De laatste procenten komen uit restnachten, niet uit meer vraag |
+| 111 | Basisprijs en toeslagen vastzetten in `pricing_config` voor 2027 | **Hoog** | Het model rekent met € 165 basis en de standaardtoeslagen (weekend +15%, vakantie NL +25%, TT +50%). Zolang die niet in de database staan, draait de prijsmotor op nul |
+| 98 | Fotograaf selecteren, shotlist en stylingbudget vastleggen (#79) | **Hoog** | De shoot zelf staat in februari 2027; dit is het voorwerk zodat die maand alleen nog uitvoeren is |
 | 99 | Drie P0-landingspagina's herbouwen (wellness, romantiek, jacuzzi) | **Hoog** | Samen 3.745 vertoningen en 2 klikken |
 | 100 | 6 artikelen per maand, sep t/m dec | **Hoog** | Rijpen precies op tijd voor het voorjaar van 2027 |
 | 101 | Gratis vermeldingen aanmelden (#85) | **Hoog** | VVV Drenthe, Visit Drenthe, ANWB, Tripadvisor, wandel-/fietssites |
 | 102 | Google Bedrijfsprofiel: wekelijkse posts, alle velden gevuld | Middel | Merkcluster staat op positie 15,3 — Google kent de entiteit nog niet |
-| 103 | Pinterest-account opzetten met de nieuwe foto's | Middel | Pins hebben maanden nodig om te rijpen; starten vóór de opening |
+| 103 | Pinterest-account opzetten met natuur- en buitenbeeld | Middel | Pins hebben maanden nodig om te rijpen; starten vóór de opening. Interieurpins volgen in maart 2027 |
+| 105 | Werkfoto's met de telefoon zodra de lodges opgeleverd zijn | Middel | Januari 2027. Niet voor de landingspagina's, wél voor het Bedrijfsprofiel, de nieuwsbrief en achter-de-schermen op social — houdt het profiel levend in de openingsmaand. Kost een uur |
 | 104 | RSS-feed koppelen aan een automatisering (bijv. automatisch delen op social) | Laag | De feed staat klaar; de koppeling is nog handwerk |

@@ -156,7 +156,7 @@ export default function AdminDashboard() {
       { id: "financieel", label: "Financieel" },
     ]},
     { id: "marketing", icon: "🎯", label: "Marketing", short: "Marketing", items: [
-      { id: "groei", label: "Groei naar 10.000" },
+      { id: "groei", label: "Groei & bezetting" },
       { id: "marketing_dashboard", label: "Marketing Dashboard" },
       { id: "search_console", label: "Search Console" },
       { id: "acties", label: "Promotiecodes" },
