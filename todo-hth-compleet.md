@@ -188,19 +188,21 @@
 
 ---
 
-## Groei naar 10.000 bezoekers — sprint augustus 2026
+## Maximale bezetting — sprint augustus 2026
 
-Volledig plan met budget: `groeiplan-10000-bezoekers.md`. Voortgang live in de admin onder **Marketing → Groei naar 10.000**.
+Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin onder **Marketing → Groei & bezetting**.
+
+**Het doel is 70% bezetting het hele jaar door.** Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
 
 ### Afgerond ✅
 | # | Item | Status |
 |---|------|--------|
-| 90 | Groeiplan naar 10.000 bezoekers, inclusief kanaalmix, 5-fasenladder en drie budgetscenario's | ✅ |
+| 90 | Groeiplan herbouwd rond bezetting: maandmodel van bezetting → nachten → boekingen → bezoekers, kanaalmix, fasenladder en vier budgetscenario's | ✅ |
 | 91 | Herkomstmeting op elke aanvraag: utm-parameters, gclid/fbclid, verwijzer, eerste én laatste contactmoment; kanaal server-side afgeleid | ✅ |
 | 92 | Kanaal zichtbaar per aanvraag in de admin (met campagne en landingspagina in de tooltip) | ✅ |
 | 93 | RSS-feed op `/blog/rss.xml` + `<link rel="alternate">` in de head | ✅ |
 | 94 | IndexNow: sleutelbestand in `public/`, melding bij publicatie van blog, landingspagina en de publicatie-cron | ✅ |
-| 95 | Admin-tab "Groei naar 10.000": stand uit Search Console, mijlpalen, kanaalmix, budgetscenario's, werkelijke herkomst per kanaal | ✅ |
+| 95 | Admin-tab "Groei & bezetting": de rekensom, het maandmodel, de doordeweekse randvoorwaarde, de zeven bezettingshefbomen, mijlpalen, kanaalmix, budgetscenario's en de werkelijke herkomst per kanaal | ✅ |
 
 ### Genomen beslissingen — 19 augustus 2026
 | # | Vraag | Besluit |
@@ -211,14 +213,18 @@ Volledig plan met budget: `groeiplan-10000-bezoekers.md`. Voortgang live in de a
 ### Openstaande beslissingen (voor Arjan) — blokkeren de start
 | # | Vraag | Impact |
 |---|-------|--------|
-| H | 10.000 per **jaar** of per **maand**? | Bepaalt of het budget ± € 7.000 of ± € 26.200 is |
-| I | Welk budgetscenario: Zuinig (€ 300/mnd), Doelgericht (€ 1.000/mnd, advies) of Versnellen (€ 1.875/mnd)? | Bepaalt of contentproductie wordt uitbesteed |
+| H | Welk budgetscenario: **Bezetting** (€ 550/mnd, advies), Zuinig (€ 300), Doelgericht (€ 1.000) of Versnellen (€ 1.875)? | Bepaalt of contentproductie wordt uitbesteed. Bezetting haalt 70% voor € 15.400 over 24 maanden |
+| I | Hoe ziet een midweek er bij ons uit — pakket, prijs, doelgroep? | Doordeweeks is 55% van de opgave. Zonder doordeweekse propositie is het plafond 43% jaarbezetting |
 
 ### Open — fase 0 (sep – dec 2026), doel 400 bezoekers/mnd
 | # | Item | Prioriteit | Toelichting |
 |---|------|-----------|-------------|
 | 96 | Migratie `2026_08_19_aanvraag_attributie.sql` draaien in Supabase | **Hoog** | Zonder deze migratie blijft het kanaal leeg op nieuwe aanvragen |
-| 97 | GA4 activeren (#81) | **Hoog** | Vervangt de Search Console-proxy door een echt sessiecijfer; zonder dit is het plan half meetbaar |
+| 97 | GA4 activeren (#81) | **Kritiek** | Nu de belangrijkste openstaande actie. Elk conversiepercentage in het plan is een branche-aanname; bij 0,8% in plaats van 1,6% is er twee keer zoveel verkeer nodig. GA4 lost dat op |
+| 106 | **Doordeweekse propositie uitwerken** — pakket, prijs, doelgroep, teksten | **Hoog** | 55% doordeweekse bezetting is de opgave; alleen weekenden verkopen geeft een plafond van 43%. Moet in januari verkoopbaar zijn |
+| 107 | Minimumverblijf-regels instellen die geen onverkoopbare gaten achterlaten | **Hoog** | Goed voor 5 tot 8% jaarbezetting en het kost niets |
+| 108 | Prijs en beschikbaarheid zichtbaar zonder formulier | **Hoog** | De grootste conversiehefboom die geen geld kost |
+| 109 | E-maillijst als last-minute-kanaal inrichten | Middel | Het enige kanaal waarmee je een specifieke week kunt vullen. Doel: 1.000 abonnees eind 2028 |
 | 98 | Fotograaf selecteren, shotlist en stylingbudget vastleggen (#79) | **Hoog** | De shoot zelf staat in februari 2027; dit is het voorwerk zodat die maand alleen nog uitvoeren is |
 | 99 | Drie P0-landingspagina's herbouwen (wellness, romantiek, jacuzzi) | **Hoog** | Samen 3.745 vertoningen en 2 klikken |
 | 100 | 6 artikelen per maand, sep t/m dec | **Hoog** | Rijpen precies op tijd voor het voorjaar van 2027 |

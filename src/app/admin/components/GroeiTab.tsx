@@ -1,8 +1,13 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import {
-  DOEL_BEZOEKERS, MIJLPALEN, KANAALMIX, KANAALMIX_TOTAAL, KANAALMIX_KOSTEN,
-  SCENARIOS, mijlpaalVoor, type Scenario,
+  BEZETTINGSDOEL, NACHTEN_BESCHIKBAAR, MAANDEN, JAAR,
+  GEMIDDELDE_VERBLIJFSDUUR, BEZOEKERS_PER_MAAND_MINIMAAL,
+  DOEL_BEZOEKERS_JAAR, DOEL_BEZOEKERS_MAAND, STRETCH_BEZOEKERS_MAAND,
+  WEEKENDPLAFOND, DOORDEWEEKS_NODIG, DOORDEWEEKSE_BEZETTING_NODIG,
+  MIJLPALEN, mijlpaalVoor, BEZETTINGSHEFBOMEN,
+  KANAALMIX, KANAALMIX_KOSTEN, KANAALMIX_VRIJ_AANDEEL,
+  SCENARIOS, type Scenario,
 } from "@/lib/groeiplan";
 import { KANAAL_LABEL, type Kanaal } from "@/lib/attributie";
 
@@ -21,6 +26,7 @@ interface GroeiData {
 
 const euro = (n: number) => `€ ${n.toLocaleString("nl-NL")}`;
 const getal = (n: number) => n.toLocaleString("nl-NL");
+const pct = (n: number) => `${Math.round(n * 100)}%`;
 
 function maandLabel(maand: string): string {
   const d = new Date(`${maand.length === 7 ? `${maand}-01` : maand}T00:00:00Z`);
@@ -42,12 +48,27 @@ function Kaart({ titel, sub, children }: { titel: string; sub?: string; children
 }
 
 function Balk({ deel, kleur = C.green }: { deel: number; kleur?: string }) {
-  const pct = Math.max(0, Math.min(100, deel * 100));
+  const breedte = Math.max(0, Math.min(100, deel * 100));
   return (
     <div style={{ height: 6, background: "#EEF0F3", borderRadius: 3, overflow: "hidden" }}>
-      <div style={{ width: `${pct}%`, height: "100%", background: kleur, borderRadius: 3 }} />
+      <div style={{ width: `${breedte}%`, height: "100%", background: kleur, borderRadius: 3 }} />
     </div>
   );
+}
+
+/** Eén stap in de keten bezetting → nachten → boekingen → bezoekers. */
+function Schakel({ waarde, eenheid, label }: { waarde: string; eenheid: string; label: string }) {
+  return (
+    <div style={{ minWidth: 116 }}>
+      <div style={{ fontSize: 26, fontWeight: 700, color: C.text, lineHeight: 1.1 }}>{waarde}</div>
+      <div style={{ fontSize: 12, color: C.text, fontWeight: 600 }}>{eenheid}</div>
+      <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.4, marginTop: 2 }}>{label}</div>
+    </div>
+  );
+}
+
+function Pijl() {
+  return <div style={{ fontSize: 18, color: C.gold, alignSelf: "center", padding: "0 2px" }}>→</div>;
 }
 
 /* ── Tab ─────────────────────────────────────────────────────────────────── */
@@ -55,7 +76,7 @@ function Balk({ deel, kleur = C.green }: { deel: number; kleur?: string }) {
 export function GroeiTab() {
   const [data, setData] = useState<GroeiData | null>(null);
   const [laadt, setLaadt] = useState(true);
-  const [scenarioId, setScenarioId] = useState<Scenario["id"]>("doelgericht");
+  const [scenarioId, setScenarioId] = useState<Scenario["id"]>("bezetting");
 
   useEffect(() => {
     let afgebroken = false;
@@ -74,8 +95,8 @@ export function GroeiTab() {
   const fase = mijlpaalVoor(nuMaand);
   const scenario = SCENARIOS.find(s => s.id === scenarioId)!;
 
-  /* Het laatste volledige maandcijfer is onze stand. Search Console meet
-   * alleen organisch verkeer, dus dit is bewust een ondergrens. */
+  /* Search Console meet alleen organisch verkeer: dit is bewust een ondergrens.
+   * Zodra GA4 draait komt het echte sessiecijfer hier te staan. */
   const laatste = data?.reeks.at(-1) ?? null;
   const vorige = data?.reeks.at(-2) ?? null;
   const stand = laatste?.klikken ?? 0;
@@ -85,6 +106,7 @@ export function GroeiTab() {
     () => Math.max(1, ...(data?.reeks ?? []).map(r => r.klikken)),
     [data],
   );
+  const maxBezoekers = useMemo(() => Math.max(...MAANDEN.map(m => m.bezoekers)), []);
 
   const kanalen = data?.kanalen.tellingen ?? [];
   const kanaalTotaal = kanalen.reduce((s, k) => s + k.aanvragen, 0);
@@ -93,14 +115,161 @@ export function GroeiTab() {
     <div style={{ maxWidth: 1000 }}>
       <header style={{ marginBottom: 24 }}>
         <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: C.text }}>
-          Groei naar 10.000 bezoekers
+          Groei — van bezetting naar bezoekers
         </h2>
-        <p style={{ margin: "6px 0 0", fontSize: 13, color: C.muted, lineHeight: 1.6, maxWidth: 720 }}>
-          Het doel is 10.000 bezoekers per maand. Dat is meer dan nodig om twee lodges te vullen —
-          en dat is precies de bedoeling: vraag boven capaciteit is prijsmacht, en het is de basis
-          onder een derde lodge. De weg ernaartoe loopt via contentvolume, niet via advertentiebudget.
+        <p style={{ margin: "6px 0 0", fontSize: 13, color: C.muted, lineHeight: 1.6, maxWidth: 760 }}>
+          Het doel is <strong style={{ color: C.text }}>{pct(BEZETTINGSDOEL)} bezetting het hele jaar door</strong>.
+          Het bezoekersaantal is daarvan een afgeleide en geen doel op zich — die volgorde staat
+          hier bewust, want sturen op verkeer levert verkeer op en niet per se nachten.
         </p>
       </header>
+
+      {/* ── De keten ── */}
+      <Kaart
+        titel="De rekensom"
+        sub={`Twee lodges, ${NACHTEN_BESCHIKBAAR} nachten per jaar te vergeven. Zo loopt het van bezetting terug naar het aantal bezoekers dat u nodig heeft.`}
+      >
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-start", marginBottom: 18 }}>
+          <Schakel waarde={pct(BEZETTINGSDOEL)} eenheid="bezetting" label="het praktische maximum voor twee lodges" />
+          <Pijl />
+          <Schakel waarde={getal(JAAR.nachten)} eenheid="nachten" label={`van de ${getal(NACHTEN_BESCHIKBAAR)} beschikbaar`} />
+          <Pijl />
+          <Schakel waarde={getal(JAAR.boekingen)} eenheid="boekingen" label={`gemiddeld ${GEMIDDELDE_VERBLIJFSDUUR.toFixed(1)} nachten per verblijf`} />
+          <Pijl />
+          <Schakel waarde={getal(JAAR.eigenBoekingen)} eenheid="via eigen site" label="de rest komt via boekingssites en terugkeer" />
+          <Pijl />
+          <Schakel waarde={getal(JAAR.bezoekers)} eenheid="bezoekers/jaar" label={`± ${getal(BEZOEKERS_PER_MAAND_MINIMAAL)} per maand`} />
+        </div>
+
+        <div style={{
+          padding: "14px 16px", background: "#FAFAF7", borderLeft: `3px solid ${C.gold}`,
+          borderRadius: "0 8px 8px 0", fontSize: 12, color: C.text, lineHeight: 1.7,
+        }}>
+          <strong>Het antwoord op de vraag:</strong> ongeveer <strong>{getal(BEZOEKERS_PER_MAAND_MINIMAAL)} bezoekers
+          per maand</strong> volstaat om {pct(BEZETTINGSDOEL)} bezetting te halen — niet 10.000.
+          Het doel staat op <strong>{getal(DOEL_BEZOEKERS_JAAR)} bezoekers per jaar</strong> ({getal(DOEL_BEZOEKERS_MAAND)} per
+          maand), ruim twee keer de minimale behoefte. Die marge is er om drie redenen: de conversie
+          begint lager zolang er geen reviews en geen interieurbeeld zijn, verkeer valt nooit precies
+          in de maanden waarin u het nodig heeft, en bezoek dat vandaag niet boekt bouwt wel de
+          e-maillijst waarmee u volgend jaar de lage maanden vult.
+          <br /><br />
+          {getal(STRETCH_BEZOEKERS_MAAND)} bezoekers per <em>maand</em> blijft een zinvol doel, maar
+          voor iets anders: dat koopt geen bezetting meer — die zit dan aan het plafond — maar
+          overvraag, en overvraag is prijsmacht.
+        </div>
+      </Kaart>
+
+      {/* ── Het maandmodel ── */}
+      <Kaart
+        titel="Per maand"
+        sub="Merk op dat het aantal boekingen het hele jaar vrijwel gelijk blijft: laagseizoen betekent veel korte verblijven, hoogseizoen weinig lange. Alleen de verblijfsduur verschuift."
+      >
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 640 }}>
+            <thead>
+              <tr style={{ textAlign: "left", color: C.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>
+                <th style={{ padding: "6px 10px 6px 0", fontWeight: 600 }}>Maand</th>
+                <th style={{ padding: "6px 10px", fontWeight: 600, textAlign: "right" }}>Doel</th>
+                <th style={{ padding: "6px 10px", fontWeight: 600, textAlign: "right" }}>Nachten</th>
+                <th style={{ padding: "6px 10px", fontWeight: 600, textAlign: "right" }}>Verblijf</th>
+                <th style={{ padding: "6px 10px", fontWeight: 600, textAlign: "right" }}>Boekingen</th>
+                <th style={{ padding: "6px 10px", fontWeight: 600, textAlign: "right" }}>Eigen site</th>
+                <th style={{ padding: "6px 10px", fontWeight: 600, textAlign: "right" }}>Conversie</th>
+                <th style={{ padding: "6px 0 6px 10px", fontWeight: 600 }}>Bezoekers nodig</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MAANDEN.map(m => (
+                <tr key={m.maand} style={{ borderTop: `1px solid ${C.border}` }}>
+                  <td style={{ padding: "8px 10px 8px 0", fontWeight: 600, color: C.text, textTransform: "capitalize" }}>{m.maand}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", color: C.muted }}>{pct(m.bezetting)}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", color: C.text }}>{m.nachten}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", color: C.muted }}>{m.verblijfsduur.toFixed(1)}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", color: C.text, fontWeight: 600 }}>{m.boekingen}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", color: C.text }}>{m.eigenBoekingen}</td>
+                  <td style={{ padding: "8px 10px", textAlign: "right", color: C.muted }}>{(m.conversie * 100).toFixed(1)}%</td>
+                  <td style={{ padding: "8px 0 8px 10px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ minWidth: 34, textAlign: "right", color: C.text }}>{getal(m.bezoekers)}</span>
+                      <div style={{ flex: 1, minWidth: 60 }}><Balk deel={m.bezoekers / maxBezoekers} /></div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              <tr style={{ borderTop: `2px solid ${C.border}`, fontWeight: 700 }}>
+                <td style={{ padding: "10px 10px 10px 0", color: C.text }}>Jaar</td>
+                <td style={{ padding: "10px", textAlign: "right", color: C.green }}>{pct(BEZETTINGSDOEL)}</td>
+                <td style={{ padding: "10px", textAlign: "right", color: C.text }}>{JAAR.nachten}</td>
+                <td style={{ padding: "10px", textAlign: "right", color: C.muted }}>{GEMIDDELDE_VERBLIJFSDUUR.toFixed(1)}</td>
+                <td style={{ padding: "10px", textAlign: "right", color: C.text }}>{JAAR.boekingen}</td>
+                <td style={{ padding: "10px", textAlign: "right", color: C.text }}>{JAAR.eigenBoekingen}</td>
+                <td style={{ padding: "10px", textAlign: "right", color: C.muted }}>
+                  {((JAAR.eigenBoekingen / JAAR.bezoekers) * 100).toFixed(1)}%
+                </td>
+                <td style={{ padding: "10px 0 10px 10px", color: C.text }}>{getal(JAAR.bezoekers)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Kaart>
+
+      {/* ── Doordeweeks ── */}
+      <Kaart
+        titel="De harde randvoorwaarde: doordeweeks"
+        sub="Dit is het cijfer dat bepaalt of maximale bezetting haalbaar is, en het staat los van marketing."
+      >
+        <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginBottom: 16 }}>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Alleen weekenden</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: C.rood, lineHeight: 1.2 }}>{pct(WEEKENDPLAFOND)}</div>
+            <div style={{ fontSize: 12, color: C.muted }}>plafond voor de jaarbezetting</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Nodig doordeweeks</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: C.text, lineHeight: 1.2 }}>{DOORDEWEEKS_NODIG}</div>
+            <div style={{ fontSize: 12, color: C.muted }}>nachten per jaar</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Doordeweekse bezetting</div>
+            <div style={{ fontSize: 28, fontWeight: 700, color: C.gold, lineHeight: 1.2 }}>{pct(DOORDEWEEKSE_BEZETTING_NODIG)}</div>
+            <div style={{ fontSize: 12, color: C.muted }}>die u moet halen</div>
+          </div>
+        </div>
+        <p style={{ margin: 0, fontSize: 12, color: C.text, lineHeight: 1.7 }}>
+          Vrijdag, zaterdag en zondag zijn drie van de zeven dagen. Verkoopt u alleen weekenden, dan
+          komt u nooit boven {pct(WEEKENDPLAFOND)} uit, hoeveel bezoekers u ook binnenhaalt. Het
+          doordeweekse publiek is een ánder publiek — 55-plussers, thuiswerkers, hondenbezitters,
+          mensen zonder schoolgaande kinderen — met een andere boodschap, een ander tarief en andere
+          kanalen. Dit is de belangrijkste opdracht van het hele plan, en er is geen advertentie die
+          hem oplost.
+        </p>
+      </Kaart>
+
+      {/* ── Hefbomen ── */}
+      <Kaart
+        titel="Wat de bezetting werkelijk bepaalt"
+        sub="Op volgorde van invloed. Meer bezoekers staat bewust onderaan."
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {BEZETTINGSHEFBOMEN.map((h, i) => (
+            <div key={h.id} style={{ display: "flex", gap: 12 }}>
+              <div style={{
+                minWidth: 22, height: 22, borderRadius: 11, flexShrink: 0,
+                background: h.impact === "hoog" ? C.green : "#E5E7EB",
+                color: h.impact === "hoog" ? "#fff" : C.muted,
+                fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center",
+              }}>{i + 1}</div>
+              <div>
+                <div style={{ display: "flex", gap: 10, alignItems: "baseline", flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{h.titel}</span>
+                  <span style={{ fontSize: 11, color: C.gold, fontWeight: 600 }}>{h.effect}</span>
+                </div>
+                <p style={{ margin: "4px 0 0", fontSize: 12, color: C.muted, lineHeight: 1.6 }}>{h.toelichting}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Kaart>
 
       {/* ── Stand van zaken ── */}
       <Kaart
@@ -121,9 +290,7 @@ export function GroeiTab() {
                 <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>
                   {maandLabel(laatste.maand)}
                 </div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: C.text, lineHeight: 1.2 }}>
-                  {getal(stand)}
-                </div>
+                <div style={{ fontSize: 30, fontWeight: 700, color: C.text, lineHeight: 1.2 }}>{getal(stand)}</div>
                 <div style={{ fontSize: 12, color: C.muted }}>
                   bezoekers uit zoeken
                   {groei !== null && (
@@ -134,30 +301,21 @@ export function GroeiTab() {
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>
-                  Doel deze fase
-                </div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: C.gold, lineHeight: 1.2 }}>
-                  {getal(fase.doel)}
-                </div>
+                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Doel deze fase</div>
+                <div style={{ fontSize: 30, fontWeight: 700, color: C.gold, lineHeight: 1.2 }}>{getal(fase.doel)}</div>
                 <div style={{ fontSize: 12, color: C.muted }}>
                   {stand >= fase.doel ? "gehaald" : `nog ${getal(fase.doel - stand)} te gaan`}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>
-                  Einddoel
-                </div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: C.green, lineHeight: 1.2 }}>
-                  {getal(DOEL_BEZOEKERS)}
-                </div>
+                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Genoeg voor {pct(BEZETTINGSDOEL)}</div>
+                <div style={{ fontSize: 30, fontWeight: 700, color: C.green, lineHeight: 1.2 }}>{getal(BEZOEKERS_PER_MAAND_MINIMAAL)}</div>
                 <div style={{ fontSize: 12, color: C.muted }}>
-                  {Math.round((stand / DOEL_BEZOEKERS) * 100)}% van de eindstreep
+                  {Math.round((stand / BEZOEKERS_PER_MAAND_MINIMAAL) * 100)}% daarvan gehaald
                 </div>
               </div>
             </div>
 
-            {/* Maandreeks — de vorm van de curve zegt meer dan het laatste cijfer. */}
             <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 90, marginBottom: 6 }}>
               {data!.reeks.map(r => (
                 <div key={r.maand} title={`${maandLabel(r.maand)}: ${getal(r.klikken)} klikken`}
@@ -181,12 +339,11 @@ export function GroeiTab() {
       {/* ── Mijlpalen ── */}
       <Kaart
         titel="De ladder"
-        sub="Vijf fases in ongeveer 24 maanden. Elke fase heeft een eigen reden van bestaan — een fase overslaan werkt niet, omdat een artikel pas na 6 tot 12 maanden zijn volle verkeer haalt."
+        sub="Elke fase heeft een bezettingsdoel én een verkeersdoel. Het bezettingsdoel is het echte doel; het verkeersdoel is wat ervoor nodig is."
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {MIJLPALEN.map(m => {
             const actief = m.id === fase.id;
-            const gehaald = stand >= m.doel;
             return (
               <div key={m.id} style={{
                 padding: "14px 16px",
@@ -197,8 +354,11 @@ export function GroeiTab() {
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{m.titel}</span>
                   <span style={{ fontSize: 12, color: C.muted }}>{m.periode}</span>
-                  <span style={{ marginLeft: "auto", fontSize: 15, fontWeight: 700, color: gehaald ? C.groen : C.gold }}>
-                    {gehaald ? "✓ " : ""}{getal(m.doel)}
+                  <span style={{ marginLeft: "auto", display: "flex", gap: 14, alignItems: "baseline" }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: m.bezetting === null ? C.light : C.green }}>
+                      {m.bezetting === null ? "—" : pct(m.bezetting)}
+                    </span>
+                    <span style={{ fontSize: 13, color: C.gold, fontWeight: 600 }}>{getal(m.doel)}/mnd</span>
                   </span>
                 </div>
                 <p style={{ margin: "6px 0 8px", fontSize: 12, color: C.muted, lineHeight: 1.6 }}>{m.waarom}</p>
@@ -213,40 +373,39 @@ export function GroeiTab() {
 
       {/* ── Kanaalmix ── */}
       <Kaart
-        titel="Waar de 10.000 vandaan komen"
-        sub={`De mix bij het einddoel. Geen enkel kanaal is groter dan 38%, zodat een algoritmewijziging of een stopgezette campagne het geheel niet omver duwt. Doorlopende kosten van deze mix: ${euro(KANAALMIX_KOSTEN)} per maand.`}
+        titel="Waar het verkeer vandaan komt"
+        sub={`Als verhouding, zodat dezelfde mix klopt bij ${getal(DOEL_BEZOEKERS_MAAND)} én bij ${getal(STRETCH_BEZOEKERS_MAAND)} bezoekers per maand. Doorlopende kosten bij het scenario Bezetting: ${euro(KANAALMIX_KOSTEN)} per maand.`}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {KANAALMIX.map(k => (
             <div key={k.id}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: C.text, minWidth: 230 }}>{k.label}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{getal(k.bezoekers)}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{pct(k.aandeel)}</span>
                 <span style={{ fontSize: 11, color: C.light }}>
-                  {Math.round((k.bezoekers / KANAALMIX_TOTAAL) * 100)}%
+                  ± {getal(Math.round(k.aandeel * DOEL_BEZOEKERS_MAAND))}/mnd
                 </span>
                 <span style={{ marginLeft: "auto", fontSize: 12, color: k.kostenPerMaand > 0 ? C.gold : C.light }}>
                   {k.kostenPerMaand > 0 ? `${euro(k.kostenPerMaand)}/mnd` : "geen vaste kosten"}
                 </span>
               </div>
-              <Balk deel={k.bezoekers / KANAALMIX_TOTAAL} kleur={k.kostenPerMaand > 0 ? C.gold : C.green} />
+              <Balk deel={k.aandeel} kleur={k.kostenPerMaand > 0 ? C.gold : C.green} />
               <p style={{ margin: "5px 0 0", fontSize: 11, color: C.muted, lineHeight: 1.6 }}>{k.toelichting}</p>
             </div>
           ))}
         </div>
         <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${C.border}`, fontSize: 12, color: C.muted, lineHeight: 1.6 }}>
           <strong style={{ color: C.text }}>Let op de verhouding.</strong> De groene balken — samen{" "}
-          {Math.round(((KANAALMIX_TOTAAL - KANAALMIX.filter(k => k.kostenPerMaand > 0).reduce((s, k) => s + k.bezoekers, 0)) / KANAALMIX_TOTAAL) * 100)}%
-          {" "}van het verkeer — kosten na de investering niets meer per maand. De gouden balken
-          stoppen op de dag dat u stopt met betalen. Daarom ligt het zwaartepunt van het budget bij
-          content en niet bij advertenties.
+          {pct(KANAALMIX_VRIJ_AANDEEL)} van het verkeer — kosten na de investering niets meer per
+          maand. De gouden balken stoppen op de dag dat u stopt met betalen. Daarom staat het
+          advertentiebudget in het scenario Bezetting alleen op de maanden waarin u het nodig heeft.
         </div>
       </Kaart>
 
       {/* ── Budget ── */}
       <Kaart
         titel="Marketingbudget"
-        sub="Drie scenario's over 24 maanden. Kies er één; elk scenario is intern consistent — losse posten eruit halen verandert de uitkomst."
+        sub="Vier scenario's over 24 maanden. Let bij het vergelijken op de bezettingskolom en niet op de bezoekerskolom — daar gaat het tenslotte om."
       >
         <div style={{ display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap" }}>
           {SCENARIOS.map(s => (
@@ -258,9 +417,9 @@ export function GroeiTab() {
                 color: s.id === scenarioId ? "#fff" : C.text,
                 fontSize: 13, fontWeight: 600, textAlign: "left",
               }}>
-              {s.naam}
+              {s.naam}{s.advies && <span style={{ fontSize: 10, marginLeft: 5, opacity: 0.85 }}>· advies</span>}
               <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.85 }}>
-                {euro(s.perMaand)}/mnd
+                {euro(s.perMaand)}/mnd · {pct(s.bezetting)}
               </div>
             </button>
           ))}
@@ -279,22 +438,28 @@ export function GroeiTab() {
             <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>
               Totaal over {scenario.maanden} maanden
             </div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: C.green }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: C.text }}>
               {euro(scenario.perMaand * scenario.maanden + scenario.eenmalig)}
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Verwacht resultaat</div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: scenario.doelGehaald ? C.groen : C.rood }}>
-              {getal(scenario.uitkomst[0])}–{getal(scenario.uitkomst[1])}
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Bezetting</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: scenario.bezetting >= BEZETTINGSDOEL ? C.groen : C.rood }}>
+              {pct(scenario.bezetting)}
             </div>
             <div style={{ fontSize: 11, color: C.muted }}>
-              {scenario.doelGehaald ? "doel gehaald" : "doel niet gehaald"}
+              {scenario.bezetting >= BEZETTINGSDOEL ? "doel gehaald" : "doel niet gehaald"}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Bezoekers p/mnd</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: C.text }}>
+              {getal(scenario.uitkomst[0])}–{getal(scenario.uitkomst[1])}
             </div>
           </div>
         </div>
 
-        <p style={{ margin: "0 0 16px", fontSize: 12, color: C.text, lineHeight: 1.7, padding: "12px 14px", background: "#FAFAF7", borderLeft: `3px solid ${C.gold}`, borderRadius: "0 8px 8px 0" }}>
+        <p style={{ margin: "0 0 16px", fontSize: 12, color: C.text, lineHeight: 1.7, padding: "12px 14px", background: "#FAFAF7", borderLeft: `3px solid ${scenario.advies ? C.green : C.gold}`, borderRadius: "0 8px 8px 0" }}>
           {scenario.oordeel}
         </p>
 
@@ -322,9 +487,7 @@ export function GroeiTab() {
           </tbody>
         </table>
 
-        <h4 style={{ margin: "22px 0 8px", fontSize: 13, fontWeight: 700, color: C.text }}>
-          Eenmalige investeringen
-        </h4>
+        <h4 style={{ margin: "22px 0 8px", fontSize: 13, fontWeight: 700, color: C.text }}>Eenmalige investeringen</h4>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
           <tbody>
             {scenario.eenmaligePosten.map(p => (
@@ -341,7 +504,7 @@ export function GroeiTab() {
       {/* ── Werkelijke herkomst ── */}
       <Kaart
         titel="Wat de kanalen werkelijk opleveren"
-        sub="Aanvragen van de afgelopen twaalf maanden, per kanaal waaruit ze binnenkwamen. Dit is de toets op het budget: een kanaal dat verkeer levert maar geen aanvragen, verdient geen verhoging."
+        sub="Aanvragen van de afgelopen twaalf maanden, per kanaal waaruit ze binnenkwamen. Dit is de toets op het budget: een kanaal dat verkeer levert maar geen boekingen, verdient geen verhoging."
       >
         {laadt ? (
           <p style={{ fontSize: 13, color: C.muted, margin: 0 }}>Bezig met laden…</p>
