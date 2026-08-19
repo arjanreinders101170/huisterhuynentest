@@ -1,5 +1,5 @@
 # Huis ter Huynen — Complete To Do Lijst
-**Bijgewerkt: 18 augustus 2026**
+**Bijgewerkt: 19 augustus 2026**
 
 ---
 
@@ -185,3 +185,40 @@
 3. **Directory-listings** (#85) — versnelt de indexering die nu nog op "Gevonden – momenteel niet geïndexeerd" staat.
 4. **Blogcontent starten** (#84).
 5. **Resterende landingspagina's** (#83).
+
+---
+
+## Groei naar 10.000 bezoekers — sprint augustus 2026
+
+Volledig plan met budget: `groeiplan-10000-bezoekers.md`. Voortgang live in de admin onder **Marketing → Groei naar 10.000**.
+
+### Afgerond ✅
+| # | Item | Status |
+|---|------|--------|
+| 90 | Groeiplan naar 10.000 bezoekers, inclusief kanaalmix, 5-fasenladder en drie budgetscenario's | ✅ |
+| 91 | Herkomstmeting op elke aanvraag: utm-parameters, gclid/fbclid, verwijzer, eerste én laatste contactmoment; kanaal server-side afgeleid | ✅ |
+| 92 | Kanaal zichtbaar per aanvraag in de admin (met campagne en landingspagina in de tooltip) | ✅ |
+| 93 | RSS-feed op `/blog/rss.xml` + `<link rel="alternate">` in de head | ✅ |
+| 94 | IndexNow: sleutelbestand in `public/`, melding bij publicatie van blog, landingspagina en de publicatie-cron | ✅ |
+| 95 | Admin-tab "Groei naar 10.000": stand uit Search Console, mijlpalen, kanaalmix, budgetscenario's, werkelijke herkomst per kanaal | ✅ |
+
+### Openstaande beslissingen (voor Arjan) — blokkeren de start
+| # | Vraag | Impact |
+|---|-------|--------|
+| H | 10.000 per **jaar** of per **maand**? | Bepaalt of het budget ± € 7.000 of ± € 26.200 is |
+| I | Welk budgetscenario: Zuinig (€ 300/mnd), Doelgericht (€ 1.000/mnd, advies) of Versnellen (€ 1.875/mnd)? | Bepaalt of contentproductie wordt uitbesteed |
+| J | Wanneer plannen we de fotoshoot? | Alles hierna hangt eraan — dit is de eerste uitgave |
+| K | Gaan we op Natuurhuisje en Airbnb, en zo ja alleen voor restcapaciteit? | Bepaalt of 45% eigen kanalen realistisch is |
+
+### Open — fase 0 (sep – dec 2026), doel 400 bezoekers/mnd
+| # | Item | Prioriteit | Toelichting |
+|---|------|-----------|-------------|
+| 96 | Migratie `2026_08_19_aanvraag_attributie.sql` draaien in Supabase | **Hoog** | Zonder deze migratie blijft het kanaal leeg op nieuwe aanvragen |
+| 97 | GA4 activeren (#81) | **Hoog** | Vervangt de Search Console-proxy door een echt sessiecijfer; zonder dit is het plan half meetbaar |
+| 98 | Interieur- & sfeerfotografie (#79) | **Hoog** | Voorwaarde voor Pinterest, Meta, landingspagina's én gidsvermeldingen |
+| 99 | Drie P0-landingspagina's herbouwen (wellness, romantiek, jacuzzi) | **Hoog** | Samen 3.745 vertoningen en 2 klikken |
+| 100 | 6 artikelen per maand, sep t/m dec | **Hoog** | Rijpen precies op tijd voor het voorjaar van 2027 |
+| 101 | Gratis vermeldingen aanmelden (#85) | **Hoog** | VVV Drenthe, Visit Drenthe, ANWB, Tripadvisor, wandel-/fietssites |
+| 102 | Google Bedrijfsprofiel: wekelijkse posts, alle velden gevuld | Middel | Merkcluster staat op positie 15,3 — Google kent de entiteit nog niet |
+| 103 | Pinterest-account opzetten met de nieuwe foto's | Middel | Pins hebben maanden nodig om te rijpen; starten vóór de opening |
+| 104 | RSS-feed koppelen aan een automatisering (bijv. automatisch delen op social) | Laag | De feed staat klaar; de koppeling is nog handwerk |

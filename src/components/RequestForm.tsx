@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate, MIN_NIGHTS } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
+import { getAttribution } from "@/lib/tracking/attribution";
 
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
@@ -119,6 +120,7 @@ export default function RequestForm() {
           aantalPersonen: String(aantalPersonen),
           huisdieren: huisdieren ? "ja" : "nee",
           _meta: { event_id: metaEventId },
+          _attr: getAttribution(),
         }),
       });
       if (!res.ok) {

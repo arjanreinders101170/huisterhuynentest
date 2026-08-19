@@ -8,6 +8,7 @@ import {
 } from "@/lib/email";
 import { APP_URL_FALLBACK } from "@/data/lodge";
 import { checkStayDates } from "@/lib/stay-dates";
+import { attributieKolommen } from "@/lib/attributie";
 
 export const runtime = "nodejs";
 
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
   }
 
-  const { naam, email, lodge, checkIn, checkOut, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode, locale, _meta } = parsed.data;
+  const { naam, email, lodge, checkIn, checkOut, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode, locale, _meta, _attr } = parsed.data;
 
   /* Datumcontrole hoort hier thuis: het `min`-attribuut op de datumvelden in
    * het formulier beperkt alleen de datumkiezer, niet wat er verstuurd wordt. */
@@ -135,6 +136,8 @@ export async function POST(request: NextRequest) {
     anonymous_id: _meta?.anonymous_id ?? null,
     fbp,
     fbc,
+    // Herkomst: welk kanaal deze aanvraag heeft opgeleverd.
+    ...attributieKolommen(_attr),
   });
 
   const resendKey = process.env.RESEND_API_KEY;
