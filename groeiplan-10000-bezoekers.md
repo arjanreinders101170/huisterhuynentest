@@ -1,6 +1,6 @@
 # Huis ter Huynen — Groeiplan naar 10.000 bezoekers
 
-**Opgesteld:** 19 augustus 2026
+**Opgesteld:** 19 augustus 2026 · **Laatst bijgewerkt:** 19 augustus 2026 (besluiten fotografie en boekingssites verwerkt)
 **Opdracht:** minimaal 10.000 bezoekers, alles uit de kast, en een onderbouwd marketingbudget met een verdeling per kanaal.
 **Leesbare versie:** https://claude.ai/code/artifact/39ae5e71-3cf0-4a59-8ee7-3d4bce74912b
 
@@ -35,6 +35,8 @@ Er is één blinde vlek die u moet kennen: **er draait nog geen GA4** [CODE]. Al
 **Waar het geld heen gaat.** Het zwaartepunt ligt bewust bij content en niet bij advertenties: **twee derde van de 10.000 bezoekers komt uit kanalen die na de investering niets meer per maand kosten** [ANALYSE]. Advertenties kopen ongeveer 2.000 bezoekers per maand en die rekening komt élke maand terug. Content koopt u één keer.
 
 **De belangrijkste voorwaarde.** Zet geen advertentiebudget aan voordat de herkomst van aanvragen gemeten wordt. Die meting is deze week gebouwd (deel 8) — vanaf nu draagt elke aanvraag het kanaal waaruit hij kwam. Zonder dat verdeelt u budget op gevoel.
+
+**Wat al besloten is.** De fotoshoot staat in **februari 2027** met een video-impressie in maart; eerder kan niet, want vóór de oplevering valt er geen interieur te fotograferen. **Natuurhuisje gaat live in maart, Airbnb in april** — beide voor restcapaciteit, niet als hoofdkanaal. Beide besluiten staan op de marketingkalender in de admin. Het gevolg staat in deel 9: het beeldwerk schuift vijf maanden op, en daarmee de conversie — niet het verkeer.
 
 ---
 
@@ -148,25 +150,29 @@ Deze fase gaat niet over verkeer. Hij gaat over posities, en over meten. Verwach
 | Actie | Waarom nu |
 |---|---|
 | GA4 activeren en aan Search Console koppelen | Zonder dit is de rest van dit plan niet meetbaar. Het recept ligt klaar in `ANALYTICS_SETUP.md`. |
-| Interieur- en sfeerfotografie laten maken | De grootste conversieblokker die er nu is, en een voorwaarde voor élk kanaal hierna — Pinterest, Meta, landingspagina's, gidsen. |
+| Fotograaf vastleggen, shotlist en stylingbudget bepalen | De shoot zelf staat in februari 2027 — vóór de oplevering valt er geen interieur te fotograferen. Wat nu geregeld kan worden, moet nu geregeld worden, zodat februari alleen nog uitvoeren is. |
 | Drie P0-landingspagina's herbouwen (wellness, romantiek, jacuzzi) | Samen 3.745 vertoningen en 2 klikken [GSC]. De grootste pagina van de site staat op positie 62,6. |
 | 24 artikelen erbij, 6 per maand | Deze rijpen precies op tijd voor het voorjaar van 2027. |
 | Google Bedrijfsprofiel verifiëren, wekelijkse posts | Het merkcluster staat op positie 15,3 — Google heeft "Huis ter Huynen" nog niet als entiteit vastgelegd [ANALYSE]. |
 | Gratis vermeldingen: VVV Drenthe, Visit Drenthe, ANWB, Tripadvisor | Versnelt de indexering die nu op "gevonden, niet geïndexeerd" blijft staan. |
-| Pinterest-account opzetten met de nieuwe foto's | Pins hebben maanden nodig om te rijpen; begin voor de opening. |
+| Pinterest-account opzetten met natuur- en buitenbeeld | Pins hebben maanden nodig om te rijpen; begin met wat er ís. Het interieurbeeld komt er in maart 2027 bij. |
 
-**Budget in deze fase:** € 650 per maand plus de eenmalige investeringen (€ 2.200). Nog géén advertenties — u kunt ze nog niet beoordelen.
+**Budget in deze fase:** € 650 per maand. Nog géén advertenties — u kunt ze nog niet beoordelen — en nog geen eenmalige investeringen: die vallen nu allemaal in Q1 2027.
+
+**Wat deze fase mist.** Zonder interieurbeeld draaien de herbouwde landingspagina's op natuur- en buitenfoto's. Dat kost conversie, niet verkeer: de posities stijgen gewoon door, maar wie op de pagina landt ziet niet waarvoor hij € 210 per nacht betaalt. Reken er daarom op dat de conversie pas vanaf maart 2027 op niveau komt, en beoordeel deze fase uitsluitend op positieverbetering.
 
 ## Fase 1 — Opening · jan – mrt 2027 · doel 1.200 bezoekers/mnd
 
-De opening is het enige moment waarop regionale media uit zichzelf over u willen schrijven. Dat moment komt één keer.
+De opening is het enige moment waarop regionale media uit zichzelf over u willen schrijven. Dat moment komt één keer. En dit is het kwartaal waarin de lodges eindelijk te fotograferen zijn — alles wat op beeld draait, begint hier.
 
 | Actie | Waarom nu |
 |---|---|
 | Persbericht naar RTV Drenthe, Dagblad van het Noorden, Asser Courant | Gratis bereik plus verwijzingen van nieuwsdomeinen — die tellen zwaar. |
 | Google Ads aan: merknaam + jacuzzi, wellness, romantiek | De organische posities zijn er nog niet; dit overbrugt het gat. |
 | Meta Ads: retargeting eerst, koud bereik daarna | Retargeting is altijd het goedkoopste; begin daar en breid pas uit als het werkt. |
-| Natuurhuisje en Airbnb live | Als vindkanaal, niet als hoofdkanaal — zie de commissieberekening in deel 7. |
+| **Interieur- & sfeerfotografie (februari)** | Het scharnierpunt van dit plan. Pinterest, Meta, de landingspagina's, Natuurhuisje en Airbnb hangen alle vijf aan deze ene dag. Plan hem vroeg in de maand, dan is er ruimte om over te doen. |
+| **Video-impressie (maart)** | Aansluitend op de fotoshoot: dezelfde styling, geen tweede reis- en stylingdag. |
+| Natuurhuisje live (maart) | Zodra het beeld er is. Als vindkanaal, niet als hoofdkanaal — zie de commissieberekening in deel 7. |
 | Reviewvliegwiel starten: verzoek 3 dagen na vertrek | Vanaf vijf echte reviews komen sterren in de zoekresultaten. |
 | Valentijn (februari) — hoogste ADR-kans van het kwartaal | Content moest hiervoor in december live staan. |
 
@@ -180,6 +186,7 @@ De artikelen uit 2026 beginnen te rijpen. Dit is de fase waarin volume gaat tell
 |---|---|
 | Contentvolume vasthouden: 6 artikelen per maand | Onderbreken kost meer dan doorgaan; het ritme is de investering. |
 | Advertentiebudget herverdelen op basis van werkelijke herkomst | Het eerste moment waarop dat onderbouwd kan. |
+| Airbnb live (april) | Een maand ná Natuurhuisje, zodat de lessen uit die listing — welke foto's werken, welke tekst, welke prijsopzet — er meteen in zitten. |
 | Duitse set compleet maken | Duitsland is de tweede markt voor Drenthe; de huidige DE-pagina's zijn te dun om te ranken [ANALYSE]. |
 | Linkbuilding: 2 kwaliteitsverwijzingen per maand | Tilt álle pagina's op, niet één. |
 | TT Assen (eind juni) op `/vakantiehuis-assen` | De grootste lokale vraagpiek, en hij komt nu nergens op de site voor [CODE]. |
@@ -253,10 +260,10 @@ Drie scenario's, alle drie over 24 maanden gerekend. Ze zijn intern consistent: 
 
 | Post | Bedrag | Wanneer | Waarom onvermijdelijk |
 |---|---|---|---|
-| Interieur- & sfeerfotografie | € 900 | sep 2026 | Halve dag, beide lodges, inclusief bewerking [MARKT]. Zonder interieurbeeld werkt geen enkel kanaal: geen Pinterest, geen Meta, geen conversie op de landingspagina's, geen gidsvermelding die opvalt. Dit is de eerste uitgave, niet de laatste. |
-| Korte video's / drone | € 600 | okt 2026 | Vijf clips. Pinterest en Meta belonen video met aanzienlijk meer bereik dan stilstaand beeld [MARKT]. |
-| Duitse vertaling door een native | € 450 | nov 2026 | Tien pagina's. De huidige Duitse set haalt 57 vertoningen en 1 klik [ANALYSE] — te dun om te ranken. |
 | Persbericht & persfoto's | € 250 | dec 2026 | Voor de opening. Eén keer bruikbaar, en dat moment komt in januari. |
+| **Interieur- & sfeerfotografie** | € 900 | **feb 2027** | Halve dag, beide lodges, inclusief bewerking [MARKT]. Zonder interieurbeeld werkt geen enkel kanaal: geen Pinterest, geen Meta, geen conversie op de landingspagina's, geen listing die opvalt. Kan niet eerder — de lodges zijn dan pas opgeleverd. |
+| **Korte video's / drone** | € 600 | **mrt 2027** | Vijf clips, aansluitend op de fotoshoot: dezelfde styling, geen tweede reisdag [MARKT]. Pinterest en Meta belonen video met aanzienlijk meer bereik dan stilstaand beeld. |
+| Duitse vertaling door een native | € 450 | apr 2027 | Tien pagina's. De huidige Duitse set haalt 57 vertoningen en 1 klik [ANALYSE] — te dun om te ranken. Met het nieuwe beeld erbij is de vertaling meteen compleet. |
 | **Totaal** | **€ 2.200** | | |
 
 ## Seizoensverdeling van het advertentiebudget
@@ -335,11 +342,13 @@ Vijftien pins per week in fase 3, opgebouwd vanaf fase 0. Boards per thema: heid
 
 ## Boekingssites — een aparte overweging
 
-Natuurhuisje en Airbnb kosten 15 tot 18% commissie [MARKT]. Ik adviseer ze **wel** te gebruiken, maar bewust als vindkanaal en niet als hoofdkanaal:
+**Besloten: we gaan erop, ná de fotoshoot.** Natuurhuisje in maart 2027, Airbnb in april. Beide kosten 15 tot 18% commissie [MARKT], dus ze worden bewust als vindkanaal ingezet en niet als hoofdkanaal:
 
 - Zet erop wat u zelf niet gevuld krijgt — laagseizoen, doordeweekse nachten, last-minutes
 - Blokkeer de weken waar u zelf al vraag voor heeft
 - Elke gast die via een boekingssite komt, gaat daarna in uw e-maillijst en krijgt bij terugkomst een directe reden om rechtstreeks te boeken
+- Airbnb start een maand later dan Natuurhuisje, zodat de lessen uit de eerste listing — welke foto's werken, welke tekst, welke prijsopzet — meteen in de tweede zitten
+- In april vergelijken we beide kanalen op netto-opbrengst per nacht ná commissie, en op het aandeel gasten dat later rechtstreeks terugboekt. Dat bepaalt hoeveel capaciteit er volgend seizoen naar de boekingssites gaat
 
 **De rekensom die dit plan verantwoordt:** als dit plan het aandeel directe boekingen van 30% naar 55% brengt, scheelt dat over twee jaar ± € 52.500 aan omzet die géén commissie betaalt. Bij 16,5% gemiddelde commissie is dat **± € 8.700 aan bespaarde commissie** [ANALYSE] — een derde van het hele marketingbudget, terugverdiend zonder één extra boeking.
 
@@ -359,16 +368,25 @@ Drie dingen die het plan uitvoerbaar en beoordeelbaar maken. Ze staan live in de
 
 ---
 
-# 9. Wat ik van u nodig heb
+# 9. Besluiten
 
-Vier besluiten. De eerste twee blokkeren de start; de laatste twee kunnen wachten tot fase 1.
+## Genomen — 19 augustus 2026
+
+| Besluit | Uitkomst | Gevolg voor het plan |
+|---|---|---|
+| **Fotografie** | **Q1 2027**, met een video-impressie erachteraan | De shoot staat in februari, de video in maart — aansluitend, op dezelfde styling, zodat er geen tweede reis- en stylingdag nodig is. Dit is de juiste keuze en niet alleen een uitstel: vóór de oplevering valt er geen interieur te fotograferen. |
+| **Boekingssites** | **Ja** — Natuurhuisje en Airbnb, ná de fotoshoot | Natuurhuisje in maart, Airbnb in april. Beide voor restcapaciteit, niet als hoofdkanaal. Zie deel 7. |
+
+**Wat die eerste beslissing kost, eerlijk gezegd.** Het beeldwerk verschuift vijf maanden, en daarmee verschuift ook alles wat eraan hangt: Pinterest op volume, Meta met video, en vooral de conversie op de landingspagina's. Dat raakt de *conversie*, niet het *verkeer* — de bezoekersladder in deel 5 is contentgedreven en blijft staan. Maar reken erop dat de trechter pas vanaf maart 2027 op zijn beoogde niveau werkt, en beoordeel de maanden daarvóór dus niet op boekingen.
+
+**Er is één ding dat het gat gedeeltelijk dicht.** De lodges zijn tussen oplevering en de shoot al wel te zien. Maak in januari zelf een serie werkfoto's met een telefoon — niet voor de landingspagina's, wel voor het Google Bedrijfsprofiel, de nieuwsbrief en "achter de schermen" op social. Dat is gratis, het houdt het profiel levend in de maand waarin u opent, en het kost een uur.
+
+## Nog open
 
 | # | Besluit | Waarom het nu moet | Mijn advies |
 |---|---|---|---|
 | **1** | **Lezing A of B** — 10.000 per jaar of per maand? | Bepaalt of het budget € 7.000 of € 26.200 is | **B**, maar alleen als reden 1, 2 of 3 uit deel 3 op u van toepassing is. Zo niet: A. |
 | **2** | **Welk scenario** — Zuinig, Doelgericht of Versnellen? | Bepaalt of contentproductie wordt uitbesteed; dat regelt u niet in een week | **Doelgericht** (€ 1.000/mnd + € 2.200 eenmalig) |
-| **3** | Fotografie: wanneer plannen we de shoot? | Alles hierna hangt hieraan. Dit is de eerste uitgave. | September 2026, vóór de herfst |
-| **4** | Gaan we op Natuurhuisje en Airbnb? | Bepaalt of het aandeel van 45% eigen kanalen realistisch is | Ja, maar als vindkanaal — zie deel 7 |
 
 **Twee dingen die geen besluit vragen en waar ik direct mee doorga:** GA4 activeren (het recept ligt klaar) en de gratis vermeldingen aanmelden. Die kosten niets en houden niemand op.
 

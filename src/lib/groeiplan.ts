@@ -34,14 +34,14 @@ export const MIJLPALEN: Mijlpaal[] = [
     doel: 400,
     titel: "Fundament",
     waarom:
-      "De site staat nog vrijwel volledig op pagina 4 en verder. Deze fase gaat niet over verkeer, maar over posities: herbouwde landingspagina's, 24 artikelen erbij en een geverifieerd bedrijfsprofiel. Verkeer volgt met 3 tot 6 maanden vertraging.",
+      "De site staat nog vrijwel volledig op pagina 4 en verder. Deze fase gaat niet over verkeer, maar over posities: herbouwde landingspagina's, 24 artikelen erbij en een geverifieerd bedrijfsprofiel. Verkeer volgt met 3 tot 6 maanden vertraging. Interieurbeeld ontbreekt in deze fase nog — de lodges zijn niet opgeleverd — dus draait het beeldwerk op natuur en buitenaanzicht.",
     hefbomen: [
       "Drie P0-landingspagina's herbouwd (wellness, romantiek, jacuzzi)",
       "24 artikelen erbij — 6 per maand",
       "Google Bedrijfsprofiel geverifieerd, wekelijkse posts",
       "Gratis vermeldingen: VVV Drenthe, Visit Drenthe, ANWB, Tripadvisor",
       "GA4 live en aan Search Console gekoppeld",
-      "Interieurfotografie — nodig voor élk kanaal hierna",
+      "Fotograaf vastgelegd en shotlist klaar — de shoot zelf kan pas na oplevering",
     ],
   },
   {
@@ -51,12 +51,13 @@ export const MIJLPALEN: Mijlpaal[] = [
     doel: 1_200,
     titel: "Opening",
     waarom:
-      "De opening is het enige moment waarop de pers uit zichzelf wil schrijven. Tegelijk gaan de eerste advertenties aan: op merknaam en op de drie commerciële clusters waar de organische positie nog te laag is om te oogsten.",
+      "De opening is het enige moment waarop de pers uit zichzelf wil schrijven. Tegelijk gaan de eerste advertenties aan: op merknaam en op de drie commerciële clusters waar de organische positie nog te laag is om te oogsten. En dit is het kwartaal waarin de lodges eindelijk te fotograferen zijn — alles wat op beeld draait, begint hier.",
     hefbomen: [
       "Persbericht naar RTV Drenthe, Dagblad van het Noorden, Asser Courant",
+      "Interieur- & sfeerfotografie in februari — het scharnierpunt van dit plan",
+      "Video-impressie in maart, aansluitend op dezelfde styling",
       "Google Ads aan op merk + jacuzzi/wellness/romantisch",
-      "Pinterest-account met seizoenspins — goedkoopste bereik in de reiscategorie",
-      "Natuurhuisje en Airbnb live als vindkanaal (niet als hoofdkanaal)",
+      "Natuurhuisje live in maart, zodra het beeld er is",
       "Eerste echte reviews verzamelen — vanaf 5 stuks komen sterren in Google",
     ],
   },
@@ -70,6 +71,8 @@ export const MIJLPALEN: Mijlpaal[] = [
       "De artikelen uit 2026 beginnen te rijpen: een artikel bereikt zijn volle verkeer pas na 6 tot 12 maanden. Dit is de fase waarin het volume gaat tellen en waarin duidelijk wordt welke advertenties hun geld waard zijn.",
     hefbomen: [
       "Contentvolume vasthouden: 6 artikelen per maand, nu op de rijpe clusters",
+      "Airbnb live in april, een maand na Natuurhuisje — met de lessen uit die listing erin",
+      "Pinterest op gang met het nieuwe beeld; Meta-campagnes met video",
       "Advertentiebudget verschuiven naar wat aantoonbaar boekingen oplevert",
       "Duitse set compleet — Duitsland is de tweede markt voor Drenthe",
       "Linkbuilding: 2 kwaliteitsverwijzingen per maand",
@@ -232,8 +235,8 @@ export interface Scenario {
 /* Eenmalige investeringen zijn in alle scenario's dezelfde noodzaak, alleen in
  * verschillende mate. Fotografie staat overal in: zonder interieurbeeld werkt
  * geen enkel kanaal, betaald of organisch. */
-const FOTO: BudgetPost = { label: "Interieur- & sfeerfotografie", bedrag: 900, wat: "Halve dag, beide lodges, inclusief bewerking. De grootste conversieblokker die er nu is." };
-const VIDEO: BudgetPost = { label: "Korte video's / drone", bedrag: 600, wat: "Vijf clips voor Pinterest, Instagram en de landingspagina's." };
+const FOTO: BudgetPost = { label: "Interieur- & sfeerfotografie", bedrag: 900, wat: "Februari 2027, halve dag, beide lodges, inclusief bewerking. Kan niet eerder: vóór de oplevering valt er geen interieur te fotograferen. De grootste conversieblokker die er is." };
+const VIDEO: BudgetPost = { label: "Korte video's / drone", bedrag: 600, wat: "Maart 2027, aansluitend op de fotoshoot — dezelfde styling, geen tweede reisdag. Vijf clips voor Pinterest, Instagram en de landingspagina's." };
 const VERTALING: BudgetPost = { label: "Duitse vertaling door native", bedrag: 450, wat: "Tien pagina's. De huidige Duitse set is te dun om te ranken." };
 const PERSKIT: BudgetPost = { label: "Persbericht & persfoto's", bedrag: 250, wat: "Voor de opening — het enige moment waarop regionale media uit zichzelf schrijven." };
 

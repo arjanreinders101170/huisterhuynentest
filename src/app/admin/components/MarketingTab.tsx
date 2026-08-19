@@ -96,7 +96,7 @@ const MONTHS: Month[] = [
       { id: "ju9",  title: "Blog 14: Kanovaren op de Drentsche Aa", category: "Blog", priority: "midden", keyword: "kanovaren drentsche aa" },
       { id: "ju10", title: "Blog 15: E-bike huren in Drenthe — adressen en prijzen", category: "Blog", priority: "midden", keyword: "e-bike huren drenthe" },
       { id: "ju11", title: "Blog 16: Een dag in Norg — brinkdorp, bos en terrasjes", category: "Blog", priority: "hoog", keyword: "wat te doen in norg" },
-      { id: "ju12", title: "Interieurphotografie lodge-Eik en lodge-Heide laten maken", category: "CRO", priority: "kritiek", note: "#1 conversie-blocker — luxe-boekers beslissen op foto's" },
+      { id: "ju12", title: "Fotograaf selecteren en shootbrief opstellen (shoot zelf: februari 2027)", category: "CRO", priority: "hoog", note: "De shoot is verplaatst naar Q1 2027: vóór de oplevering valt er geen interieur te fotograferen. Dit is het voorwerk — fotograaf vastleggen, shotlist en stylingbudget bepalen, zodat februari alleen nog uitvoeren is." },
       { id: "ju13", title: "VVV Drenthe aanmelden + Visit Drenthe listing aanmaken", category: "Lokaal", priority: "hoog" },
       { id: "ju14", title: "WhatsApp drijvende knop toevoegen (desktop + mobiel)", category: "CRO", priority: "hoog" },
       { id: "ju15", title: "Email 2 (nieuwsbrief serie): artikel + lodge-teaser sturen", category: "Email", priority: "hoog" },
@@ -220,6 +220,8 @@ const MONTHS: Month[] = [
       { id: "j27-5", title: "Blog: 'Wandelen in de winter rond de Drentsche Aa'", category: "Blog", priority: "midden" },
       { id: "j27-6", title: "Funnel meten nu er echte sessies zijn: sessie → CTA → aanvraag → boeking", category: "Analytics", priority: "hoog", note: "Vervang de aannames uit het rapport door eigen cijfers. Doel samengesteld: 1,5% sessie → boeking." },
       { id: "j27-7", title: "Tarieven maart en april vaststellen", category: "Revenue", priority: "hoog" },
+      { id: "j27-8", title: "Fotoshoot voorbereiden: shotlist, styling en datum vastleggen", category: "CRO", priority: "kritiek", note: "Per lodge: woonkamer, hottub bij avondlicht, badkamer, slaapkamer, ontbijttafel, buitenaanzicht in twee lichtcondities. Plan een dag zonder gasten en reserveer stylingbudget voor linnen, bloemen en tafeldekking — een lege lodge fotografeert leeg." },
+      { id: "j27-9", title: "Videobrief opstellen voor de impressie in maart", category: "CRO", priority: "midden", note: "Zelfde fotograaf, aansluitend op de fotoshoot: dat scheelt een tweede styling- en reisdag. Vijf korte clips, verticaal gefilmd voor Pinterest, Reels en de hero van de landingspagina's." },
     ],
   },
   {
@@ -234,6 +236,8 @@ const MONTHS: Month[] = [
       { id: "f27-4", title: "Blog: Pasen en meivakantie in Drenthe", category: "Blog", priority: "hoog", note: "Drie maanden vóór de piek." },
       { id: "f27-5", title: "Drie fietsartikelen samenvoegen tot één sterke gids", category: "Blog", priority: "midden" },
       { id: "f27-6", title: "180-dagen evaluatie tegen de forecast", category: "Analytics", priority: "hoog", note: "Doel op dit punt: 8.000–12.000 vertoningen per maand, CTR 2,8%, commerciële positie 22–28." },
+      { id: "f27-7", title: "Interieur- & sfeerfotografie beide lodges (± € 900)", category: "CRO", priority: "kritiek", note: "De grootste conversieblokker die er is: luxe-boekers beslissen op beeld. Alles wat hierna komt — Pinterest, Meta, de landingspagina's, Natuurhuisje en Airbnb — hangt aan deze dag. Plan hem vroeg in de maand, dan is er ruimte om over te doen." },
+      { id: "f27-8", title: "Nieuwe foto's doorvoeren op homepage, lodgepagina's en GBP", category: "CRO", priority: "kritiek", note: "Binnen twee weken na de shoot. Comprimeer de bronbestanden onder 400 KB — de huidige originelen zijn ~3 MB en kosten Core Web Vitals." },
     ],
   },
   {
@@ -248,6 +252,9 @@ const MONTHS: Month[] = [
       { id: "m27-4", title: "Blog: voorjaarswandelingen vanuit Zeijen", category: "Blog", priority: "midden" },
       { id: "m27-5", title: "A/B-test op de primaire CTA", category: "CRO", priority: "hoog", note: "Toets 'Bekijk beschikbaarheid' tegen 'Bekijk vrije weekenden' op de romantiekpagina." },
       { id: "m27-6", title: "Maanddashboard", category: "Analytics", priority: "midden" },
+      { id: "m27-7", title: "Video-impressie opnemen (± € 600)", category: "CRO", priority: "hoog", note: "Vijf clips. Pinterest en Meta belonen video met aanzienlijk meer bereik dan stilstaand beeld, en een lodge met een hottub verkoopt zich in beweging beter dan op een foto." },
+      { id: "m27-8", title: "Pinterest vullen met het nieuwe beeld", category: "Social", priority: "hoog", note: "Boards per thema: heide, wandelroutes, de lodges, wellness, Drenthe met hond. Pins hebben maanden nodig om te rijpen — hoe eerder ze staan, hoe eerder ze verkeer leveren." },
+      { id: "m27-9", title: "Natuurhuisje-profiel aanmaken en live zetten", category: "Betaald", priority: "hoog", keyword: "natuurhuisje drenthe", note: "Exacte doelgroep (natuur, rust), ± 15% commissie. Zet erop wat u zelf niet gevuld krijgt — laagseizoen, doordeweekse nachten, last-minutes — en blokkeer de weken waar u zelf al vraag voor heeft. Elke gast gaat daarna in de nieuwsbrief met een reden om de volgende keer rechtstreeks te boeken." },
     ],
   },
   {
@@ -261,6 +268,8 @@ const MONTHS: Month[] = [
       { id: "a27-3", title: "Seizoensbrief voorjaar naar de nieuwsbrieflijst", category: "Email", priority: "hoog" },
       { id: "a27-4", title: "Lokale samenwerkingen: fietsverhuur, restaurants, wellness in de buurt", category: "Lokaal", priority: "midden" },
       { id: "a27-5", title: "Maanddashboard", category: "Analytics", priority: "midden" },
+      { id: "a27-6", title: "Airbnb-profiel aanmaken en live zetten", category: "Betaald", priority: "hoog", note: "Een maand ná Natuurhuisje, zodat de lessen uit die listing — welke foto's werken, welke tekst, welke prijsopzet — er meteen in zitten. Internationaal bereik, vooral koppels en gezinnen." },
+      { id: "a27-7", title: "Kanaalvergelijking: eigen site versus Natuurhuisje versus Airbnb", category: "Analytics", priority: "hoog", note: "Netto per nacht ná commissie naast elkaar, plus het aandeel gasten dat later rechtstreeks terugboekt. Bepaalt hoeveel capaciteit er volgend seizoen naar de boekingssites gaat." },
     ],
   },
   {
