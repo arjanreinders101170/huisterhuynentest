@@ -42,6 +42,26 @@ export const checkoutSchema = z.object({
   }).optional(),
 });
 
+/* Herkomst van het bezoek. Alles optioneel: de bezoeker kan storage hebben
+ * geblokkeerd, en een aanvraag mag daar nooit op stuklopen. */
+const attributieTouchSchema = z.object({
+  utm_source:   z.string().max(200).optional(),
+  utm_medium:   z.string().max(200).optional(),
+  utm_campaign: z.string().max(200).optional(),
+  utm_term:     z.string().max(200).optional(),
+  utm_content:  z.string().max(200).optional(),
+  gclid:        z.string().max(200).optional(),
+  fbclid:       z.string().max(200).optional(),
+  referrer:     z.string().max(200).optional(),
+  landing_page: z.string().max(200).optional(),
+  op:           z.string().max(40).optional(),
+}).partial();
+
+export const attributieSchema = z.object({
+  eerste:  attributieTouchSchema.optional(),
+  laatste: attributieTouchSchema.optional(),
+});
+
 export const reserveringSchema = z.object({
   naam: z.string().min(1).max(100),
   email: z.string().email(),
@@ -61,4 +81,5 @@ export const reserveringSchema = z.object({
     event_id: z.string().min(8).max(80),
     anonymous_id: z.string().max(80).optional(),
   }).optional(),
+  _attr: attributieSchema.optional(),
 });

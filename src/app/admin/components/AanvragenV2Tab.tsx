@@ -4,6 +4,7 @@ import { BookingRequest } from "../types";
 import { Badge } from "./Badge";
 import { timeAgo } from "./Badge";
 import { offerCountdown, offerExpiryDate, formatDateNl, OFFER_VALID_DAYS } from "@/lib/offer-expiry";
+import { KANAAL_LABEL, type Kanaal } from "@/lib/attributie";
 
 const BRON_LABELS: Record<string, { icon: string; label: string }> = {
   homepage:   { icon: "🏠", label: "Homepage" },
@@ -13,6 +14,23 @@ const BRON_LABELS: Record<string, { icon: string; label: string }> = {
 };
 
 const PLATFORMS = ["Booking.com", "Airbnb", "Direct", "Anders"];
+
+/* Waar deze aanvraag vandaan kwam, kort genoeg voor de regel in de lijst.
+ * De tooltip toont de campagne en de landingspagina — dat is wat je nodig
+ * hebt om te beoordelen of een advertentie zijn geld waard was. */
+function herkomst(r: BookingRequest): { label: string; titel: string } | null {
+  if (!r.kanaal) return null;
+  const label = KANAAL_LABEL[r.kanaal as Kanaal] ?? r.kanaal;
+  const regels = [`Laatste klik: ${label}`];
+  if (r.eerste_kanaal && r.eerste_kanaal !== r.kanaal) {
+    regels.push(`Eerst gevonden via: ${KANAAL_LABEL[r.eerste_kanaal as Kanaal] ?? r.eerste_kanaal}`);
+  }
+  if (r.utm_campaign) regels.push(`Campagne: ${r.utm_campaign}`);
+  if (r.utm_content) regels.push(`Advertentie: ${r.utm_content}`);
+  if (r.referrer) regels.push(`Via: ${r.referrer}`);
+  if (r.landing_page) regels.push(`Binnengekomen op: ${r.landing_page}`);
+  return { label, titel: regels.join("\n") };
+}
 
 const LODGE_SHORT_NAMES: Record<string, string> = {
   lodge_1: "De Heide",
@@ -758,7 +776,14 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
                     background: isExpanded ? "#FAFAF7" : "transparent",
                   }}
                 >
-                  <div title={bron.label} style={{ fontSize: 14 }}>{bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span></div>
+                  <div title={bron.label} style={{ fontSize: 14 }}>
+                    {bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span>
+                    {herkomst(r) && (
+                      <div title={herkomst(r)!.titel} style={{ fontSize: 10, color: C.gold, marginTop: 2, fontWeight: 600 }}>
+                        {herkomst(r)!.label}
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <div style={{ fontWeight: 500 }}>{name}</div>
                     <div style={{ fontSize: 11, color: C.muted }}>{email}</div>
