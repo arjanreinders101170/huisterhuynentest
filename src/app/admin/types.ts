@@ -64,6 +64,7 @@ export const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   offerte_verstuurd: { bg: "#E3F2FD", text: "#1565C0" },
   geboekt: { bg: "#E8F5E9", text: "#2E7D32" },
   verlopen: { bg: "#F5F5F5", text: "#9E9E9E" },
+  verstuurd: { bg: "#F5F5F5", text: "#9E9E9E" },
   aanbetaling_verstuurd: { bg: "#FFF8E1", text: "#F9A825" },
   aanbetaling_betaald: { bg: "#E8F5E9", text: "#2E7D32" },
   restbetaling_verstuurd: { bg: "#FFF8E1", text: "#F9A825" },
