@@ -2,7 +2,8 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   BEZETTINGSDOEL, NACHTEN_BESCHIKBAAR, MAANDEN, JAAR,
-  VASTE_LASTEN_PER_MAAND, BREAKEVEN, LADDER, BASISPRIJS, TOESLAGEN, nachtprijs,
+  VASTE_LASTEN, VASTE_LASTEN_PER_JAAR, VASTE_LASTEN_PER_MAAND, BREAKEVEN, LADDER,
+  BASISPRIJS, TOESLAGEN, nachtprijs, BLOKPLAFOND, WINTERSTRAF, ENERGIE_PER_NACHT, SCHOONMAAK,
   GEMIDDELDE_VERBLIJFSDUUR, BEZOEKERS_PER_MAAND_MINIMAAL,
   DOEL_BEZOEKERS_JAAR, DOEL_BEZOEKERS_MAAND, STRETCH_BEZOEKERS_MAAND,
   WEEKENDPLAFOND, DOORDEWEEKS_NODIG, DOORDEWEEKSE_BEZETTING_NODIG,
@@ -163,7 +164,7 @@ export function GroeiTab() {
       {/* ── De ondergrens ── */}
       <Kaart
         titel="De ondergrens — dekking van hypotheek en vaste lasten"
-        sub={`${euro(VASTE_LASTEN_PER_MAAND)} per maand moet binnenkomen voor beide lodges samen. Doorgerekend op de kalender van 2027 met de werkelijke tarieven uit de prijsmotor.`}
+        sub={`${euro(VASTE_LASTEN.financieringPerMaand)} per maand financieringslasten plus ${euro(VASTE_LASTEN.parkkostenPerJaar)} per jaar parkkosten — samen ${euro(VASTE_LASTEN_PER_JAAR)} per jaar, ${euro(VASTE_LASTEN_PER_MAAND)} per maand. Doorgerekend op de kalender van 2027 met de tarieven uit de prijsmotor.`}
       >
         <div style={{ display: "flex", gap: 28, flexWrap: "wrap", marginBottom: 18 }}>
           <div>
@@ -196,12 +197,13 @@ export function GroeiTab() {
               <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Boekingen</th>
               <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Gem. tarief</th>
               <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Omzet</th>
+              <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Energie</th>
               <th style={{ padding: "6px 0", fontWeight: 600, textAlign: "right" }}>Ná vaste lasten</th>
             </tr>
           </thead>
           <tbody>
             {LADDER.map(t => {
-              const isDoel = Math.abs(t.bezetting - BEZETTINGSDOEL) < 0.01;
+              const isDoel = t.bezetting >= BLOKPLAFOND.bezetting - 0.01;
               const isBreak = Math.abs(t.bezetting - BREAKEVEN.bezetting) < 0.01;
               return (
                 <tr key={t.bezetting} style={{
@@ -212,12 +214,13 @@ export function GroeiTab() {
                   <td style={{ padding: "9px 0", color: C.text }}>
                     {pct(t.bezetting)}
                     {isBreak && <span style={{ marginLeft: 8, fontSize: 10, color: C.gold }}>break-even</span>}
-                    {isDoel && <span style={{ marginLeft: 8, fontSize: 10, color: C.green }}>doel</span>}
+                    {isDoel && <span style={{ marginLeft: 8, fontSize: 10, color: C.green }}>plafond in blokken</span>}
                   </td>
                   <td style={{ padding: "9px 0", textAlign: "right", color: C.text }}>{t.nachten}</td>
                   <td style={{ padding: "9px 0", textAlign: "right", color: C.muted }}>{t.boekingen}</td>
                   <td style={{ padding: "9px 0", textAlign: "right", color: C.muted }}>{euro(t.adr)}</td>
                   <td style={{ padding: "9px 0", textAlign: "right", color: C.text }}>{euro(t.omzet)}</td>
+                  <td style={{ padding: "9px 0", textAlign: "right", color: C.muted }}>−{euro(t.energie)}</td>
                   <td style={{ padding: "9px 0", textAlign: "right", color: t.resultaat > 0 ? C.groen : C.rood }}>
                     {euro(t.resultaat)}
                   </td>
@@ -236,20 +239,50 @@ export function GroeiTab() {
           ))}
         </div>
 
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
+          <div style={{
+            flex: "1 1 20rem", padding: "12px 14px", background: "#FAFAF7",
+            borderLeft: `3px solid ${C.rood}`, borderRadius: "0 8px 8px 0",
+            fontSize: 12, color: C.text, lineHeight: 1.7,
+          }}>
+            <strong>De winterstraf.</strong> Stroom en water gaan op de meter, en dat maakt de lage
+            maanden dubbel lastig. Een novembernacht levert {euro(WINTERSTRAF.novemberTarief)} op en
+            kost {euro(WINTERSTRAF.novemberEnergie)} aan energie — netto {euro(WINTERSTRAF.novemberNetto)}.
+            Een augustusnacht levert {euro(WINTERSTRAF.augustusTarief)} op en kost er
+            {" "}{euro(WINTERSTRAF.augustusEnergie)} — netto {euro(WINTERSTRAF.augustusNetto)}. De maanden
+            die het moeilijkst te verkopen zijn, zijn ook het duurst om te leveren. Reken daarom in de
+            winter met een minimumverblijf van drie nachten: de jacuzzi opwarmen kost hetzelfde bij twee
+            of bij vier nachten.
+          </div>
+          <div style={{
+            flex: "1 1 20rem", padding: "12px 14px", background: "#FAFAF7",
+            borderLeft: `3px solid ${C.gold}`, borderRadius: "0 8px 8px 0",
+            fontSize: 12, color: C.text, lineHeight: 1.7,
+          }}>
+            <strong>Het blokplafond.</strong> Verkoopt u uitsluitend hele weekenden, midweken en
+            vakantieweken, dan komt u niet verder dan {BLOKPLAFOND.nachten} van de {NACHTEN_BESCHIKBAAR} nachten —
+            {" "}{pct(BLOKPLAFOND.bezetting)}. De rest zijn losse zondag- en maandagnachten die tussen twee
+            boekingen in vallen. {pct(BEZETTINGSDOEL)} halen betekent dus per definitie ook die restnachten
+            verkopen: flexibele aankomstdagen en een last-minute-kanaal zijn geen verfijning maar
+            voorwaarde.
+          </div>
+        </div>
+
         <p style={{
           margin: 0, fontSize: 12, color: C.text, lineHeight: 1.7,
-          padding: "12px 14px", background: "#FAFAF7", borderLeft: `3px solid ${C.gold}`, borderRadius: "0 8px 8px 0",
+          padding: "12px 14px", background: "#FAFAF7", borderLeft: `3px solid ${C.green}`, borderRadius: "0 8px 8px 0",
         }}>
           <strong>Wat dit betekent.</strong> De lichten blijven aan bij {pct(BREAKEVEN.bezetting)} bezetting —
-          {" "}{BREAKEVEN.nachtenPerMaand} nachten en {BREAKEVEN.boekingenPerMaand} boekingen per maand over
-          twee lodges, en daar zijn ongeveer {BREAKEVEN.bezoekersPerMaand} bezoekers per maand voor nodig.
-          Het doel van {pct(BEZETTINGSDOEL)} is dus geen overleven maar verdienen: het verschil tussen
-          break-even en {pct(BEZETTINGSDOEL)} is ruim {euro(60_000)} per jaar. Het marketingbudget van
-          {" "}{euro(550)} per maand is precies het gereedschap om dat verschil te overbruggen.
+          {" "}{BREAKEVEN.nachtenPerMaand} nachten en {BREAKEVEN.boekingenPerMaand.toFixed(1)} boekingen per
+          maand over twee lodges, en daar zijn ongeveer {BREAKEVEN.bezoekersPerMaand} bezoekers per maand
+          voor nodig. Het doel van {pct(BEZETTINGSDOEL)} is dus geen overleven maar verdienen: het verschil
+          tussen break-even en het plafond is ruim {euro(54_000)} per jaar. Het marketingbudget van
+          {" "}{euro(550)} per maand hoeft daarvan maar één extra boeking per maand terug te verdienen.
           <br /><br />
-          Basisprijs {euro(BASISPRIJS)} per nacht; per nacht wint de duurste toeslag. Aannames in de
-          variabele kosten: {euro(18)} per nacht aan gas, water en stroom, en {euro(55)} schoonmaak per
-          wissel tegen {euro(75)} die u doorberekent. Toeristenbelasting telt niet mee — dat is
+          Basisprijs {euro(BASISPRIJS)} per nacht; per nacht wint de duurste toeslag. Variabele kosten:
+          {" "}{euro(ENERGIE_PER_NACHT[7])} tot {euro(ENERGIE_PER_NACHT[1])} per nacht aan stroom en water
+          (op de meter, seizoensgebonden) en {euro(SCHOONMAAK.kostprijs)} schoonmaak per wissel tegen
+          {" "}{euro(SCHOONMAAK.doorberekend)} die u doorberekent. Toeristenbelasting telt niet mee — dat is
           doorstroom naar de gemeente.
         </p>
       </Kaart>

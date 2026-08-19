@@ -123,10 +123,29 @@ export const DOORDEWEEKSE_BEZETTING_NODIG = DOORDEWEEKS_NODIG / DOORDEWEEKSE_NAC
 export const WEEKENDPLAFOND = WEEKENDNACHTEN / NACHTEN_BESCHIKBAAR;
 
 
-/* ── De ondergrens: dekking van hypotheek en vaste lasten ────────────────── */
+/* ── De ondergrens: dekking van de vaste lasten ──────────────────────────── */
 
-/** Wat er maandelijks binnen moet komen om hypotheek en vaste lasten te dekken. */
-export const VASTE_LASTEN_PER_MAAND = 2_000;
+/** Opgave eigenaar, 19 augustus 2026. */
+export const VASTE_LASTEN = {
+  financieringPerMaand: 2_000,
+  parkkostenPerJaar: 3_500,
+};
+export const VASTE_LASTEN_PER_JAAR =
+  VASTE_LASTEN.financieringPerMaand * 12 + VASTE_LASTEN.parkkostenPerJaar;
+export const VASTE_LASTEN_PER_MAAND = Math.round(VASTE_LASTEN_PER_JAAR / 12);
+
+/**
+ * Stroom en water worden op de meter afgerekend en zijn dus een variabele
+ * kostenpost per verhuurde nacht, geen vaste last. Sterk seizoensgebonden: een
+ * jacuzzi op temperatuur houden kost in januari een veelvoud van juli, en de
+ * lodge moet er in de winter bovendien warm bij.  [AANNAME]
+ */
+export const ENERGIE_PER_NACHT: Record<number, number> = {
+  1: 28, 2: 28, 3: 24, 4: 18, 5: 14, 6: 12,
+  7: 12, 8: 12, 9: 14, 10: 20, 11: 26, 12: 28,
+};
+
+export const SCHOONMAAK = { doorberekend: 75, kostprijs: 55 };
 
 /**
  * Tarieven zoals de prijsmotor ze berekent (pricing_config + sync-pricing).
@@ -145,28 +164,34 @@ export const TOESLAGEN: { label: string; pct: number }[] = [
 export const nachtprijs = (pct: number) => Math.round(BASISPRIJS * (1 + pct / 100));
 
 /**
- * Break-even, doorgerekend op de kalender van 2027 met de werkelijke tarieven.
+ * Break-even, doorgerekend op de kalender van 2027 — zie analyse/break-even.py.
  *
- * Er is gerekend in verkoopbare blokken — weekenden van twee nachten, midweken
- * van drie, vakantieweken van zeven — en niet in losse nachten, want die
- * bestaan niet. Per maand alleen de voorraad van díe maand: november moet in
- * november verdiend worden.
- *
- * Variabele kosten: € 18 per nacht aan gas, water en stroom (de jacuzzi is de
- * grootverbruiker) en € 55 schoonmaak per wissel tegen € 75 die u doorberekent.
- * Toeristenbelasting telt niet mee — dat is doorstroom naar de gemeente.
+ * Gerekend in verkoopbare blokken (weekend vr+za, midweek di t/m do,
+ * vakantieweek zeven nachten) en niet in losse nachten, want die bestaan niet.
+ * Elke maand draagt zichzelf: november is niet op te halen met de opbrengst van
+ * augustus, want de financieringslasten lopen door.
  */
 export const BREAKEVEN = {
-  bezetting: 0.20,
-  nachtenPerMaand: 12,
-  boekingenPerMaand: 5,
-  nachtenPerJaar: 146,
-  boekingenPerJaar: 60,
-  omzetPerJaar: 29_420,
-  gemiddeldTarief: 202,
-  /** Bezoekers per maand die daarbij horen, langs dezelfde trechter als het doel. */
-  bezoekersPerMaand: 147,
+  bezetting: 0.22,
+  nachtenPerMaand: 13,
+  boekingenPerMaand: 5.6,
+  nachtenPerJaar: 160,
+  boekingenPerJaar: 67,
+  omzetPerJaar: 32_126,
+  gemiddeldTarief: 201,
+  bezoekersPerMaand: 164,
 };
+
+/**
+ * Het plafond dat de blokstructuur zelf oplegt.
+ *
+ * Als u uitsluitend hele weekenden, midweken en vakantieweken verkoopt, komt u
+ * niet verder dan 500 van de 730 nachten. De rest zijn losse zondag- en
+ * maandagnachten die tussen twee boekingen in vallen. 70% halen betekent dus
+ * per definitie ook die restnachten verkopen — met flexibele aankomstdagen en
+ * een last-minute-kanaal.
+ */
+export const BLOKPLAFOND = { nachten: 500, bezetting: 500 / 730 };
 
 export interface LadderTrede {
   bezetting: number;
@@ -174,23 +199,25 @@ export interface LadderTrede {
   boekingen: number;
   adr: number;
   omzet: number;
-  /** Verblijfsomzet minus variabele kosten, minus € 24.000 vaste lasten. */
+  energie: number;
+  /** Verblijfsomzet minus energie plus schoonmaakmarge, minus de vaste lasten. */
   resultaat: number;
 }
 
-/**
- * Wat elke bezettingsgraad overhoudt. Het gemiddelde tarief daalt naarmate de
- * kalender voller wordt: de dure weekenden en vakantieweken gaan het eerst weg,
- * de doordeweekse basisnachten blijven het langst liggen.
- */
 export const LADDER: LadderTrede[] = [
-  { bezetting: 0.20, nachten: 146, boekingen: 60,  adr: 202, omzet: 29_420, resultaat: 4_800 },
-  { bezetting: 0.30, nachten: 220, boekingen: 98,  adr: 201, omzet: 44_319, resultaat: 18_300 },
-  { bezetting: 0.40, nachten: 294, boekingen: 134, adr: 198, omzet: 58_212, resultaat: 31_600 },
-  { bezetting: 0.50, nachten: 366, boekingen: 158, adr: 192, omzet: 70_092, resultaat: 42_700 },
-  { bezetting: 0.60, nachten: 438, boekingen: 182, adr: 187, omzet: 81_972, resultaat: 53_700 },
-  { bezetting: 0.70, nachten: 513, boekingen: 207, adr: 184, omzet: 94_347, resultaat: 65_300 },
+  { bezetting: 0.22, nachten: 162, boekingen: 64,  adr: 205, omzet: 33_280, energie: 2_880, resultaat: 4_180 },
+  { bezetting: 0.30, nachten: 220, boekingen: 93,  adr: 201, omzet: 44_286, energie: 4_048, resultaat: 14_598 },
+  { bezetting: 0.41, nachten: 296, boekingen: 126, adr: 198, omzet: 58_575, energie: 5_532, resultaat: 28_063 },
+  { bezetting: 0.50, nachten: 365, boekingen: 149, adr: 192, omzet: 69_960, energie: 7_278, resultaat: 38_162 },
+  { bezetting: 0.60, nachten: 440, boekingen: 174, adr: 187, omzet: 82_335, energie: 8_304, resultaat: 50_011 },
+  { bezetting: 0.68, nachten: 500, boekingen: 194, adr: 184, omzet: 92_235, energie: 9_792, resultaat: 58_823 },
 ];
+
+/** De winterstraf: lage maanden zijn moeilijker te verkopen én duurder te leveren. */
+export const WINTERSTRAF = {
+  novemberTarief: 190, novemberEnergie: 26, novemberNetto: 164,
+  augustusTarief: 206, augustusEnergie: 12, augustusNetto: 194,
+};
 
 /* ── Mijlpalen ───────────────────────────────────────────────────────────── */
 

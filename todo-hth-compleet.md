@@ -192,7 +192,7 @@
 
 Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin onder **Marketing → Groei & bezetting**.
 
-**Break-even ligt op 20% jaarbezetting** — 12 nachten en 5 boekingen per maand over beide lodges, bij € 2.000 aan hypotheek en vaste lasten. **Het doel is 70%**, en dat verschil is ruim € 60.000 per jaar. Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
+**Break-even ligt op 22% jaarbezetting** — 13 nachten en ruim 5 boekingen per maand over beide lodges, bij € 27.500 vaste lasten per jaar (€ 2.000/mnd financiering + € 3.500/jr parkkosten). Stroom en water gaan op de meter en zijn dus variabel: € 12 per nacht in de zomer, € 28 in de winter. **Het doel is 70%**, en het verschil tussen 22% en het blokplafond van 68% is ruim € 54.000 per jaar. Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
 
 ### Afgerond ✅
 | # | Item | Status |
@@ -225,7 +225,10 @@ Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin o
 | 107 | Minimumverblijf-regels instellen die geen onverkoopbare gaten achterlaten | **Hoog** | Goed voor 5 tot 8% jaarbezetting en het kost niets |
 | 108 | Prijs en beschikbaarheid zichtbaar zonder formulier | **Hoog** | De grootste conversiehefboom die geen geld kost |
 | 109 | E-maillijst als last-minute-kanaal inrichten | Middel | Het enige kanaal waarmee je een specifieke week kunt vullen. Doel: 1.000 abonnees eind 2028 |
-| 110 | **Werkelijke vaste lasten per jaar aanleveren** | **Hoog** | Break-even is nu gerekend met € 2.000/maand netto. Met de echte cijfers (hypotheek, verzekering, onderhoud, boekhouding, reservering groot onderhoud) wordt de ondergrens exact in plaats van indicatief |
+| 110 | Resterende vaste lasten aanleveren: verzekering, onderhoud, reservering groot onderhoud, boekhouding, internet | **Hoog** | Financiering (€ 24.000) en parkkosten (€ 3.500) staan erin. De rest schat ik op € 3.000–5.000/jr; dat tilt break-even van 22% naar ± 25% |
+| 112 | Meterstanden bijhouden per verhuurde nacht | Middel | De energiekosten (€ 12 zomer – € 28 winter per nacht) zijn nu schattingen. Na één winter met echte standen wordt de hele ondergrens exact |
+| 113 | **Minimumverblijf 3 nachten in nov t/m feb instellen** | **Hoog** | De jacuzzi opwarmen kost hetzelfde bij 2 of 4 nachten. Verdeelt de opwarmpiek over meer omzet — en voorkomt losse gaten |
+| 114 | Flexibele aankomstdagen + last-minute-kanaal | **Hoog** | Alleen hele weekenden en midweken verkopen geeft een plafond van 68%. De laatste procenten komen uit restnachten, niet uit meer vraag |
 | 111 | Basisprijs en toeslagen vastzetten in `pricing_config` voor 2027 | **Hoog** | Het model rekent met € 165 basis en de standaardtoeslagen (weekend +15%, vakantie NL +25%, TT +50%). Zolang die niet in de database staan, draait de prijsmotor op nul |
 | 98 | Fotograaf selecteren, shotlist en stylingbudget vastleggen (#79) | **Hoog** | De shoot zelf staat in februari 2027; dit is het voorwerk zodat die maand alleen nog uitvoeren is |
 | 99 | Drie P0-landingspagina's herbouwen (wellness, romantiek, jacuzzi) | **Hoog** | Samen 3.745 vertoningen en 2 klikken |

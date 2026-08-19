@@ -39,7 +39,9 @@ Er is één blinde vlek die u moet kennen: **er draait nog geen GA4** [CODE]. El
 
 **Maar zet het doel niet op 370.** Daar zit geen enkele marge in, en drie dingen vragen om marge: de conversie begint lager zolang er geen reviews en geen interieurbeeld zijn, verkeer valt nooit precies in de maanden waarin u het nodig heeft, en bezoek dat vandaag niet boekt bouwt wel de e-maillijst waarmee u volgend jaar de lage maanden vult. **Ruim twee keer de minimale behoefte is een verdedigbaar doel — en dat is precies 10.000 bezoekers per jáár, ± 830 per maand.**
 
-**En de ondergrens.** Met € 2.000 per maand aan hypotheek en vaste lasten ligt break-even op **20% jaarbezetting** — twaalf nachten en vijf boekingen per maand over twee lodges, en daar zijn ± 147 bezoekers per maand voor nodig. Doorgerekend op de kalender van 2027 met de echte tarieven (€ 165 basis, € 190 weekend, € 206 vakantie, € 248 TT). **Het doel van 70% is dus geen overleven maar verdienen: het verschil is ruim € 60.000 per jaar.** Zie deel 2.
+**En de ondergrens.** Vaste lasten € 27.500 per jaar (€ 2.000 per maand financiering plus € 3.500 parkkosten). Stroom en water gaan op de meter en zijn dus variabel. Break-even ligt daarmee op **22% jaarbezetting** — dertien nachten en ruim vijf boekingen per maand over twee lodges, waarvoor ± 164 bezoekers per maand nodig zijn. Doorgerekend op de kalender van 2027 met de echte tarieven (€ 165 basis, € 190 weekend, € 206 vakantie, € 248 TT). **Het doel is dus geen overleven maar verdienen: het verschil tussen 22% en het plafond van 68% is ruim € 54.000 per jaar.** Zie deel 2.
+
+**Twee dingen die de metercijfers blootleggen.** De maanden die het moeilijkst te verkopen zijn, zijn ook het duurst om te leveren: een novembernacht levert € 190 op en kost € 26 aan energie, een augustusnacht € 206 tegen € 12. En als u alleen hele weekenden en midweken verkoopt, ligt uw plafond op 68% — de rest zijn losse zondag- en maandagnachten. Beide staan in deel 2.
 
 **Wat de bezetting werkelijk bepaalt, is geen marketingvraag.** Bij 512 nachten is verkeer niet de beperkende factor. Dit zijn ze, op volgorde:
 
@@ -117,9 +119,18 @@ Bij 10.000 per jaar zit u dus met een dekking van ruim twee keer op het slechtst
 
 ---
 
-# 2. De ondergrens — dekking van hypotheek en vaste lasten
+# 2. De ondergrens — dekking van de vaste lasten
 
-**Uitgangspunt:** € 2.000 per maand moet er binnenkomen voor beide woningen samen, om hypotheek en vaste lasten te dekken. Dat is € 24.000 per jaar. Hieronder wat dat betekent in nachten.
+**Uitgangspunt** (opgave eigenaar, 19 augustus 2026):
+
+| Post | Bedrag | Soort |
+|---|---:|---|
+| Financieringslasten | € 2.000 per maand | vast |
+| Parkkosten | € 3.500 per jaar | vast |
+| **Totaal vaste lasten** | **€ 27.500 per jaar** · € 2.292 per maand | |
+| Stroom en water | op de meter | **variabel** |
+
+Dat laatste is geen detail. **Stroom en water op de meter betekent dat energie een kostprijs per verhuurde nacht is en geen vaste last** — en die kostprijs verschilt sterk per seizoen.
 
 ## 2.1 De tarieven waarmee gerekend is
 
@@ -134,75 +145,113 @@ Rechtstreeks uit de prijsmotor: basisprijs uit `pricing_config`, toeslagen uit `
 | Schoolvakantie NL | +25% | **€ 206** |
 | TT Assen | +50% | **€ 248** |
 
-Daarnaast: schoonmaak € 75 per boeking en toeristenbelasting € 1,50 per persoon per nacht [CODE]. De toeristenbelasting telt hieronder **niet** mee — dat is doorstroom naar de gemeente Tynaarlo en geen omzet.
+Daarnaast schoonmaak € 75 per boeking en toeristenbelasting € 1,50 per persoon per nacht [CODE]. De toeristenbelasting telt hieronder **niet** mee — dat is doorstroom naar de gemeente Tynaarlo, geen omzet.
 
-## 2.2 Hoe er gerekend is
+## 2.2 De variabele kosten per nacht
 
-Twee dingen maken het verschil tussen een cijfer dat klopt en een cijfer dat vleit:
+| Post | Bedrag | Toelichting |
+|---|---:|---|
+| Stroom en water, juni t/m augustus | € 12 per nacht | Alleen de jacuzzi [AANNAME] |
+| Stroom en water, april/mei en september | € 14 – 18 | |
+| Stroom en water, oktober en maart | € 20 – 24 | |
+| Stroom en water, november t/m februari | € 26 – 28 | Jacuzzi op temperatuur én de lodge verwarmen [AANNAME] |
+| Schoonmaak per wissel | € 55 kostprijs / € 75 doorberekend | Marge € 20 per boeking [AANNAME] |
 
-**Er wordt in blokken verkocht, niet in losse nachten.** Een weekend is vrijdag plus zaterdag, een midweek dinsdag tot en met donderdag, een vakantieweek zeven nachten. Rekenen met "de twaalf duurste nachten van de maand" zou een antwoord geven dat u nooit kunt verkopen.
+Die energiebedragen zijn schattingen. Ze zijn na één winter met echte meterstanden te vervangen — en dan wordt dit hele hoofdstuk exact.
 
-**Elke maand moet zichzelf dragen.** November kan niet worden opgehaald met de opbrengst van augustus, want de hypotheek loopt door.
+## 2.3 Hoe er gerekend is
 
-**Variabele kosten die eraf gaan** [AANNAME]: € 18 per nacht aan gas, water en stroom — de jacuzzi is daarin de grootverbruiker — en € 55 werkelijke schoonmaakkosten per wissel tegen de € 75 die u doorberekent.
+Twee dingen scheiden een cijfer dat klopt van een cijfer dat vleit:
 
-## 2.3 De uitkomst per maand
+**Er wordt in blokken verkocht, niet in losse nachten.** Een weekend is vrijdag plus zaterdag, een midweek dinsdag tot en met donderdag, een vakantieweek zeven nachten. Rekenen met "de dertien duurste nachten van de maand" geeft een antwoord dat u nooit kunt verkopen.
 
-| Maand | Beschikbaar | Nachten nodig | Boekingen | Bezetting | Verblijfsomzet | Gem. tarief |
-|---|---:|---:|---:|---:|---:|---:|
-| januari | 62 | 12 | 5 | 19% | € 2.475 | € 206 |
-| februari | 56 | 12 | 5 | 21% | € 2.458 | € 205 |
-| maart | 62 | 12 | 6 | 19% | € 2.277 | € 190 |
-| april | 60 | 12 | 5 | 20% | € 2.409 | € 201 |
-| mei | 62 | 14 | 2 | 23% | € 2.888 | € 206 |
-| juni | 60 | 10 | 5 | 17% | € 2.128 | € 213 |
-| juli | 62 | 13 | 5 | 21% | € 2.681 | € 206 |
-| augustus | 62 | 13 | 5 | 21% | € 2.681 | € 206 |
-| september | 60 | 12 | 6 | 20% | € 2.277 | € 190 |
-| oktober | 62 | 12 | 5 | 19% | € 2.458 | € 205 |
-| november | 60 | 12 | 6 | 20% | € 2.277 | € 190 |
-| december | 62 | 12 | 5 | 19% | € 2.409 | € 201 |
-| **Jaar** | **730** | **146** | **60** | **20%** | **€ 29.420** | **€ 202** |
+**Elke maand draagt zichzelf.** November is niet op te halen met de opbrengst van augustus, want de financieringslasten lopen door.
 
-**Het antwoord: 20% jaarbezetting. Twaalf nachten en vijf boekingen per maand, over twee lodges samen.**
+## 2.4 De uitkomst per maand
 
-Juni valt het laagst (17%) door de TT-week: die weken leveren € 248 per nacht op, dus u heeft er minder van nodig. Maart, september en november vallen het hoogst omdat daar geen enkele toeslag geldt behalve het weekend — daar verkoopt u tegen € 190 en heeft u er dus meer nodig.
+| Maand | Beschikbaar | Energie p/nacht | Nachten nodig | Boekingen | Bezetting | Verblijfsomzet | Gem. tarief |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| januari | 62 | € 28 | 14 | 6 | 23% | € 2.888 | € 206 |
+| februari | 56 | € 28 | 14 | 6 | 25% | € 2.854 | € 204 |
+| maart | 62 | € 24 | 14 | 7 | 23% | € 2.656 | € 190 |
+| april | 60 | € 18 | 12 | 5 | 20% | € 2.409 | € 201 |
+| mei | 62 | € 14 | 14 | 2 | 23% | € 2.888 | € 206 |
+| juni | 60 | € 12 | 12 | 6 | 20% | € 2.508 | € 209 |
+| juli | 62 | € 12 | 13 | 5 | 21% | € 2.681 | € 206 |
+| augustus | 62 | € 12 | 13 | 5 | 21% | € 2.681 | € 206 |
+| september | 60 | € 14 | 14 | 7 | 23% | € 2.656 | € 190 |
+| oktober | 62 | € 20 | 12 | 5 | 19% | € 2.458 | € 205 |
+| november | 60 | € 26 | 14 | 7 | 23% | € 2.656 | € 190 |
+| december | 62 | € 28 | 14 | 6 | 23% | € 2.788 | € 199 |
+| **Jaar** | **730** | | **160** | **67** | **22%** | **€ 32.126** | **€ 201** |
 
-## 2.4 Wat dat betekent voor de weekenden
+**Het antwoord: 22% jaarbezetting. Dertien nachten en ruim vijf boekingen per maand, over twee lodges samen.**
 
-Twaalf nachten per maand klinkt bescheiden. Maar als u die vrijwel allemaal in het weekend verkoopt — en dat is wat er bij lage bezetting gebeurt — dan zijn dat **zes weekendboekingen per maand op ongeveer negen beschikbare weekendplekken** (4,3 weekenden × 2 lodges).
+## 2.5 De winterstraf
 
-**Break-even betekent dus: twee derde van al uw weekenden vol.** Dat is geen bescheiden opgave voor een accommodatie zonder reviews en zonder interieurfoto's. Het is precies de reden dat fase 1 in het plan een bewijsjaar heet en geen bezettingsjaar.
+Dit is de belangrijkste consequentie van "op de meter", en hij werkt precies de verkeerde kant op:
 
-## 2.5 De ladder van break-even naar het doel
+| | November | Augustus |
+|---|---:|---:|
+| Tarief per nacht | € 190 | € 206 |
+| Energie op de meter | − € 26 | − € 12 |
+| **Netto per nacht** | **€ 164** | **€ 194** |
+
+**De maanden die het moeilijkst te verkopen zijn, zijn ook het duurst om te leveren.** Een winternacht levert 15% minder op dan een zomernacht bij een tarief dat maar 8% lager ligt.
+
+Drie gevolgen voor het beleid:
+
+1. **Minimumverblijf van drie nachten in november tot en met februari.** De jacuzzi opwarmen kost hetzelfde bij twee of bij vier nachten; de vaste opwarmpiek verdeelt zich dan over meer omzet.
+2. **Winterkorting mag, maar niet op de nachtprijs.** Een derde nacht gratis kost u € 26 aan energie; € 30 van de nachtprijs af kost u € 30 marge. Stuur op verblijfsduur en niet op prijs.
+3. **De € 190 weekendprijs in november is scherper dan hij lijkt.** Als u daar toch onder wilt om te vullen, weet dan dat de bodem rond € 120 ligt voordat een nacht geld kóst in plaats van oplevert.
+
+## 2.6 De ladder van break-even naar het plafond
 
 Naarmate de kalender voller wordt daalt het gemiddelde tarief: de dure weekenden en vakantieweken gaan het eerst weg, de doordeweekse basisnachten van € 165 blijven het langst liggen.
 
-| Bezetting | Nachten | Boekingen | Gem. tarief | Verblijfsomzet | Ná vaste lasten |
-|---:|---:|---:|---:|---:|---:|
-| **20%** | 146 | 60 | € 202 | € 29.420 | **€ 4.800** ← break-even |
-| 30% | 220 | 98 | € 201 | € 44.319 | € 18.300 |
-| 40% | 294 | 134 | € 198 | € 58.212 | € 31.600 |
-| 50% | 366 | 158 | € 192 | € 70.092 | € 42.700 |
-| 60% | 438 | 182 | € 187 | € 81.972 | € 53.700 |
-| **70%** | 513 | 207 | € 184 | € 94.347 | **€ 65.300** ← doel |
+| Bezetting | Nachten | Boekingen | Gem. tarief | Verblijfsomzet | Energie | Ná vaste lasten |
+|---:|---:|---:|---:|---:|---:|---:|
+| **22%** | 162 | 64 | € 205 | € 33.280 | − € 2.880 | **€ 4.180** ← break-even |
+| 30% | 220 | 93 | € 201 | € 44.286 | − € 4.048 | € 14.598 |
+| 41% | 296 | 126 | € 198 | € 58.575 | − € 5.532 | € 28.063 |
+| 50% | 365 | 149 | € 192 | € 69.960 | − € 7.278 | € 38.162 |
+| 60% | 440 | 174 | € 187 | € 82.335 | − € 8.304 | € 50.011 |
+| **68%** | 500 | 194 | € 184 | € 92.235 | − € 9.792 | **€ 58.823** ← plafond in blokken |
 
-## 2.6 Wat dit met het hele plan doet
+## 2.7 Het blokplafond — een nieuwe bevinding
 
-**Het doel van 70% is geen overleven maar verdienen.** Het verschil tussen break-even en 70% is **ruim € 60.000 per jaar**. Dat is waar het marketingplan over gaat.
+De ladder stopt bij 68%, en dat is geen afronding.
 
-**En de bezoekersvraag wordt daarmee bijna triviaal.** Bij 20% bezetting zijn er 60 boekingen per jaar nodig, waarvan ± 28 via de eigen site. Langs dezelfde trechter als in deel 1 zijn dat **1.760 bezoekers per jaar — ongeveer 147 per maand.**
+**Als u uitsluitend hele weekenden, midweken en vakantieweken verkoopt, komt u niet verder dan 500 van de 730 nachten.** De overige 230 zijn losse zondag- en maandagnachten die tussen twee boekingen in vallen.
+
+Dat bevestigt langs een heel andere weg wat in deel 1 als praktisch maximum stond: **70% is precies de grens van wat haalbaar is, en de laatste procenten komen niet uit meer vraag maar uit een strakkere kalender.** Flexibele aankomstdagen, minimumverblijf-regels die geen gaten achterlaten, en een last-minute-kanaal via de e-maillijst zijn dus geen verfijning maar voorwaarde.
+
+## 2.8 Wat dit met het hele plan doet
+
+**Het doel is geen overleven maar verdienen.** Het verschil tussen break-even (22%) en het plafond (68%) is **ruim € 54.000 per jaar**. Dáár gaat het marketingplan over.
+
+**En de bezoekersvraag wordt er bijna triviaal van.** Bij 22% bezetting zijn er 67 boekingen per jaar nodig, waarvan ± 31 via de eigen site. Langs dezelfde trechter als in deel 1 zijn dat **1.970 bezoekers per jaar — ongeveer 164 per maand.**
 
 | | Bezoekers per maand |
 |---|---:|
-| De lichten blijven aan (20% bezetting) | **± 147** |
+| De lichten blijven aan (22% bezetting) | **± 164** |
 | De kalender vol (70% bezetting) | **± 370** |
 | Het doel, met marge | **830** |
 | Waar we het gesprek mee begonnen | 10.000 |
 
-**Het marketingbudget in perspectief.** € 550 per maand is 27,5% van uw dekkingsbehoefte — dat klinkt fors. Maar het is het gereedschap waarmee u van 20% naar 70% gaat, en dat verschil is € 60.000 per jaar. Elke euro marketing moet dus ongeveer € 9 aan extra resultaat opleveren om zichzelf terug te verdienen. Bij één extra boeking van drie nachten à € 190 per maand — één boeking — bent u er al.
+**Het marketingbudget in perspectief.** € 550 per maand is 24% van uw dekkingsbehoefte. Maar het is het gereedschap waarmee u van 22% naar 68% gaat, en dat verschil is € 54.000 per jaar. Elke euro marketing moet ongeveer € 8 aan extra resultaat opleveren om zichzelf terug te verdienen — bij één extra boeking van drie nachten per maand bent u er al.
 
-**Eén waarschuwing bij de € 2.000.** Ik heb aangenomen dat dit een *netto* behoefte is: geld dat overblijft ná de variabele kosten van een verhuurde nacht. Bedoelt u er bruto verblijfsomzet mee, dan ligt de lat lager — dan volstaat 17% in plaats van 20%. Bedoelt u er ook nog verzekering, onderhoud, boekhouding en een reservering voor groot onderhoud mee, dan is de dekkingsbehoefte hoger dan € 2.000 en schuift break-even naar boven. **Als u me de werkelijke jaarlijkse vaste lasten geeft, wordt dit cijfer exact in plaats van indicatief.**
+## 2.9 Wat er nog niet in zit
+
+De ondergrens is nu gebaseerd op financiering en parkkosten. Deze posten heb ik **niet** meegerekend omdat ik ze niet ken:
+
+- Opstal-, inboedel- en aansprakelijkheidsverzekering
+- Onderhoud en een reservering voor groot onderhoud (jacuzzi, dak, terras)
+- Boekhouding en administratie
+- Internet en abonnementen
+- Gemeentelijke belastingen, voor zover niet in de parkkosten inbegrepen
+
+Reken op € 3.000 tot € 5.000 per jaar aan deze posten samen [AANNAME]. Dat tilt de vaste lasten naar € 30.500 – € 32.500 en break-even van 22% naar **ongeveer 25%**. Geef me de werkelijke bedragen en dit hoofdstuk wordt exact.
 
 ---
 
