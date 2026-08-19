@@ -7,6 +7,7 @@ import { GTM, GTMNoscript } from "@/components/tracking/GTM";
 import { MetaPixel } from "@/components/tracking/MetaPixel";
 import { RouteChangePixel } from "@/components/tracking/RouteChangePixel";
 import { TrackingListeners } from "@/components/tracking/TrackingListeners";
+import { PRICE_FROM_EUR } from "@/lib/site";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -130,6 +131,43 @@ const jsonLd = {
   },
   image: [OG_IMAGE],
   priceRange: "€€€",
+  currenciesAccepted: "EUR",
+  // priceRange "€€€" zegt Google niets over de echte prijs; de vanafprijs stond
+  // wel in de tekst maar nergens machineleesbaar, wat prijs-rich-results
+  // blokkeert. De Offer maakt de vanafprijs per nacht expliciet, met de
+  // UnitPriceSpecification voor de eenheid (één nacht, minimaal twee nachten).
+  makesOffer: {
+    "@type": "Offer",
+    name: "Overnachting in een privé lodge met jacuzzi",
+    description:
+      "Vanafprijs per nacht voor een van beide lodges, bij een verblijf van minimaal twee nachten.",
+    price: PRICE_FROM_EUR,
+    priceCurrency: "EUR",
+    availability: "https://schema.org/InStock",
+    url: `${SITE_URL}/#reserveren`,
+    priceSpecification: {
+      "@type": "UnitPriceSpecification",
+      price: PRICE_FROM_EUR,
+      priceCurrency: "EUR",
+      minPrice: PRICE_FROM_EUR,
+      unitCode: "DAY",
+      unitText: "nacht",
+      referenceQuantity: {
+        "@type": "QuantitativeValue",
+        value: 1,
+        unitCode: "DAY",
+        unitText: "nacht",
+      },
+      valueAddedTaxIncluded: true,
+    },
+    eligibleQuantity: {
+      "@type": "QuantitativeValue",
+      minValue: 2,
+      unitCode: "DAY",
+      unitText: "nachten",
+    },
+    seller: { "@type": "LodgingBusiness", name: "Huis ter Huynen", url: SITE_URL },
+  },
   amenityFeature: [
     { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },
     { "@type": "LocationFeatureSpecification", name: "Sauna", value: true },

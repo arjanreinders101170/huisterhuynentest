@@ -190,146 +190,198 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     sort_order: 2,
   },
   {
+    // Focus verscherpt op de hoofdterm "romantisch weekendje weg drenthe"
+    // (95 vertoningen, positie 26,4 — de enige commerciële term binnen bereik
+    // van pagina 1). De pagina stond gemiddeld op 50,1 omdat ze op tientallen
+    // brede, irrelevante termen werd getoond; de tekst mikt nu op stellen,
+    // met het verkleinwoord "weekendje" en "voor twee" in title en H1.
     slug: "romantisch-weekend-weg-drenthe",
-    breadcrumb: "Romantisch weekend weg Drenthe",
-    eyebrow: "Voor koppels · Zeijen · Drenthe",
-    h1: "Romantisch weekend weg in Drenthe",
+    breadcrumb: "Romantisch weekendje weg Drenthe",
+    eyebrow: "Voor twee · Zeijen · Drenthe",
+    h1: "Romantisch weekendje weg in Drenthe — met z'n tweeën, privé jacuzzi",
     hero_sub:
-      "Geen agenda, geen drukte — alleen jullie samen, de heide voor de deur en een privé-hottub onder de sterren. Een romantisch weekend in Drenthe op zijn mooist.",
+      "Een vrijstaande lodge op de heide bij Zeijen, met een eigen jacuzzi op het terras. Geen receptie, geen buren, geen ontbijtzaal met vreemden. Alleen u tweeën en de stilte van Drenthe.",
     hero_image: "/heide1.jpg",
     hero_image_alt:
-      "Paarse bloeiende heide bij zonsondergang in Drenthe, ideaal decor voor een romantisch weekend weg",
+      "Paarse bloeiende heide bij zonsondergang in Drenthe, decor voor een romantisch weekendje weg met z'n tweeën",
     price_from: PRICE,
     intro:
-      "Een romantisch weekend weg draait om tijd voor elkaar, zonder afleiding. Drenthe is daar als geen ander op gemaakt: de stilste provincie van Nederland, met eindeloze natuur en weinig toeristen. Bij Huis ter Huynen verblijft u in een volledig privé lodge met eigen hottub — de ideale plek om samen volledig af te schakelen.",
+      "Een romantisch weekendje weg mislukt zelden door de bestemming en meestal door de drukte eromheen: een hotel met een volle ontbijtzaal, een wellnessafdeling vol onbekenden, dunne wanden. Bij Huis ter Huynen huurt u een vrijstaand huisje voor twee op de Drentse heide, met een jacuzzi op uw eigen terras die het hele jaar op 38 °C staat. Er staan maar twee lodges op het terrein, u boekt rechtstreeks bij de eigenaar en vanaf het moment dat u de auto parkeert hoeft u niemand meer te spreken.",
     sections: [
       {
-        eyebrow: "Waarom Drenthe",
-        heading: "De rust die een romantisch weekend nodig heeft",
+        eyebrow: "Privacy",
+        heading: "Met z'n tweeën, en verder niemand",
         body: [
-          "Romantiek heeft ruimte en rust nodig. Drenthe biedt allebei in overvloed: geen files, geen massa's, wel uitgestrekte heide, oude strubbenbossen en het kronkelende beekdal van de Drentsche Aa. Hier hoort u 's ochtends alleen vogels en 's avonds niets dan de wind. Precies die stilte maakt een weekend met z'n tweeën zo bijzonder.",
-          "En toch hoeft u niets te missen: een goed restaurant, een wellnessdag of een cultureel uitje in Assen zijn allemaal binnen handbereik. U kiest zelf of u de lodge nauwelijks verlaat of er juist op uittrekt.",
+          "Romantiek verdraagt geen publiek. Dat is de reden dat een vrijstaand huisje voor een weekend met z'n tweeën bijna altijd beter werkt dan een hotelkamer: geen gang met deuren, geen personeel dat langsloopt, geen tijdslot voor de sauna. U doet de deur achter u dicht en de rest van de wereld staat buiten.",
+          "Er staan hier twee lodges, op afstand van elkaar, elk met een terras dat uitkijkt op heide en bos in plaats van op een ander huisje. Geen receptie: u krijgt uw eigen toegang en kunt aankomen wanneer het u uitkomt.",
         ],
       },
       {
-        eyebrow: "Ideeën",
-        heading: "Zo maakt u het weekend onvergetelijk",
+        eyebrow: "Het moment",
+        heading: "De jacuzzi 's avonds: het moment waar het weekend om draait",
         body: [
-          "Een romantisch weekend in Drenthe is wat u er samen van maakt. Een paar ideeën die het verblijf compleet maken:",
-        ],
-        bullets: [
-          "Zonsondergang op de heide, gevolgd door de hottub onder de sterrenhemel.",
-          "Een kaarsdiner op uw eigen terras, met streekproducten uit de regio.",
-          "Samen fietsen door de esdorpen richting Norg en de Drentsche Aa.",
-          "Een wellnessdag in de omgeving en daarna ontspannen in uw eigen sauna (Lodge De Heide).",
-          "Een doe-niets-dag: ochtendkoffie in bad, een boek en geen enkele verplichting.",
+          "Overdag is Drenthe mooi. 's Avonds is het stil op een manier die in de Randstad niet bestaat. Als het donker wordt, gaat de jacuzzi aan — of beter: die staat al aan, 24/7 op 38 °C — en zit u in warm, bruisend water met damp boven het oppervlak en een glas binnen handbereik.",
+          "Boven u een sterrenhemel die hier werkelijk te zien is: Drenthe kent nauwelijks lichtvervuiling, dus op een heldere avond ziet u de Melkweg staan. Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-jacuzzi meer doet dan een wellnessabonnement.",
         ],
       },
       {
-        eyebrow: "De accommodatie",
-        heading: "Een privé lodge met hottub voor twee",
+        eyebrow: "Het programma",
+        heading: "Twee dagen Drenthe voor stellen: een voorstel",
         body: [
-          "Beide lodges zijn volledig privé en perfect voor een koppel: een eigen terras, een privé-hottub op 38 °C en een sfeervol interieur waarin u zich meteen thuis voelt. Geen receptie, geen mede-gasten — alleen jullie samen.",
-          "Vier u een jubileum, verjaardag of gewoon elkaar? Laat het ons weten bij de boeking, dan zorgen we waar mogelijk voor een persoonlijk welkom.",
+          "Vrijdagavond aankomen, niets meer plannen. Boodschappen doet u onderweg of laat u klaarzetten; koken kan in de volledig uitgeruste keuken, en Lodge De Eik heeft een buitenkeuken met BBQ. De avond eindigt in de jacuzzi.",
+          "Zaterdagochtend een wandeling door de Zeijerstrubben, het strubbenbos direct naast het dorp, of iets verder over het Ballooërveld waar de schaapskudde loopt. 's Middags met de fiets richting Norg of langs de Drentsche Aa, het mooiste beekdal van Nederland. Eten doet u in Norg of aan de rand van de Norgerberg, op een kwartier rijden.",
+          "Zondag uitslapen, ontbijt op het terras, nog één keer het water in. Check-out is om elf uur; wilt u later weg, dan is late check-out tegen een meerprijs mogelijk.",
         ],
       },
       {
-        eyebrow: "Praktisch",
-        heading: "Ideaal te combineren met de rest van Drenthe",
+        eyebrow: "Ook geschikt",
+        heading: "Ook voor een vriendinnenweekend of met twee stellen",
         body: [
-          "Huis ter Huynen ligt in Zeijen, op twintig minuten van Assen en een kwartier van het Nationaal Park Drentsche Aa. Daardoor combineert u rust met bereikbaarheid: een romantisch diner, een museumbezoek of een wellnessmiddag zijn zo geregeld, en daarna keert u terug naar uw eigen stille plek op de heide.",
+          "Niet elk weekend met z'n tweeën is romantisch bedoeld, en dat hoeft ook niet. Elke lodge slaapt maximaal vier personen, dus een vriendinnenweekend of een weekend met twee stellen past prima — met dezelfde privé-jacuzzi en dezelfde stilte eromheen.",
+          "Komt u met een grotere groep: beide lodges samen zijn goed voor acht personen. Vraag ze dan wel in één keer aan, dan houden we de data bij elkaar.",
+        ],
+      },
+      {
+        eyebrow: "Gelegenheden",
+        heading: "Valentijn, verjaardag of jubileum in Drenthe",
+        body: [
+          "Februari is hier het rustigste en donkerste seizoen, en juist daardoor het sterkste weekend voor Valentijn: koude lucht, warm water, vrijwel niemand op de heide. Voor een verjaardag of jubileum werkt elk seizoen — de paarse heide in augustus en september, de herfstkleuren in oktober, de rijp in januari.",
+          "Viert u iets, laat het bij de aanvraag weten. Wij zetten desgewenst een welkomstpakket met streekproducten klaar; voor iets anders — bloemen, een fles bubbels — kijken we wat er te regelen valt.",
         ],
       },
     ],
     faq: [
-      "Is de lodge geschikt voor een romantisch weekend met z'n tweeën? :: Zeker. Beide lodges zijn volledig privé, met een eigen hottub op het terras en een sfeervol interieur — ideaal voor koppels die rust en privacy zoeken.",
-      "Wanneer is de mooiste tijd voor een romantisch weekend in Drenthe? :: Elk seizoen heeft zijn charme: de paarse heide in augustus en september, de herfstkleuren in oktober, of juist de stille, besneeuwde winter waarin de hottub op zijn mooist is.",
-      "Kunnen we een bijzondere gelegenheid vieren? :: Ja, vermeld het bij uw boeking. Waar mogelijk verzorgen we een persoonlijk welkom om jullie verjaardag, jubileum of verrassing extra bijzonder te maken.",
-      "Hoe boeken we het romantisch weekend? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp. Wij reageren binnen 24 uur met een persoonlijk voorstel — zonder tussenpersoon.",
+      "Is de jacuzzi echt privé? :: Ja. Elke lodge heeft een eigen, afgeschermde jacuzzi op het eigen terras. U deelt hem met niemand buiten uw gezelschap; er is op het terrein geen gedeelde wellnessruimte en er staan maar twee lodges.",
+      "Kunnen we laat inchecken? :: Ja. Check-in is vanaf 15:00 uur en er is geen receptie waar u zich hoeft te melden — u krijgt uw eigen toegang, dus ook een aankomst laat op de vrijdagavond is geen probleem. Laat het even weten, dan houden we er rekening mee.",
+      "Is er een romantisch arrangement? :: Wij werken niet met vaste arrangementen; u boekt de lodge en kiest zelf wat u erbij wilt. Een welkomstpakket met lokaal bier, kaas en worst kan vooraf worden klaargezet, net als een boodschappenpakket of e-bikes voor een dag.",
+      "Kunnen we bloemen of champagne laten klaarzetten? :: Vermeld het bij uw aanvraag. Een welkomstpakket met streekproducten regelen we standaard; voor bloemen of een fles bubbels kijken we per aanvraag wat mogelijk is — wij zijn een kleinschalig adres, geen hotel met roomservice.",
+      "Hoe ver is het rijden vanuit de Randstad? :: Reken op twee tot tweeënhalf uur: via de A28 tot afslag Zeijen, en dan nog een paar minuten over de weg het dorp in. Assen ligt op twintig minuten, Groningen op een half uur.",
+      "Hoeveel nachten moeten we minimaal boeken? :: Een verblijf duurt minimaal twee nachten. Een weekend van vrijdag tot zondag is de meest geboekte vorm en past precies bij het ritme van deze plek.",
     ].join("\n"),
     related: [
-      "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
-      "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
+      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Wellness huisje Drenthe :: /wellness-vakantie-drenthe",
+      "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
       "Wat te doen in de omgeving :: /omgeving",
     ].join("\n"),
-    cta_title: "Plan jullie romantisch weekend in Drenthe",
+    cta_title: "Plan uw romantische weekendje weg in Drenthe",
     cta_body:
-      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel jullie vraag — wij reageren binnen 24 uur persoonlijk.",
-    meta_title: "Romantisch Weekend Weg in Drenthe | Privé Lodge met Hottub",
+      "De lodges zijn al boekbaar voor 2027. Bekijk de vrije weekenden of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Romantisch Weekendje Weg Drenthe | Privé Jacuzzi voor Twee",
     meta_description:
-      "Romantisch weekend weg in Drenthe? Verblijf in een privé lodge met hottub op de heide bij Zeijen. Rust, natuur en privacy voor koppels. Boek direct, 20 min van Assen.",
+      "Met z'n tweeën weg in Drenthe: een vrijstaande lodge met eigen jacuzzi op het terras, geen buren, geen receptie. Op de heide bij Zeijen. Vanaf €165 per nacht.",
     og_image: "",
     sort_order: 3,
   },
   {
+    // Retarget van "wellness vakantie" naar "wellness huisje" (128 vertoningen,
+    // de grootste term in de cluster; kwam in de oude title niet voor). De URL
+    // blijft staan: 1.526 vertoningen aan history wegen zwaarder dan een
+    // keyword in het pad. "Huisje" en "huis" staan nu in H1, title, intro en FAQ.
     slug: "wellness-vakantie-drenthe",
-    breadcrumb: "Wellness vakantie Drenthe",
-    eyebrow: "Wellness & rust · Zeijen · Drenthe",
-    h1: "Wellness vakantie in Drenthe",
+    breadcrumb: "Wellness huisje Drenthe",
+    eyebrow: "Privé sauna & jacuzzi · Zeijen · Drenthe",
+    h1: "Wellness huisje in Drenthe met privé-sauna en jacuzzi",
     hero_sub:
-      "Een privé-hottub op het terras, een eigen sauna en de stilste natuur van Nederland om u heen. Bij Huis ter Huynen is wellness geen afdeling, maar de hele ervaring.",
+      "Geen gedeelde spa, geen openingstijden, geen onbekenden in bad. Twee vrijstaande wellness huisjes op de heide bij Zeijen, met een eigen jacuzzi op het terras en een sauna die alleen van u is.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
-      "Lodge De Eik met privé-hottub op het terras, omringd door bos bij Zeijen — onderdeel van een wellness vakantie in Drenthe",
+      "Wellness huisje in Drenthe: Lodge De Eik met privé-jacuzzi op het terras, omringd door bos bij Zeijen",
     price_from: PRICE,
     intro:
-      "Een wellness vakantie in Drenthe gaat verder dan een uurtje sauna. Hier is de natuur zelf de bron van rust: stilteregio's, eindeloze heide en bossen waar u niemand tegenkomt. Bij Huis ter Huynen combineert u die rust met echte luxe — een privé-hottub, een eigen sauna in Lodge De Heide en alle comfort om volledig tot uzelf te komen.",
+      "Een wellness huisje in Drenthe is iets anders dan een wellnesshotel met een dagkaart. Hier is er geen balie, geen tijdslot en geen gedeelde sauna: u huurt een vrijstaand huis op de heide bij Zeijen, met een jacuzzi op uw eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna. Er staan maar twee huisjes op het terrein, dus wie u tegenkomt bepaalt u zelf.",
     sections: [
       {
-        eyebrow: "Het idee",
-        heading: "Natuur als medicijn, comfort als basis",
+        eyebrow: "Het verschil",
+        heading: "Privé wellness: geen openingstijden, geen onbekenden",
         body: [
-          "Onderzoek laat keer op keer zien dat tijd in een stille, groene omgeving stress meetbaar verlaagt. Drenthe is daar de ideale plek voor: het is officieel de stilste provincie van Nederland, met beschermde stilteregio's en weinig lichtvervuiling. Een wandeling door de Zeijerstrubben of langs de Drentsche Aa doet wat geen behandeling kan.",
-          "Bij Huis ter Huynen voegt u daar het comfort aan toe dat een wellness vakantie compleet maakt: warm, bruisend water in uw privé-hottub, een sauna die alleen van u is, en een lodge waar u zich meteen ontspant. Geen gedeelde ruimtes, geen drukte — wellness op uw eigen tempo.",
+          "In vrijwel elk wellnessresort deelt u het water. U reserveert een tijdslot, u loopt langs een balie en u zit met vreemden in dezelfde sauna. Precies dat is de reden dat steeds meer stellen een wellness huisje huren in plaats van een hotel met wellnessafdeling: het water, het terras en de stilte zijn dan van u alleen.",
+          "Bij Huis ter Huynen staan twee vrijstaande lodges op ruime afstand van elkaar, elk met een eigen terras dat uitkijkt op natuur en niet op buren. Geen receptie, geen gedeelde faciliteiten en geen sleutel die u bij iemand moet ophalen. U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de jacuzzi liggen.",
         ],
       },
       {
-        eyebrow: "Wat u krijgt",
-        heading: "Privé-wellness in uw eigen lodge",
+        eyebrow: "In het huisje",
+        heading: "Wat er in het huisje zit: sauna, jacuzzi en een terras dat niemand inkijkt",
         body: [
-          "U hoeft de deur niet uit voor uw wellnessmoment. Beide lodges hebben een eigen hottub; Lodge De Heide heeft daarnaast een privé-sauna.",
+          "Beide huisjes zijn ingericht voor maximaal vier personen, met een volledig uitgeruste keuken, fijne bedden en een eigen buitenruimte. Het verschil tussen de twee zit in de wellness, en daar zijn we eerlijk over: de sauna zit in Lodge De Heide.",
         ],
         bullets: [
-          "Privé-hottub op het terras, 24/7 beschikbaar op 38 °C.",
-          "Eigen sauna in Lodge De Heide — geen reservering, geen mede-gasten.",
-          "Volledige privacy: uw terras kijkt uit op natuur, niet op buren.",
-          "Wandel- en fietsroutes vanuit de deur voor 'forest bathing' en beweging.",
-          "Wellnesscentra en spa's in de regio (Assen, Hof van Saksen) voor een dag extra verwennerij.",
+          "Privé-jacuzzi op het terras bij beide lodges — 24/7 beschikbaar, standaard op 38 °C.",
+          "Eigen sauna in Lodge De Heide, plus panoramisch uitzicht over het bos.",
+          "Lodge De Eik heeft geen sauna, maar wel een buitenkeuken met BBQ onder de eiken.",
+          "Volledige privacy: uw terras kijkt uit op heide en bos, niet op een ander huisje.",
+          "Wandel- en fietsroutes vanuit de deur, gratis wifi en een laadpaal op het terrein.",
         ],
       },
       {
-        eyebrow: "Een dag",
-        heading: "Zo ziet een wellnessdag eruit",
+        eyebrow: "Een weekend",
+        heading: "Een wellnessweekend in Drenthe: hoe zo'n dag eruitziet",
         body: [
-          "Begin de dag met een stille ochtendwandeling over de heide, als de dauw er nog ligt. Terug bij de lodge een uitgebreid ontbijt op het terras, daarna de sauna in. 's Middags een fietstocht door de esdorpen of een bezoek aan een wellnesscentrum in de buurt. En als de avond valt: de hottub in, met zicht op een sterrenhemel die u in de stad nooit ziet.",
-          "Dat ritme — bewegen, opwarmen, afkoelen, niets moeten — is precies waarvoor een wellness vakantie bedoeld is. In Drenthe komt het vanzelf.",
+          "Acht uur 's ochtends: een wandeling over het Zeijerveld, als de dauw er nog ligt en u werkelijk niemand tegenkomt. Terug bij het huisje ontbijt op het terras, met de deur open. De middag is voor niets — een boek, een fietstocht door de esdorpen richting Norg, of een uitstapje naar Assen.",
+          "Vijf uur: de sauna aan. Zeven uur: eten, rustig, zonder reservering. Negen uur: de jacuzzi in, met damp boven het water en een sterrenhemel erboven die u in de stad niet krijgt — Drenthe heeft nauwelijks lichtvervuiling. Dat ritme van bewegen, opwarmen, afkoelen en niets moeten is precies waar een wellnessweekend voor bedoeld is.",
+        ],
+      },
+      {
+        eyebrow: "Seizoen",
+        heading: "Wellness in de winter: waarom januari en februari het mooist zijn",
+        body: [
+          "Warm water werkt het best als het buiten koud is. In januari en februari is het hier om vijf uur al donker, hangt er vaak rijp op de heide en zit u in 38 °C water met uw adem als wolkjes boven het oppervlak. De sauna erna is geen luxe meer maar precies wat het lichaam vraagt.",
+          "Praktisch is de winter ook het rustigste seizoen in Drenthe: geen fietsdrukte, lege wandelpaden en meer kans op een vrij weekend. Wie liever de paarse heide ziet, komt in augustus of september — maar voor wellness alleen is de winter de sterkste maand.",
+        ],
+      },
+      {
+        // Overgezet uit /blog/wellness-in-drenthe (301 → deze pagina).
+        eyebrow: "In de regio",
+        heading: "Dagspa's en sauna's in de buurt, als aanvulling",
+        body: [
+          "In en rond Drenthe vindt u verschillende dagspa's en saunacomplexen, vaak met binnen- én buitensauna's, stoomcabines, verwarmde baden en relaxruimtes. Veel ervan zijn ingericht met hout, natuursteen en uitzicht op groen. Als aanvulling op uw verblijf is dat een fijne uitstap: op een regenachtige middag, of als rustpunt tussen twee actieve dagen door.",
+          "Het blijft een uitstapje, geen vervanging. De jacuzzi op uw eigen terras vraagt geen reistijd en geen openingstijd — juist 's avonds, na een dag wandelen of fietsen, is dat het verschil tussen wél en niet meer het water in gaan.",
+        ],
+      },
+      {
+        // Overgezet uit /blog/wellness-in-drenthe (301 → deze pagina).
+        eyebrow: "Praktisch",
+        heading: "Zo houdt u een wellnessweekend écht ontspannen",
+        body: [
+          "De grootste valkuil van een wellnessweekend is te veel willen. Vier eenvoudige gewoontes maken het verschil tussen \"ontspannen\" en \"echt ontspannen\".",
+        ],
+        bullets: [
+          "Plan minder dan u denkt: één activiteit per dagdeel, de rest laat u open.",
+          "Drink voldoende water — sauna en jacuzzi ontspannen, maar drogen ook uit.",
+          "Wissel warmte af met buitenlucht: een korte wandeling tussen twee sessies versterkt het effect.",
+          "Laat de telefoon liggen. Een paar uur zonder meldingen doet meer dan een extra behandeling.",
         ],
       },
       {
         eyebrow: "De omgeving",
-        heading: "Stilte, heide en water binnen handbereik",
+        heading: "Wat u in de buurt vindt",
         body: [
-          "Het Nationaal Park Drentsche Aa ligt op een kwartier, het Ballooërveld met zijn paarse heide vlakbij en Assen — met wellnesscentra, restaurants en het Drents Museum — op twintig minuten. U bepaalt zelf hoeveel u onderneemt en hoeveel u gewoon stil zit.",
+          "Het Nationaal Park Drentsche Aa ligt op een kwartier en het Ballooërveld met zijn schaapskudde op twaalf minuten; vanuit de deur loopt u zo de Zeijerstrubben in. Assen — met restaurants, het Drents Museum en een paar wellnesscentra voor een dag extra verwennerij — is twintig minuten rijden.",
+          "Wie de wellness wil combineren met een lange wandeling of een dag op de fiets, vindt in de omgeving genoeg routes om de hele week te vullen zonder twee keer hetzelfde pad te lopen.",
         ],
       },
     ],
     faq: [
-      "Heeft de lodge een eigen sauna? :: Lodge De Heide beschikt over een eigen privé-sauna. Beide lodges hebben een privé-hottub op het terras, 24/7 beschikbaar.",
-      "Is dit geschikt voor een wellnessweekend met z'n tweeën? :: Zeker. De lodges zijn volledig privé en ideaal voor koppels die rust en verwennerij zoeken, zonder de drukte van een groot wellnessresort.",
-      "Zijn er ook wellnesscentra in de omgeving? :: Ja. In Assen (20 min) en de wijdere regio vindt u verschillende wellnesscentra en spa's, zoals Spa Hof van Saksen, voor een dag extra verwennerij.",
-      "Wat is de beste periode voor een wellness vakantie in Drenthe? :: Elk seizoen werkt: de paarse heide in de nazomer, de herfstkleuren, of juist de winter, wanneer de hottub in de besneeuwde stilte op zijn mooist is.",
+      "Is de sauna privé of gedeeld? :: Privé. De sauna zit in Lodge De Heide en is uitsluitend voor de gasten van die lodge — geen reservering, geen tijdslot, geen mede-gasten. Er is op het terrein geen gedeelde wellnessruimte.",
+      "Kan ik een wellness huisje boeken voor één nacht? :: Nee, een verblijf duurt minimaal twee nachten. Eén nacht is voor een wellnessweekend ook aan de korte kant: de dag van aankomst gaat grotendeels op aan aankomen.",
+      "Is de jacuzzi ook in de winter in gebruik? :: Ja, het hele jaar door. De jacuzzi staat 24/7 op 38 °C, en juist in de winter is hij op zijn mooist: warm water, koude lucht en een heldere sterrenhemel.",
+      "Wat is het verschil tussen De Heide en De Eik qua wellness? :: Lodge De Heide heeft naast de privé-jacuzzi een eigen sauna en panoramisch uitzicht over het bos. Lodge De Eik heeft dezelfde jacuzzi op het terras, geen sauna, maar wel een buitenkeuken met BBQ.",
+      "Kan ik hier met twee stellen terecht? :: Ja. Elk huisje is geschikt voor maximaal vier personen, dus twee stellen passen in één lodge. Wilt u met een grotere groep komen: beide lodges samen zijn goed voor acht personen — vraagt u dat wel gelijktijdig aan.",
+      "Boek ik rechtstreeks bij de eigenaar? :: Ja. Huis ter Huynen wordt particulier verhuurd; u boekt rechtstreeks bij ons, zonder tussenpartij en zonder boekingskosten. Wij reageren binnen 24 uur persoonlijk.",
+      "Zijn er ook dagspa's in de omgeving? :: Ja, in Assen (20 min) en de wijdere regio, zoals Spa Hof van Saksen. Het verschil met de jacuzzi op uw eigen terras is de drempel: bij een dagspa hoort reistijd en een openingstijd, thuis stapt u zo van de bank het water in.",
     ].join("\n"),
     related: [
-      "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
-      "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
-      "Romantisch weekend weg Drenthe :: /romantisch-weekend-weg-drenthe",
+      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Romantisch weekendje weg Drenthe :: /romantisch-weekend-weg-drenthe",
+      "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
+      "Paarse heide Drenthe :: /heide-drenthe",
     ].join("\n"),
-    cta_title: "Boek uw wellness vakantie in Drenthe",
+    cta_title: "Boek uw wellness huisje in Drenthe",
     cta_body:
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
-    meta_title: "Wellness Vakantie in Drenthe | Lodge met Hottub & Sauna",
+    meta_title: "Wellness Huisje Drenthe | Privé Sauna & Jacuzzi, Geen Gedeelde Spa",
     meta_description:
-      "Wellness vakantie in Drenthe: privé lodge met eigen hottub en sauna op de heide bij Zeijen. Stilte, natuur en comfort, 20 min van Assen. Vanaf €165 per nacht.",
+      "Een wellness huisje in Drenthe waar de sauna en jacuzzi alleen van u zijn. Twee vrijstaande lodges op de heide bij Zeijen, 24/7 op temperatuur. Vanaf €165 p.n.",
     og_image: "",
     sort_order: 4,
   },
@@ -950,6 +1002,21 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
       },
       {
+        // Samengevoegd vanuit /wandelen-drentsche-aa (301 → deze pagina).
+        eyebrow: "Beekdal",
+        heading: "Wandelen langs de Drentsche Aa",
+        body: [
+          "Het Nationaal Park Drentsche Aa ligt op een kwartier rijden en verdient een eigen dag. Het is een van de laatste beken van Nederland die nog natuurlijk meandert: de loop is nooit rechtgetrokken, dus het water volgt nog altijd zijn eigen bochten en zandbanken. Daaromheen liggen essen — hoger gelegen akkers die al eeuwen bewerkt worden — afgewisseld met hooilanden, broekbosjes en heideresten op de flanken van het dal.",
+          "Voor wandelaars betekent dat afwisseling op kleine schaal: open weiland, dan een schaduwrijk pad langs het water, even later een es met uitzicht over het hele dal. Routes van een uur tot een halve dag zijn er in overvloed, en wie meer wil lopen volgt een deel van het Drentsche Aa-pad dat het hele stroomgebied doorkruist.",
+        ],
+        bullets: [
+          "Boswachterspad Oudemolense Diep — 7 km, ± 2 uur, met vlonderpaden langs het water en kans op de ijsvogel.",
+          "Startpunten in Schipborg, Anloo, Gasteren en Loon — elk met eigen toegang tot het beekdal, alle vier binnen twintig minuten rijden.",
+          "Voorjaar: hooilanden vol dotterbloemen, orchideeën en pinksterbloemen. Vroeg in de ochtend de grootste kans op reeën en reigers.",
+          "Winter: kale essen en mist boven het water — het stilste seizoen van het beekdal.",
+        ],
+      },
+      {
         eyebrow: "Kiezen",
         heading: "Welke route past bij uw dag?",
         body: [
@@ -979,10 +1046,12 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Welke wandelroutes starten bij de lodge? :: Vanaf de brink van Zeijen, op een paar minuten lopen, starten vier gemarkeerde routes: de Veentjesroute (7,5 km), Weg van Zeijen (11 km), De Zeijerlaar (14 km) en de Knapzakroute Zeijen–Peest (17 km, splitsbaar in 7 of 11 km).",
       "Wat is de mooiste wandelroute in Drenthe voor beginners? :: De Veentjesroute van 7,5 km is makkelijk, goed gemarkeerd en in ongeveer twee uur te lopen. Ook het Boswachterspad Oudemolense Diep (7 km) in het Nationaal Park Drentsche Aa is prima te doen en heeft vlonderpaden langs het water.",
       "Kan ik met mijn hond wandelen in de omgeving? :: Ja. Honden zijn op vrijwel alle routes welkom, meestal aangelijnd vanwege broedvogels en schaapskuddes. In de lodges zijn honden in overleg ook welkom.",
+      "Waar kan ik wandelen langs de Drentsche Aa? :: Het Nationaal Park Drentsche Aa ligt op een kwartier rijden. Het Boswachterspad Oudemolense Diep (7 km) is de mooiste korte route; startpunten in Schipborg, Anloo, Gasteren en Loon geven toegang tot rondjes van een uur tot een halve dag.",
       "Wanneer is de heide op de routes paars? :: Doorgaans van half augustus tot begin september. Het Ballooërveld (12 min) en het Dwingelderveld (25 min) zijn dan de mooiste bestemmingen.",
       "Hoe kan ik direct boeken? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp — zonder tussenpersoon en met persoonlijke bevestiging binnen 24 uur.",
     ].join("\n"),
     related: [
+      "De Drentsche Aa: het beekdallandschap :: /blog/drentsche-aa-beekdallandschap",
       "Fietsen in Drenthe :: /fietsen-in-drenthe",
       "Fochteloërveen :: /fochteloerveen-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
@@ -994,7 +1063,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
     meta_title: "Wandelroutes in Drenthe | De Mooiste Routes rond Zeijen",
     meta_description:
-      "De mooiste wandelroutes in Drenthe: vier routes vanaf de brink in Zeijen (7,5–17 km) en de beste natuurgebieden binnen 30 minuten. Overnacht in een lodge met hottub.",
+      "De mooiste wandelroutes in Drenthe: vier routes vanaf de brink in Zeijen (7,5–17 km), wandelen langs de Drentsche Aa en de beste natuurgebieden binnen 30 minuten.",
     og_image: "/wandel_drenthe.jpg",
     sort_order: 16,
   },

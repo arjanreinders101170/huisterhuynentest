@@ -226,6 +226,8 @@ export interface Mijlpaal {
   periode: string;
   /** Eerste maand van de fase, als YYYY-MM. */
   vanaf: string;
+  /** Laatste maand van de fase, als YYYY-MM. Het doel hoort bij déze maand, niet bij nu. */
+  tot: string;
   /** Bezoekers per maand die bij deze fase horen. */
   doel: number;
   /** Bezetting die in deze fase gehaald moet worden; null vóór de opening. */
@@ -240,6 +242,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "fundament",
     periode: "sep – dec 2026",
     vanaf: "2026-09",
+    tot: "2026-12",
     doel: 400,
     bezetting: null,
     titel: "Fundament",
@@ -258,6 +261,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "opening",
     periode: "jan – jun 2027",
     vanaf: "2027-01",
+    tot: "2027-06",
     doel: 700,
     bezetting: 0.45,
     titel: "Opening",
@@ -275,6 +279,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "opniveau",
     periode: "jul 2027 – jun 2028",
     vanaf: "2027-07",
+    tot: "2028-06",
     doel: 1_000,
     bezetting: 0.62,
     titel: "Op niveau",
@@ -292,6 +297,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "maximaal",
     periode: "vanaf jul 2028",
     vanaf: "2028-07",
+    tot: "2028-12",
     doel: 1_500,
     bezetting: 0.70,
     titel: "Maximale bezetting",
@@ -307,6 +313,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "prijsmacht",
     periode: "2029 en verder",
     vanaf: "2029-01",
+    tot: "2029-12",
     doel: STRETCH_BEZOEKERS_MAAND,
     bezetting: 0.70,
     titel: "Prijsmacht (optioneel)",
@@ -316,6 +323,7 @@ export const MIJLPALEN: Mijlpaal[] = [
       "Ruim 100 rijpe artikelen — het kantelpunt voor onderwerpautoriteit",
       "Pinterest en Meta op volume met eigen video",
       "Uitbreiding: een derde lodge start niet meer bij nul",
+
     ],
   },
 ];
@@ -560,3 +568,17 @@ export const SCENARIOS: Scenario[] = [
     ],
   },
 ];
+
+/** Vóór de eerste fase begint is er nog geen fase — dat moet het scherm kunnen zeggen. */
+export const PLAN_START = MIJLPALEN[0].vanaf;
+
+export function planGestart(maand: string): boolean {
+  return maand >= PLAN_START;
+}
+
+/** Aantal hele maanden van `van` naar `tot`, beide als YYYY-MM. Negatief als `tot` eerder ligt. */
+export function maandenTussen(van: string, tot: string): number {
+  const [jv, mv] = van.split("-").map(Number);
+  const [jt, mt] = tot.split("-").map(Number);
+  return (jt - jv) * 12 + (mt - mv);
+}

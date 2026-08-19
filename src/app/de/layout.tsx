@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PRICE_FROM_EUR } from "@/lib/site";
 
 const SITE = "https://www.huisterhuynen.nl";
 const OG_IMAGE = `${SITE}/lodge-heide.jpg`;
@@ -87,6 +88,42 @@ const jsonLd = {
   },
   image: [OG_IMAGE],
   priceRange: "€€€",
+  currenciesAccepted: "EUR",
+  // Gleicher Offer wie auf der niederländischen Seite: priceRange "€€€" sagt
+  // Google nichts über den tatsächlichen Preis, der Ab-Preis war nirgends
+  // maschinenlesbar hinterlegt.
+  makesOffer: {
+    "@type": "Offer",
+    name: "Übernachtung in einer privaten Lodge mit Whirlpool",
+    description:
+      "Ab-Preis pro Nacht für eine der beiden Lodges, bei einem Aufenthalt von mindestens zwei Nächten.",
+    price: PRICE_FROM_EUR,
+    priceCurrency: "EUR",
+    availability: "https://schema.org/InStock",
+    url: `${SITE}/de`,
+    priceSpecification: {
+      "@type": "UnitPriceSpecification",
+      price: PRICE_FROM_EUR,
+      priceCurrency: "EUR",
+      minPrice: PRICE_FROM_EUR,
+      unitCode: "DAY",
+      unitText: "Nacht",
+      referenceQuantity: {
+        "@type": "QuantitativeValue",
+        value: 1,
+        unitCode: "DAY",
+        unitText: "Nacht",
+      },
+      valueAddedTaxIncluded: true,
+    },
+    eligibleQuantity: {
+      "@type": "QuantitativeValue",
+      minValue: 2,
+      unitCode: "DAY",
+      unitText: "Nächte",
+    },
+    seller: { "@type": "LodgingBusiness", name: "Huis ter Huynen", url: SITE },
+  },
   amenityFeature: [
     { "@type": "LocationFeatureSpecification", name: "Privater Hot Tub", value: true },
     { "@type": "LocationFeatureSpecification", name: "Sauna", value: true },

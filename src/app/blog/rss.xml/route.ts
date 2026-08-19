@@ -1,4 +1,5 @@
 import { getSupabase } from "@/lib/supabase";
+import { REDIRECTED_BLOG_SLUGS } from "@/lib/redirects";
 
 export const runtime = "nodejs";
 // Een uur cache: nieuwe artikelen mogen best een uur onderweg zijn, en zo
@@ -52,7 +53,9 @@ export async function GET(): Promise<Response> {
       .eq("gepubliceerd", true)
       .order("gepubliceerd_op", { ascending: false })
       .limit(50);
-    if (data) posts = data as Post[];
+    // Naar een landingspagina samengevoegde artikelen horen niet in de feed:
+    // hun URL geeft een 301 en abonnees zouden op een omleiding uitkomen.
+    if (data) posts = (data as Post[]).filter((p) => !REDIRECTED_BLOG_SLUGS.has(p.slug));
   } catch {
     // Database onbereikbaar: liever een lege maar geldige feed dan een 500,
     // want feedlezers straffen fouten af met minder vaak ophalen.

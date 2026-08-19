@@ -7,6 +7,7 @@
 
 import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, SEED_BY_SLUG, type LandingPageRecord } from "@/lib/landing-seed";
+import { REDIRECTED_LANDING_SLUGS } from "@/lib/redirects";
 import type { LandingConfig, LandingFaq, RelatedLink } from "@/components/LandingTemplate";
 
 /** "Vraag :: Antwoord" per regel → [{ q, a }]. */
@@ -69,6 +70,8 @@ export function recordToConfig(rec: LandingPageRecord, locale?: "nl" | "de"): La
 /** Returns the record to render, or null (→ 404).
  * Published DB row wins; unpublished DB row → null; no row → seed fallback. */
 export async function getLandingPage(slug: string): Promise<LandingPageRecord | null> {
+  // 301'd naar een andere pagina: nooit renderen, ook niet vanuit de seed.
+  if (REDIRECTED_LANDING_SLUGS.has(slug)) return null;
   try {
     const { data } = await getSupabase()
       .from("landing_pages")
@@ -99,5 +102,6 @@ export async function getServedLandingSlugs(): Promise<string[]> {
   } catch {
     SEED_LANDING_PAGES.forEach((p) => served.add(p.slug));
   }
+  REDIRECTED_LANDING_SLUGS.forEach((slug) => served.delete(slug));
   return [...served];
 }

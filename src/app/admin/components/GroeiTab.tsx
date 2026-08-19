@@ -9,7 +9,7 @@ import {
   WEEKENDPLAFOND, DOORDEWEEKS_NODIG, DOORDEWEEKSE_BEZETTING_NODIG,
   MIJLPALEN, mijlpaalVoor, BEZETTINGSHEFBOMEN,
   KANAALMIX, KANAALMIX_KOSTEN, KANAALMIX_VRIJ_AANDEEL,
-  SCENARIOS, type Scenario,
+  SCENARIOS, planGestart, maandenTussen, type Scenario,
 } from "@/lib/groeiplan";
 import { KANAAL_LABEL, type Kanaal } from "@/lib/attributie";
 
@@ -29,6 +29,18 @@ interface GroeiData {
 const euro = (n: number) => `€ ${n.toLocaleString("nl-NL")}`;
 const getal = (n: number) => n.toLocaleString("nl-NL");
 const pct = (n: number) => `${Math.round(n * 100)}%`;
+
+/* Een stand van 3 op 10.000 is 0,03% en wordt afgerond 0% — wat leest als
+ * "er gebeurt niets". Onder de procent tonen we daarom dat het klein is,
+ * niet dat het nul is. */
+const procent = (deel: number): string => {
+  const pct = deel * 100;
+  if (pct > 0 && pct < 1) return "<1%";
+  return `${Math.round(pct)}%`;
+};
+
+/** Maanden schrijven we uit, zodat "over 4 maanden" nergens "over 4 maand" wordt. */
+const maanden = (n: number) => `${n} ${n === 1 ? "maand" : "maanden"}`;
 
 function maandLabel(maand: string): string {
   const d = new Date(`${maand.length === 7 ? `${maand}-01` : maand}T00:00:00Z`);
@@ -95,6 +107,12 @@ export function GroeiTab() {
 
   const nuMaand = new Date().toISOString().slice(0, 7);
   const fase = mijlpaalVoor(nuMaand);
+  /* Vóór september 2026 is de eerste fase nog niet begonnen. Zonder dit leest
+   * het scherm als "we lopen achter op fase fundament" terwijl die nog moet
+   * starten. */
+  const gestart = planGestart(nuMaand);
+  const maandenTotFase = maandenTussen(nuMaand, fase.vanaf);
+  const maandenTotFaseDoel = maandenTussen(nuMaand, fase.tot);
   const scenario = SCENARIOS.find(s => s.id === scenarioId)!;
 
   /* Search Console meet alleen organisch verkeer: dit is bewust een ondergrens.
@@ -102,7 +120,20 @@ export function GroeiTab() {
   const laatste = data?.reeks.at(-1) ?? null;
   const vorige = data?.reeks.at(-2) ?? null;
   const stand = laatste?.klikken ?? 0;
-  const groei = vorige && vorige.klikken > 0 ? (stand - vorige.klikken) / vorige.klikken : null;
+
+  /* Bij deze aantallen zegt een percentage niets: van 1 naar 3 is +200% en
+   * klinkt als een doorbraak. Onder de 20 klikken tonen we het verschil zelf. */
+  const verschil = vorige ? stand - vorige.klikken : null;
+  const groeiTekst =
+    vorige === null || verschil === null ? null
+      : vorige.klikken >= 20
+        ? `${verschil >= 0 ? "+" : ""}${Math.round((verschil / vorige.klikken) * 100)}%`
+        : `${verschil >= 0 ? "+" : ""}${getal(verschil)} t.o.v. ${maandLabel(vorige.maand)}`;
+
+  /* De reeks eindigt op de laatst opgehaalde maand. Loopt die meer dan één
+   * maand achter, dan kijkt u naar oude cijfers en moet het scherm dat zeggen. */
+  const maandenOud = laatste ? maandenTussen(laatste.maand, nuMaand) : 0;
+  const verouderd = maandenOud >= 2;
 
   const maxKlikken = useMemo(
     () => Math.max(1, ...(data?.reeks ?? []).map(r => r.klikken)),
@@ -401,8 +432,10 @@ export function GroeiTab() {
 
       {/* ── Stand van zaken ── */}
       <Kaart
-        titel={`Stand — fase ${fase.titel.toLowerCase()} (${fase.periode})`}
-        sub="Gemeten als organische klikken uit Search Console. Dat mist direct, social en betaald verkeer, dus het echte cijfer ligt hoger. Zodra GA4 draait komt het sessiecijfer hier te staan."
+        titel={gestart
+          ? `Stand — fase ${fase.titel.toLowerCase()} (${fase.periode})`
+          : `Stand — de eerste fase (${fase.titel.toLowerCase()}) begint ${maandLabel(fase.vanaf)}`}
+        sub="Gemeten als organische klikken uit Search Console, per maand. Dat mist direct, social en betaald verkeer, dus het echte cijfer ligt hoger. Zodra GA4 draait komt het sessiecijfer hier te staan."
       >
         {laadt ? (
           <p style={{ fontSize: 13, color: C.muted, margin: 0 }}>Bezig met laden…</p>
@@ -416,38 +449,84 @@ export function GroeiTab() {
             <div style={{ display: "flex", gap: 32, flexWrap: "wrap", marginBottom: 18 }}>
               <div>
                 <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>
-                  {maandLabel(laatste.maand)}
+                  Nu — {maandLabel(laatste.maand)}
                 </div>
                 <div style={{ fontSize: 30, fontWeight: 700, color: C.text, lineHeight: 1.2 }}>{getal(stand)}</div>
                 <div style={{ fontSize: 12, color: C.muted }}>
                   bezoekers uit zoeken
-                  {groei !== null && (
-                    <span style={{ marginLeft: 6, color: groei >= 0 ? C.groen : C.rood, fontWeight: 600 }}>
-                      {groei >= 0 ? "+" : ""}{Math.round(groei * 100)}%
+                  {groeiTekst && verschil !== null && (
+                    <span style={{ marginLeft: 6, color: verschil >= 0 ? C.groen : C.rood, fontWeight: 600 }}>
+                      {groeiTekst}
                     </span>
                   )}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Doel deze fase</div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: C.gold, lineHeight: 1.2 }}>{getal(fase.doel)}</div>
+                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>
+                  Doel {maandLabel(fase.tot)}
+                </div>
+                <div style={{ fontSize: 30, fontWeight: 700, color: C.gold, lineHeight: 1.2 }}>
+                  {getal(fase.doel)}
+                </div>
                 <div style={{ fontSize: 12, color: C.muted }}>
-                  {stand >= fase.doel ? "gehaald" : `nog ${getal(fase.doel - stand)} te gaan`}
+                  {stand >= fase.doel
+                    ? "gehaald"
+                    : maandenTotFaseDoel > 0
+                      ? `nog ${getal(fase.doel - stand)} te gaan, in ${maanden(maandenTotFaseDoel)}`
+                      : `nog ${getal(fase.doel - stand)} te gaan`}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Genoeg voor {pct(BEZETTINGSDOEL)}</div>
-                <div style={{ fontSize: 30, fontWeight: 700, color: C.green, lineHeight: 1.2 }}>{getal(BEZOEKERS_PER_MAAND_MINIMAAL)}</div>
+                <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>
+                  Genoeg voor {pct(BEZETTINGSDOEL)}
+                </div>
+                <div style={{ fontSize: 30, fontWeight: 700, color: C.green, lineHeight: 1.2 }}>
+                  {getal(BEZOEKERS_PER_MAAND_MINIMAAL)}
+                </div>
                 <div style={{ fontSize: 12, color: C.muted }}>
-                  {Math.round((stand / BEZOEKERS_PER_MAAND_MINIMAAL) * 100)}% daarvan gehaald
+                  {procent(stand / BEZOEKERS_PER_MAAND_MINIMAAL)} daarvan gehaald
                 </div>
               </div>
             </div>
 
+            {/* Zonder deze regel leest de kaart als achterstand, terwijl de
+              * eerste fase nog moet beginnen. */}
+            <p style={{
+              margin: "0 0 18px", fontSize: 12, color: C.text, lineHeight: 1.7,
+              padding: "12px 14px", background: "#FAFAF7",
+              borderLeft: `3px solid ${C.gold}`, borderRadius: "0 8px 8px 0",
+            }}>
+              <strong>Zo leest u dit.</strong> {getal(stand)} is wat de site in{" "}
+              {maandLabel(laatste.maand)} werkelijk uit Google haalde — de laatste maand met
+              volledige cijfers; {maandLabel(nuMaand)} loopt nog.{" "}
+              {gestart
+                ? `De ${getal(fase.doel)} ernaast is geen cijfer voor nu maar voor ${maandLabel(fase.tot)}, het eind van fase ${fase.titel.toLowerCase()}.`
+                : `De ${getal(fase.doel)} ernaast is geen cijfer voor nu: fase ${fase.titel.toLowerCase()} begint pas ${maandLabel(fase.vanaf)}${maandenTotFase > 0 ? ` — over ${maanden(maandenTotFase)}` : ""}, en die ${getal(fase.doel)} hoort bij ${maandLabel(fase.tot)}, het eind van die fase.`}
+              {" "}Voor de bezetting is {getal(BEZOEKERS_PER_MAAND_MINIMAAL)} per maand al genoeg;
+              het doel van {getal(DOEL_BEZOEKERS_MAAND)} is er om marge te hebben. Verwacht de
+              beweging bovendien laat: artikelen halen hun volle verkeer pas na 6 tot 12 maanden,
+              dus de curve loopt achter op het werk.
+            </p>
+
+            {verouderd && (
+              <p style={{ margin: "0 0 18px", fontSize: 12, color: C.rood, lineHeight: 1.7 }}>
+                Let op: de laatste cijfers zijn van {maandLabel(laatste.maand)}, {maanden(maandenOud)} geleden.
+                Haal Search Console opnieuw op via die tab — hier staat nu een verouderde stand.
+              </p>
+            )}
+
+            {/* Maandreeks — de vorm van de curve zegt meer dan het laatste cijfer.
+              * Bij weinig maanden zetten we het aantal erboven: een balk op
+              * volle hoogte suggereert anders veel verkeer waar er 5 klikken staan. */}
             <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 90, marginBottom: 6 }}>
               {data!.reeks.map(r => (
                 <div key={r.maand} title={`${maandLabel(r.maand)}: ${getal(r.klikken)} klikken`}
                   style={{ flex: 1, minWidth: 6, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}>
+                  {data!.reeks.length <= 12 && (
+                    <div style={{ fontSize: 10, color: C.light, textAlign: "center", marginBottom: 2 }}>
+                      {getal(r.klikken)}
+                    </div>
+                  )}
                   <div style={{
                     height: `${Math.max(2, (r.klikken / maxKlikken) * 100)}%`,
                     background: r.maand === laatste.maand ? C.green : "#C7CDD4",
@@ -458,7 +537,9 @@ export function GroeiTab() {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: C.light }}>
               <span>{maandLabel(data!.reeks[0].maand)}</span>
-              <span>{maandLabel(laatste.maand)}</span>
+              <span>
+                {maandLabel(laatste.maand)} — hoogste maand tot nu toe: {getal(maxKlikken)}
+              </span>
             </div>
           </>
         )}
@@ -482,6 +563,14 @@ export function GroeiTab() {
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{m.titel}</span>
                   <span style={{ fontSize: 12, color: C.muted }}>{m.periode}</span>
+                  {actief && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase",
+                      color: C.green, background: "#DCE7E0", borderRadius: 4, padding: "2px 6px",
+                    }}>
+                      {gestart ? "nu bezig" : `start ${maandLabel(m.vanaf)}`}
+                    </span>
+                  )}
                   <span style={{ marginLeft: "auto", display: "flex", gap: 14, alignItems: "baseline" }}>
                     <span style={{ fontSize: 15, fontWeight: 700, color: m.bezetting === null ? C.light : C.green }}>
                       {m.bezetting === null ? "—" : pct(m.bezetting)}
