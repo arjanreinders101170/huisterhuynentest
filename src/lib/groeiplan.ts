@@ -19,6 +19,8 @@ export interface Mijlpaal {
   periode: string;
   /** Eerste maand van de fase, als YYYY-MM — waarmee de admin bepaalt waar we staan. */
   vanaf: string;
+  /** Laatste maand van de fase, als YYYY-MM. Het doel hoort bij déze maand, niet bij nu. */
+  tot: string;
   doel: number;
   titel: string;
   waarom: string;
@@ -31,6 +33,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "fundament",
     periode: "sep – dec 2026",
     vanaf: "2026-09",
+    tot: "2026-12",
     doel: 400,
     titel: "Fundament",
     waarom:
@@ -48,6 +51,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "opening",
     periode: "jan – mrt 2027",
     vanaf: "2027-01",
+    tot: "2027-03",
     doel: 1_200,
     titel: "Opening",
     waarom:
@@ -64,6 +68,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "opbouw",
     periode: "apr – dec 2027",
     vanaf: "2027-04",
+    tot: "2027-12",
     doel: 3_500,
     titel: "Opbouw",
     waarom:
@@ -80,6 +85,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "schaal",
     periode: "jan – jun 2028",
     vanaf: "2028-01",
+    tot: "2028-06",
     doel: 7_000,
     titel: "Schaal",
     waarom:
@@ -95,6 +101,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     id: "doel",
     periode: "jul – dec 2028",
     vanaf: "2028-07",
+    tot: "2028-12",
     doel: 10_000,
     titel: "10.000 bezoekers",
     waarom:
@@ -298,6 +305,20 @@ export const SCENARIOS: Scenario[] = [
 ];
 
 /** De verwachte bezoekers per maand voor de fase waar een datum in valt. */
+/** Vóór de eerste fase begint is er nog geen fase — dat moet het scherm kunnen zeggen. */
+export const PLAN_START = MIJLPALEN[0].vanaf;
+
+export function planGestart(maand: string): boolean {
+  return maand >= PLAN_START;
+}
+
+/** Aantal hele maanden van `van` naar `tot`, beide als YYYY-MM. Negatief als `tot` eerder ligt. */
+export function maandenTussen(van: string, tot: string): number {
+  const [jv, mv] = van.split("-").map(Number);
+  const [jt, mt] = tot.split("-").map(Number);
+  return (jt - jv) * 12 + (mt - mv);
+}
+
 export function mijlpaalVoor(maand: string): Mijlpaal {
   let gevonden = MIJLPALEN[0];
   for (const m of MIJLPALEN) {
