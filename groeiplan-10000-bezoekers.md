@@ -2,6 +2,7 @@
 
 **Opgesteld:** 19 augustus 2026
 **Opdracht:** minimaal 10.000 bezoekers, alles uit de kast, en een onderbouwd marketingbudget met een verdeling per kanaal.
+**Leesbare versie:** https://claude.ai/code/artifact/39ae5e71-3cf0-4a59-8ee7-3d4bce74912b
 
 ---
 
