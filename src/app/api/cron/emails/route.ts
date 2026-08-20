@@ -327,8 +327,9 @@ export async function GET(request: NextRequest) {
               appLink: `${appUrl}?s=${stay.token}`,
             }),
           });
+          // Logregel, geen boeking — zie migrations/2026_08_19_followup_mail_status.sql
           await getSupabase().from("bookings").insert({
-            guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "betaald",
+            guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "verstuurd",
             metadata: { type: "late-checkout", stay_id: stay.id, sent_at: new Date().toISOString() },
           });
           lcSent++;
