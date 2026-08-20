@@ -51,7 +51,11 @@ export async function handleStaysPost(action: string, body: Record<string, unkno
       }
       const { randomBytes, randomInt } = await import("crypto");
       const token = randomBytes(24).toString("hex");
-      const door_code = String(randomInt(1000, 9999));
+      /* Zes cijfers in plaats van vier: randomInt(1000, 9999) gaf 8.999
+       * mogelijkheden (bovengrens is exclusief, en codes met een voorloopnul
+       * kwamen nooit voor). Dit is de code voor het fysieke keypad, dus de
+       * zoekruimte gaat van 9.000 naar een miljoen. */
+      const door_code = String(randomInt(0, 1_000_000)).padStart(6, "0");
       const { error } = await getSupabase().from("stays").insert({
         guest_id: guestId, lodge, check_in, check_out, token, door_code,
         status: "gepland", welcome_sent: false,

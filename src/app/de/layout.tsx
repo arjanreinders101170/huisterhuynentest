@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PRICE_FROM_EUR } from "@/lib/site";
+import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
 
 const SITE = "https://www.huisterhuynen.nl";
 const OG_IMAGE = `${SITE}/lodge-heide.jpg`;
@@ -168,7 +168,7 @@ export default function DeLayout({ children }: { children: React.ReactNode }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
       {children}
     </>

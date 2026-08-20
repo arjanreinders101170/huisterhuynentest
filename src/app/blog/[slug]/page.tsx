@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
-import { SITE_URL, blogOgImageUrl } from "@/lib/site";
+import { SITE_URL, blogOgImageUrl, jsonLdScript } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -188,11 +188,11 @@ export default async function ArtikelPagina(
     <div style={{ background: T.bg, minHeight: "100vh" }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(jsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumbLd) }}
       />
 
       {/* Hero */}

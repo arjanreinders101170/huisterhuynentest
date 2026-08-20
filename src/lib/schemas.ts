@@ -1,10 +1,19 @@
 import { z } from "zod";
 
+/* /api/booking registreert een upsell voor een gast die al in de lodge zit.
+ *
+ * Eerder nam dit schema product, prijs, gastNaam en gastEmail als vrije tekst
+ * aan. Daarmee was het endpoint een e-mailrelay: een aanvaller koos zelf de
+ * ontvanger en de tekst, en kreeg een mail met geldige SPF- en DKIM-
+ * handtekeningen vanaf lodge@huisterhuynen.nl. De enige echte aanroeper
+ * (concierge/page.tsx) stuurde bovendien nooit gastNaam/gastEmail mee, dus
+ * die werd altijd geweigerd — het misbruikpad was het enige dat werkte.
+ *
+ * Nu identificeert het stay-token de gast, en komen naam, e-mailadres, product
+ * en prijs allemaal uit de database. De client kiest alleen nog wélk product. */
 export const bookingSchema = z.object({
-  product: z.string().min(1).max(100),
-  prijs: z.string().max(20).optional(),
-  gastNaam: z.string().min(1).max(100),
-  gastEmail: z.string().email(),
+  stayToken: z.string().min(16).max(128),
+  productId: z.string().min(1).max(50),
   datum: z.string().max(100).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });

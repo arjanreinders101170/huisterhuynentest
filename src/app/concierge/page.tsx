@@ -271,16 +271,20 @@ function AppInner() {
   };
 
   /* ═══ BOOKING ═══ */
-  const handleBook = async (product: string) => {
-    if (booked === product) return;
-    setBooked(product);
+  const handleBook = async (productId: string) => {
+    if (booked === productId) return;
+    setBooked(productId);
+    /* Zonder verblijf valt er niets te registreren: /api/booking leidt naam,
+     * e-mailadres en prijs af uit het stay-token en weigert zonder. */
+    const token = stay?.token || tokenParam;
+    if (!token) return;
     try {
       await fetch("/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          product,
-          naam: "Gast",
+          stayToken: token,
+          productId,
           datum: new Date().toISOString().split("T")[0],
         }),
       });

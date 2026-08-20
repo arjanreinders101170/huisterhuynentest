@@ -95,7 +95,8 @@ export async function POST(request: NextRequest) {
     const personen = persons || 2;
     const periodLine = `${esc(from)} &mdash; ${esc(to)}`;
     const subLine = `Lodge ${lodgeLabel}${wasFallback ? " <span style=\"color:#B49A5E;\">(alternatief, voorkeur was bezet)</span>" : ""} &middot; ${personen} ${personen === 1 ? "persoon" : "personen"}`;
-    const firstName = esc((name || "").split(" ")[0] || name || "");
+    // Niet hier escapen: lodgeEmail doet dat nu voor de titel.
+    const firstName = (name || "").split(" ")[0] || name || "";
 
     const resendKey = process.env.RESEND_API_KEY;
     if (resendKey) {

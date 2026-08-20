@@ -17,6 +17,12 @@ const LIMITS: Record<string, { max: number; window: number }> = {
   "/api/admin/request-link":   { max: 5,  window: 3600000 },  // 5/hour — voorkomt e-mailspam per IP
   "/api/admin/verify":         { max: 10, window: 3600000 },  // 10/hour — tokens zijn one-time-use
   "/api/mollie/webhook":       { max: 30, window: 3600000 },  // 30/hour — elke call kost een Mollie API-request
+  "/api/reservering":          { max: 5,  window: 3600000 },  // 5/hour — hoofdformulier, stuurt twee mails per aanvraag
+  "/api/newsletter":           { max: 3,  window: 3600000 },  // 3/hour — elke aanmelding mailt een vreemd adres
+  "/api/discount/validate":    { max: 10, window: 600000 },   // 10/10min — remt het aftasten van codes
+  "/api/guest-check":          { max: 5,  window: 600000 },   // 5/10min — remt enumeratie van de gastentabel
+  "/api/pricing":              { max: 60, window: 60000 },    // 60/min — leest de hele prijsstructuur uit
+  "/api/meta/capi":            { max: 120, window: 60000 },   // 120/min — anders vervuilbaar met verzonnen events
 };
 
 function checkRateLimit(ip: string, path: string): boolean {
@@ -85,8 +91,22 @@ export async function middleware(request: NextRequest) {
     pathname === "/concierge" || pathname.startsWith("/concierge/");
 
   if (isConciergeRoute && pathname !== "/concierge/locked") {
-    const hasToken = Boolean(request.nextUrl.searchParams.get("s"));
-    if (!hasToken && !(await hasValidStaySession(request))) {
+    /* Let op wat deze poort wel en niet is.
+     *
+     * Middleware draait op de Edge en heeft geen databaseverbinding, dus of
+     * een token bij een lopend verblijf hoort is hier niet vast te stellen.
+     * De echte grens ligt in /api/stay (valideert tegen de stays-tabel en zet
+     * pas dan de ondertekende cookie) en in /api/nuki/unlock (valideert
+     * opnieuw, onafhankelijk). Haalt de token het daar niet, dan stuurt de
+     * pagina zelf door naar /concierge/locked.
+     *
+     * Wat hier wel kan: eisen dat de token de vorm van een token heeft.
+     * Eerder volstond een willekeurige waarde — /app?s=x kwam er zo langs.
+     * Dat sluit geen gat in de gegevens, maar scheelt het uitserveren van de
+     * app-schil aan wie alleen wat aan het rondklikken is. */
+    const token = request.nextUrl.searchParams.get("s") ?? "";
+    const heeftTokenVorm = /^[0-9a-f]{48}$/.test(token);
+    if (!heeftTokenVorm && !(await hasValidStaySession(request))) {
       return NextResponse.rewrite(new URL("/concierge/locked", request.url));
     }
   }
