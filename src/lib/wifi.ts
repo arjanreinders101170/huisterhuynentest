@@ -21,5 +21,16 @@ export function wifiPassword(): string {
       "wifiPassword() is server-only — haal het wachtwoord op via /api/stay."
     );
   }
-  return process.env.WIFI_PASSWORD ?? "";
+  const waarde = process.env.WIFI_PASSWORD ?? "";
+  if (!waarde) {
+    /* Vroeger heette deze variabele NEXT_PUBLIC_WIFI_PASSWORD. Staat alleen
+     * die oude nog in Vercel, dan valt dit stil terug op een lege string en
+     * verdwijnt de wifi-kaart uit de gast-app zonder dat iemand doorheeft
+     * waarom. Daarom een expliciete melding in plaats van stilte. */
+    console.error(
+      "[wifi] WIFI_PASSWORD ontbreekt. Let op: NEXT_PUBLIC_WIFI_PASSWORD is " +
+      "de oude naam en wordt niet meer gelezen — die hoort verwijderd te zijn."
+    );
+  }
+  return waarde;
 }

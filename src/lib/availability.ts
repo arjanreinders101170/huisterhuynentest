@@ -72,7 +72,18 @@ export function overlaps(a: Period, b: Period): boolean {
 /** Externe agenda. Faalt deze, dan geven we dat door in plaats van te doen alsof alles vrij is. */
 export async function fetchIcalPeriods(lodge: string): Promise<{ periods: Period[]; ok: boolean }> {
   const url = ICAL_URLS[lodge];
-  if (!url) return { periods: [], ok: false };
+  if (!url) {
+    /* Luidruchtig, want de gevolgen zijn stil: zonder externe agenda ziet de
+     * beschikbaarheidskalender alleen onze eigen bevestigde reserveringen, en
+     * lijken door Booking.com bezette nachten vrij. Dat nodigt een dubbele
+     * boeking uit. ok:false zorgt dat de route niet cachet en de UI het
+     * onvolledige beeld meldt — maar dat is pas zichtbaar als iemand kijkt. */
+    console.error(
+      `[availability] ICAL_${lodge.toUpperCase()} ontbreekt — externe agenda ` +
+      `wordt overgeslagen voor ${lodge}. Zet de env-var in Vercel.`
+    );
+    return { periods: [], ok: false };
+  }
   try {
     const res = await fetch(url, {
       headers: { "User-Agent": "HuisTermHuynen-Calendar/1.0" },
