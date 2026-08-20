@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { logSentEmail } from "@/lib/mail-log";
 import { esc, lodgePhoto, welcomeEmail, thankYouEmail, lateCheckoutEmail } from "@/lib/email";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
@@ -172,13 +173,17 @@ export async function handleStaysPost(action: string, body: Record<string, unkno
         }),
       });
 
-      // Logregel, geen boeking — zie migrations/2026_08_19_followup_mail_status.sql
-      await getSupabase().from("bookings").insert({
-        guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "verstuurd",
-        metadata: { type: "late-checkout", stay_id: stayId, sent_at: new Date().toISOString(), source: "admin" },
+      const gelogd = await logSentEmail("late-checkout-email", stay.guest_id, {
+        type: "late-checkout", stay_id: stayId, sent_at: new Date().toISOString(), source: "admin",
       });
 
-      return NextResponse.json({ success: true });
+      // De mail is verstuurd, dus dit blijft een succes. Zonder logregel stuurt
+      // de avond-cron hem alleen nog een keer: die ontdubbelt op stay_id.
+      return NextResponse.json({
+        success: true,
+        gelogd,
+        ...(gelogd ? {} : { waarschuwing: "Mail verstuurd, maar niet gelogd — de cron kan hem vanavond opnieuw sturen" }),
+      });
     }
     case "send_thankyou": {
       const stayId = body.id;

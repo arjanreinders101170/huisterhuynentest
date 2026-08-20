@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { logSentEmail } from "@/lib/mail-log";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import {
   esc, welcomeEmail, lateCheckoutEmail, thankYouEmail, followUpEmail, lodgePhoto,
@@ -129,6 +130,7 @@ export async function GET(request: NextRequest) {
         .limit(20);
 
       let followupSent = 0;
+      let followupLogFailed = 0;
       for (const fg of followupGuests ?? []) {
         if (!fg.email) continue;
         const { data: existing } = await getSupabase()
@@ -150,19 +152,17 @@ export async function GET(request: NextRequest) {
             subject: "Hoe was je verblijf? — Huis ter Huynen",
             html: followUpEmail({ firstName: followFirstName, photoUrl: followPhoto, reviewLink: GOOGLE_REVIEW_URL, bookLink: `${baseUrl}/#reserveren` }),
           });
-          // Logregel, geen boeking: hij dient alleen om te onthouden dat deze gast
-          // al een follow-up kreeg. Vandaar status "verstuurd" — een betaalstatus
-          // zou de mail meetellen als omzet op het dashboard.
-          await getSupabase().from("bookings").insert({
-            guest_id: fg.id, product: "follow-up-email", prijs: 0, status: "verstuurd",
-            metadata: { type: "follow-up", sent_at: new Date().toISOString() },
+          const gelogd = await logSentEmail("follow-up-email", fg.id, {
+            type: "follow-up", sent_at: new Date().toISOString(),
           });
+          if (!gelogd) followupLogFailed++;
           followupSent++;
         } catch (e) {
           console.error("Follow-up cron failed for guest", fg.id, e);
         }
       }
       results.followup = followupSent;
+      results.followup_log_mislukt = followupLogFailed;
 
       /* ── 4. Offertes: herinneren en laten vervallen ──
        * Een offerte blokkeert de agenda niet, dus zonder einddatum blijft
@@ -298,6 +298,7 @@ export async function GET(request: NextRequest) {
         .eq("check_out", localDate(tomorrow));
 
       let lcSent = 0;
+      let lcLogFailed = 0;
       for (const stay of lcStays ?? []) {
         const { data: guest } = await getSupabase()
           .from("guests").select("naam, email").eq("id", stay.guest_id).single();
@@ -327,17 +328,17 @@ export async function GET(request: NextRequest) {
               appLink: `${appUrl}?s=${stay.token}`,
             }),
           });
-          // Logregel, geen boeking — zie migrations/2026_08_19_followup_mail_status.sql
-          await getSupabase().from("bookings").insert({
-            guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "verstuurd",
-            metadata: { type: "late-checkout", stay_id: stay.id, sent_at: new Date().toISOString() },
+          const lcGelogd = await logSentEmail("late-checkout-email", stay.guest_id, {
+            type: "late-checkout", stay_id: stay.id, sent_at: new Date().toISOString(),
           });
+          if (!lcGelogd) lcLogFailed++;
           lcSent++;
         } catch (e) {
           console.error("Late checkout cron failed for stay", stay.id, e);
         }
       }
       results.late_checkout = lcSent;
+      results.late_checkout_log_mislukt = lcLogFailed;
     }
 
     return NextResponse.json({ ok: true, type, results });
