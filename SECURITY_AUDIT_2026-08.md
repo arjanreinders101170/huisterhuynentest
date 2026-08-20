@@ -1,6 +1,6 @@
 # Security Audit — Huis ter Huynen (augustus 2026)
 
-> ## Status: 20 van de 25 bevindingen opgelost
+> ## Status: 22 van de 27 bevindingen opgelost
 >
 > Dit document is de **audit-momentopname** van 19 augustus op commit `da19066`.
 > De bevindingen zijn inmiddels grotendeels hersteld in PR #192 (zes commits).
@@ -9,22 +9,34 @@
 >
 > | | |
 > |---|---|
-> | **Opgelost** | 20 — waaronder alle vier de blokkerende High-bevindingen |
+> | **Opgelost** | 22 — waaronder de Critical en alle vier de blokkerende High-bevindingen |
 > | **Deels** | F-17 (headers geconsolideerd; `'unsafe-inline'` blijft) |
 > | **Open** | F-07 productkeuze · F-20 UX · F-23 organisatie · F-25 geparkeerd |
 > | **Dependencies** | van 8 naar 3 — rest vraagt Next 16 (major) |
-> | **Score** | 62 → **85 / 100** |
+> | **Score** | 62 → **88 / 100** |
 >
 > **Nog handmatig te doen — de code kan dit niet voor je:**
 >
 > 1. Wifi-wachtwoord roteren en de Vercel-variabele hernoemen naar `WIFI_PASSWORD`
 > 2. Beide Booking.com iCal-export-URL's roteren → `ICAL_LODGE_1` / `ICAL_LODGE_2`
-> 3. Migratie `2026_08_20_rls_admin_tabellen.sql` uitvoeren op de database
-> 4. Lockout-instelling van het Nuki-codeslot nakijken
+> 3. Lockout-instelling van het Nuki-codeslot nakijken
+>
+> De databasemigraties zijn inmiddels uitgevoerd en geverifieerd — zie hieronder.
 >
 > Zonder de eerste twee is de code opgeschoond maar blijven de gelekte waarden geldig.
 >
-> **Eén bevinding kwam er later bij:** F-25 (wifi-wachtwoord en stay-token in de
+> **Drie bevindingen kwamen er later bij.** F-26 (**Critical**) en F-27 kwamen
+> boven toen de eigenaar de `pg_policies`-uitvoer van de productiedatabase
+> aanleverde — de blinde vlek die in dit rapport als *Database 55%* stond. Een
+> policy genaamd "Service role full access" stond op `roles = {public}` in plaats
+> van `{service_role}`, en gaf daarmee iedereen volledige lees- en schrijftoegang
+> tot negen tabellen, waaronder `stays` (stay-tokens en deurcodes).
+>
+> Beide zijn opgelost en geverifieerd: alle 23 tabellen staan nu op RLS aan met
+> nul policies, met één uitzondering (`reviews`, `anon:SELECT` voor de homepage),
+> en nul schrijfrechten voor `anon`. Controleer opnieuw met `scripts/check-rls.sql`.
+>
+> **De derde:** F-25 (wifi-wachtwoord en stay-token in de
 > URL naar `api.qrserver.com`) is gevonden tijdens het herstellen, niet tijdens de
 > audit. Geparkeerd op verzoek; de CSP blokkeert die requests op dit moment al.
 
