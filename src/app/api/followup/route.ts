@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { logSentEmail } from "@/lib/mail-log";
 import { esc } from "@/lib/email";
 import { verifyAdminSession } from "@/lib/admin-auth";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
@@ -133,6 +134,7 @@ export async function POST(request: NextRequest) {
     const { Resend } = await import("resend");
     const resend = new Resend(resendKey);
     let sent = 0;
+    let logMislukt = 0;
 
     for (const guest of guests) {
       if (!guest.email) continue;
@@ -156,15 +158,11 @@ export async function POST(request: NextRequest) {
           html: followUpEmailHtml(esc(guest.naam || "")),
         });
 
-        // Mark as sent — logregel, geen boeking. Een betaalstatus zou de mail
-        // op het dashboard als betaling laten zien.
-        await getSupabase().from("bookings").insert({
-          guest_id: guest.id,
-          product: "follow-up-email",
-          prijs: 0,
-          status: "verstuurd",
-          metadata: { type: "follow-up", sent_at: new Date().toISOString() },
+        // Mark as sent
+        const gelogd = await logSentEmail("follow-up-email", guest.id, {
+          type: "follow-up", sent_at: new Date().toISOString(),
         });
+        if (!gelogd) logMislukt++;
 
         sent++;
       } catch (e) {
@@ -172,7 +170,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ sent, message: `${sent} follow-up email(s) verstuurd` });
+    return NextResponse.json({
+      sent,
+      logMislukt,
+      message: logMislukt > 0
+        ? `${sent} follow-up email(s) verstuurd, maar ${logMislukt} logregel(s) konden niet worden opgeslagen — die gasten krijgen de mail bij de volgende run opnieuw`
+        : `${sent} follow-up email(s) verstuurd`,
+    });
   } catch (err) {
     console.error("Follow-up error:", err);
     return NextResponse.json({ error: "Kon follow-ups niet versturen" }, { status: 500 });

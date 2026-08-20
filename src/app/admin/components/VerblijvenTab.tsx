@@ -10,6 +10,7 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [linkError, setLinkError] = useState<string | null>(null);
   const [lcSentIds, setLcSentIds] = useState<Set<string>>(new Set());
+  const [lcWarning, setLcWarning] = useState<string | null>(null);
 
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
 
@@ -72,6 +73,7 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
 
   const sendLateCheckout = async (stayId: string) => {
     setSendingId(stayId);
+    setLcWarning(null);
     try {
       const r = await fetch("/api/admin/data", {
         method: "POST",
@@ -79,7 +81,11 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
         body: JSON.stringify({ action: "send_late_checkout", id: stayId }),
       });
       const d = await r.json();
-      if (d.success) setLcSentIds(prev => new Set(prev).add(stayId));
+      if (d.success) {
+        setLcSentIds(prev => new Set(prev).add(stayId));
+        // De mail ging weg, maar zonder logregel stuurt de cron hem opnieuw.
+        if (d.waarschuwing) setLcWarning(d.waarschuwing);
+      }
     } catch {}
     setSendingId(null);
   };
@@ -200,6 +206,13 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
           background: "#FDECEA", border: "1px solid #F5C2C0", color: "#B71C1C",
           fontSize: 12, padding: "8px 12px", borderRadius: 6, marginBottom: 12,
         }}>{linkError}</div>
+      )}
+
+      {lcWarning && (
+        <div style={{
+          background: "#FFF8E1", border: "1px solid #F0DFA8", color: "#8A6D1B",
+          fontSize: 12, padding: "8px 12px", borderRadius: 6, marginBottom: 12,
+        }}>{lcWarning}</div>
       )}
 
       {stays.length === 0 ? (
