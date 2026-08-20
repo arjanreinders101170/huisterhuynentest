@@ -33,10 +33,17 @@ export async function POST(request: NextRequest) {
   const nights = typeof body.nights === "number" ? body.nights : null;
   const checkIn: string | null = typeof body.checkIn === "string" ? body.checkIn : null;
 
+  /* .eq() in plaats van .ilike(): ILIKE behandelt de invoer als patroon, dus
+   * werden % en _ metatekens van de aanvaller. Met .single() erachter was elk
+   * antwoord een orakel — "%" matcht alles, "L_____" bevestigt de lengte — en
+   * daarmee viel een code teken voor teken uit te lezen zonder hem te kennen.
+   * Codes worden bij create én update als toUpperCase().trim() opgeslagen
+   * (zie _discount-codes.ts, plus de unique index op upper(code)), dus een
+   * exacte match op dezelfde normalisatie vindt precies dezelfde rijen. */
   const { data, error } = await getSupabase()
     .from("discount_codes")
     .select("*")
-    .ilike("code", rawCode)
+    .eq("code", rawCode)
     .single<DiscountCode>();
 
   if (error || !data) {

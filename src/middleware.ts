@@ -17,6 +17,12 @@ const LIMITS: Record<string, { max: number; window: number }> = {
   "/api/admin/request-link":   { max: 5,  window: 3600000 },  // 5/hour — voorkomt e-mailspam per IP
   "/api/admin/verify":         { max: 10, window: 3600000 },  // 10/hour — tokens zijn one-time-use
   "/api/mollie/webhook":       { max: 30, window: 3600000 },  // 30/hour — elke call kost een Mollie API-request
+  "/api/reservering":          { max: 5,  window: 3600000 },  // 5/hour — hoofdformulier, stuurt twee mails per aanvraag
+  "/api/newsletter":           { max: 3,  window: 3600000 },  // 3/hour — elke aanmelding mailt een vreemd adres
+  "/api/discount/validate":    { max: 10, window: 600000 },   // 10/10min — remt het aftasten van codes
+  "/api/guest-check":          { max: 5,  window: 600000 },   // 5/10min — remt enumeratie van de gastentabel
+  "/api/pricing":              { max: 60, window: 60000 },    // 60/min — leest de hele prijsstructuur uit
+  "/api/meta/capi":            { max: 120, window: 60000 },   // 120/min — anders vervuilbaar met verzonnen events
 };
 
 function checkRateLimit(ip: string, path: string): boolean {

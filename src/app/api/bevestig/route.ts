@@ -363,7 +363,8 @@ export async function POST(request: NextRequest) {
       const baseUrlBv = new URL(appUrlBv).origin;
       const { url: photoUrl } = lodgePhoto(baseUrlBv, a.lodge);
       const lodgeNaamBv = lodgeName(a.lodge || "lodge_1");
-      const firstName = esc((gastNaam || "").split(" ")[0] || gastNaam || "");
+      // Niet hier escapen: lodgeEmail doet dat nu voor de titel.
+      const firstName = (gastNaam || "").split(" ")[0] || gastNaam || "";
       const periodLine = `${esc(a.van)} t/m ${esc(a.tot)}`;
       const subLine = `Lodge ${esc(lodgeNaamBv)} &middot; ${a.personen} ${a.personen === 1 ? "persoon" : "personen"}${a.offerte_bedrag != null ? ` &middot; ${bedrag}` : ""}`;
 
@@ -374,7 +375,7 @@ export async function POST(request: NextRequest) {
         subject: `Reservering bevestigd! — ${esc(gastNaam)} · ${esc(a.van)} t/m ${esc(a.tot)}`,
         replyTo: a.gastEmail,
         html: lodgeEmail({
-          photoUrl, photoAlt: `Lodge ${esc(lodgeNaamBv)}`,
+          photoUrl, photoAlt: `Lodge ${lodgeNaamBv}`,
           title: "Reservering bevestigd",
           intro: `${esc(gastNaam)} heeft het aanbod geaccepteerd. Hieronder vind je de details om het verblijf in admin in te plannen.`,
           blocks: [
@@ -413,7 +414,7 @@ export async function POST(request: NextRequest) {
         to: [a.gastEmail],
         subject: `Reservering bevestigd — ${LODGE_NAME}`,
         html: lodgeEmail({
-          photoUrl, photoAlt: `Lodge ${esc(lodgeNaamBv)}`,
+          photoUrl, photoAlt: `Lodge ${lodgeNaamBv}`,
           title: `Bevestigd${firstName ? `, ${firstName}` : ""}`,
           intro: `Jullie reservering voor Lodge ${esc(lodgeNaamBv)} staat klaar. We verheugen ons op de komst en nemen een paar dagen voor aankomst contact op met alle praktische informatie.`,
           blocks: [

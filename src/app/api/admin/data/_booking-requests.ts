@@ -304,7 +304,7 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
             to: [req.gast_email],
             subject: `${faseLabel} voor je verblijf — Huis ter Huynen`,
             html: lodgeEmail({
-              photoUrl, photoAlt: `Lodge ${esc(lodgeNaam)}`,
+              photoUrl, photoAlt: `Lodge ${lodgeNaam}`,
               title: phase === "aanbetaling"
                 ? `Bevestig je verblijf${firstName ? `, ${firstName}` : ""}`
                 : `Laatste stap${firstName ? `, ${firstName}` : ""}`,

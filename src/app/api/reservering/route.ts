@@ -36,10 +36,13 @@ async function validateAndApplyCode(
   code: string,
   nights: number,
 ): Promise<{ valid: true; discount: number; type: string; waarde: number; omschrijving: string | null; id: string } | { valid: false }> {
+  /* Zie /api/discount/validate: ILIKE maakte van de code een patroon en
+   * daarmee van dit endpoint een orakel. Exacte match op dezelfde
+   * normalisatie als bij het opslaan. */
   const { data } = await getSupabase()
     .from("discount_codes")
     .select("*")
-    .ilike("code", code)
+    .eq("code", code.trim().toUpperCase())
     .single<DiscountCode>();
 
   if (!data || !data.actief) return { valid: false };
@@ -168,7 +171,7 @@ export async function POST(request: NextRequest) {
       replyTo: email,
       subject: `Reserveringsaanvraag: Lodge ${esc(lodgeLabel)} — ${esc(naam)}`,
       html: lodgeEmail({
-        photoUrl, photoAlt: `Lodge ${esc(lodgeLabel)}`,
+        photoUrl, photoAlt: `Lodge ${lodgeLabel}`,
         title: "Nieuwe reserveringsaanvraag",
         intro: `Een nieuwe aanvraag voor Lodge ${esc(lodgeLabel)} via de homepage. Beoordeel in admin en stuur een offerte.`,
         blocks: [
@@ -191,8 +194,8 @@ export async function POST(request: NextRequest) {
       to: [email],
       subject: `Aanvraag ontvangen — ${LODGE_NAME}`,
       html: lodgeEmail({
-        photoUrl, photoAlt: `Lodge ${esc(lodgeLabel)}`,
-        title: `Bedankt, ${esc(naam)}`,
+        photoUrl, photoAlt: `Lodge ${lodgeLabel}`,
+        title: `Bedankt, ${naam}`,
         intro: "We hebben je aanvraag ontvangen en nemen binnen 24 uur contact met je op met een persoonlijk aanbod.",
         blocks: [
           infoBlock("Jouw aanvraag", periodLine, subLine),

@@ -155,7 +155,7 @@ export type LodgeEmailOpts = {
   /** Volledige URL naar de hero-foto. Geef niets door om de foto weg te laten. */
   photoUrl?: string;
   photoAlt?: string;
-  /** H1-tekst (al ge-escape'd). */
+  /** H1-tekst. Platte tekst — lodgeEmail escapet dit zelf. */
   title: string;
   /** Optionele intro-paragraaf direct onder de titel, gecentreerd. */
   intro?: string;
@@ -170,7 +170,7 @@ const DEFAULT_FOOTER = `Vragen? WhatsApp ons op <a href="tel:+31642568603" style
 /** Hoofd-template. Alle uitgaande mails moeten hier doorheen. */
 export function lodgeEmail(opts: LodgeEmailOpts): string {
   const photo = opts.photoUrl
-    ? `<tr><td style="padding:0;font-size:0;line-height:0;"><img src="${opts.photoUrl}" alt="${opts.photoAlt || "Huis ter Huynen"}" width="600" style="display:block;width:100%;max-width:600px;height:auto;" /></td></tr>`
+    ? `<tr><td style="padding:0;font-size:0;line-height:0;"><img src="${opts.photoUrl}" alt="${esc(opts.photoAlt || "Huis ter Huynen")}" width="600" style="display:block;width:100%;max-width:600px;height:auto;" /></td></tr>`
     : "";
   const intro = opts.intro ? paragraph(opts.intro) : "";
   const footer = opts.footer ?? DEFAULT_FOOTER;
@@ -194,7 +194,7 @@ export function lodgeEmail(opts: LodgeEmailOpts): string {
   <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDFBF6;border:1px solid #E0D8C8;border-radius:12px;overflow:hidden;">
     ${photo}
     <tr><td style="padding:32px 28px 28px;">
-      <h1 style="margin:0 0 14px;font-size:28px;color:#2A2418;text-align:center;font-family:Georgia,'Times New Roman',serif;line-height:1.2;">${opts.title}</h1>
+      <h1 style="margin:0 0 14px;font-size:28px;color:#2A2418;text-align:center;font-family:Georgia,'Times New Roman',serif;line-height:1.2;">${esc(opts.title)}</h1>
       ${intro}
       ${opts.blocks.join("\n")}
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
@@ -302,7 +302,7 @@ export function lateCheckoutEmail(opts: LateCheckoutEmailOpts): string {
     photoUrl: opts.photoUrl,
     photoAlt: `Lodge ${opts.lodgeNaam}`,
     title: "Nog één nacht",
-    intro: `${opts.firstName ? `${opts.firstName}, nog` : "Nog"} één nacht en dan zit het er weer op. We hopen dat jullie een heerlijk verblijf hebben gehad. Geniet vanavond nog even van de stilte.`,
+    intro: `${opts.firstName ? `${esc(opts.firstName)}, nog` : "Nog"} één nacht en dan zit het er weer op. We hopen dat jullie een heerlijk verblijf hebben gehad. Geniet vanavond nog even van de stilte.`,
     blocks: [
       calloutBlock("Nog niet klaar om te gaan?", "Boek een late check-out &mdash; ideaal voor een lekker lang ontbijt of nog even een boswandeling."),
       ctaButton(opts.appLink, "Vraag late check-out aan"),
@@ -352,7 +352,7 @@ export function followUpEmail(opts: FollowUpEmailOpts): string {
     photoUrl: opts.photoUrl,
     photoAlt: "Huis ter Huynen",
     title: "Hoe kijk je terug?",
-    intro: `${opts.firstName ? `Hoi ${opts.firstName}, het` : "Het"} is alweer even geleden dat je bij ons was. We hopen dat je genoten hebt van Drenthe!`,
+    intro: `${opts.firstName ? `Hoi ${esc(opts.firstName)}, het` : "Het"} is alweer even geleden dat je bij ons was. We hopen dat je genoten hebt van Drenthe!`,
     blocks: [
       calloutBlock(
         "Vertel ons hoe het was",
@@ -419,8 +419,8 @@ export type RejectionEmailOpts = {
 export function rejectionEmail(opts: RejectionEmailOpts): string {
   return lodgeEmail({
     photoUrl: opts.photoUrl,
-    photoAlt: `Lodge ${esc(opts.lodgeNaam)}`,
-    title: `Over je aanvraag${opts.firstName ? `, ${esc(opts.firstName)}` : ""}`,
+    photoAlt: `Lodge ${opts.lodgeNaam}`,
+    title: `Over je aanvraag${opts.firstName ? `, ${opts.firstName}` : ""}`,
     blocks: [
       ...(opts.periodeLabel
         ? [infoBlock("Je aanvraag", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}`)]
@@ -456,8 +456,8 @@ export function offerReminderEmail(opts: OfferMailOpts): string {
 
   return lodgeEmail({
     photoUrl: opts.photoUrl,
-    photoAlt: `Lodge ${esc(opts.lodgeNaam)}`,
-    title: `Je aanbod staat nog klaar${opts.firstName ? `, ${esc(opts.firstName)}` : ""}`,
+    photoAlt: `Lodge ${opts.lodgeNaam}`,
+    title: `Je aanbod staat nog klaar${opts.firstName ? `, ${opts.firstName}` : ""}`,
     intro: `We hoorden nog niets van je — geen probleem, misschien moest je even overleggen. Je persoonlijke aanbod voor Lodge ${esc(opts.lodgeNaam)} staat ${resterend} voor je klaar.`,
     blocks: [
       infoBlock("Je verblijf", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}${bedrag ? ` &middot; ${bedrag}` : ""}`),
@@ -475,8 +475,8 @@ export function offerReminderEmail(opts: OfferMailOpts): string {
 export function offerExpiredEmail(opts: Omit<OfferMailOpts, "confirmUrl" | "dagenResterend"> & { siteUrl: string }): string {
   return lodgeEmail({
     photoUrl: opts.photoUrl,
-    photoAlt: `Lodge ${esc(opts.lodgeNaam)}`,
-    title: `Je aanbod is verlopen${opts.firstName ? `, ${esc(opts.firstName)}` : ""}`,
+    photoAlt: `Lodge ${opts.lodgeNaam}`,
+    title: `Je aanbod is verlopen${opts.firstName ? `, ${opts.firstName}` : ""}`,
     intro: `Het persoonlijke aanbod voor Lodge ${esc(opts.lodgeNaam)} was geldig tot en met ${esc(opts.geldigTot)}. We hebben de datums weer vrijgegeven, zodat andere gasten ze kunnen aanvragen.`,
     blocks: [
       infoBlock("Het ging om", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}`),
