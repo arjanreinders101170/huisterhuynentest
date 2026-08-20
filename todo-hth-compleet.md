@@ -225,7 +225,7 @@ Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin o
 | 107 | Minimumverblijf-regels instellen die geen onverkoopbare gaten achterlaten | **Hoog** | Goed voor 5 tot 8% jaarbezetting en het kost niets |
 | 108 | Prijs en beschikbaarheid zichtbaar zonder formulier | **Hoog** | De grootste conversiehefboom die geen geld kost |
 | 109 | E-maillijst als last-minute-kanaal inrichten | Middel | Het enige kanaal waarmee je een specifieke week kunt vullen. Doel: 1.000 abonnees eind 2028 |
-| 110 | Resterende vaste lasten aanleveren: verzekering, onderhoud, reservering groot onderhoud, boekhouding, internet | **Hoog** | Financiering (€ 24.000) en parkkosten (€ 3.500) staan erin. De rest schat ik op € 3.000–5.000/jr; dat tilt break-even van 22% naar ± 25% |
+| 110 | Resterende vaste lasten aanleveren: verzekering, onderhoud, reservering groot onderhoud, boekhouding, internet | **Hoog** | Financiering (€ 24.000) en parkkosten (€ 3.500) staan erin. De rest schat ik op € 3.000–5.000/jr; dat tilt break-even van 30% naar ± 33% |
 | 112 | Meterstanden bijhouden per verhuurde nacht | Middel | De energiekosten (€ 12 zomer – € 28 winter per nacht) zijn nu schattingen. Na één winter met echte standen wordt de hele ondergrens exact |
 | 113 | **Minimumverblijf 3 nachten in nov t/m feb instellen** | **Hoog** | De jacuzzi opwarmen kost hetzelfde bij 2 of 4 nachten. Verdeelt de opwarmpiek over meer omzet — en voorkomt losse gaten |
 | 114 | ✅ Drie boekingsvormen vastgelegd: midweek (ma→vr), weekend (vr→zo), week (ma→zo) | ✅ | Vaste wisseldagen op maandag en vrijdag. Blokplafond 85,5% — ruim boven het doel. Afgedwongen in de kalender, beide aanvraagformulieren en server-side |
