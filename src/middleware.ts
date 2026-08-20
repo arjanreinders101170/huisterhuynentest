@@ -91,8 +91,22 @@ export async function middleware(request: NextRequest) {
     pathname === "/concierge" || pathname.startsWith("/concierge/");
 
   if (isConciergeRoute && pathname !== "/concierge/locked") {
-    const hasToken = Boolean(request.nextUrl.searchParams.get("s"));
-    if (!hasToken && !(await hasValidStaySession(request))) {
+    /* Let op wat deze poort wel en niet is.
+     *
+     * Middleware draait op de Edge en heeft geen databaseverbinding, dus of
+     * een token bij een lopend verblijf hoort is hier niet vast te stellen.
+     * De echte grens ligt in /api/stay (valideert tegen de stays-tabel en zet
+     * pas dan de ondertekende cookie) en in /api/nuki/unlock (valideert
+     * opnieuw, onafhankelijk). Haalt de token het daar niet, dan stuurt de
+     * pagina zelf door naar /concierge/locked.
+     *
+     * Wat hier wel kan: eisen dat de token de vorm van een token heeft.
+     * Eerder volstond een willekeurige waarde — /app?s=x kwam er zo langs.
+     * Dat sluit geen gat in de gegevens, maar scheelt het uitserveren van de
+     * app-schil aan wie alleen wat aan het rondklikken is. */
+    const token = request.nextUrl.searchParams.get("s") ?? "";
+    const heeftTokenVorm = /^[0-9a-f]{48}$/.test(token);
+    if (!heeftTokenVorm && !(await hasValidStaySession(request))) {
       return NextResponse.rewrite(new URL("/concierge/locked", request.url));
     }
   }

@@ -7,8 +7,10 @@ const cspHeader = [
   // Meta Pixel + GTM load external scripts from googletagmanager.com (gtm.js)
   // and connect.facebook.net (fbevents.js).
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net",
-  // Inline styles are used extensively; Google Fonts stylesheet is loaded via next/font (no external CSS request)
-  "style-src 'self' 'unsafe-inline'",
+  // Inline styles worden overal gebruikt. De adminlogin laadt daarnaast een
+  // stylesheet van fonts.googleapis.com; die host stond niet in style-src,
+  // waardoor het lettertype daar stil terugviel.
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   // Google Fonts glyphs
   "font-src 'self' https://fonts.gstatic.com",
   // Images: self, data URIs, blob URLs, Meta Pixel 1x1 tracking pixels, GTM resources,
@@ -44,6 +46,10 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
+          // Stond eerder alleen in vercel.json, waardoor HSTS stilzwijgend
+          // zou verdwijnen bij een deploy buiten Vercel. Hier hoort hij,
+          // naast de rest van de headers.
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
         ],
       },
     ];
