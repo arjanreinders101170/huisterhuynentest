@@ -156,12 +156,13 @@ export async function POST(request: NextRequest) {
           html: followUpEmailHtml(esc(guest.naam || "")),
         });
 
-        // Mark as sent
+        // Mark as sent — logregel, geen boeking. Een betaalstatus zou de mail
+        // op het dashboard als betaling laten zien.
         await getSupabase().from("bookings").insert({
           guest_id: guest.id,
           product: "follow-up-email",
           prijs: 0,
-          status: "betaald",
+          status: "verstuurd",
           metadata: { type: "follow-up", sent_at: new Date().toISOString() },
         });
 

@@ -172,8 +172,9 @@ export async function handleStaysPost(action: string, body: Record<string, unkno
         }),
       });
 
+      // Logregel, geen boeking — zie migrations/2026_08_19_followup_mail_status.sql
       await getSupabase().from("bookings").insert({
-        guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "betaald",
+        guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "verstuurd",
         metadata: { type: "late-checkout", stay_id: stayId, sent_at: new Date().toISOString(), source: "admin" },
       });
 

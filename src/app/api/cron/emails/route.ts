@@ -150,8 +150,11 @@ export async function GET(request: NextRequest) {
             subject: "Hoe was je verblijf? — Huis ter Huynen",
             html: followUpEmail({ firstName: followFirstName, photoUrl: followPhoto, reviewLink: GOOGLE_REVIEW_URL, bookLink: `${baseUrl}/#reserveren` }),
           });
+          // Logregel, geen boeking: hij dient alleen om te onthouden dat deze gast
+          // al een follow-up kreeg. Vandaar status "verstuurd" — een betaalstatus
+          // zou de mail meetellen als omzet op het dashboard.
           await getSupabase().from("bookings").insert({
-            guest_id: fg.id, product: "follow-up-email", prijs: 0, status: "betaald",
+            guest_id: fg.id, product: "follow-up-email", prijs: 0, status: "verstuurd",
             metadata: { type: "follow-up", sent_at: new Date().toISOString() },
           });
           followupSent++;
@@ -324,8 +327,9 @@ export async function GET(request: NextRequest) {
               appLink: `${appUrl}?s=${stay.token}`,
             }),
           });
+          // Logregel, geen boeking — zie migrations/2026_08_19_followup_mail_status.sql
           await getSupabase().from("bookings").insert({
-            guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "betaald",
+            guest_id: stay.guest_id, product: "late-checkout-email", prijs: 0, status: "verstuurd",
             metadata: { type: "late-checkout", stay_id: stay.id, sent_at: new Date().toISOString() },
           });
           lcSent++;
