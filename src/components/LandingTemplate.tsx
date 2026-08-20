@@ -8,12 +8,31 @@ import { DirectBookingUSP } from "@/components/DirectBookingUSP";
  * structured data so all commercial landing pages stay consistent.
  */
 
+export interface LandingTable {
+  /** Kolomkoppen; bepaalt meteen het aantal kolommen. */
+  head: string[];
+  rows: string[][];
+  /** Korte toelichting onder de tabel (bron, peildatum). */
+  note?: string;
+}
+
 export interface LandingSection {
   id?: string;
   eyebrow?: string;
   heading: string;
   body: string[];
   bullets?: string[];
+  /** Feitelijke opsomming die als tabel leesbaarder is dan als bullets —
+   *  afstanden, prijzen, openingstijden. Google trekt zo'n tabel ook
+   *  makkelijker als snippet uit de pagina dan een lopende alinea. */
+  table?: LandingTable;
+}
+
+/** Losse feiten onder de hero: het antwoord op de eerste vier vragen van de
+ *  bezoeker, zonder dat hij hoeft te scrollen. */
+export interface LandingKeyFact {
+  label: string;
+  value: string;
 }
 
 export interface LandingFaq {
@@ -34,6 +53,10 @@ export interface LandingConfig {
   heroSub: string;
   heroImage: string;
   heroImageAlt: string;
+  /** CSS object-position voor de hero. Het beeld wordt op elk scherm anders
+   *  bijgesneden; zonder eigen brandpunt valt het onderwerp op een telefoon
+   *  buiten beeld. */
+  heroFocus?: string;
   priceFrom?: string;
   intro: string;
   sections: LandingSection[];
@@ -42,6 +65,13 @@ export interface LandingConfig {
   ctaTitle: string;
   ctaBody: string;
   locale?: "nl" | "de";
+  keyFacts?: LandingKeyFact[];
+  /** ISO-datum van de laatste inhoudelijke wijziging. Wordt zichtbaar getoond
+   *  en als dateModified in de structured data gezet. */
+  updatedAt?: string;
+  /** Waar de pagina inhoudelijk over gaat, los van de accommodatie. Levert een
+   *  `about`-entiteit in de structured data (bijv. een TouristAttraction). */
+  about?: { name: string; type?: string; description?: string; url?: string };
 }
 
 const T = {
@@ -51,33 +81,101 @@ const T = {
   text: "#2A2418",
   muted: "#5A534C",
   gold: "#B49A5E",
+  // Hetzelfde goud is op een lichte achtergrond maar 2,6:1 — ruim onder de
+  // 4,5:1 die WCAG AA voor kleine tekst vraagt, en juist de eyebrows en
+  // vinkjes zijn klein. goldInk is dezelfde tint, donker genoeg (4,7:1) om
+  // op card en white wél leesbaar te zijn. T.gold blijft voor donkere vlakken
+  // en voor niet-tekstuele accenten.
+  goldInk: "#8A6F2E",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
-/** Builds the JSON-LD blocks (BreadcrumbList + FAQPage) for a landing page. */
+/** Kop → anker. Zonder id's kan de inhoudsopgave nergens heen linken en heeft
+ *  Google geen kapstok voor "ga naar dit deel"-sitelinks. */
+export function sectionAnchor(section: LandingSection, index: number): string {
+  if (section.id) return section.id;
+  const slug = section.heading
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48)
+    .replace(/-+$/g, "");
+  return slug || `deel-${index + 1}`;
+}
+
+/** Toon de inhoudsopgave pas als er echt iets te navigeren valt. Bij vier
+ *  secties scrollt de bezoeker sneller dan hij een lijstje leest. */
+const TOC_DREMPEL = 5;
+
+/** Builds the JSON-LD blocks (WebPage + BreadcrumbList + FAQPage) for a
+ *  landing page.
+ *
+ *  De WebPage-node ontbrak: daardoor had Google geen enkel machineleesbaar
+ *  aanknopingspunt voor de hoofdafbeelding, de wijzigingsdatum of het
+ *  onderwerp van de pagina — alleen een kruimelpad en een FAQ die los in de
+ *  lucht hingen. Met een expliciete WebPage hangen die twee nu aan een pagina
+ *  die zelf bij de LodgingBusiness hoort. */
 export function landingSchemas(config: LandingConfig): object[] {
   const url = `${SITE_URL}/${config.slug}`;
-  return [
+  const taal = config.locale === "de" ? "de-DE" : "nl-NL";
+
+  const webPage: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${url}#webpage`,
+    url,
+    name: config.h1,
+    description: config.heroSub,
+    inLanguage: taal,
+    isPartOf: { "@type": "WebSite", "@id": `${SITE_URL}#website`, url: SITE_URL, name: "Huis ter Huynen" },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}${config.heroImage}`,
+      caption: config.heroImageAlt,
+    },
+    breadcrumb: { "@id": `${url}#breadcrumb` },
+    about: config.about
+      ? {
+          "@type": config.about.type ?? "Thing",
+          name: config.about.name,
+          ...(config.about.description ? { description: config.about.description } : {}),
+          ...(config.about.url ? { sameAs: config.about.url } : {}),
+        }
+      : { "@type": "LodgingBusiness", "@id": `${SITE_URL}#lodging`, name: "Huis ter Huynen", url: SITE_URL },
+  };
+  if (config.updatedAt) webPage.dateModified = config.updatedAt;
+
+  const schemas: object[] = [
+    webPage,
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
+      "@id": `${url}#breadcrumb`,
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: config.breadcrumb, item: url },
       ],
     },
-    {
+  ];
+
+  if (config.faq.length > 0) {
+    schemas.push({
       "@context": "https://schema.org",
       "@type": "FAQPage",
+      "@id": `${url}#faq`,
       mainEntity: config.faq.map((f) => ({
         "@type": "Question",
         name: f.q,
         acceptedAnswer: { "@type": "Answer", text: f.a },
       })),
-    },
-  ];
+    });
+  }
+
+  return schemas;
 }
 
 const I18N = {
@@ -92,6 +190,8 @@ const I18N = {
     ctaWa: "Stel je vraag via WhatsApp",
     opening: "Opening 1 januari 2027 · al boekbaar",
     footerMore: "Meer vakanties in Drenthe",
+    toc: "Op deze pagina",
+    updated: "Laatst bijgewerkt",
   },
   de: {
     home: "Huis ter Huynen",
@@ -104,15 +204,24 @@ const I18N = {
     ctaWa: "Frage via WhatsApp stellen",
     opening: "Eröffnung 1. Januar 2027 · bereits buchbar",
     footerMore: "Weitere Unterkünfte in Drenthe",
+    toc: "Auf dieser Seite",
+    updated: "Zuletzt aktualisiert",
   },
 };
 
 export function LandingTemplate({ config }: { config: LandingConfig }) {
   const t = I18N[config.locale ?? "nl"];
+  const anchors = config.sections.map((s, i) => sectionAnchor(s, i));
+  const toonToc = config.sections.length >= TOC_DREMPEL;
+  const bijgewerkt = config.updatedAt
+    ? new Date(config.updatedAt).toLocaleDateString(config.locale === "de" ? "de-DE" : "nl-NL", {
+        day: "numeric", month: "long", year: "numeric",
+      })
+    : null;
   return (
     <div style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
       {/* Breadcrumb */}
-      <div style={{ background: T.green, padding: "16px 40px" }}>
+      <div className="lp-pad" style={{ background: T.green, paddingTop: 16, paddingBottom: 16 }}>
         <div style={{ maxWidth: 980, margin: "0 auto" }}>
           <nav aria-label="Breadcrumb">
             <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -130,7 +239,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
 
       {/* Hero */}
       <section style={{ position: "relative", minHeight: 460, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color: "white", overflow: "hidden", background: "#141210" }}>
-        <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: "center 45%", opacity: 0.7 }} />
+        <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,8,4,.18) 0%, rgba(10,8,4,.6) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "72px 32px" }}>
           <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
@@ -159,22 +268,68 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         </div>
       </section>
 
+      {/* Feiten in één oogopslag — staat bewust bóven de intro: wie op een
+          informatieve zoekopdracht binnenkomt wil eerst het antwoord zien en
+          pas daarna het verhaal. */}
+      {config.keyFacts && config.keyFacts.length > 0 && (
+        <section className="lp-pad" style={{ background: T.green, paddingTop: 26, paddingBottom: 26 }}>
+          <dl className="lp-facts" style={{ maxWidth: 980, margin: "0 auto", padding: 0 }}>
+            {config.keyFacts.map((f, i) => (
+              <div key={i}>
+                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.gold, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
+                  {f.label}
+                </dt>
+                <dd style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 700, color: "white", margin: 0, lineHeight: 1.35 }}>
+                  {f.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
       {/* Intro lead */}
-      <section style={{ background: T.card, padding: "56px 40px 8px" }}>
+      <section className="lp-pad" style={{ background: T.card, paddingTop: 56, paddingBottom: 8 }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
           <p style={{ fontFamily: T.sans, fontSize: 18, color: T.text, lineHeight: 1.8, margin: 0, fontWeight: 400, borderLeft: `3px solid ${T.gold}`, paddingLeft: 20 }}>
             {config.intro}
           </p>
+
+          {/* Inhoudsopgave: alleen bij lange pagina's. Echte ankerlinks, zodat
+              de bezoeker springt én Google de deelonderwerpen ziet. */}
+          {toonToc && (
+            <nav aria-label={t.toc} style={{ marginTop: 28, background: "white", border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 22px" }}>
+              <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldInk, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 12 }}>
+                {t.toc}
+              </div>
+              <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+                {config.sections.map((sec, i) => (
+                  <li key={i}>
+                    <a href={`#${anchors[i]}`} className="lp-toc-link" style={{ fontFamily: T.sans, fontSize: 14.5, color: T.green, textDecoration: "none", fontWeight: 500, lineHeight: 1.5 }}>
+                      {sec.heading}
+                    </a>
+                  </li>
+                ))}
+                {config.faq.length > 0 && (
+                  <li>
+                    <a href="#veelgestelde-vragen" className="lp-toc-link" style={{ fontFamily: T.sans, fontSize: 14.5, color: T.green, textDecoration: "none", fontWeight: 500, lineHeight: 1.5 }}>
+                      {t.faqTitle}
+                    </a>
+                  </li>
+                )}
+              </ol>
+            </nav>
+          )}
         </div>
       </section>
 
       {/* Content sections */}
-      <section style={{ background: T.card, padding: "32px 40px 64px" }}>
+      <section className="lp-pad" style={{ background: T.card, paddingTop: 32, paddingBottom: 64 }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
           {config.sections.map((s, i) => (
-            <div key={i} id={s.id} style={{ marginTop: i === 0 ? 24 : 44 }}>
+            <div key={i} id={anchors[i]} className="lp-anchor" style={{ marginTop: i === 0 ? 24 : 44 }}>
               {s.eyebrow && (
-                <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>
+                <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldInk, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>
                   {s.eyebrow}
                 </div>
               )}
@@ -190,11 +345,54 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                 <ul style={{ margin: "4px 0 0", padding: 0, listStyle: "none" }}>
                   {s.bullets.map((b, k) => (
                     <li key={k} style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.6, padding: "8px 0", borderBottom: k < s.bullets!.length - 1 ? `1px solid ${T.border}` : "none", display: "flex", gap: 10, alignItems: "baseline" }}>
-                      <span style={{ color: T.gold, flexShrink: 0 }}>✓</span>
+                      <span style={{ color: T.goldInk, flexShrink: 0 }} aria-hidden>✓</span>
                       {b}
                     </li>
                   ))}
                 </ul>
+              )}
+              {s.table && s.table.head.length > 0 && (
+                <>
+                  {/* De wrapper scrollt, niet de pagina: een tabel van vier
+                      kolommen past niet op 360px en mag de body nooit
+                      horizontaal laten schuiven. */}
+                  {/* Onder 640px zet de CSS deze tabel om in losse kaartjes:
+                      vier kolommen met een uitleg-kolom erbij zijn op een
+                      telefoon alleen leesbaar door horizontaal te scrollen, en
+                      dan staat juist de nuttigste kolom buiten beeld. De
+                      role-attributen houden de tabelsemantiek overeind zodra
+                      display:block de native rollen wegneemt; data-label voedt
+                      het kopje boven elke waarde in de kaartweergave. */}
+                  <div className="lp-table-wrap" tabIndex={0} role="region" aria-label={s.heading}>
+                    <table role="table" style={{ borderCollapse: "collapse", width: "100%", minWidth: 460, fontFamily: T.sans, fontSize: 14.5 }}>
+                      <thead>
+                        <tr role="row">
+                          {s.table.head.map((h, k) => (
+                            <th key={k} role="columnheader" scope="col" style={{ textAlign: "left", padding: "10px 14px", background: T.green, color: "white", fontWeight: 600, fontSize: 13, letterSpacing: ".2px", whiteSpace: "nowrap" }}>
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {s.table.rows.map((row, k) => (
+                          <tr key={k} role="row" style={{ background: k % 2 ? "white" : "transparent" }}>
+                            {row.map((cel, m) => (
+                              <td key={m} role="cell" data-label={s.table!.head[m]} style={{ padding: "10px 14px", borderBottom: `1px solid ${T.border}`, color: m === 0 ? T.text : T.muted, fontWeight: m === 0 ? 600 : 300, lineHeight: 1.5 }}>
+                                {cel}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {s.table.note && (
+                    <p style={{ fontFamily: T.sans, fontSize: 12.5, color: T.muted, fontWeight: 300, margin: "10px 0 0", lineHeight: 1.6 }}>
+                      {s.table.note}
+                    </p>
+                  )}
+                </>
               )}
             </div>
           ))}
@@ -205,7 +403,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           laatste bezwaren wegnemen, dan pas vragen om te reserveren. De
           'ontdek ook'-links staan daarom ná de CTA. */}
       {config.faq.length > 0 && (
-        <section style={{ background: "white", padding: "64px 40px" }}>
+        <section id="veelgestelde-vragen" className="lp-pad lp-anchor" style={{ background: "white", paddingTop: 64, paddingBottom: 64 }}>
           <div style={{ maxWidth: 780, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 40 }}>
               <h2 style={{ fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 32px)", color: T.text, margin: 0, fontWeight: 700 }}>
@@ -225,12 +423,17 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                 </div>
               ))}
             </div>
+            {bijgewerkt && (
+              <p style={{ fontFamily: T.sans, fontSize: 12.5, color: T.muted, fontWeight: 300, margin: "28px 0 0", textAlign: "center" }}>
+                {t.updated}: <time dateTime={config.updatedAt}>{bijgewerkt}</time>
+              </p>
+            )}
           </div>
         </section>
       )}
 
       {/* Final CTA */}
-      <section style={{ background: T.green, padding: "72px 40px", textAlign: "center" }}>
+      <section className="lp-pad" style={{ background: T.green, paddingTop: 72, paddingBottom: 72, textAlign: "center" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
           <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
             {t.opening}
@@ -255,7 +458,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
 
       {/* Related internal links */}
       {config.related.length > 0 && (
-        <section style={{ background: T.bg, padding: "56px 40px" }}>
+        <section className="lp-pad" style={{ background: T.bg, paddingTop: 56, paddingBottom: 56 }}>
           <div style={{ maxWidth: 980, margin: "0 auto" }}>
             <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.green, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 20 }}>
               {t.relatedLabel}
@@ -272,7 +475,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       )}
 
       {/* Footer */}
-      <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.6)", padding: "44px 40px 32px" }}>
+      <footer className="lp-pad" style={{ background: "#1A1A1A", color: "rgba(255,255,255,.6)", paddingTop: 44, paddingBottom: 32 }}>
         <div style={{ maxWidth: 980, margin: "0 auto" }}>
           {/* Meer vakanties — interne links naar de andere landingspagina's */}
           <div style={{ paddingBottom: 28, marginBottom: 24, borderBottom: "1px solid rgba(255,255,255,.1)" }}>

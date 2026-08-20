@@ -4,21 +4,29 @@ import { LandingPageRow, LandingSection } from "../types";
 import { slugify } from "@/lib/slug";
 import { PUBLIC_IMAGES } from "@/lib/site";
 
-type LandingSectionForm = { eyebrow: string; heading: string; bodyText: string; bulletsText: string };
+/* `rest` bewaart de velden van een sectie die dit formulier niet toont —
+ * op dit moment het eigen anker (`id`) en een tabel. Zonder die doorgifte
+ * gooit één keer opslaan in de admin de tabel van een landingspagina weg,
+ * want het formulier bouwt de sectie opnieuw op uit alleen de vier velden
+ * die het kent. */
+type LandingSectionForm = {
+  eyebrow: string; heading: string; bodyText: string; bulletsText: string;
+  rest: Omit<LandingSection, "eyebrow" | "heading" | "body" | "bullets">;
+};
 type LandingForm = {
   id: string; slug: string; breadcrumb: string; eyebrow: string; h1: string;
   hero_sub: string; hero_image: string; hero_image_alt: string; price_from: string;
   intro: string; sections: LandingSectionForm[]; faq: string; related: string;
   cta_title: string; cta_body: string; meta_title: string; meta_description: string;
-  og_image: string; sort_order: number;
+  og_image: string; key_facts: string; hero_focus: string; sort_order: number;
 };
 
 const EMPTY_LANDING: LandingForm = {
   id: "", slug: "", breadcrumb: "", eyebrow: "", h1: "",
   hero_sub: "", hero_image: "/lodge-heide.jpg", hero_image_alt: "", price_from: "Vanaf €165 per nacht",
-  intro: "", sections: [{ eyebrow: "", heading: "", bodyText: "", bulletsText: "" }],
+  intro: "", sections: [{ eyebrow: "", heading: "", bodyText: "", bulletsText: "", rest: {} }],
   faq: "", related: "", cta_title: "", cta_body: "", meta_title: "", meta_description: "",
-  og_image: "", sort_order: 0,
+  og_image: "", key_facts: "", hero_focus: "", sort_order: 0,
 };
 
 function landingToForm(p: LandingPageRow): LandingForm {
@@ -26,15 +34,20 @@ function landingToForm(p: LandingPageRow): LandingForm {
     id: p.id, slug: p.slug, breadcrumb: p.breadcrumb, eyebrow: p.eyebrow, h1: p.h1,
     hero_sub: p.hero_sub, hero_image: p.hero_image || "/lodge-heide.jpg", hero_image_alt: p.hero_image_alt,
     price_from: p.price_from, intro: p.intro,
-    sections: (Array.isArray(p.sections) ? p.sections : []).map((s: LandingSection) => ({
-      eyebrow: s.eyebrow || "", heading: s.heading || "",
-      bodyText: (s.body || []).join("\n\n"),
-      bulletsText: (s.bullets || []).join("\n"),
-    })),
+    sections: (Array.isArray(p.sections) ? p.sections : []).map((s: LandingSection) => {
+      const { eyebrow, heading, body, bullets, ...rest } = s;
+      return {
+        eyebrow: eyebrow || "", heading: heading || "",
+        bodyText: (body || []).join("\n\n"),
+        bulletsText: (bullets || []).join("\n"),
+        rest,
+      };
+    }),
     faq: p.faq || "", related: p.related || "",
     cta_title: p.cta_title, cta_body: p.cta_body,
     meta_title: p.meta_title, meta_description: p.meta_description,
-    og_image: p.og_image || "", sort_order: p.sort_order || 0,
+    og_image: p.og_image || "", key_facts: p.key_facts || "",
+    hero_focus: p.hero_focus || "", sort_order: p.sort_order || 0,
   };
 }
 
@@ -42,6 +55,7 @@ function landingFormToPayload(f: LandingForm) {
   const sections = f.sections
     .filter(s => s.heading.trim() || s.bodyText.trim() || s.bulletsText.trim())
     .map(s => ({
+      ...s.rest,
       ...(s.eyebrow.trim() ? { eyebrow: s.eyebrow.trim() } : {}),
       heading: s.heading.trim(),
       body: s.bodyText.split(/\n\n+/).map(x => x.trim()).filter(Boolean),
@@ -52,7 +66,8 @@ function landingFormToPayload(f: LandingForm) {
     hero_sub: f.hero_sub, hero_image: f.hero_image, hero_image_alt: f.hero_image_alt,
     price_from: f.price_from, intro: f.intro, sections, faq: f.faq, related: f.related,
     cta_title: f.cta_title, cta_body: f.cta_body, meta_title: f.meta_title,
-    meta_description: f.meta_description, og_image: f.og_image, sort_order: f.sort_order,
+    meta_description: f.meta_description, og_image: f.og_image,
+    key_facts: f.key_facts, hero_focus: f.hero_focus, sort_order: f.sort_order,
   };
 }
 
@@ -130,7 +145,7 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
     );
   };
 
-  const addSection = () => setForm(f => ({ ...f, sections: [...f.sections, { eyebrow: "", heading: "", bodyText: "", bulletsText: "" }] }));
+  const addSection = () => setForm(f => ({ ...f, sections: [...f.sections, { eyebrow: "", heading: "", bodyText: "", bulletsText: "", rest: {} }] }));
   const removeSection = (i: number) => setForm(f => ({ ...f, sections: f.sections.filter((_, j) => j !== i) }));
   const updateSection = (i: number, key: keyof LandingSectionForm, val: string) =>
     setForm(f => ({ ...f, sections: f.sections.map((s, j) => j === i ? { ...s, [key]: val } : s) }));
@@ -296,12 +311,29 @@ export function LandingTab({ pages, setPages }: { pages: LandingPageRow[]; setPa
 
         <div>
           <label style={lab}>
+            Brandpunt hero — CSS object-position, bijv. &quot;28% 72%&quot;. Leeg laten voor &quot;center 45%&quot;; nodig als het onderwerp op een telefoon buiten beeld valt
+          </label>
+          <input value={form.hero_focus} onChange={e => setForm(f => ({ ...f, hero_focus: e.target.value }))}
+            placeholder="center 45%" style={inp} />
+        </div>
+
+        <div>
+          <label style={lab}>
             Social/OG-afbeelding — gebruikt bij delen op social media; zonder foto wordt per pagina een eigen kaart met de H1 gegenereerd
           </label>
           <select value={form.og_image} onChange={e => setForm(f => ({ ...f, og_image: e.target.value }))} style={inp}>
             <option value="">Automatisch (kaart met paginatitel)</option>
             {PUBLIC_IMAGES.map(img => <option key={img} value={img}>{img}</option>)}
           </select>
+        </div>
+
+        <div>
+          <label style={lab}>
+            Feiten onder de hero — één &quot;Label :: Waarde&quot; per regel, leeg laten om het blok te verbergen
+          </label>
+          <textarea value={form.key_facts} onChange={e => setForm(f => ({ ...f, key_facts: e.target.value }))}
+            rows={4} placeholder={"Toegang :: Gratis, het hele jaar door\nDichtstbij de lodge :: 5 minuten"}
+            style={{ ...inp, resize: "vertical", fontFamily: "ui-monospace, monospace", fontSize: 12.5 }} />
         </div>
 
         <div>

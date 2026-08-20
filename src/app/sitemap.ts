@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { getSupabase } from "@/lib/supabase";
-import { getServedLandingSlugs } from "@/lib/landing";
+import { getServedLandingPages } from "@/lib/landing";
 import { REDIRECTED_BLOG_SLUGS } from "@/lib/redirects";
 
 const SITE_URL = "https://www.huisterhuynen.nl";
@@ -128,12 +128,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let landingPages: MetadataRoute.Sitemap = [];
   try {
-    const slugs = await getServedLandingSlugs();
-    const slugSet = new Set(slugs);
-    landingPages = slugs.map((slug) => {
+    const pages = await getServedLandingPages();
+    const slugSet = new Set(pages.map((p) => p.slug));
+    landingPages = pages.map(({ slug, updatedAt }) => {
       const entry: MetadataRoute.Sitemap[number] = {
         url: `${SITE_URL}/${slug}`,
-        lastModified,
+        // De echte wijzigingsdatum, niet het moment van crawlen: een lastmod
+        // die voor elke pagina "nu" zegt, wordt door Google als ruis
+        // behandeld en dan telt hij ook niet meer mee voor de pagina die
+        // wél net is herschreven. Weten we de datum niet, dan laten we het
+        // veld weg — een ontbrekende lastmod is neutraal, een onjuiste niet.
+        ...(updatedAt ? { lastModified: new Date(updatedAt) } : {}),
         changeFrequency: "monthly" as const,
         priority: slug.startsWith("de/") ? 0.85 : 0.9,
       };

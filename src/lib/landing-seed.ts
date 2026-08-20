@@ -7,10 +7,14 @@
  */
 
 export interface LandingSectionData {
+  /** Eigen anker; leeg laten laat de template er een van de kop maken. */
+  id?: string;
   eyebrow?: string;
   heading: string;
   body: string[];
   bullets?: string[];
+  /** Feiten die als tabel leesbaarder zijn dan als bullets. */
+  table?: { head: string[]; rows: string[][]; note?: string };
 }
 
 export interface LandingPageRecord {
@@ -21,6 +25,8 @@ export interface LandingPageRecord {
   hero_sub: string;
   hero_image: string;
   hero_image_alt: string;
+  /** CSS object-position voor de hero, bijv. "28% 75%". Leeg = "center 45%". */
+  hero_focus?: string;
   price_from: string;
   intro: string;
   sections: LandingSectionData[];
@@ -31,6 +37,14 @@ export interface LandingPageRecord {
   meta_title: string;
   meta_description: string;
   og_image: string;
+  /** "Label :: Waarde" per regel — de feitenstrip onder de hero. */
+  key_facts?: string;
+  /** Het onderwerp van de pagina los van de accommodatie, voor de
+   *  `about`-entiteit in de structured data. */
+  about?: { name: string; type?: string; description?: string; url?: string };
+  /** ISO-datum van de laatste inhoudelijke wijziging. Voedt de zichtbare
+   *  datum, de structured data én de lastmod in de sitemap. */
+  updated_at?: string;
   gepubliceerd?: boolean;
   sort_order?: number;
 }
@@ -45,6 +59,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     // de zichtbare tekst — title, H1, intro en FAQ zeggen daarom "jacuzzi"
     // (754 vertoningen) waar de pagina eerst alleen "hottub" (249) zei.
     slug: "vakantiehuis-met-hottub-drenthe",
+    // Zie migrations/2026_08_18_lp3_jacuzzi.sql — datum van de laatste
+    // inhoudelijke herziening, voedt de lastmod in de sitemap.
+    updated_at: "2026-08-18",
     breadcrumb: "Vakantiehuis met jacuzzi Drenthe",
     eyebrow: "Privé jacuzzi · Zeijen · Drenthe",
     h1: "Vakantiehuis met privé-jacuzzi in Drenthe",
@@ -120,6 +137,8 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
   },
   {
     slug: "luxe-lodge-drenthe",
+    // Zie migrations/2026_08_19_lp1_lp2_herbouw.sql.
+    updated_at: "2026-08-19",
     breadcrumb: "Luxe lodge Drenthe",
     eyebrow: "Boutique lodge · Zeijen · Drenthe",
     h1: "Luxe lodge in Drenthe",
@@ -196,6 +215,8 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     // brede, irrelevante termen werd getoond; de tekst mikt nu op stellen,
     // met het verkleinwoord "weekendje" en "voor twee" in title en H1.
     slug: "romantisch-weekend-weg-drenthe",
+    // Zie migrations/2026_08_19_lp1_lp2_herbouw.sql.
+    updated_at: "2026-08-19",
     breadcrumb: "Romantisch weekendje weg Drenthe",
     eyebrow: "Voor twee · Zeijen · Drenthe",
     h1: "Romantisch weekendje weg in Drenthe — met z'n tweeën, privé jacuzzi",
@@ -587,6 +608,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Romantisch weekend weg Drenthe :: /romantisch-weekend-weg-drenthe",
       "Wellness vakantie Drenthe :: /wellness-vakantie-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
+      "Hunebedden in Drenthe :: /hunebedden-drenthe",
     ].join("\n"),
     cta_title: "Boek uw bijzonder verblijf in Drenthe",
     cta_body:
@@ -669,74 +691,171 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     sort_order: 9,
   },
   {
+    // Beste pagina van de site: 568 vertoningen op positie 13, tegen een CTR
+    // van 1,4%. Die positie is niet het probleem van de techniek maar van de
+    // inhoud — de pagina beantwoordde de zoekvraag ("hunebedden drenthe" is
+    // informatief) niet, en wat er stond klopte deels niet: Drenthe telt 52
+    // van de 54 Nederlandse hunebedden, niet 54, en het dichtstbijzijnde
+    // hunebed is niet D9 bij Anloo maar D5, twee kilometer verderop aan de
+    // weg van Zeijen naar Peest. Dat laatste is meteen het sterkste argument
+    // dat geen enkele concurrent kan kopiëren.
     slug: "hunebedden-drenthe",
     breadcrumb: "Hunebedden Drenthe",
-    eyebrow: "Prehistorie & natuur · Zeijen · Drenthe",
-    h1: "Hunebedden in Drenthe: logeren in het hart van de prehistorie",
+    eyebrow: "52 hunebedden · Zeijen · Drenthe",
+    h1: "Hunebedden in Drenthe: alle 52 op een rij",
     hero_sub:
-      "Drenthe telt 54 hunebedden — meer dan de helft van alle Nederlandse megalietgraven. Overnacht in een luxe lodge bij Zeijen en ontdek de oudste monumenten van Nederland vanuit uw eigen uitvalsbasis.",
-    hero_image: "/museum_drenthe.jpg",
+      "Drenthe telt 52 van de 54 Nederlandse hunebedden. Hieronder waar ze liggen, welke de moeite waard zijn en wat een bezoek kost — plus twee lodges op vijf minuten van hunebed D5 bij Zeijen.",
+    hero_image: "/heide2.jpg",
     hero_image_alt:
-      "Hunebed in het Drentse landschap, omgeven door hei en bos, nabij de Hunebed Highway N34",
+      "Hunebed op een zandvlakte tussen bloeiende heide en berken in Drenthe, bij zonsopkomst",
+    // Het hunebed staat links op de panoramafoto; met de standaard
+    // "center 45%" valt het op een telefoon buiten de uitsnede en kijkt de
+    // bezoeker naar berken in plaats van naar waar hij voor kwam.
+    hero_focus: "28% 72%",
     price_from: PRICE,
+    key_facts: [
+      "Aantal in Drenthe :: 52 van de 54 in Nederland",
+      "Ouderdom :: Circa 5.000 jaar (3400–3100 v.Chr.)",
+      "Toegang :: Gratis, het hele jaar door",
+      "Dichtstbij de lodge :: D5 Zeijen — 5 minuten",
+    ].join("\n"),
+    about: {
+      name: "Hunebedden in Drenthe",
+      type: "TouristAttraction",
+      description:
+        "De 52 megalietgraven van de trechterbekercultuur in de provincie Drenthe, gebouwd tussen 3400 en 3100 v.Chr.",
+      url: "https://nl.wikipedia.org/wiki/Hunebed",
+    },
+    updated_at: "2026-08-20",
     intro:
-      "Nergens in Nederland liggen zoveel hunebedden als in Drenthe. De 54 megalietgraven, gebouwd door de Trechterbekercultuur zo'n 5.000 jaar geleden, liggen verspreid over de provincie — langs de Hunebed Highway, in de bossen bij Emmen en rondom de stille esdorpen van Noord-Drenthe. Huis ter Huynen in Zeijen is dé uitvalsbasis om dit unieke erfgoed te verkennen.",
+      "Nergens in Nederland liggen zoveel hunebedden als in Drenthe: 52 van de 54. Ze zijn zo'n 5.000 jaar oud, vrij toegankelijk en liggen verspreid van Steenbergen in het noordwesten tot Emmen in het zuidoosten. Deze pagina zet op een rij hoeveel er zijn, waar ze liggen, welke u gezien moet hebben en wat u praktisch moet weten — geschreven vanuit Zeijen, waar hunebed D5 op twee kilometer van de deur ligt.",
     sections: [
       {
-        eyebrow: "Het erfgoed",
-        heading: "5.000 jaar geschiedenis op loopafstand",
+        eyebrow: "Het aantal",
+        heading: "Hoeveel hunebedden heeft Drenthe?",
         body: [
-          "Hunebedden zijn de oudste bovengrondse monumenten van Nederland. Ze werden gebouwd door de Trechterbekercultuur als collectieve graven — enorme keien, sommige van tientallen tonnen, nauwkeurig geplaatst zonder enig modern gereedschap. Hoe dat mogelijk was, is tot op de dag van vandaag een mysterie.",
-          "Drenthe telt 54 van de 54 Nederlandse hunebedden. Ze liggen verspreid over de provincie, van Emmen in het zuiden tot Anloo en Balloo in het noorden. Vanuit de lodge bij Zeijen bereikt u de dichtstbijzijnde hunebedden in minder dan tien minuten.",
+          "Drenthe telt 52 hunebedden. Nederland heeft er 54 in totaal: de overige twee liggen in Groningen, bij Noordlaren (G1) en bij Heveskesklooster (G5). Ruim negentig procent van alle Nederlandse megalietgraven ligt dus in één provincie — en dat is geen toeval, want alleen hier liet het landijs de zwerfkeien achter waarmee ze gebouwd konden worden.",
+          "De Drentse hunebedden dragen nummers van D1 tot en met D54, wat verwarrend genoeg 54 nummers zijn voor 52 monumenten. Archeoloog Albert Egges van Giffen nummerde ze in de jaren twintig van west naar oost, en twee nummers vielen later af: D33 is verdwenen en D48 bleek bij nader onderzoek helemaal geen hunebed te zijn. De nummering is sindsdien bewust niet hernummerd, zodat oudere opgravingsverslagen bruikbaar blijven.",
+          "Het zwaartepunt ligt op de Hondsrug, tussen Anloo en Emmen. Maar ook Noord-Drenthe heeft er een reeks — en daar staat het rustigste deel van de verzameling, zonder bezoekerscentrum, zonder parkeerplaats en meestal zonder andere bezoekers.",
         ],
       },
       {
-        eyebrow: "Hunebed Highway",
-        heading: "De N34: een route door de prehistorie",
+        eyebrow: "In de buurt",
+        heading: "Welke hunebedden liggen het dichtst bij Zeijen?",
         body: [
-          "De Hunebed Highway volgt de N34 dwars door Drenthe en verbindt tientallen hunebedden, musea en prehistorische vindplaatsen. Een rijkere route voor liefhebbers van geschiedenis bestaat er nauwelijks in Nederland.",
+          "Het dichtstbijzijnde hunebed is D5, aan de weg van Zeijen naar Peest, tegenover natuurgebied de Zeijerstrubben. Vanaf de lodge is dat vijf minuten fietsen. D5 ligt in een laagte, is vanaf de weg nauwelijks te zien en heeft geen parkeerterrein of informatiezuil — u staat er meestal alleen. Vlak ernaast ligt het Noordse Veld, met celtic fields en grafheuvels een van de rijkste archeologische landschappen van Drenthe.",
+          "Vanaf Zeijen liggen de meeste andere hunebedden binnen een halfuur rijden. Deze tabel geeft de reistijd met de auto en waarom het betreffende hunebed het bezoek waard is.",
+        ],
+        table: {
+          head: ["Hunebed", "Plaats", "Vanaf Zeijen", "Waarom erheen"],
+          rows: [
+            ["D5", "Zeijen", "± 5 min", "Het dichtstbijzijnde hunebed. Geen parkeerplaats, geen drukte — naast het Noordse Veld."],
+            ["D2", "Westervelde", "± 15 min", "Klein en rustig gelegen aan de rand van het dorp, te combineren met Norg."],
+            ["D6", "Tynaarlo", "± 15 min", "Een van de weinige hunebedden waarvan alle dekstenen nog op hun plaats liggen."],
+            ["D10", "Gasteren", "± 20 min", "Bescheiden restant in een weids, open landschap bij de Drentsche Aa."],
+            ["D8", "Anloo", "± 25 min", "Bij het brinkdorp Anloo, goed te combineren met een wandeling door het beekdal."],
+            ["D17 en D18", "Rolde", "± 25 min", "Twee hunebedden pal naast de middeleeuwse kerk — nergens staan ze zo in het dorp."],
+            ["D27", "Borger", "± 35 min", "Het grootste hunebed van Nederland (22,6 m), naast het Hunebedcentrum."],
+            ["D53 en D54", "Havelte", "± 50 min", "D53 is met bijna 18 meter het op één na grootste van het land."],
+          ],
+          note: "Reistijden bij benadering, met de auto vanaf Zeijen. D5 en D2 zijn ook prima met de fiets te doen.",
+        },
+      },
+      {
+        eyebrow: "De hoogtepunten",
+        heading: "De mooiste en grootste hunebedden van Drenthe",
+        body: [
+          "Welk hunebed het mooiste is, hangt af van wat u zoekt: het grootste, het gaafste of het stilste. Deze vijf dekken alle drie.",
         ],
         bullets: [
-          "Hunebedden D9 t/m D14 bij Anloo en Eext — op 10 tot 15 minuten van Zeijen.",
-          "Drents Museum in Assen — het Meisje van Yde en andere vondsten uit de hunebedtijd.",
-          "Hunebedcentrum Borger — het grootste hunebed van Nederland en een volledig museum.",
-          "Nationaal Park Drentsche Aa — prehistorisch landschap met celtic fields en urnenvelden.",
+          "D27 in Borger — het grootste van Nederland: 22,6 meter, negen dekstenen, en de zwaarste steen die ooit in een Nederlands hunebed is gebruikt (naar schatting 20 ton).",
+          "D53 bij Havelte — met bijna achttien meter het op één na grootste, en dankzij de open ligging op de Havelterberg het fotogeniekste bij laagstaande zon.",
+          "D6 bij Tynaarlo — een van de weinige hunebedden waarvan alle dekstenen nog liggen zoals ze vijfduizend jaar geleden zijn neergelegd.",
+          "D17 en D18 in Rolde — twee hunebedden pal naast de middeleeuwse dorpskerk, het duidelijkste bewijs dat deze plekken millennia lang bijzonder zijn gebleven.",
+          "D5 bij Zeijen — geen record, wel de rust: geen bordjes, geen parkeerterrein, en op een doordeweekse ochtend meestal geen mens.",
+        ],
+      },
+      {
+        eyebrow: "Praktisch",
+        heading: "Hunebedden bezoeken: gratis, jaarrond, zonder openingstijden",
+        body: [
+          "Een bezoek aan de hunebedden zelf kost niets. Ze liggen in het open landschap, in bermen, bossen en heidevelden, en zijn het hele jaar door vrij toegankelijk — er is geen kaartverkoop, geen hek en geen sluitingstijd. Alleen het Hunebedcentrum in Borger is een museum met entree.",
+          "Wel gelden er ongeschreven regels. Hunebedden zijn rijksmonumenten: klimmen wordt afgeraden, want de stenen liggen los op elkaar en het schuren zet zich af op het monument. Honden mogen mee, maar in de omliggende natuurgebieden geldt vrijwel overal een aanlijnplicht. Parkeren kan bij de bekendere hunebedden op een aangelegde plek; bij de kleinere, zoals D5, is het een berm en niets meer.",
+        ],
+        bullets: [
+          "Toegang tot de hunebedden zelf: gratis, het hele jaar, dag en nacht.",
+          "Hunebedcentrum Borger: circa € 14,50 voor volwassenen en € 7,50 voor kinderen van 4 t/m 11 jaar; met Museumkaart gratis. Controleer de actuele tarieven en openingstijden vooraf.",
+          "Beste moment: vroege ochtend of het laatste uur voor zonsondergang — dan geeft strijklicht de stenen reliëf en is het stil.",
+          "Met kinderen: het buitenterrein van het Hunebedcentrum en de goed bereikbare hunebedden bij Rolde en Borger werken het beste.",
+          "Stevige schoenen zijn genoeg; de meeste hunebedden liggen op enkele tientallen meters van de weg.",
+        ],
+      },
+      {
+        eyebrow: "De route",
+        heading: "De Hunebed Highway en een fietsroute vanaf Zeijen",
+        body: [
+          "De N34 tussen Emmen en Groningen draagt de bijnaam Hunebed Highway: de weg volgt de Hondsrug en komt langs het grootste deel van de Drentse hunebedden. Wie ze in één dag wil zien, rijdt de N34 van zuid naar noord en pikt onderweg Borger, Drouwen, Eext en Anloo mee — met het Hunebedcentrum halverwege als natuurlijke lunchstop.",
+          "Vanaf Zeijen is er ook een rustiger variant op de fiets. Via het Noordse Veld naar D5, door de Zeijerstrubben naar Ubbena, en verder over het knooppuntennetwerk richting Tynaarlo (D6) — een rondje van ongeveer 35 kilometer over vrijwel volledig autoluwe paden. Wie meer wil, rijdt door naar Rolde en het Ballooërveld en komt uit op zo'n 55 kilometer.",
+        ],
+      },
+      {
+        eyebrow: "De geschiedenis",
+        heading: "Wie bouwde de hunebedden, en hoe?",
+        body: [
+          "De hunebedden zijn gebouwd tussen 3400 en 3100 v.Chr. door de trechterbekercultuur, genoemd naar het aardewerk dat in de grafkamers is teruggevonden. Ze dienden als collectieve graven: in één hunebed zijn resten van tientallen tot honderden mensen aangetroffen, samen met potten, bijlen en sieraden.",
+          "De stenen zijn geen gehouwen blokken maar zwerfkeien, tijdens de voorlaatste ijstijd vanuit Scandinavië meegevoerd door het landijs en achtergelaten op het Drents plateau. Precies dáárom liggen de Nederlandse hunebedden vrijwel allemaal in Drenthe: verder zuidelijk kwam het ijs niet, en dus lag daar het bouwmateriaal niet.",
+          "De naam heeft niets met de Hunnen te maken. 'Hune' is een oud woord voor reus — de middeleeuwse verklaring voor stenen die te zwaar leken om door mensen verplaatst te zijn. Hoe het wél is gedaan, met glijbanen van hout, hefbomen en veel mankracht, is nog altijd deels reconstructie.",
         ],
       },
       {
         eyebrow: "De accommodatie",
-        heading: "Luxe overnachten tussen de prehistorie",
+        heading: "Slapen bij de hunebedden: twee lodges in Zeijen",
         body: [
-          "Na een dag langs de hunebedden keert u terug naar Huis ter Huynen: twee volledig privé boutique lodges met privé-hottub op het terras. Lodge De Heide heeft bovendien een eigen sauna; Lodge De Eik een buitenkeuken met BBQ. Beide zijn ingericht op comfort, privacy en de rust van de Drentse natuur.",
-          "U boekt rechtstreeks bij Huis ter Huynen — persoonlijk, zonder tussenpersoon, en met directe communicatie met de gastheer.",
+          "In een hunebed slapen kan niet — het zijn rijksmonumenten. Ernaast wonen kan wel. Huis ter Huynen ligt in Zeijen, twee kilometer van hunebed D5, en telt twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras.",
+          "Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos; Lodge De Eik een buitenkeuken met BBQ onder de eiken. Beide hebben een volledig uitgeruste keuken, gratis wifi en een laadpaal op het terrein. Geen receptie, geen gedeelde wellness, geen buren.",
+          "U boekt rechtstreeks bij de eigenaar: geen tussenpartij, geen boekingskosten, en direct contact met de gastheer over de beste route langs de hunebedden.",
         ],
       },
       {
         eyebrow: "De omgeving",
-        heading: "Meer dan alleen hunebedden",
+        heading: "Meer dan hunebedden: prehistorie rond Zeijen",
         body: [
-          "Zeijen is een van de mooiste brinkdorpen van Drenthe en ligt op een kwartier van het Nationaal Park Drentsche Aa. De heide van het Ballooërveld, de Zeijerstrubben en ruim 1.000 km aan fietspaden maken de omgeving rijker dan alleen prehistorie — ook voor wie niet elke dag op pad wil voor cultuur.",
+          "De hunebedden zijn het zichtbaarste, maar niet het enige spoor uit de prehistorie. Direct naast D5 ligt het Noordse Veld: een heideveld met grafheuvels en celtic fields — de rechthoekige akkertjes van de ijzertijd, die u pas ziet als u weet waar u op moet letten. Archeologisch is dit een van de best bewaarde landschappen van de provincie.",
+          "Verder in de omgeving geven het Drents Museum in Assen (20 minuten, met het Meisje van Yde) en het Hunebedcentrum in Borger de context bij wat u in het veld ziet staan. En wie na twee dagen prehistorie toe is aan gewoon buiten zijn: het Ballooërveld ligt op twaalf minuten, het Nationaal Park Drentsche Aa op een kwartier, en er lopen meer dan 1.000 kilometer fietspaden door de omgeving.",
         ],
       },
     ],
     faq: [
-      "Hoe ver liggen de dichtstbijzijnde hunebedden? :: Vanuit de lodge in Zeijen rijdt u in minder dan tien minuten naar de hunebedden bij Anloo (D9–D14). Het Hunebedcentrum in Borger ligt op circa 30 minuten.",
-      "Wat is de Hunebed Highway? :: De Hunebed Highway volgt de N34 door Drenthe en verbindt tientallen hunebedden, musea en prehistorische vindplaatsen. Een mooie dagtocht voor liefhebbers van geschiedenis.",
-      "Is het Drents Museum een aanrader bij het bezoek aan hunebedden? :: Zeker. Het Drents Museum in Assen (20 min) geeft context aan de hunebedtijd, met o.a. het beroemde Meisje van Yde en vondsten uit de prehistorische nederzettingen van Drenthe.",
-      "Kan ik ook met de fiets de hunebedden bereiken? :: Ja. Er zijn diverse fietsroutes vanuit Zeijen die langs hunebedden lopen. De regio beschikt over meer dan 1.000 km fietspaden, veel langs prehistorische bezienswaardigheden.",
+      "Hoeveel hunebedden heeft Drenthe? :: Drenthe telt 52 hunebedden, van de 54 die Nederland in totaal heeft. De andere twee liggen in Groningen, bij Noordlaren en Heveskesklooster. De Drentse exemplaren zijn genummerd van D1 tot en met D54; D33 is verdwenen en D48 bleek geen hunebed, waardoor 54 nummers 52 monumenten aanduiden.",
+      "Waar liggen de hunebedden in Drenthe? :: Ze liggen verspreid over de hele provincie, van Steenbergen en Westervelde in het noordwesten tot Emmen in het zuidoosten. Het zwaartepunt ligt op de Hondsrug, langs de N34 tussen Anloo en Emmen. Het dichtstbijzijnde hunebed bij Zeijen is D5, aan de weg naar Peest.",
+      "Wat is het grootste hunebed van Nederland? :: Dat is D27 in Borger: 22,6 meter lang, met negen dekstenen en de zwaarste steen die ooit in een Nederlands hunebed is gebruikt (naar schatting 20 ton). Op nummer twee staat D53 bij Havelte, met bijna achttien meter.",
+      "Wat is het mooiste hunebed van Drenthe? :: Dat hangt af van wat u zoekt. D27 in Borger is het grootste en het best toegelicht, D6 bij Tynaarlo het gaafste — daar liggen alle dekstenen nog op hun oorspronkelijke plaats — en D5 bij Zeijen het stilste: geen parkeerplaats, geen bordjes, meestal geen mens.",
+      "Kun je in een hunebed slapen? :: Nee. Hunebedden zijn rijksmonumenten en er mag niet in worden overnacht of geklommen. Wél kunt u ernaast slapen: Huis ter Huynen in Zeijen ligt op twee kilometer van hunebed D5, met twee privé lodges met eigen hottub op het terras.",
+      "Kost een bezoek aan de hunebedden geld? :: Nee. De hunebedden liggen in het open landschap en zijn het hele jaar door gratis en zonder openingstijden te bezoeken. Alleen het Hunebedcentrum in Borger is een museum met entree: circa € 14,50 voor volwassenen en € 7,50 voor kinderen van 4 t/m 11 jaar, gratis met Museumkaart. Controleer de actuele tarieven vooraf.",
+      "Hoe oud zijn de hunebedden? :: Ongeveer 5.000 jaar. Ze zijn gebouwd tussen 3400 en 3100 v.Chr. en daarmee de oudste bovengrondse monumenten van Nederland — ouder dan de piramide van Cheops en dan het stenen Stonehenge.",
+      "Wie hebben de hunebedden gebouwd? :: De trechterbekercultuur, genoemd naar het aardewerk uit de grafkamers. Niet de Hunnen en niet reuzen: 'hune' is een oud woord voor reus, de middeleeuwse verklaring voor stenen die te zwaar leken om door mensen verplaatst te zijn. De stenen zelf zijn zwerfkeien die het landijs in de voorlaatste ijstijd vanuit Scandinavië heeft achtergelaten.",
+      "Wat is de Hunebed Highway? :: De bijnaam van de N34 tussen Emmen en Groningen. De weg volgt de Hondsrug en komt langs het grootste deel van de Drentse hunebedden, met het Hunebedcentrum in Borger ongeveer halverwege. Een dagtocht van zuid naar noord doet de meeste bekende exemplaren aan.",
+      "Zijn de hunebedden geschikt voor kinderen? :: Ja. Ze liggen in de open lucht, kosten niets en zijn met een korte wandeling te bereiken. Klimmen wordt afgeraden omdat de stenen los op elkaar liggen. Met kinderen werken het buitenterrein van het Hunebedcentrum in Borger en de goed bereikbare hunebedden bij Rolde het beste.",
+      "Mag mijn hond mee naar de hunebedden? :: Ja, de hunebedden liggen in vrij toegankelijk landschap. Houd er wel rekening mee dat in de omliggende natuurgebieden vrijwel overal een aanlijnplicht geldt. Bij Huis ter Huynen zijn honden in overleg welkom.",
+      "Hoe ver liggen de hunebedden vanaf Huis ter Huynen? :: Hunebed D5 ligt op twee kilometer — vijf minuten fietsen. D2 bij Westervelde en D6 bij Tynaarlo liggen op een kwartier rijden, Anloo en Rolde op circa 25 minuten en het Hunebedcentrum met D27 in Borger op ongeveer 35 minuten.",
     ].join("\n"),
     related: [
+      "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
+      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
       "Bijzonder overnachten Drenthe :: /bijzonder-overnachten-drenthe",
+      "Vakantiehuis bij Assen :: /vakantiehuis-assen",
+      "Fietsen in Drenthe :: /fietsen-in-drenthe",
+      "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
       "Overnachten bij Veenhuizen :: /overnachten-veenhuizen",
       "Omgeving & activiteiten :: /omgeving",
     ].join("\n"),
-    cta_title: "Boek uw verblijf bij de hunebedden van Drenthe",
+    cta_title: "Overnacht op vijf minuten van hunebed D5",
     cta_body:
-      "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
-    meta_title: "Hunebedden Drenthe | Overnachten bij de Prehistorie in Zeijen",
+      "Twee privé lodges met eigen hottub op de heide bij Zeijen, met het dichtstbijzijnde hunebed van Drenthe op fietsafstand. Al boekbaar voor 2027 — wij reageren binnen 24 uur persoonlijk.",
+    meta_title: "Hunebedden Drenthe: alle 52 op een rij + de mooiste routes",
     meta_description:
-      "Hunebedden Drenthe ontdekken? Overnacht in een luxe lodge met hottub in Zeijen, op 10 min van de hunebedden bij Anloo. Hunebed Highway en Drents Museum dichtbij.",
-    og_image: "/museum_drenthe.jpg",
+      "Drenthe telt 52 van de 54 Nederlandse hunebedden. Waar ze liggen, welke de mooiste zijn en wat een bezoek kost. Plus overnachten op 5 minuten van hunebed D5.",
+    og_image: "",
     sort_order: 10,
   },
   {
@@ -947,6 +1066,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     related: [
       "Bijzonder overnachten in Drenthe :: /bijzonder-overnachten-drenthe",
       "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Hunebedden in Drenthe :: /hunebedden-drenthe",
       "Omgeving & activiteiten :: /omgeving",
     ].join("\n"),
     cta_title: "Boek uw verblijf tijdens het heideseizoen",
@@ -1055,6 +1175,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Fietsen in Drenthe :: /fietsen-in-drenthe",
       "Fochteloërveen :: /fochteloerveen-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
+      "Hunebedden in Drenthe :: /hunebedden-drenthe",
       "Vakantiehuis in Drenthe met hond :: /vakantiehuis-drenthe-met-hond",
       "Omgeving & activiteiten :: /omgeving",
     ].join("\n"),

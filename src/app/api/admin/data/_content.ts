@@ -26,6 +26,7 @@ function buildLandingFields(body: Record<string, unknown>) {
     hero_sub: str(body.hero_sub),
     hero_image: str(body.hero_image) || "/lodge-heide.jpg",
     hero_image_alt: str(body.hero_image_alt),
+    hero_focus: str(body.hero_focus),
     price_from: str(body.price_from),
     intro: str(body.intro),
     sections,
@@ -36,6 +37,7 @@ function buildLandingFields(body: Record<string, unknown>) {
     meta_title: str(body.meta_title),
     meta_description: str(body.meta_description),
     og_image: str(body.og_image),
+    key_facts: str(body.key_facts),
     sort_order: Number.isFinite(Number(body.sort_order)) ? Number(body.sort_order) : 0,
   };
 }
@@ -187,12 +189,19 @@ export async function handleContentPost(action: string, body: Record<string, unk
       if (!fields.slug || !fields.h1) return NextResponse.json({ error: "Slug en H1 zijn verplicht" }, { status: 400 });
       const slugFout = slugLengteFout(fields.slug);
       if (slugFout) return NextResponse.json({ error: slugFout }, { status: 400 });
+      const { data: voor } = await getSupabase()
+        .from("landing_pages").select("gepubliceerd").eq("id", body.id).single();
       const { error } = await getSupabase().from("landing_pages").update({
         ...fields,
         updated_at: new Date().toISOString(),
       }).eq("id", body.id);
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
       revalidatePath(`/${fields.slug}`);
+      // Een herschreven pagina is voor een zoekmachine net zo goed nieuws als
+      // een nieuwe pagina. Tot nu toe meldde alleen het publiceren zich aan,
+      // waardoor een inhoudelijke herziening tot de volgende spontane crawl
+      // bleef liggen. Alleen melden als de pagina ook echt live staat.
+      if (voor?.gepubliceerd) await meldAan([`/${fields.slug}`]);
       return NextResponse.json({ success: true });
     }
     case "publish_landing_page": {
@@ -249,6 +258,7 @@ export async function handleContentPost(action: string, body: Record<string, unk
         hero_sub: p.hero_sub,
         hero_image: p.hero_image,
         hero_image_alt: p.hero_image_alt,
+        hero_focus: p.hero_focus ?? "",
         price_from: p.price_from,
         intro: p.intro,
         sections: p.sections,
@@ -259,6 +269,9 @@ export async function handleContentPost(action: string, body: Record<string, unk
         meta_title: p.meta_title,
         meta_description: p.meta_description,
         og_image: p.og_image,
+        key_facts: p.key_facts ?? "",
+        about: p.about ?? null,
+        updated_at: p.updated_at ? new Date(p.updated_at).toISOString() : new Date().toISOString(),
         gepubliceerd: true,
         sort_order: p.sort_order ?? 0,
       }));

@@ -56,3 +56,98 @@
 .hth-faq summary::-webkit-details-marker { display: none; }
 .hth-faq .hth-faq-plus { transition: transform 0.2s ease; }
 .hth-faq details[open] .hth-faq-plus { transform: rotate(45deg); }
+
+/* ── Landingspagina's ────────────────────────────────────────────────
+ * De secties stonden op een vaste horizontale padding van 40px. Op een
+ * telefoon van 360px bleef daardoor 280px over voor de tekst — bijna een
+ * derde van het scherm ging op aan marge. Hier één klasse voor alle
+ * secties, zodat de maat op één plek staat.
+ */
+.lp-pad { padding-left: 40px; padding-right: 40px; }
+@media (max-width: 640px) {
+  .lp-pad { padding-left: 20px; padding-right: 20px; }
+}
+
+/* Ankerdoelen niet onder de bovenrand laten vallen bij een sprong vanuit
+ * de inhoudsopgave. */
+.lp-anchor { scroll-margin-top: 24px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Feiten in één oogopslag onder de hero. */
+.lp-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px 28px;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .lp-facts { grid-template-columns: repeat(2, 1fr); gap: 16px 18px; }
+}
+
+/* Een tabel van vier kolommen past niet op een telefoon. De wrapper
+ * scrollt, de pagina niet. */
+.lp-table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #E0D8C8;
+  border-radius: 10px;
+}
+.lp-table-wrap:focus-visible { outline: 2px solid #2F4F3E; outline-offset: 2px; }
+
+/* Inhoudsopgave: onderstreping pas bij hover/focus, en een zichtbare
+ * focusring voor wie met het toetsenbord navigeert. */
+.lp-toc-link:hover { text-decoration: underline; }
+.lp-toc-link:focus-visible {
+  outline: 2px solid #2F4F3E;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* Onder 640px wordt de tabel een lijst kaartjes. Vier kolommen passen niet
+ * op een telefoon, en horizontaal scrollen zet juist de kolom met de uitleg
+ * buiten beeld. Elke cel krijgt zijn kolomkop als label mee (data-label). */
+@media (max-width: 640px) {
+  .lp-table-wrap {
+    overflow-x: visible;
+    border: 0;
+    border-radius: 0;
+  }
+  .lp-table-wrap table { min-width: 0 !important; }
+  /* Visueel verbergen, niet uit de toegankelijkheidsboom halen. */
+  .lp-table-wrap thead {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .lp-table-wrap tr {
+    display: block;
+    background: #fff !important;
+    border: 1px solid #E0D8C8;
+    border-radius: 10px;
+    padding: 4px 14px 10px;
+    margin-bottom: 10px;
+  }
+  .lp-table-wrap td {
+    display: block;
+    border-bottom: 0 !important;
+    padding: 8px 0 0 !important;
+  }
+  .lp-table-wrap td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #8A6F2E;
+    margin-bottom: 3px;
+  }
+}
