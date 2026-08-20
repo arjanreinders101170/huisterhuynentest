@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import {
   BEZETTINGSDOEL, NACHTEN_BESCHIKBAAR, MAANDEN, JAAR,
   VASTE_LASTEN, VASTE_LASTEN_PER_JAAR, VASTE_LASTEN_PER_MAAND, BREAKEVEN, LADDER,
+  MARKETING_PER_MAAND, LASTEN_ZONDER_MARKETING, BOEKINGSVORMEN,
   BASISPRIJS, TOESLAGEN, nachtprijs, BLOKPLAFOND, WINTERSTRAF, ENERGIE_PER_NACHT, SCHOONMAAK,
   GEMIDDELDE_VERBLIJFSDUUR, BEZOEKERS_PER_MAAND_MINIMAAL,
   DOEL_BEZOEKERS_JAAR, DOEL_BEZOEKERS_MAAND, STRETCH_BEZOEKERS_MAAND,
@@ -195,13 +196,15 @@ export function GroeiTab() {
       {/* ── De ondergrens ── */}
       <Kaart
         titel="De ondergrens — dekking van hypotheek en vaste lasten"
-        sub={`${euro(VASTE_LASTEN.financieringPerMaand)} per maand financieringslasten plus ${euro(VASTE_LASTEN.parkkostenPerJaar)} per jaar parkkosten — samen ${euro(VASTE_LASTEN_PER_JAAR)} per jaar, ${euro(VASTE_LASTEN_PER_MAAND)} per maand. Doorgerekend op de kalender van 2027 met de tarieven uit de prijsmotor.`}
+        sub={`${euro(VASTE_LASTEN.financieringPerMaand)}/mnd financiering plus ${euro(VASTE_LASTEN.parkkostenPerJaar)}/jr parkkosten is ${euro(LASTEN_ZONDER_MARKETING)}; mét het marketingbudget van ${euro(MARKETING_PER_MAAND)}/mnd komt dat op ${euro(VASTE_LASTEN_PER_JAAR)} per jaar, ${euro(VASTE_LASTEN_PER_MAAND)} per maand. Marketing telt mee als vaste last: het moet zichzelf terugverdienen, niet uit de opbrengst worden gefinancierd.`}
       >
         <div style={{ display: "flex", gap: 28, flexWrap: "wrap", marginBottom: 18 }}>
           <div>
             <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Break-even</div>
             <div style={{ fontSize: 30, fontWeight: 700, color: C.gold, lineHeight: 1.2 }}>{pct(BREAKEVEN.bezetting)}</div>
-            <div style={{ fontSize: 12, color: C.muted }}>jaarbezetting</div>
+            <div style={{ fontSize: 12, color: C.muted }}>
+              jaarbezetting · {pct(BREAKEVEN.zonderMarketing.bezetting)} zonder marketing
+            </div>
           </div>
           <div>
             <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>Per maand</div>
@@ -290,12 +293,13 @@ export function GroeiTab() {
             borderLeft: `3px solid ${C.gold}`, borderRadius: "0 8px 8px 0",
             fontSize: 12, color: C.text, lineHeight: 1.7,
           }}>
-            <strong>Het blokplafond.</strong> Verkoopt u uitsluitend hele weekenden, midweken en
-            vakantieweken, dan komt u niet verder dan {BLOKPLAFOND.nachten} van de {NACHTEN_BESCHIKBAAR} nachten —
-            {" "}{pct(BLOKPLAFOND.bezetting)}. De rest zijn losse zondag- en maandagnachten die tussen twee
-            boekingen in vallen. {pct(BEZETTINGSDOEL)} halen betekent dus per definitie ook die restnachten
-            verkopen: flexibele aankomstdagen en een last-minute-kanaal zijn geen verfijning maar
-            voorwaarde.
+            <strong>Het blokplafond: {pct(BLOKPLAFOND.bezetting)}.</strong> Er wordt verhuurd in drie
+            vormen — {BOEKINGSVORMEN.map(v => `${v.vorm.toLowerCase()} (${v.verloop})`).join(", ")} —
+            met maandag en vrijdag als enige wisseldagen. Midweek en weekend sluiten exact op elkaar
+            aan, dus per week valt alleen de zondagnacht buiten de vormen: {BLOKPLAFOND.nachten} van
+            de {NACHTEN_BESCHIKBAAR} nachten blijven verkoopbaar. Dat ligt ruim boven het doel van
+            {" "}{pct(BEZETTINGSDOEL)}, en het scheelt schoonmaakwissels: een weekboeking kost er één
+            waar midweek plus weekend er twee kosten.
           </div>
         </div>
 
@@ -307,8 +311,9 @@ export function GroeiTab() {
           {" "}{BREAKEVEN.nachtenPerMaand} nachten en {BREAKEVEN.boekingenPerMaand.toFixed(1)} boekingen per
           maand over twee lodges, en daar zijn ongeveer {BREAKEVEN.bezoekersPerMaand} bezoekers per maand
           voor nodig. Het doel van {pct(BEZETTINGSDOEL)} is dus geen overleven maar verdienen: het verschil
-          tussen break-even en het plafond is ruim {euro(54_000)} per jaar. Het marketingbudget van
-          {" "}{euro(550)} per maand hoeft daarvan maar één extra boeking per maand terug te verdienen.
+          tussen break-even en het doel is bijna {euro(47_000)} per jaar, en tot het plafond ruim
+          {" "}{euro(63_000)}. Het marketingbudget zit al in dat break-evencijfer verwerkt: alles
+          boven {pct(BREAKEVEN.bezetting)} is winst.
           <br /><br />
           Basisprijs {euro(BASISPRIJS)} per nacht; per nacht wint de duurste toeslag. Variabele kosten:
           {" "}{euro(ENERGIE_PER_NACHT[7])} tot {euro(ENERGIE_PER_NACHT[1])} per nacht aan stroom en water

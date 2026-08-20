@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
+import { isAankomstdag, vertrekdatumsVoor, bepaalVerblijfsvorm, vormLabel } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 import { getAttribution } from "@/lib/tracking/attribution";
 
@@ -85,6 +86,11 @@ function MonthCalendar({
   const monthName = firstDay.toLocaleDateString("nl-NL", { month: "long", year: "numeric" });
 
   const rangeEnd = checkOut || hovered;
+  /* De vertrekdatums die bij de gekozen aankomst horen — leeg zolang er nog
+   * geen aankomst is, want dan zijn de aankomstdagen aan de beurt. */
+  const geldigeVertrek = checkIn && !checkOut
+    ? vertrekdatumsVoor(checkIn).map(v => v.datum)
+    : [];
 
   const days: { iso: string; inMonth: boolean }[] = [];
   for (let i = 0; i < offset; i++) {
@@ -114,6 +120,10 @@ function MonthCalendar({
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
         {days.map(({ iso, inMonth }) => {
           const isPast = iso < today;
+          /* Alleen dagen die in een boekingsvorm passen zijn klikbaar: als er
+           * nog geen aankomst is gekozen de aankomstdagen, daarna de bijbehorende
+           * vertrekdagen. Zo kan er geen ongeldige combinatie ontstaan. */
+          const kiesbaar = !checkIn || checkOut ? isAankomstdag(iso) : geldigeVertrek.includes(iso);
           const booked = isBooked(iso, events);
           const pricing = priceForDate(iso, pricingData, events, today);
           const isCheckIn = iso === checkIn;
@@ -134,6 +144,12 @@ function MonthCalendar({
               bg = booked ? "#F5D9D9" : "transparent";
               color = booked ? "#9B3A3A" : T.muted;
               opacity = booked ? 1 : 0;
+            } else if (!kiesbaar && !isCheckIn && !isCheckOut) {
+              /* Vrij, maar past niet in een boekingsvorm bij deze stap. De dag
+               * blijft leesbaar — anders lijkt hij bezet — maar nodigt niet uit
+               * tot klikken. */
+              color = T.muted;
+              opacity = 0.35;
             } else {
               cursor = "pointer";
               pointerEvents = "auto";
@@ -154,8 +170,8 @@ function MonthCalendar({
           return (
             <div
               key={iso}
-              onClick={() => inMonth && !isPast && !booked ? onDayClick(iso) : undefined}
-              onMouseEnter={() => inMonth && !isPast && !booked ? onDayHover(iso) : undefined}
+              onClick={() => inMonth && !isPast && !booked && kiesbaar ? onDayClick(iso) : undefined}
+              onMouseEnter={() => inMonth && !isPast && !booked && kiesbaar ? onDayHover(iso) : undefined}
               onMouseLeave={() => onDayHover(null)}
               style={{
                 aspectRatio: "1", display: "flex", flexDirection: "column",
@@ -275,23 +291,26 @@ export default function BookingCalendar() {
   };
 
   const handleDayClick = (iso: string) => {
+    // Stap 1 — aankomst. Alleen maandag en vrijdag; de kalender laat de rest
+    // al niet klikken, dit is de vangnetcontrole.
     if (!checkIn || (checkIn && checkOut)) {
+      if (!isAankomstdag(iso)) return;
       setCheckIn(iso);
       setCheckOut(null);
       setSent(false);
       return;
     }
-    if (iso <= checkIn) {
-      setCheckIn(iso);
-      setCheckOut(null);
+    // Stap 2 — vertrek. Alleen de datums die een geldige vorm opleveren.
+    const opties = vertrekdatumsVoor(checkIn).map(v => v.datum);
+    if (!opties.includes(iso)) {
+      // Een klik op een andere aankomstdag begint gewoon opnieuw.
+      if (isAankomstdag(iso)) { setCheckIn(iso); setCheckOut(null); }
       return;
     }
-    const nights = diffDays(checkIn, iso);
-    if (nights < 2) return;
-    // Check no booked day in range
-    let d = addDays(checkIn, 1);
+    // Geen bezette nacht binnen het blok.
+    let d = checkIn;
     while (d < iso) {
-      if (isBooked(d, events)) { setCheckIn(iso); setCheckOut(null); return; }
+      if (isBooked(d, events)) { setCheckIn(null); setCheckOut(null); return; }
       d = addDays(d, 1);
     }
     setCheckOut(iso);
@@ -302,6 +321,7 @@ export default function BookingCalendar() {
   const month1 = new Date(now.getFullYear(), now.getMonth() + monthOffset + 1, 1);
 
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;
+  const gekozenVorm = checkIn && checkOut ? bepaalVerblijfsvorm(checkIn, checkOut) : null;
 
   // Calculate total price applying holiday surcharges + availability discounts
   let totalPrice = 0;
@@ -509,15 +529,24 @@ export default function BookingCalendar() {
             ))}
           </div>
 
+          {/* De drie vormen benoemen: zonder uitleg lijken de doffe dagen bezet. */}
+          <div style={{
+            textAlign: "center", fontFamily: T.sans, fontSize: 12, color: T.muted,
+            padding: "4px 0 2px", lineHeight: 1.6,
+          }}>
+            We verhuren per <strong>midweek</strong> (ma&nbsp;–&nbsp;vr),{" "}
+            <strong>weekend</strong> (vr&nbsp;–&nbsp;zo) of <strong>hele week</strong> (ma&nbsp;–&nbsp;zo).
+          </div>
+
           {/* Hint when no dates selected */}
           {!checkIn && (
             <div style={{ textAlign: "center", padding: "20px 0", fontFamily: T.sans, fontSize: 14, color: T.muted }}>
-              Klik op een aankomstdatum om te beginnen
+              Kies een aankomstdag — maandag of vrijdag
             </div>
           )}
           {checkIn && !checkOut && (
             <div style={{ textAlign: "center", padding: "20px 0", fontFamily: T.sans, fontSize: 14, color: T.muted }}>
-              Klik op een vertrekdatum (minimaal 2 nachten)
+              {vertrekdatumsVoor(checkIn!).map(v => vormLabel(v.vorm)).join(" · ")}
             </div>
           )}
 
@@ -539,6 +568,7 @@ export default function BookingCalendar() {
                   </div>
                   <div style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.75)", marginTop: 4 }}>
                     {nights} nacht{nights !== 1 ? "en" : ""}
+                    {gekozenVorm && ` · ${vormLabel(gekozenVorm)}`}
                   </div>
                 </div>
                 {hasPrice && (

@@ -39,9 +39,11 @@ Er is één blinde vlek die u moet kennen: **er draait nog geen GA4** [CODE]. El
 
 **Maar zet het doel niet op 370.** Daar zit geen enkele marge in, en drie dingen vragen om marge: de conversie begint lager zolang er geen reviews en geen interieurbeeld zijn, verkeer valt nooit precies in de maanden waarin u het nodig heeft, en bezoek dat vandaag niet boekt bouwt wel de e-maillijst waarmee u volgend jaar de lage maanden vult. **Ruim twee keer de minimale behoefte is een verdedigbaar doel — en dat is precies 10.000 bezoekers per jáár, ± 830 per maand.**
 
-**En de ondergrens.** Vaste lasten € 27.500 per jaar (€ 2.000 per maand financiering plus € 3.500 parkkosten). Stroom en water gaan op de meter en zijn dus variabel. Break-even ligt daarmee op **22% jaarbezetting** — dertien nachten en ruim vijf boekingen per maand over twee lodges, waarvoor ± 164 bezoekers per maand nodig zijn. Doorgerekend op de kalender van 2027 met de echte tarieven (€ 165 basis, € 190 weekend, € 206 vakantie, € 248 TT). **Het doel is dus geen overleven maar verdienen: het verschil tussen 22% en het plafond van 68% is ruim € 54.000 per jaar.** Zie deel 2.
+**En de ondergrens.** Financiering € 24.000 plus parkkosten € 3.500 is € 27.500; met het marketingbudget van € 900 per maand erbij — dat telt mee als vaste last, het moet zichzelf terugverdienen — komt dat op **€ 38.300 per jaar**. Break-even ligt daarmee op **30% jaarbezetting**: achttien nachten en ruim zeven boekingen per maand over twee lodges, waarvoor ± 213 bezoekers per maand nodig zijn. Zonder marketing zou break-even op 21% liggen. Doorgerekend op de kalender van 2027 met de echte tarieven (€ 165 basis, € 190 weekend, € 206 vakantie, € 248 TT). **Alles boven die 30% is winst: het verschil met het doel van 70% is bijna € 47.000 per jaar.** Zie deel 2.
 
-**Twee dingen die de metercijfers blootleggen.** De maanden die het moeilijkst te verkopen zijn, zijn ook het duurst om te leveren: een novembernacht levert € 190 op en kost € 26 aan energie, een augustusnacht € 206 tegen € 12. En als u alleen hele weekenden en midweken verkoopt, ligt uw plafond op 68% — de rest zijn losse zondag- en maandagnachten. Beide staan in deel 2.
+**De winterstraf.** De maanden die het moeilijkst te verkopen zijn, zijn ook het duurst om te leveren: een novembernacht levert € 190 op en kost € 26 aan energie, een augustusnacht € 206 tegen € 12. Daaruit volgt beleid dat niets met marketing te maken heeft — minimumverblijf van drie nachten in de winter, en korting op verblijfsduur in plaats van op de nachtprijs.
+
+**En een correctie op mezelf.** Ik schreef eerder dat het blokplafond op 68% ligt en dat flexibele aankomstdagen daarom voorwaarde zijn voor 70%. Dat kwam door een slappere blokindeling van mijn kant. Met de vormen die nu vastliggen — midweek (ma→vr), weekend (vr→zo) en week (ma→zo) — sluiten de blokken exact op elkaar aan en valt alleen de zondagnacht erbuiten: **het plafond is 85,5%.** Vaste wisseldagen zijn dus geen belemmering maar juist het instrument voor maximale bezetting. Zie deel 2.7.
 
 **Wat de bezetting werkelijk bepaalt, is geen marketingvraag.** Bij 512 nachten is verkeer niet de beperkende factor. Dit zijn ze, op volgorde:
 
@@ -50,7 +52,7 @@ Er is één blinde vlek die u moet kennen: **er draait nog geen GA4** [CODE]. El
 3. **Reviews.** Onder de tien reviews zit de bezetting structureel vast — het raakt de positie in Google, de klikkans, de conversie op de site én de rangschikking op Natuurhuisje en Airbnb.
 4. **De vijf lage maanden.** November tot en met maart dragen 165 van de 512 nachten. Daar wordt de jaarbezetting gewonnen, niet in augustus — augustus loopt vanzelf vol.
 
-**Wat het kost.** Een nieuw scenario, toegesneden op bezetting: **€ 550 per maand plus € 2.200 eenmalig — € 15.400 over 24 maanden.** Dat is **€ 10.800 minder** dan het oorspronkelijke advies, en het haalt dezelfde 70%. Het verschil zat in verkeer dat u niet kunt verzilveren.
+**Wat het kost.** Scenario *Bezetting*: **€ 900 per maand plus € 2.200 eenmalig — € 23.800 over 24 maanden.** Het budget is groot genoeg om zichzelf terug te verdienen bovenop de financiering, en het gaat naar wat de bezetting werkelijk bepaalt: conversie, reviews, doordeweekse vraag en de vijf lage maanden.
 
 **Wat 10.000 per maand dan nog is.** Een ander doel, voor later: dat koopt geen bezetting meer — die zit dan aan het plafond — maar overvraag, en overvraag is prijsmacht. Van € 210 naar € 260 gemiddeld is bij 512 nachten **€ 25.600 extra per jaar** zonder één extra nacht. Zinvol vanaf 2029, en alleen als er ook een derde lodge of een tweede product komt.
 
@@ -163,29 +165,41 @@ Die energiebedragen zijn schattingen. Ze zijn na één winter met echte metersta
 
 Twee dingen scheiden een cijfer dat klopt van een cijfer dat vleit:
 
-**Er wordt in blokken verkocht, niet in losse nachten.** Een weekend is vrijdag plus zaterdag, een midweek dinsdag tot en met donderdag, een vakantieweek zeven nachten. Rekenen met "de dertien duurste nachten van de maand" geeft een antwoord dat u nooit kunt verkopen.
+**Er wordt in blokken verkocht, niet in losse nachten.** Sinds 20 augustus 2026 liggen de vormen vast (besluit eigenaar):
+
+| Vorm | Verloop | Nachten |
+|---|---|---:|
+| Midweek | maandag → vrijdag | 4 |
+| Weekend | vrijdag → zondag | 2 |
+| Week | maandag → zondag | 6 |
+
+Twee wisseldagen dus: maandag en vrijdag. Elke wisseldag kost een schoonmaakbeurt en maakt de kalender lastiger planbaar, dus losse dagen worden niet verhuurd. Rekenen met "de achttien duurste nachten van de maand" zou een antwoord geven dat u nooit kunt verkopen.
 
 **Elke maand draagt zichzelf.** November is niet op te halen met de opbrengst van augustus, want de financieringslasten lopen door.
 
 ## 2.4 De uitkomst per maand
 
-| Maand | Beschikbaar | Energie p/nacht | Nachten nodig | Boekingen | Bezetting | Verblijfsomzet | Gem. tarief |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| januari | 62 | € 28 | 14 | 6 | 23% | € 2.888 | € 206 |
-| februari | 56 | € 28 | 14 | 6 | 25% | € 2.854 | € 204 |
-| maart | 62 | € 24 | 14 | 7 | 23% | € 2.656 | € 190 |
-| april | 60 | € 18 | 12 | 5 | 20% | € 2.409 | € 201 |
-| mei | 62 | € 14 | 14 | 2 | 23% | € 2.888 | € 206 |
-| juni | 60 | € 12 | 12 | 6 | 20% | € 2.508 | € 209 |
-| juli | 62 | € 12 | 13 | 5 | 21% | € 2.681 | € 206 |
-| augustus | 62 | € 12 | 13 | 5 | 21% | € 2.681 | € 206 |
-| september | 60 | € 14 | 14 | 7 | 23% | € 2.656 | € 190 |
-| oktober | 62 | € 20 | 12 | 5 | 19% | € 2.458 | € 205 |
-| november | 60 | € 26 | 14 | 7 | 23% | € 2.656 | € 190 |
-| december | 62 | € 28 | 14 | 6 | 23% | € 2.788 | € 199 |
-| **Jaar** | **730** | | **160** | **67** | **22%** | **€ 32.126** | **€ 201** |
+Bij een dekkingsbehoefte van € 38.300 per jaar (financiering, parkkosten én marketing):
 
-**Het antwoord: 22% jaarbezetting. Dertien nachten en ruim vijf boekingen per maand, over twee lodges samen.**
+| Maand | Beschikbaar | Energie p/nacht | Nachten nodig | Boekingen | Bezetting | Verblijfsomzet |
+|---|---:|---:|---:|---:|---:|---:|
+| januari | 62 | € 28 | 18 | 7 | 29% | € 3.680 |
+| februari | 56 | € 28 | 18 | 7 | 32% | € 3.646 |
+| maart | 62 | € 24 | 20 | 9 | 32% | € 3.696 |
+| april | 60 | € 18 | 18 | 7 | 30% | € 3.580 |
+| mei | 62 | € 14 | 18 | 7 | 29% | € 3.614 |
+| juni | 60 | € 12 | 16 | 8 | 27% | € 3.267 |
+| juli | 62 | € 12 | 16 | 5 | 26% | € 3.300 |
+| augustus | 62 | € 12 | 16 | 5 | 26% | € 3.300 |
+| september | 60 | € 14 | 20 | 9 | 33% | € 3.696 |
+| oktober | 62 | € 20 | 18 | 7 | 29% | € 3.646 |
+| november | 60 | € 26 | 20 | 9 | 33% | € 3.696 |
+| december | 62 | € 28 | 18 | 7 | 29% | € 3.580 |
+| **Jaar** | **730** | | **216** | **87** | **30%** | **€ 42.793** |
+
+**Het antwoord: 30% jaarbezetting. Achttien nachten en ruim zeven boekingen per maand, over twee lodges samen.** Zonder het marketingbudget zou dat 21% zijn — 156 nachten in plaats van 216.
+
+Vertaald naar boekingsvormen: achttien nachten per maand is bijvoorbeeld drie weekboekingen (18 nachten, 3 wissels), of twee weken plus anderhalve midweek, of vier midweken plus een weekend. **Drie tot vier boekingen per maand per lodge**, met maandag en vrijdag als vaste wisseldagen.
 
 ## 2.5 De winterstraf
 
@@ -216,30 +230,44 @@ Naarmate de kalender voller wordt daalt het gemiddelde tarief: de dure weekenden
 | 41% | 296 | 126 | € 198 | € 58.575 | − € 5.532 | € 28.063 |
 | 50% | 365 | 149 | € 192 | € 69.960 | − € 7.278 | € 38.162 |
 | 60% | 440 | 174 | € 187 | € 82.335 | − € 8.304 | € 50.011 |
-| **68%** | 500 | 194 | € 184 | € 92.235 | − € 9.792 | **€ 58.823** ← plafond in blokken |
+| **70%** | 512 | 180 | € 186 | € 95.271 | − € 9.720 | **€ 50.851** ← doel |
+| **85,5%** | 624 | 208 | € 182 | € 113.751 | − € 12.248 | **€ 67.363** ← plafond in blokken |
 
-## 2.7 Het blokplafond — een nieuwe bevinding
+## 2.7 Het blokplafond — correctie op een eerdere bevinding
 
-De ladder stopt bij 68%, en dat is geen afronding.
+**In een eerdere versie van dit stuk stond dat het blokplafond op 68% ligt en dat flexibele aankomstdagen daarom voorwaarde zijn voor 70%. Dat klopte niet, en de conclusie was daarmee ook verkeerd.**
 
-**Als u uitsluitend hele weekenden, midweken en vakantieweken verkoopt, komt u niet verder dan 500 van de 730 nachten.** De overige 230 zijn losse zondag- en maandagnachten die tussen twee boekingen in vallen.
+Die 68% kwam uit een slappere blokindeling die ik zelf had gekozen: weekend als vrijdag plus zaterdag, midweek als dinsdag tot en met donderdag. In dat schema vallen zowel de zondag- als de maandagnacht buiten de blokken — twee van de zeven, dus een plafond van 5/7.
 
-Dat bevestigt langs een heel andere weg wat in deel 1 als praktisch maximum stond: **70% is precies de grens van wat haalbaar is, en de laatste procenten komen niet uit meer vraag maar uit een strakkere kalender.** Flexibele aankomstdagen, minimumverblijf-regels die geen gaten achterlaten, en een last-minute-kanaal via de e-maillijst zijn dus geen verfijning maar voorwaarde.
+Met de vormen die nu vastliggen sluit het wél aan:
+
+| | Nachten |
+|---|---:|
+| Midweek (ma → vr) | ma, di, wo, do |
+| Weekend (vr → zo) | vr, za |
+| **Samen** | **6 van de 7** |
+| Valt buiten de vormen | zondagnacht |
+
+**Het plafond is dus 6/7 = 85,5%** — 624 van de 730 nachten. Dat ligt ruim boven het doel van 70%.
+
+**De conclusie draait daarmee om.** Vaste wisseldagen zijn geen belemmering voor maximale bezetting maar juist het instrument ervoor: ze voorkomen precies de losse gaten van één of twee nachten die een kalender onverkoopbaar maken. Flexibele aankomst op elke dag is *niet* nodig voor 70%, en zou bovendien meer schoonmaakwissels kosten.
+
+**Wat er wel te winnen valt op de zondagnacht.** Die 104 nachten per jaar (52 weken × 2 lodges) staan structureel leeg. Ze los verkopen kost een extra wissel voor één nacht en is de moeite niet waard. Wilt u ze toch benutten, dan is de route een **verlengd weekend (vr → ma, 3 nachten) als vierde vorm in het laagseizoen** — één wissel, drie nachten, en het vult precies de nacht die anders leeg blijft. Iets om te overwegen als 70% eenmaal structureel staat; niet nu.
 
 ## 2.8 Wat dit met het hele plan doet
 
-**Het doel is geen overleven maar verdienen.** Het verschil tussen break-even (22%) en het plafond (68%) is **ruim € 54.000 per jaar**. Dáár gaat het marketingplan over.
+**Het doel is geen overleven maar verdienen.** Het verschil tussen break-even (30%) en het doel (70%) is **bijna € 47.000 per jaar**; tot het plafond van 85,5% is het ruim € 63.000. Dáár gaat het marketingplan over.
 
-**En de bezoekersvraag wordt er bijna triviaal van.** Bij 22% bezetting zijn er 67 boekingen per jaar nodig, waarvan ± 31 via de eigen site. Langs dezelfde trechter als in deel 1 zijn dat **1.970 bezoekers per jaar — ongeveer 164 per maand.**
+**En de bezoekersvraag blijft bescheiden.** Bij 30% bezetting zijn er 87 boekingen per jaar nodig, waarvan ± 41 via de eigen site. Langs dezelfde trechter als in deel 1 zijn dat **2.560 bezoekers per jaar — ongeveer 213 per maand.**
 
 | | Bezoekers per maand |
 |---|---:|
-| De lichten blijven aan (22% bezetting) | **± 164** |
+| Alles gedekt, marketing incluis (30% bezetting) | **± 213** |
 | De kalender vol (70% bezetting) | **± 370** |
 | Het doel, met marge | **830** |
 | Waar we het gesprek mee begonnen | 10.000 |
 
-**Het marketingbudget in perspectief.** € 550 per maand is 24% van uw dekkingsbehoefte. Maar het is het gereedschap waarmee u van 22% naar 68% gaat, en dat verschil is € 54.000 per jaar. Elke euro marketing moet ongeveer € 8 aan extra resultaat opleveren om zichzelf terug te verdienen — bij één extra boeking van drie nachten per maand bent u er al.
+**Het marketingbudget in perspectief.** € 900 per maand is € 10.800 per jaar, en het zit al ín de break-even van 30% verwerkt. Dat is de eerlijke manier om ernaar te kijken: marketing wordt niet uit de opbrengst gefinancierd maar moet zichzelf terugverdienen bovenop de financiering. De negen procentpunten die het break-evenpunt daardoor stijgt (van 21% naar 30%) zijn 60 nachten — vijf per maand. Levert de marketing méér dan vijf extra nachten per maand op, dan verdient hij zichzelf terug; en het verschil tussen 30% en 70% is bijna € 47.000 per jaar.
 
 ## 2.9 Wat er nog niet in zit
 
@@ -410,7 +438,7 @@ Het eerste volledige jaar met beeld, reviews en meetbare conversie. De weekenden
 | TT Assen (eind juni) op `/vakantiehuis-assen` | De grootste lokale vraagpiek, en hij komt nu nergens op de site voor [CODE]. |
 | Heidebloei (augustus) — `/heide-drenthe` actualiseren in juni | Uw enige top-10-positie; behandel hem als seizoensbezit. |
 
-**Budget:** € 550 per maand.
+**Budget:** € 900 per maand.
 
 ## Fase 3 — Maximale bezetting · vanaf jul 2028 · 1.500 bezoekers/mnd · **70% bezetting**
 
@@ -436,22 +464,22 @@ Vier scenario's over 24 maanden. **Vergelijk ze op de bezettingskolom, niet op d
 
 | | **Bezetting** *(advies)* | Zuinig | Doelgericht | Versnellen |
 |---|---|---|---|---|
-| Per maand | **€ 550** | € 300 | € 1.000 | € 1.875 |
+| Per maand | **€ 900** | € 300 | € 1.000 | € 1.875 |
 | Eenmalig | **€ 2.200** | € 900 | € 2.200 | € 3.400 |
-| **Totaal over 24 maanden** | **€ 15.400** | € 8.100 | € 26.200 | € 48.400 |
+| **Totaal over 24 maanden** | **€ 23.800** | € 8.100 | € 26.200 | € 48.400 |
 | **Bezetting na 24 mnd** | **70%** | 60% | 70% | 70% |
-| Bezoekers p/mnd na 24 mnd | 1.200 – 1.800 | 700 – 1.100 | 8.000 – 10.000 | 10.000 – 13.000 |
+| Bezoekers p/mnd na 24 mnd | 1.500 – 2.200 | 700 – 1.100 | 8.000 – 10.000 | 10.000 – 13.000 |
 | Bezettingsdoel gehaald | **ja** | nee | ja | ja |
 
-**Let op wat deze tabel zegt.** Drie van de vier scenario's halen 70%. Het verschil tussen € 15.400 en € 48.400 koopt geen extra nacht — het koopt verkeer dat u pas kunt verzilveren als er meer te verhuren is, of als u de prijzen verhoogt.
+**Let op wat deze tabel zegt.** Drie van de vier scenario's halen 70%. Het verschil tussen € 23.800 en € 48.400 koopt geen extra nacht — het koopt verkeer dat u pas kunt verzilveren als er meer te verhuren is, of als u de prijzen verhoogt.
 
 ## Waarom "Bezetting" het advies is
 
 Dit scenario verschilt van het oorspronkelijke advies op één punt: het budget gaat naar wat de bezetting daadwerkelijk bepaalt in plaats van naar verkeersvolume. Concreet zijn er drie posten weg (minder content, minder linkbuilding, minder jaarrond adverteren) en drie posten bij (conversie, reviews, en advertenties die alleen in de dalmaanden staan).
 
-**Zuinig** haalt 60%: de weekenden en de zomer lopen vol, maar de lage maanden en doordeweeks niet. Dat verschil is ongeveer 70 nachten per jaar — bij € 210 gemiddeld is dat **€ 14.700 aan gemiste omzet**, oftewel bijna twee keer het hele budgetverschil met scenario Bezetting. Zuinig is dus geen besparing.
+**Zuinig** haalt 60%: de weekenden en de zomer lopen vol, maar de lage maanden en doordeweeks niet. Dat verschil is ongeveer 70 nachten per jaar — bij € 210 gemiddeld is dat **€ 14.700 aan gemiste omzet**, ruim het dubbele van het budgetverschil met scenario Bezetting. Zuinig is dus geen besparing.
 
-**Doelgericht** haalt dezelfde 70% voor € 10.800 meer. Dat verschil is niet weggegooid — het bouwt een verkeersfundament dat later prijsmacht en uitbreidingsruimte oplevert — maar het levert dit jaar en volgend jaar geen extra nacht op. Verstandig zodra er een derde lodge in beeld komt.
+**Doelgericht** haalt dezelfde 70% voor € 2.400 meer per jaar. Dat verschil is niet weggegooid — het bouwt een verkeersfundament dat later prijsmacht en uitbreidingsruimte oplevert — maar het levert dit jaar en volgend jaar geen extra nacht op. Verstandig zodra er een derde lodge in beeld komt.
 
 **Versnellen** is voor twee lodges overinvesteren.
 
@@ -459,13 +487,13 @@ Dit scenario verschilt van het oorspronkelijke advies op één punt: het budget 
 
 | Post | Per maand | Aandeel | Wat het koopt |
 |---|---|---|---|
-| **Contentproductie** | € 200 | 36% | Drie artikelen per maand in plaats van zes (± € 90 per stuk uitbesteed, twee zelf) [MARKT]. Genoeg voor 10.000 bezoekers per jaar; het zesde artikel voegt verkeer toe dat u niet kunt verzilveren. |
-| **Advertenties — alleen de lage maanden** | € 150 | 27% | November t/m maart en doordeweekse gaten, niet het hele jaar door. Gemiddeld over twaalf maanden; in de praktijk € 350 in januari en € 0 in augustus. |
-| **Conversie & beeld** | € 80 | 15% | Seizoensbeeld, A/B-tests op de CTA, prijs en beschikbaarheid zichtbaar maken. Van 1% naar 2% conversie halveert het benodigde verkeer — de goedkoopste hefboom die er is. |
-| **Reviews & gastbeleving** | € 50 | 9% | Automatische reviewverzoeken en kleine attenties die reviews opleveren. Onder de tien reviews zit de bezetting vast. |
-| **Tooling** | € 45 | 8% | Positiemeting, e-mail, en een tarieven- en beschikbaarheidsoverzicht om gaten te zien vóórdat ze ontstaan. |
-| **Pinterest & e-mail** | € 25 | 5% | De e-maillijst is het enige kanaal waarmee u een specifieke week kunt vullen. Pinterest levert jarenlang verkeer voor bijna niets. |
-| **Totaal** | **€ 550** | 100% | |
+| **Contentproductie** | € 360 | 40% | Zes artikelen per maand, waarvan vier uitbesteed (± € 90 per stuk) [MARKT]. Het volume dat de organische basis draagt en dat na een jaar gratis blijft leveren. |
+| **Advertenties — dalmaanden en doordeweeks** | € 250 | 28% | November t/m maart en de doordeweekse gaten. Gemiddeld over twaalf maanden; in de praktijk € 500 in januari en € 0 in augustus. |
+| **Conversie & beeld** | € 120 | 13% | Seizoensbeeld, A/B-tests op de CTA, prijs en beschikbaarheid zichtbaar maken. Van 1% naar 2% conversie halveert het benodigde verkeer — de goedkoopste hefboom die er is. |
+| **Reviews & gastbeleving** | € 60 | 7% | Automatische reviewverzoeken en kleine attenties die reviews opleveren. Onder de tien reviews zit de bezetting vast. |
+| **Tooling** | € 60 | 7% | Positiemeting, e-mail, en een tarieven- en beschikbaarheidsoverzicht om gaten te zien vóórdat ze ontstaan. |
+| **Pinterest & e-mail** | € 50 | 6% | De e-maillijst is het enige kanaal waarmee u een specifieke week kunt vullen. Pinterest levert jarenlang verkeer voor bijna niets. |
+| **Totaal** | **€ 900** | 100% | |
 
 ## Bezetting — eenmalige investeringen
 
@@ -495,7 +523,7 @@ Gemiddeld: € 150 per maand — precies de post uit de tabel hierboven. Maar de
 
 # 8. Waar we het in gaan zetten — per kanaal
 
-Bedragen hieronder horen bij het scenario **Bezetting** (€ 550/mnd).
+Bedragen hieronder horen bij het scenario **Bezetting** (€ 900/mnd).
 
 ## Content — het fundament (€ 200/mnd)
 
@@ -578,7 +606,7 @@ Klein in verkeer, doorslaggevend in bezetting. Dit is het enige kanaal waarmee u
 
 **De rekensom die dit plan verantwoordt.** Twee sommen, naast elkaar:
 
-*Bespaarde commissie.* Brengt dit plan het aandeel directe boekingen van 30% naar 55%, dan is dat over twee jaar ± € 52.500 aan omzet die géén commissie betaalt. Bij 16,5% gemiddeld is dat **± € 8.700** [ANALYSE] — meer dan de helft van het budget van € 15.400, terugverdiend zonder één extra boeking.
+*Bespaarde commissie.* Brengt dit plan het aandeel directe boekingen van 30% naar 55%, dan is dat over twee jaar ± € 52.500 aan omzet die géén commissie betaalt. Bij 16,5% gemiddeld is dat **± € 8.700** [ANALYSE] — ruim een derde van het budget van € 23.800, terugverdiend zonder één extra boeking.
 
 *Extra nachten.* Het verschil tussen 60% bezetting (scenario Zuinig) en 70% (scenario Bezetting) is ± 70 nachten per jaar. Bij € 210 gemiddeld is dat **€ 14.700 per jaar, € 29.400 over twee jaar** [ANALYSE].
 
@@ -610,7 +638,7 @@ Drie dingen die het plan uitvoerbaar en beoordeelbaar maken. Ze staan live in de
 | **Fotografie** | **Q1 2027**, met een video-impressie erachteraan | De shoot staat in februari, de video in maart — aansluitend, op dezelfde styling, zodat er geen tweede reis- en stylingdag nodig is. Dit is de juiste keuze en niet alleen een uitstel: vóór de oplevering valt er geen interieur te fotograferen. |
 | **Boekingssites** | **Ja** — Natuurhuisje en Airbnb, ná de fotoshoot | Natuurhuisje in maart, Airbnb in april. Beide voor restcapaciteit, niet als hoofdkanaal. Zie deel 8. |
 
-**Wat het bezettingsdoel verandert aan het budget.** Het advies gaat van € 26.200 naar **€ 15.400** — scenario *Bezetting*, € 550 per maand plus € 2.200 eenmalig. Het verschil van € 10.800 zat in verkeer dat bij twee lodges niet te verzilveren is. Wat ervoor terugkomt is budget voor conversie, reviews en de dalmaanden, en een advertentiebudget dat alleen aanstaat in de maanden waarin het een nacht kan redden.
+**Wat het bezettingsdoel verandert aan het budget.** Het advies is scenario *Bezetting*: **€ 900 per maand plus € 2.200 eenmalig, € 23.800 over 24 maanden.** Het zwaartepunt verschuift van verkeersvolume naar wat de bezetting werkelijk bepaalt — conversie, reviews, doordeweekse vraag — en het advertentiebudget staat alleen aan in de maanden waarin het een nacht kan redden. Het budget telt mee als vaste last: break-even stijgt daardoor van 21% naar 30%, en dat is de eerlijke voorstelling van zaken.
 
 **Wat de fotobeslissing kost, eerlijk gezegd.** Het beeldwerk verschuift vijf maanden, en daarmee verschuift ook alles wat eraan hangt: Pinterest op volume, Meta met video, en vooral de conversie op de landingspagina's. Dat raakt de *conversie*, niet het *verkeer* — de bezoekersladder in deel 6 is contentgedreven en blijft staan. Maar reken erop dat de trechter pas vanaf maart 2027 op zijn beoogde niveau werkt, en beoordeel de maanden daarvóór dus niet op boekingen.
 
@@ -620,7 +648,7 @@ Drie dingen die het plan uitvoerbaar en beoordeelbaar maken. Ze staan live in de
 
 | # | Besluit | Waarom het nu moet | Mijn advies |
 |---|---|---|---|
-| **1** | **Welk budgetscenario** — Bezetting, Zuinig, Doelgericht of Versnellen? | Bepaalt of contentproductie wordt uitbesteed; dat regelt u niet in een week | **Bezetting** — € 550/mnd plus € 2.200 eenmalig, € 15.400 over 24 maanden. Haalt 70% voor € 10.800 minder dan het vorige advies. |
+| **1** | **Welk budgetscenario** — Bezetting, Zuinig, Doelgericht of Versnellen? | Bepaalt of contentproductie wordt uitbesteed; dat regelt u niet in een week | **Bezetting** — € 900/mnd plus € 2.200 eenmalig, € 23.800 over 24 maanden. |
 | **2** | **Hoe ziet een midweek er bij u uit?** | Doordeweeks is 55% van de opgave, en dit is een productvraag die u alleen kunt beantwoorden — pakket, prijs, doelgroep | Begin met één propositie in plaats van drie: **wellness-midweek, drie nachten di t/m vr, per nacht goedkoper dan het weekend.** De thuiswerk- en hondvariant kunnen later. |
 
 **Twee dingen die geen besluit vragen en waar ik direct mee doorga:** GA4 activeren (het recept ligt klaar, en het is nu de belangrijkste openstaande actie van het hele plan) en de gratis vermeldingen aanmelden. Die kosten niets en houden niemand op.

@@ -29,10 +29,11 @@ export async function POST(request: NextRequest) {
     }
 
     /* Terugkomers mogen een aanvraag zonder exacte datums sturen ("ergens in
-     * het najaar"). Zijn de datums er wél, dan gelden dezelfde regels als op
-     * de homepage — het formulier beperkt de kalender, maar dat is UI. */
+     * het najaar"). Zijn de datums er wél, dan gelden de gewone datumregels,
+     * maar niet de drie boekingsvormen: dit is een wens en geen boeking, en
+     * de admin giet hem bij het opstellen van de offerte in een geldige vorm. */
     if (fromIso && toIso) {
-      const dateCheck = checkStayDates(fromIso, toIso);
+      const dateCheck = checkStayDates(fromIso, toIso, { vormen: false });
       if (!dateCheck.ok) {
         return NextResponse.json({ error: dateCheck.error }, { status: 400 });
       }
