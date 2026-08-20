@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc } from "@/lib/email";
 import { bookingSchema } from "@/lib/schemas";
+import { getProduct } from "@/lib/products";
+import { verifieerStayToken, gastVanVerblijf } from "@/lib/stay-lookup";
 
 export const runtime = "nodejs";
 
@@ -200,34 +202,50 @@ export async function POST(request: NextRequest) {
 
     const parsed = bookingSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Ongeldige invoer", details: parsed.error.flatten().fieldErrors }, { status: 400 });
+      return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
 
-    const { product, prijs, gastNaam, gastEmail, datum, metadata } = parsed.data;
+    const { stayToken, productId, datum, metadata } = parsed.data;
+
+    /* Wie is dit? Niet wat de client beweert, maar wat het verblijf zegt.
+     * Hierdoor kan de ontvanger van de bevestigingsmail nooit meer door de
+     * afzender van het verzoek gekozen worden. */
+    const verblijf = await verifieerStayToken(stayToken);
+    if (!verblijf) {
+      return NextResponse.json({ error: "Geen geldig verblijf" }, { status: 403 });
+    }
+    const gast = await gastVanVerblijf(verblijf.guestId);
+    if (!gast) {
+      return NextResponse.json({ error: "Geen gastgegevens bij dit verblijf" }, { status: 409 });
+    }
+    const gastNaam = gast.naam;
+    const gastEmail = gast.email;
+
+    /* Product en prijs komen uit de productentabel, niet uit het verzoek.
+     * Anders staat er straks een zelfverzonnen omschrijving en bedrag in de
+     * mail naar de eigenaar en in de bookings-tabel. */
+    const productRow = await getProduct(productId);
+    if (!productRow) {
+      return NextResponse.json({ error: "Onbekend product" }, { status: 400 });
+    }
+    const product = productRow.naam;
+    const prijsNum = productRow.prijs;
 
     const bookingDate = datum || new Date().toLocaleDateString("nl-NL", {
       weekday: "long", day: "numeric", month: "long", year: "numeric",
     });
-    const bookingPrijs = prijs || "Prijs op aanvraag";
+    const bookingPrijs = prijsNum > 0
+      ? `€ ${prijsNum.toFixed(2)}`
+      : "Prijs op aanvraag";
 
-    // 1. Upsert guest
-    let guestId = null;
-    try {
-      const { data } = await getSupabase().rpc("upsert_guest", {
-        p_naam: gastNaam,
-        p_email: gastEmail,
-      });
-      guestId = data;
-    } catch (e) { console.error("Guest upsert failed:", e); }
-
-    // 2. Insert booking
+    // Boeking vastleggen op de gast die bij dit verblijf hoort.
     try {
       await getSupabase().from("bookings").insert({
-        guest_id: guestId,
+        guest_id: verblijf.guestId,
         product,
-        prijs: parseFloat(String(bookingPrijs).replace(/[^0-9.,]/g, "").replace(",", ".")) || null,
+        prijs: prijsNum > 0 ? prijsNum : null,
         status: "nieuw",
-        metadata: metadata || {},
+        metadata: { ...(metadata || {}), stay_id: verblijf.id, lodge: verblijf.lodge },
       });
     } catch (e) { console.error("Booking insert failed:", e); }
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SITE_URL, landingOgImageUrl } from "@/lib/site";
+import { SITE_URL, landingOgImageUrl, jsonLdScript } from "@/lib/site";
 import { getLandingPage, getServedLandingSlugs, recordToConfig } from "@/lib/landing";
 import { LandingTemplate, landingSchemas } from "@/components/LandingTemplate";
 
@@ -54,7 +54,7 @@ export default async function DeLandingPage(
   return (
     <>
       {schemas.map((schema, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(schema) }} />
       ))}
       <LandingTemplate config={config} />
     </>

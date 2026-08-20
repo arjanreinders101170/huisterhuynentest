@@ -186,13 +186,20 @@ function fallbackReply(text: string, lang: "nl" | "de", hasStay = false): string
   return fb.default;
 }
 
+/* De preflight stond op "*", terwijl vercel.json voor alle /api/*-antwoorden
+ * juist één origin toestaat. Die tegenstrijdigheid maakte de configuratie
+ * onleesbaar zonder iets extra's toe te staan (de browser controleert de
+ * origin ook op het echte antwoord). Nu gelijkgetrokken met vercel.json. */
+const TOEGESTANE_ORIGIN = "https://www.huisterhuynen.nl";
+
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": TOEGESTANE_ORIGIN,
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
+      "Vary": "Origin",
     },
   });
 }

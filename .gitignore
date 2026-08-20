@@ -7,7 +7,9 @@
 /coverage
 
 # next.js
-/.next/
+# Zonder leidende slash, zodat ook geneste build-mappen worden genegeerd:
+# src/app/admin/.next/ stond hierdoor eerder wél in versiebeheer.
+.next/
 /out/
 
 # production

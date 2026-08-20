@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { reserveringSchema } from "@/lib/schemas";
-import { safeInsertBookingRequest } from "@/lib/pricing";
+import { safeInsertBookingRequest, computeStayPrice } from "@/lib/pricing";
 import {
   esc as escEmail, lodgeEmail, lodgePhoto, infoBlock, calloutBlock,
   checklist, detailsBlock,
@@ -95,7 +95,43 @@ export async function POST(request: NextRequest) {
   const checkOutFmt = fmtDate(checkOut);
   // Nachten uit de gevalideerde datums, niet uit het meegestuurde veld.
   const nightsNum = dateCheck.nights;
-  let totalNum = parseFloat(totalPrice) || 0;
+
+  /* De prijs komt van de server, niet uit het formulier.
+   *
+   * `totalPrice` is een veld dat de browser meestuurt, en die waarde belandde
+   * als voorgestelde_prijs in de aanvraag — precies het bedrag dat in de admin
+   * al is voorgevuld wanneer de host de offerte opmaakt. Wie 89 in plaats van
+   * 890 instuurde, gokte erop dat dat niet wordt nagekeken.
+   *
+   * Dezelfde berekening als /api/terugkomen gebruikt. Faalt hij (bijvoorbeeld
+   * omdat er geen prijsperiodes voor deze lodge staan), dan gaat er 0 in en
+   * ziet de host meteen dat er handmatig een prijs bepaald moet worden. */
+  const personenNum = aantalPersonen ? parseInt(aantalPersonen) || 2 : 2;
+  let totalNum = 0;
+  let berekendLabel: string | null = null;
+  try {
+    const calc = await computeStayPrice({
+      lodge,
+      checkIn,
+      checkOut,
+      personen: personenNum,
+      huisdier: huisdieren === "ja",
+    });
+    totalNum = calc.verblijf;
+    berekendLabel = calc.voorstelLabel;
+  } catch (e) {
+    console.error("computeStayPrice (reservering) failed:", e);
+  }
+
+  /* Wat de browser toonde bewaren we niet als prijs, maar we signaleren het
+   * wel: wijkt het af, dan klopt of de kalender of de prijstabel niet. */
+  const getoondePrijs = parseFloat(totalPrice) || 0;
+  if (totalNum > 0 && Math.abs(getoondePrijs - totalNum) > 1) {
+    console.warn(
+      `[reservering] prijsafwijking: browser toonde ${getoondePrijs}, server berekende ${totalNum} ` +
+      `(${lodge} ${checkIn}–${checkOut})`
+    );
+  }
 
   // Server-side promo code validation and use-count increment
   let promoInfo: { label: string; discount: number } | null = null;
@@ -128,11 +164,11 @@ export async function POST(request: NextRequest) {
     check_in: checkIn,
     check_out: checkOut,
     nachten: nightsNum,
-    personen: aantalPersonen ? parseInt(aantalPersonen) || 2 : 2,
+    personen: personenNum,
     huisdieren: huisdieren === "ja",
     bericht: bericht || null,
     voorgestelde_prijs: totalNum,
-    voorgestelde_prijs_label: priceLabel || null,
+    voorgestelde_prijs_label: berekendLabel ?? priceLabel ?? null,
     promo_code: promoInfo?.label || null,
     status: "nieuw",
     meta_event_id: _meta?.event_id ?? null,

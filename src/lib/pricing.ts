@@ -151,14 +151,18 @@ export async function safeInsertBookingRequest(row: Record<string, unknown>): Pr
         code: error.code,
         details: error.details,
         hint: error.hint,
-        row,
+        /* Niet de hele rij: die bevat gast_naam, gast_email en het vrije
+         * berichtveld. Vercel-logs zijn breder toegankelijk dan de database
+         * en gaan doorgaans naar een externe log-drain. Alleen wat nodig is
+         * om te zien wat er misging. */
+        row: { bron: row.bron, lodge: row.lodge, check_in: row.check_in, nachten: row.nachten },
       }));
       return null;
     }
     console.log(`[booking_requests] inserted ${data?.id} (bron=${row.bron})`);
     return data?.id || null;
   } catch (e) {
-    console.error("[booking_requests] insert threw:", e, "row:", JSON.stringify(row));
+    console.error("[booking_requests] insert threw:", e, "bron:", row.bron);
     return null;
   }
 }

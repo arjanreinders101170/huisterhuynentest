@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { jsonLdScript } from "@/lib/site";
 
 const SITE_URL = "https://www.huisterhuynen.nl";
 
@@ -181,7 +182,7 @@ export default function OmgevingLayout({ children }: { children: React.ReactNode
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdScript(schema) }}
         />
       ))}
       {children}

@@ -2,6 +2,26 @@
  *  metadata, canonicals and JSON-LD. Always the www host. */
 export const SITE_URL = "https://www.huisterhuynen.nl";
 
+/**
+ * Serialiseert JSON-LD voor plaatsing in een <script>-blok.
+ *
+ * JSON.stringify escapet `<` niet, dus een waarde die "</script>" bevat breekt
+ * uit het scriptblok en de rest wordt als HTML uitgevoerd. Vandaag vullen
+ * alleen ingelogde admins deze velden (blogtitels, landingspagina's), dus er
+ * is nu geen exploiteerbaar pad — maar het is een sink die op scherp staat
+ * voor de dag dat er bezoekersinvoer in een schema belandt, bijvoorbeeld
+ * reviews in een aggregateRating.
+ *
+ * \u2028 en \u2029 zijn geldig in JSON maar niet in JavaScript-broncode, en
+ * breken de parser wanneer de browser dit blok leest.
+ */
+export function jsonLdScript(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 /** Images in /public usable as hero/OG images for landing pages and blog posts. */
 export const PUBLIC_IMAGES = [
   "/lodge-heide.jpg", "/lodge-eik.jpg", "/heide1.jpg", "/heide2.jpg", "/heide3.jpg",

@@ -95,8 +95,6 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
   const [forms, setForms] = useState<Record<string, OfferteForm>>({});
   const [saving, setSaving] = useState<string | null>(null);
   const [result, setResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
-  const [diagnosing, setDiagnosing] = useState(false);
-  const [diagnosis, setDiagnosis] = useState<unknown>(null);
   const [payLoading, setPayLoading] = useState<string | null>(null);
   const [rejectOpen, setRejectOpen] = useState<string | null>(null);
   const [rejectText, setRejectText] = useState("");
@@ -111,19 +109,6 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     width: "100%", padding: "9px 12px", borderRadius: 8,
     border: `1px solid ${C.border}`, background: C.card,
     fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box",
-  };
-
-  const runDiagnosis = async () => {
-    setDiagnosing(true);
-    setDiagnosis(null);
-    try {
-      const r = await fetch("/api/admin/diagnose-booking-requests");
-      const d = await r.json();
-      setDiagnosis(d);
-    } catch (e) {
-      setDiagnosis({ error: String(e) });
-    }
-    setDiagnosing(false);
   };
 
   const openEditor = async (req: BookingRequest, editable = true) => {
@@ -832,25 +817,6 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
         </div>
       )}
 
-      <details style={{ marginTop: 16, padding: "10px 16px", background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 12, color: C.muted }}>
-        <summary style={{ cursor: "pointer", fontWeight: 500 }}>🔧 Diagnose: aanvragen komen niet binnen?</summary>
-        <div style={{ marginTop: 12 }}>
-          <p style={{ margin: "0 0 10px", lineHeight: 1.5 }}>
-            Test of de <code>booking_requests</code>-tabel bereikbaar en beschrijfbaar is. Doet een proef-insertie en ruimt die direct op.
-          </p>
-          <button onClick={runDiagnosis} disabled={diagnosing} style={{
-            padding: "7px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
-            background: C.card, fontSize: 12, color: C.text, cursor: diagnosing ? "not-allowed" : "pointer",
-          }}>{diagnosing ? "Bezig..." : "Diagnose starten"}</button>
-          {diagnosis !== null && (
-            <pre style={{
-              marginTop: 12, padding: 12, background: "#1F1F1F", color: "#E0E0E0",
-              borderRadius: 6, fontSize: 11, overflowX: "auto", maxHeight: 400,
-              fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-            }}>{JSON.stringify(diagnosis, null, 2)}</pre>
-          )}
-        </div>
-      </details>
     </>
   );
 }

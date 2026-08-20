@@ -61,6 +61,12 @@ export async function POST(request: NextRequest) {
         naam: String(naam).slice(0, 50),
         sterren: Number(sterren),
         tekst: String(tekst).slice(0, 500),
+        /* Expliciet, want deze route is onbeveiligd: iedereen kan een review
+         * insturen. De tabel staat in geen enkele migratie in deze repo, dus
+         * de kolomdefault is hier niet te controleren — en op een default
+         * vertrouwen die je niet kunt zien, is geen moderatie. Zichtbaar
+         * maken gebeurt in de admin (actie toggle_review). */
+        zichtbaar: false,
       })
       .select()
       .single();
