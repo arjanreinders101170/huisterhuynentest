@@ -130,8 +130,14 @@ export const VASTE_LASTEN = {
   financieringPerMaand: 2_000,
   parkkostenPerJaar: 3_500,
 };
-export const VASTE_LASTEN_PER_JAAR =
+
+/** Het gekozen marketingbudget. Óók een vaste last: het moet zichzelf
+ *  terugverdienen bovenop de financiering, niet eruit. */
+export const MARKETING_PER_MAAND = 900;
+
+export const LASTEN_ZONDER_MARKETING =
   VASTE_LASTEN.financieringPerMaand * 12 + VASTE_LASTEN.parkkostenPerJaar;
+export const VASTE_LASTEN_PER_JAAR = LASTEN_ZONDER_MARKETING + MARKETING_PER_MAAND * 12;
 export const VASTE_LASTEN_PER_MAAND = Math.round(VASTE_LASTEN_PER_JAAR / 12);
 
 /**
@@ -172,26 +178,40 @@ export const nachtprijs = (pct: number) => Math.round(BASISPRIJS * (1 + pct / 10
  * augustus, want de financieringslasten lopen door.
  */
 export const BREAKEVEN = {
-  bezetting: 0.22,
-  nachtenPerMaand: 13,
-  boekingenPerMaand: 5.6,
-  nachtenPerJaar: 160,
-  boekingenPerJaar: 67,
-  omzetPerJaar: 32_126,
-  gemiddeldTarief: 201,
-  bezoekersPerMaand: 164,
+  /** Zónder marketing: alleen financiering en parkkosten. */
+  zonderMarketing: { bezetting: 0.214, nachtenPerJaar: 156, boekingenPerJaar: 62, omzetPerJaar: 31_432 },
+  /** Mét het gekozen marketingbudget erbij — dit is het cijfer dat telt. */
+  bezetting: 0.296,
+  nachtenPerMaand: 18,
+  boekingenPerMaand: 7.3,
+  nachtenPerJaar: 216,
+  boekingenPerJaar: 87,
+  omzetPerJaar: 42_793,
+  gemiddeldTarief: 198,
+  bezoekersPerMaand: 213,
 };
 
 /**
- * Het plafond dat de blokstructuur zelf oplegt.
+ * Het plafond dat de drie boekingsvormen opleggen.
  *
- * Als u uitsluitend hele weekenden, midweken en vakantieweken verkoopt, komt u
- * niet verder dan 500 van de 730 nachten. De rest zijn losse zondag- en
- * maandagnachten die tussen twee boekingen in vallen. 70% halen betekent dus
- * per definitie ook die restnachten verkopen — met flexibele aankomstdagen en
- * een last-minute-kanaal.
+ * Midweek (ma→vr, 4 nachten) en weekend (vr→zo, 2 nachten) sluiten exact op
+ * elkaar aan met vrijdag als wisseldag; samen zijn ze de week (ma→zo). Per week
+ * van zeven nachten valt daarmee alleen de zondagnacht buiten de vormen.
+ *
+ * Dat is 624 van de 730 nachten: **85,5%**, ruim boven het doel van 70%. Een
+ * eerdere versie van dit model kwam op 68% en concludeerde dat flexibele
+ * aankomstdagen noodzakelijk waren; dat kwam door een slappere blokindeling
+ * (weekend vr+za, midweek di t/m do) waarbij zowel de zondag- als de
+ * maandagnacht uitvielen. Met vaste wisseldagen op maandag en vrijdag is de
+ * kalender juist strakker, niet losser.
  */
-export const BLOKPLAFOND = { nachten: 500, bezetting: 500 / 730 };
+export const BLOKPLAFOND = { nachten: 624, bezetting: 624 / 730 };
+
+export const BOEKINGSVORMEN = [
+  { vorm: "Midweek", verloop: "ma → vr", nachten: 4 },
+  { vorm: "Weekend", verloop: "vr → zo", nachten: 2 },
+  { vorm: "Week",    verloop: "ma → zo", nachten: 6 },
+] as const;
 
 export interface LadderTrede {
   bezetting: number;
@@ -204,13 +224,15 @@ export interface LadderTrede {
   resultaat: number;
 }
 
+/** Resultaat is ná financiering, parkkosten én het marketingbudget. */
 export const LADDER: LadderTrede[] = [
-  { bezetting: 0.22, nachten: 162, boekingen: 64,  adr: 205, omzet: 33_280, energie: 2_880, resultaat: 4_180 },
-  { bezetting: 0.30, nachten: 220, boekingen: 93,  adr: 201, omzet: 44_286, energie: 4_048, resultaat: 14_598 },
-  { bezetting: 0.41, nachten: 296, boekingen: 126, adr: 198, omzet: 58_575, energie: 5_532, resultaat: 28_063 },
-  { bezetting: 0.50, nachten: 365, boekingen: 149, adr: 192, omzet: 69_960, energie: 7_278, resultaat: 38_162 },
-  { bezetting: 0.60, nachten: 440, boekingen: 174, adr: 187, omzet: 82_335, energie: 8_304, resultaat: 50_011 },
-  { bezetting: 0.68, nachten: 500, boekingen: 194, adr: 184, omzet: 92_235, energie: 9_792, resultaat: 58_823 },
+  { bezetting: 0.222, nachten: 162, boekingen: 55,  adr: 207, omzet: 33_561, energie: 2_744, resultaat: -6_383 },
+  { bezetting: 0.301, nachten: 220, boekingen: 84,  adr: 203, omzet: 44_715, energie: 4_128, resultaat: 3_967 },
+  { bezetting: 0.400, nachten: 292, boekingen: 120, adr: 200, omzet: 58_377, energie: 5_304, resultaat: 17_173 },
+  { bezetting: 0.504, nachten: 368, boekingen: 144, adr: 194, omzet: 71_511, energie: 7_272, resultaat: 28_819 },
+  { bezetting: 0.603, nachten: 440, boekingen: 162, adr: 190, omzet: 83_391, energie: 8_808, resultaat: 39_523 },
+  { bezetting: 0.701, nachten: 512, boekingen: 180, adr: 186, omzet: 95_271, energie: 9_720, resultaat: 50_851 },
+  { bezetting: 0.855, nachten: 624, boekingen: 208, adr: 182, omzet: 113_751, energie: 12_248, resultaat: 67_363 },
 ];
 
 /** De winterstraf: lage maanden zijn moeilijker te verkopen én duurder te leveren. */
@@ -387,11 +409,11 @@ export const BEZETTINGSHEFBOMEN: Hefboom[] = [
   },
   {
     id: "gaten",
-    titel: "Gaten in de kalender voorkomen",
-    effect: "5 – 8% bezetting",
+    titel: "De zondagnacht en de losse gaten",
+    effect: "de laatste 15%",
     impact: "middel",
     toelichting:
-      "Een boeking van vrijdag tot maandag laat vier nachten over die niemand los koopt. Minimumverblijf-regels, flexibele aankomstdagen en een last-minute-kanaal via de e-maillijst maken het verschil tussen 62% en 70%.",
+      "De drie vaste vormen dekken 85,5% van de nachten; de zondagnacht valt er structureel buiten. Dat is bewust — hem los verkopen kost een extra schoonmaakwissel voor één nacht. Wilt u hem toch vullen, dan is de weg een verlengd weekend (vr→ma) als losse vorm in het laagseizoen, niet flexibele aankomst op elke dag.",
   },
   {
     id: "boekingssites",
@@ -489,22 +511,22 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "bezetting",
     naam: "Bezetting",
-    perMaand: 550,
+    perMaand: 900,
     maanden: 24,
     eenmalig: 2_200,
     bezetting: 0.70,
-    uitkomst: [1_200, 1_800],
+    uitkomst: [1_500, 2_200],
     advies: true,
     oordeel:
-      "Het advies, nu het doel bezetting is en niet verkeer. Het budget gaat naar wat de bezetting daadwerkelijk bepaalt: conversie, reviews, doordeweekse vraag en de vijf lage maanden. Levert ruim twee keer het verkeer dat het model vraagt, en dat is genoeg — meer bezoekers kopen geen extra nacht als de kalender al vol is.",
+      "Het advies. Het budget gaat naar wat de bezetting bepaalt — conversie, reviews, doordeweekse vraag en de vijf lage maanden — en het is groot genoeg om zichzelf terug te verdienen bovenop de financiering. Break-even ligt daarmee op 30% in plaats van 21%: dat is de eerlijke prijs van marketing die meetelt als vaste last. Alles boven die 30% is winst, en het verschil tussen 30% en 70% is bijna € 47.000 per jaar.",
     eenmaligePosten: [FOTO, VIDEO, VERTALING, PERSKIT],
     posten: [
-      { label: "Contentproductie", bedrag: 200, wat: "Drie artikelen per maand in plaats van zes. Genoeg voor 10.000 bezoekers per jaar; het zesde artikel voegt verkeer toe dat u niet kunt verzilveren." },
-      { label: "Advertenties — alleen de lage maanden", bedrag: 150, wat: "November t/m maart en doordeweekse gaten, niet het hele jaar door. In augustus adverteren voor een lodge die toch vol zit, is weggegooid geld." },
-      { label: "Conversie & beeld", bedrag: 80, wat: "Seizoensbeeld, A/B-tests op de CTA, prijs en beschikbaarheid zichtbaar maken. Van 1% naar 2% conversie halveert het benodigde verkeer." },
-      { label: "Reviews & gastbeleving", bedrag: 50, wat: "Automatische reviewverzoeken en kleine attenties die reviews opleveren. Onder de tien reviews zit de bezetting vast." },
-      { label: "Tooling", bedrag: 45, wat: "Positiemeting, e-mail, en een tarieven- en beschikbaarheidsoverzicht om gaten te zien vóórdat ze ontstaan." },
-      { label: "Pinterest & e-mail", bedrag: 25, wat: "De e-maillijst is het enige kanaal waarmee u een specifieke week kunt vullen. Pinterest levert jarenlang verkeer voor bijna niets." },
+      { label: "Contentproductie", bedrag: 360, wat: "Zes artikelen per maand, waarvan vier uitbesteed (± € 90 per stuk). Het volume dat de organische basis draagt." },
+      { label: "Advertenties — dalmaanden en doordeweeks", bedrag: 250, wat: "November t/m maart en de doordeweekse gaten. Gemiddelde over twaalf maanden; in de praktijk € 500 in januari en € 0 in augustus." },
+      { label: "Conversie & beeld", bedrag: 120, wat: "Seizoensbeeld, A/B-tests op de CTA, prijs en beschikbaarheid zichtbaar maken. Van 1% naar 2% conversie halveert het benodigde verkeer — de goedkoopste hefboom die er is." },
+      { label: "Reviews & gastbeleving", bedrag: 60, wat: "Automatische reviewverzoeken en kleine attenties die reviews opleveren. Onder de tien reviews zit de bezetting vast." },
+      { label: "Tooling", bedrag: 60, wat: "Positiemeting, e-mail, en een tarieven- en beschikbaarheidsoverzicht om gaten te zien vóórdat ze ontstaan." },
+      { label: "Pinterest & e-mail", bedrag: 50, wat: "De e-maillijst is het enige kanaal waarmee u een specifieke week kunt vullen. Pinterest levert jarenlang verkeer voor bijna niets." },
     ],
   },
   {
@@ -517,7 +539,7 @@ export const SCENARIOS: Scenario[] = [
     uitkomst: [700, 1_100],
     advies: false,
     oordeel:
-      "Haalt de weekenden en de zomer vol, maar niet de lage maanden en niet doordeweeks — daar blijft u rond 60% steken. Alles wordt zelf geschreven en gefotografeerd. Kies dit als de agenda krapper is dan de portemonnee, en accepteer dan dat 70% niet gehaald wordt.",
+      "Haalt de weekenden en de zomer vol, maar niet de lage maanden en niet doordeweeks — daar blijft u rond 60% steken. Break-even ligt lager (25%) omdat er minder marketing in de vaste lasten zit, maar het eindresultaat is ± € 11.000 per jaar lager dan bij Bezetting. Goedkoper is hier dus duurder.",
     eenmaligePosten: [FOTO],
     posten: [
       { label: "Advertenties (alleen piekweken)", bedrag: 150, wat: "Merknaam beschermen plus de weken vóór Valentijn, Pasen en de zomer." },
@@ -536,7 +558,7 @@ export const SCENARIOS: Scenario[] = [
     uitkomst: [8_000, 10_000],
     advies: false,
     oordeel:
-      "Bouwt 10.000 bezoekers per máánd. Dat haalt dezelfde 70% bezetting als het scenario Bezetting, voor € 10.800 meer — het verschil koopt geen nachten maar prijsmacht en uitbreidingsruimte. Alleen zinvol als er een derde lodge of een tweede product komt.",
+      "Bouwt 10.000 bezoekers per máánd. Dat haalt dezelfde 70% bezetting als het scenario Bezetting, voor € 2.400 meer per jaar — het verschil koopt geen nachten maar prijsmacht en uitbreidingsruimte. Zinvol zodra er een derde lodge of een tweede product komt.",
     eenmaligePosten: [FOTO, VIDEO, VERTALING, PERSKIT],
     posten: [
       { label: "Contentproductie", bedrag: 360, wat: "Zes artikelen per maand, waarvan vier uitbesteed." },

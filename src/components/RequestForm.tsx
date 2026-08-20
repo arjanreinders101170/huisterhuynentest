@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate, MIN_NIGHTS } from "@/lib/stay-dates";
+import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate, MIN_NIGHTS,
+         isAankomstdag, vertrekdatumsVoor, vormLabel } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 import { getAttribution } from "@/lib/tracking/attribution";
 
@@ -40,6 +41,7 @@ export default function RequestForm() {
   const minDate = earliestStayDate();
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;
   const dateCheck = checkStayDates(checkIn, checkOut);
+  const vertrekOpties = checkIn && isAankomstdag(checkIn) ? vertrekdatumsVoor(checkIn) : [];
   const datesValid = dateCheck.ok;
   // Alleen tonen als er iets te melden valt over ingevulde datums.
   const dateError = checkIn && checkOut && !dateCheck.ok ? dateCheck.error : "";
@@ -191,15 +193,37 @@ export default function RequestForm() {
           <div>
             <label style={labelStyle}>Gewenste aankomst *</label>
             <input type="date" value={checkIn} min={minDate}
-              onChange={e => { setCheckIn(e.target.value); if (checkOut && e.target.value >= checkOut) setCheckOut(""); }}
+              onChange={e => {
+                const aan = e.target.value;
+                setCheckIn(aan);
+                // Meteen een geldige vertrekdatum klaarzetten, anders moet de
+                // gast zelf uitrekenen welke combinatie mag.
+                const opties = aan && isAankomstdag(aan) ? vertrekdatumsVoor(aan) : [];
+                setCheckOut(opties.length > 0 ? opties[0].datum : "");
+              }}
               style={inputStyle} />
           </div>
           <div>
-            <label style={labelStyle}>Gewenste vertrek *</label>
-            <input type="date" value={checkOut} min={checkIn || minDate}
-              onChange={e => setCheckOut(e.target.value)} style={inputStyle} />
+            <label style={labelStyle}>Vertrek *</label>
+            {vertrekOpties.length > 0 ? (
+              <select value={checkOut} onChange={e => setCheckOut(e.target.value)} style={inputStyle}>
+                {vertrekOpties.map(o => (
+                  <option key={o.datum} value={o.datum}>
+                    {new Date(`${o.datum}T00:00:00`).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
+                    {" — "}{vormLabel(o.vorm)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input type="date" value={checkOut} min={checkIn || minDate}
+                onChange={e => setCheckOut(e.target.value)} style={inputStyle} disabled={!checkIn} />
+            )}
           </div>
         </div>
+        <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: "0 0 6px", lineHeight: 1.6 }}>
+          We verhuren per midweek (ma&nbsp;–&nbsp;vr), weekend (vr&nbsp;–&nbsp;zo) of hele week (ma&nbsp;–&nbsp;zo).
+          Aankomst is dus op maandag of vrijdag.
+        </p>
         {bookingsNotYetOpen() && (
           <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: "0 0 6px", lineHeight: 1.6 }}>
             We openen op {formatOpeningDate()} — aanvragen kunnen voor data vanaf die dag.

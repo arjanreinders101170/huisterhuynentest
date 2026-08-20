@@ -39,6 +39,94 @@ export function nightsBetween(checkIn: string, checkOut: string): number {
   );
 }
 
+
+/* ═══ De drie boekingsvormen ═══════════════════════════════════════════════
+ *
+ * Losse dagen worden niet verhuurd. Elke wisseldag kost een schoonmaakbeurt
+ * en maakt de kalender lastig planbaar, dus er zijn twee vaste wisseldagen —
+ * maandag en vrijdag — en daarmee precies drie vormen:
+ *
+ *   Midweek   maandag → vrijdag    4 nachten (ma, di, wo, do)
+ *   Weekend   vrijdag → zondag     2 nachten (vr, za)
+ *   Week      maandag → zondag     6 nachten (midweek + weekend aaneen)
+ *
+ * Midweek en weekend sluiten exact op elkaar aan. Per week van zeven nachten
+ * valt alleen de zondagnacht buiten de vormen, dus het theoretische plafond
+ * ligt op 6/7 = 85,5% bezetting — ruim boven het doel van 70%.
+ */
+
+export type Verblijfsvorm = "midweek" | "weekend" | "week";
+
+interface VormRegel {
+  /** Weekdag van aankomst, 0 = zondag … 6 = zaterdag (Date#getDay). */
+  aankomst: number;
+  vertrek: number;
+  nachten: number;
+  labelNl: string;
+  labelDe: string;
+}
+
+export const VERBLIJFSVORMEN: Record<Verblijfsvorm, VormRegel> = {
+  midweek: { aankomst: 1, vertrek: 5, nachten: 4, labelNl: "Midweek (ma – vr)", labelDe: "Kurzwoche (Mo – Fr)" },
+  weekend: { aankomst: 5, vertrek: 0, nachten: 2, labelNl: "Weekend (vr – zo)", labelDe: "Wochenende (Fr – So)" },
+  week:    { aankomst: 1, vertrek: 0, nachten: 6, labelNl: "Week (ma – zo)",    labelDe: "Woche (Mo – So)" },
+};
+
+/** Weekdag van een ISO-datum, zonder tijdzone-verschuiving. */
+export function weekdag(iso: string): number {
+  return new Date(`${iso}T00:00:00Z`).getUTCDay();
+}
+
+/** Welke vorm past bij deze datums? null als het geen geldige combinatie is. */
+export function bepaalVerblijfsvorm(checkIn: string, checkOut: string): Verblijfsvorm | null {
+  const nachten = nightsBetween(checkIn, checkOut);
+  const aan = weekdag(checkIn);
+  const uit = weekdag(checkOut);
+  for (const [naam, regel] of Object.entries(VERBLIJFSVORMEN) as [Verblijfsvorm, VormRegel][]) {
+    if (regel.nachten === nachten && regel.aankomst === aan && regel.vertrek === uit) return naam;
+  }
+  return null;
+}
+
+/** Mag er op deze dag worden aangekomen? Alleen maandag en vrijdag. */
+export function isAankomstdag(iso: string): boolean {
+  const d = weekdag(iso);
+  return d === 1 || d === 5;
+}
+
+/** De geldige vertrekdatums bij een gekozen aankomstdatum, vroegste eerst. */
+export function vertrekdatumsVoor(checkIn: string): { datum: string; vorm: Verblijfsvorm }[] {
+  const aan = weekdag(checkIn);
+  const uit: { datum: string; vorm: Verblijfsvorm }[] = [];
+  for (const [naam, regel] of Object.entries(VERBLIJFSVORMEN) as [Verblijfsvorm, VormRegel][]) {
+    if (regel.aankomst !== aan) continue;
+    uit.push({ datum: voegDagenToe(checkIn, regel.nachten), vorm: naam });
+  }
+  return uit.sort((a, b) => a.datum.localeCompare(b.datum));
+}
+
+function voegDagenToe(iso: string, dagen: number): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + dagen);
+  return d.toISOString().slice(0, 10);
+}
+
+export function vormLabel(vorm: Verblijfsvorm, locale: Locale = "nl"): string {
+  const r = VERBLIJFSVORMEN[vorm];
+  return locale === "de" ? r.labelDe : r.labelNl;
+}
+
+export const MESSAGES_VORM = {
+  nl: {
+    aankomstdag: "Aankomst is op maandag of vrijdag. Kies een van die dagen.",
+    geenVorm: "We verhuren in drie vormen: midweek (ma – vr), weekend (vr – zo) of een hele week (ma – zo). Kies een van die combinaties.",
+  },
+  de: {
+    aankomstdag: "Anreise ist montags oder freitags. Bitte wähle einen dieser Tage.",
+    geenVorm: "Wir vermieten in drei Formen: Kurzwoche (Mo – Fr), Wochenende (Fr – So) oder eine ganze Woche (Mo – So). Bitte wähle eine davon.",
+  },
+} as const;
+
 const MESSAGES = {
   nl: {
     missing: "Kies een aankomst- en vertrekdatum.",
@@ -69,9 +157,10 @@ export type StayDateCheck =
 export function checkStayDates(
   checkIn: string | null | undefined,
   checkOut: string | null | undefined,
-  opts?: { locale?: Locale; minNights?: number },
+  opts?: { locale?: Locale; minNights?: number; vormen?: boolean },
 ): StayDateCheck {
-  const m = MESSAGES[opts?.locale ?? "nl"];
+  const locale = opts?.locale ?? "nl";
+  const m = MESSAGES[locale];
   const minNights = opts?.minNights ?? MIN_NIGHTS;
 
   if (!checkIn || !checkOut) return { ok: false, error: m.missing };
@@ -88,6 +177,14 @@ export function checkStayDates(
   const nights = nightsBetween(checkIn, checkOut);
   if (nights < 1) return { ok: false, error: m.order };
   if (nights < minNights) return { ok: false, error: m.minNights };
+
+  // Standaard aan. Uit te zetten voor de admin, die een handmatige boeking
+  // buiten de vaste vormen moet kunnen vastleggen.
+  if (opts?.vormen !== false) {
+    const v = MESSAGES_VORM[locale];
+    if (!isAankomstdag(checkIn)) return { ok: false, error: v.aankomstdag };
+    if (!bepaalVerblijfsvorm(checkIn, checkOut)) return { ok: false, error: v.geenVorm };
+  }
 
   return { ok: true, nights };
 }

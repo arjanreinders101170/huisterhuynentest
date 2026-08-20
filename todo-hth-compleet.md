@@ -192,7 +192,7 @@
 
 Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin onder **Marketing → Groei & bezetting**.
 
-**Break-even ligt op 22% jaarbezetting** — 13 nachten en ruim 5 boekingen per maand over beide lodges, bij € 27.500 vaste lasten per jaar (€ 2.000/mnd financiering + € 3.500/jr parkkosten). Stroom en water gaan op de meter en zijn dus variabel: € 12 per nacht in de zomer, € 28 in de winter. **Het doel is 70%**, en het verschil tussen 22% en het blokplafond van 68% is ruim € 54.000 per jaar. Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
+**Break-even ligt op 30% jaarbezetting** — 18 nachten en ruim 7 boekingen per maand over beide lodges, bij € 38.300 vaste lasten per jaar (€ 24.000 financiering + € 3.500 parkkosten + € 10.800 marketing). Marketing telt bewust mee als vaste last; zonder marketing zou break-even op 21% liggen. **Het doel is 70%**, en dat verschil is bijna € 47.000 per jaar. Het blokplafond ligt op **85,5%** (alleen de zondagnacht valt buiten de drie boekingsvormen). Bezoekers zijn daarvan een afgeleide: ± 370 per maand volstaat, het doel staat op 830 per maand (10.000 per jaar) voor de marge. 10.000 per *maand* is een doel voor 2029 en koopt prijsmacht, geen bezetting.
 
 ### Afgerond ✅
 | # | Item | Status |
@@ -213,7 +213,7 @@ Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin o
 ### Openstaande beslissingen (voor Arjan) — blokkeren de start
 | # | Vraag | Impact |
 |---|-------|--------|
-| H | Welk budgetscenario: **Bezetting** (€ 550/mnd, advies), Zuinig (€ 300), Doelgericht (€ 1.000) of Versnellen (€ 1.875)? | Bepaalt of contentproductie wordt uitbesteed. Bezetting haalt 70% voor € 15.400 over 24 maanden |
+| H | Welk budgetscenario: **Bezetting** (€ 900/mnd, advies), Zuinig (€ 300), Doelgericht (€ 1.000) of Versnellen (€ 1.875)? | Bepaalt of contentproductie wordt uitbesteed. Bezetting haalt 70% voor € 23.800 over 24 maanden |
 | I | Hoe ziet een midweek er bij ons uit — pakket, prijs, doelgroep? | Doordeweeks is 55% van de opgave. Zonder doordeweekse propositie is het plafond 43% jaarbezetting |
 
 ### Open — fase 0 (sep – dec 2026), doel 400 bezoekers/mnd
@@ -228,7 +228,8 @@ Volledig plan met budget: `groeiplan-bezetting.md`. Voortgang live in de admin o
 | 110 | Resterende vaste lasten aanleveren: verzekering, onderhoud, reservering groot onderhoud, boekhouding, internet | **Hoog** | Financiering (€ 24.000) en parkkosten (€ 3.500) staan erin. De rest schat ik op € 3.000–5.000/jr; dat tilt break-even van 22% naar ± 25% |
 | 112 | Meterstanden bijhouden per verhuurde nacht | Middel | De energiekosten (€ 12 zomer – € 28 winter per nacht) zijn nu schattingen. Na één winter met echte standen wordt de hele ondergrens exact |
 | 113 | **Minimumverblijf 3 nachten in nov t/m feb instellen** | **Hoog** | De jacuzzi opwarmen kost hetzelfde bij 2 of 4 nachten. Verdeelt de opwarmpiek over meer omzet — en voorkomt losse gaten |
-| 114 | Flexibele aankomstdagen + last-minute-kanaal | **Hoog** | Alleen hele weekenden en midweken verkopen geeft een plafond van 68%. De laatste procenten komen uit restnachten, niet uit meer vraag |
+| 114 | ✅ Drie boekingsvormen vastgelegd: midweek (ma→vr), weekend (vr→zo), week (ma→zo) | ✅ | Vaste wisseldagen op maandag en vrijdag. Blokplafond 85,5% — ruim boven het doel. Afgedwongen in de kalender, beide aanvraagformulieren en server-side |
+| 115 | Overwegen: verlengd weekend (vr→ma) als vierde vorm in het laagseizoen | Laag | Vult de zondagnacht die nu structureel leegblijft (104 per jaar). Pas oppakken als 70% structureel staat |
 | 111 | Basisprijs en toeslagen vastzetten in `pricing_config` voor 2027 | **Hoog** | Het model rekent met € 165 basis en de standaardtoeslagen (weekend +15%, vakantie NL +25%, TT +50%). Zolang die niet in de database staan, draait de prijsmotor op nul |
 | 98 | Fotograaf selecteren, shotlist en stylingbudget vastleggen (#79) | **Hoog** | De shoot zelf staat in februari 2027; dit is het voorwerk zodat die maand alleen nog uitvoeren is |
 | 99 | Drie P0-landingspagina's herbouwen (wellness, romantiek, jacuzzi) | **Hoog** | Samen 3.745 vertoningen en 2 klikken |
