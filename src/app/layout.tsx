@@ -57,7 +57,23 @@ export const metadata: Metadata = {
   authors: [{ name: "Huis ter Huynen" }],
   creator: "Huis ter Huynen",
   publisher: "Huis ter Huynen",
-  robots: { index: true, follow: true },
+  // "index, follow" is het minimum; de rest bepaalt hoe rijk de SERP-snippet
+  // mag zijn. Zonder max-image-preview:large houdt Google het bij een
+  // duimnageltje of helemaal geen afbeelding — en juist bij Discover en bij
+  // de visuele resultaten is die grote preview het verschil in CTR.
+  // max-snippet:-1 haalt de limiet van de tekstsnippet eraf, zodat een
+  // volledig antwoord uit de pagina getoond mag worden.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "nl_NL",

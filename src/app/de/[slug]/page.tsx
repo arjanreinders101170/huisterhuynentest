@@ -22,7 +22,12 @@ export async function generateMetadata(
   const url = `${SITE_URL}/de/${slug}`;
   const ogImage = landingOgImageUrl(rec);
   return {
-    title: rec.meta_title || rec.h1,
+    // Absolute titel: het root-layout heeft template "%s – Huis ter Huynen",
+    // en dat plakte er ongevraagd 18 tekens achter. Een zorgvuldig op 60
+    // tekens geschreven meta_title werd daardoor in de SERP afgekapt — de
+    // hunebeddenpagina eindigde op "... in Ze...". De merknaam staat toch al
+    // in het getoonde domein.
+    title: { absolute: rec.meta_title || rec.h1 },
     description: rec.meta_description,
     alternates: { canonical: url },
     openGraph: {

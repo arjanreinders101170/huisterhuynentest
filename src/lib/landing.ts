@@ -8,7 +8,7 @@
 import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, SEED_BY_SLUG, type LandingPageRecord } from "@/lib/landing-seed";
 import { REDIRECTED_LANDING_SLUGS } from "@/lib/redirects";
-import type { LandingConfig, LandingFaq, RelatedLink } from "@/components/LandingTemplate";
+import type { LandingConfig, LandingFaq, LandingKeyFact, RelatedLink } from "@/components/LandingTemplate";
 
 /** "Vraag :: Antwoord" per regel → [{ q, a }]. */
 export function parseFaq(text: string | null | undefined): LandingFaq[] {
@@ -46,6 +46,24 @@ export function parseRelated(text: string | null | undefined): RelatedLink[] {
     .filter((x): x is RelatedLink => x !== null);
 }
 
+/** "Label :: Waarde" per regel → [{ label, value }]. */
+export function parseKeyFacts(text: string | null | undefined): LandingKeyFact[] {
+  if (!text) return [];
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const idx = line.indexOf("::");
+      if (idx === -1) return null;
+      const label = line.slice(0, idx).trim();
+      const value = line.slice(idx + 2).trim();
+      if (!label || !value) return null;
+      return { label, value };
+    })
+    .filter((x): x is LandingKeyFact => x !== null);
+}
+
 /** Database row / seed record → renderable LandingConfig. */
 export function recordToConfig(rec: LandingPageRecord, locale?: "nl" | "de"): LandingConfig {
   return {
@@ -56,6 +74,7 @@ export function recordToConfig(rec: LandingPageRecord, locale?: "nl" | "de"): La
     heroSub: rec.hero_sub,
     heroImage: rec.hero_image || "/lodge-heide.jpg",
     heroImageAlt: rec.hero_image_alt,
+    heroFocus: rec.hero_focus || undefined,
     priceFrom: rec.price_from || undefined,
     intro: rec.intro,
     sections: Array.isArray(rec.sections) ? rec.sections : [],
@@ -64,6 +83,9 @@ export function recordToConfig(rec: LandingPageRecord, locale?: "nl" | "de"): La
     ctaTitle: rec.cta_title,
     ctaBody: rec.cta_body,
     locale: locale ?? (rec.slug.startsWith("de/") ? "de" : "nl"),
+    keyFacts: parseKeyFacts(rec.key_facts),
+    about: rec.about ?? undefined,
+    updatedAt: rec.updated_at ?? undefined,
   };
 }
 
@@ -88,20 +110,31 @@ export async function getLandingPage(slug: string): Promise<LandingPageRecord | 
 /** Slugs that should be served/indexed: published DB rows + seed pages that
  * have no DB row yet. Used by the dynamic route and the sitemap. */
 export async function getServedLandingSlugs(): Promise<string[]> {
-  const served = new Set<string>();
+  return (await getServedLandingPages()).map((p) => p.slug);
+}
+
+/** Zelfde selectie als getServedLandingSlugs(), maar mét de datum van de
+ *  laatste wijziging. De sitemap zette voor elke landingspagina `new Date()`
+ *  als lastmod neer: bij elke crawl beweerde de site dat álle pagina’s zojuist
+ *  gewijzigd waren. Een lastmod die altijd "nu" zegt, zegt niets, en Google
+ *  negeert het signaal dan voor de hele sitemap — juist voor een pagina die
+ *  wél inhoudelijk is herschreven is dat zonde. */
+export async function getServedLandingPages(): Promise<{ slug: string; updatedAt?: string }[]> {
+  const served = new Map<string, string | undefined>();
+  const seedDatum = (slug: string) => SEED_BY_SLUG[slug]?.updated_at;
   try {
     const { data } = await getSupabase()
       .from("landing_pages")
-      .select("slug, gepubliceerd");
-    const rows = (data ?? []) as { slug: string; gepubliceerd: boolean }[];
+      .select("slug, gepubliceerd, updated_at");
+    const rows = (data ?? []) as { slug: string; gepubliceerd: boolean; updated_at?: string }[];
     const dbSlugs = new Set(rows.map((r) => r.slug));
-    rows.filter((r) => r.gepubliceerd).forEach((r) => served.add(r.slug));
+    rows.filter((r) => r.gepubliceerd).forEach((r) => served.set(r.slug, r.updated_at ?? seedDatum(r.slug)));
     SEED_LANDING_PAGES.forEach((p) => {
-      if (!dbSlugs.has(p.slug)) served.add(p.slug);
+      if (!dbSlugs.has(p.slug)) served.set(p.slug, p.updated_at);
     });
   } catch {
-    SEED_LANDING_PAGES.forEach((p) => served.add(p.slug));
+    SEED_LANDING_PAGES.forEach((p) => served.set(p.slug, p.updated_at));
   }
   REDIRECTED_LANDING_SLUGS.forEach((slug) => served.delete(slug));
-  return [...served];
+  return [...served].map(([slug, updatedAt]) => ({ slug, updatedAt }));
 }

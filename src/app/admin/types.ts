@@ -12,6 +12,11 @@ export type LandingPageRow = {
   intro: string; sections: LandingSection[]; faq: string; related: string;
   cta_title: string; cta_body: string; meta_title: string; meta_description: string;
   og_image: string; gepubliceerd: boolean; sort_order: number;
+  /** "Label :: Waarde" per regel — de feitenstrip onder de hero. */
+  key_facts?: string | null;
+  /** CSS object-position voor de hero, bijv. "28% 75%". */
+  hero_focus?: string | null;
+  updated_at?: string | null;
 };
 export type BookingRequest = {
   id: string; created_at: string; updated_at: string;
