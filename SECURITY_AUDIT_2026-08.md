@@ -1,5 +1,33 @@
 # Security Audit — Huis ter Huynen (augustus 2026)
 
+> ## Status: 20 van de 25 bevindingen opgelost
+>
+> Dit document is de **audit-momentopname** van 19 augustus op commit `da19066`.
+> De bevindingen zijn inmiddels grotendeels hersteld in PR #192 (zes commits).
+> Het bijgewerkte rapport, met per bevinding wat er precies is veranderd, staat
+> als Artifact — zie de PR-omschrijving.
+>
+> | | |
+> |---|---|
+> | **Opgelost** | 20 — waaronder alle vier de blokkerende High-bevindingen |
+> | **Deels** | F-17 (headers geconsolideerd; `'unsafe-inline'` blijft) |
+> | **Open** | F-07 productkeuze · F-20 UX · F-23 organisatie · F-25 geparkeerd |
+> | **Dependencies** | van 8 naar 3 — rest vraagt Next 16 (major) |
+> | **Score** | 62 → **85 / 100** |
+>
+> **Nog handmatig te doen — de code kan dit niet voor je:**
+>
+> 1. Wifi-wachtwoord roteren en de Vercel-variabele hernoemen naar `WIFI_PASSWORD`
+> 2. Beide Booking.com iCal-export-URL's roteren → `ICAL_LODGE_1` / `ICAL_LODGE_2`
+> 3. Migratie `2026_08_20_rls_admin_tabellen.sql` uitvoeren op de database
+> 4. Lockout-instelling van het Nuki-codeslot nakijken
+>
+> Zonder de eerste twee is de code opgeschoond maar blijven de gelekte waarden geldig.
+>
+> **Eén bevinding kwam er later bij:** F-25 (wifi-wachtwoord en stay-token in de
+> URL naar `api.qrserver.com`) is gevonden tijdens het herstellen, niet tijdens de
+> audit. Geparkeerd op verzoek; de CSP blokkeert die requests op dit moment al.
+
 > **Datum:** 2026-08-19
 > **Commit:** `da19066` · branch `claude/security-audit-full-pgpdwk`
 > **Scope:** 237 bestanden · 32.673 regels TS/TSX · 31 API-routes · 22 migraties · 125 commits historie
