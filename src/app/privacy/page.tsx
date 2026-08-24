@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           <p>U heeft recht op inzage, correctie, verwijdering en portabiliteit van uw gegevens. Contact: <a href="mailto:lodge@huisterhuynen.nl" style={{ color: C.gold }}>lodge@huisterhuynen.nl</a></p>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>4. Cookies & tracking</h2>
           <p>
-            Wij gebruiken Meta Pixel + Conversions API en Google Tag Manager om bezoekersstatistieken te meten en gepersonaliseerde advertenties te tonen. Deze cookies worden alleen geplaatst als u daarvoor toestemming geeft. U kunt uw keuze op elk moment wijzigen:{" "}
+            Wij gebruiken Meta Pixel + Conversions API, Google Tag Manager en Google Ads (conversiemeting en remarketing) om bezoekersstatistieken te meten en gepersonaliseerde advertenties te tonen. Deze cookies worden alleen geplaatst als u daarvoor toestemming geeft. U kunt uw keuze op elk moment wijzigen:{" "}
             <button
               type="button"
               onClick={() => typeof window !== "undefined" && window.dispatchEvent(new Event("hth:open-consent"))}

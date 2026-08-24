@@ -93,7 +93,15 @@ export default function DatenschutzPage() {
             Wir setzen den Google Tag Manager (Google Ireland Ltd., Gordon House, Barrow Street, Dublin 4, Irland) ein, um Tracking-Tags zentral zu verwalten. Der Google Tag Manager selbst erfasst keine personenbezogenen Daten, aktiviert jedoch ggf. andere Tags, die Daten erfassen können (jeweils nur mit Ihrer Einwilligung).
           </p>
 
-          <h3 style={S.h3}>4.4 Widerruf der Einwilligung</h3>
+          <h3 style={S.h3}>4.4 Google Ads</h3>
+          <p style={S.p}>
+            Nach Ihrer Einwilligung setzen wir Google Ads (Google Ireland Ltd., Gordon House, Barrow Street, Dublin 4, Irland) ein. Das Google-Ads-Tag misst, welche Buchungen und Anfragen aus einer unserer Anzeigen entstanden sind (Conversion-Tracking), und erlaubt es uns, Besuchern unserer Website später erneut eine Anzeige zu zeigen (Remarketing). Ohne Ihre Einwilligung in die Kategorie „Personalisierte Werbung“ werden über Google Consent Mode v2 keine Werbe-Cookies gesetzt.
+          </p>
+          <p style={S.p}>
+            <strong>Drittlandübermittlung:</strong> Eine Übermittlung Ihrer Daten in die USA findet statt. Google LLC ist nach dem EU-US Data Privacy Framework zertifiziert; ergänzend gelten Standardvertragsklauseln gemäß Art. 46 DSGVO. Mehr dazu unter <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: C.gold }}>policies.google.com/privacy</a>.
+          </p>
+
+          <h3 style={S.h3}>4.5 Widerruf der Einwilligung</h3>
           <p style={S.p}>
             Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen. Bitte klicken Sie dazu auf{" "}
             <button
