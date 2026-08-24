@@ -19,6 +19,7 @@ bestemming — beide lopen door dezelfde `pushEvent()` in de code.
 | Event-mapping naar GA4-namen | `GA4_EVENT_MAP` in `ga4.ts` | Klaar |
 | Consent Mode v2 default-deny | `src/lib/tracking/consent.ts` | Klaar |
 | CSP-uitzonderingen voor GA4 | `next.config.ts` | Toegevoegd in PR #178 |
+| Google Ads-basistag (`AW-18397549973`) | `src/components/tracking/GoogleAds.tsx` | Klaar — laadt `gtag.js`, consent-gated via Consent Mode v2 |
 | Sitemap | `src/app/sitemap.ts` → `/sitemap.xml` | Klaar, inclusief hreflang nl/de |
 | `robots.txt` | `public/robots.txt` | Klaar, verwijst naar de sitemap |
 
@@ -186,9 +187,15 @@ De cookiebanner staat op default-deny (`analytics_storage: denied`). **Zonder
   wel — die vult gtag.js zelf. Alleen relevant als je in Looker op
   `page_location` van een custom event filtert; gebruik daar liever de
   standaard pagina-dimensies.
-- **Google Signals / Google Ads** vereisen extra CSP-ruimte
-  (`stats.g.doubleclick.net`). Bewust nog niet toegevoegd — doe dat pas als
-  je daadwerkelijk gaat adverteren.
+- **Google Ads staat sinds augustus 2026 live.** De basistag
+  (`AW-18397549973`) zit in `src/components/tracking/GoogleAds.tsx` en de CSP
+  in `next.config.ts` laat nu `*.doubleclick.net`, `googleadservices.com` en
+  de Google-landdomeinen door. Wat er nog niet is: een **conversielabel**.
+  Maak in Google Ads → Doelen → Conversies een conversieactie aan, kopieer het
+  `send_to`-label (`AW-18397549973/xxxxxxxx`) en vuur dat af op het
+  boekingsmoment — bijvoorbeeld naast de bestaande `Purchase`-event in
+  `src/lib/tracking/dataLayer.ts`. Zolang dat label ontbreekt meet Google Ads
+  alleen pageviews en remarketing, geen conversies.
 - **Conversiedata blijft voorlopig leeg.** `purchase` en `begin_checkout`
   vullen zich pas als de boekingsstroom draait. Bouw het Looker-dashboard
   daarom eerst op verkeer + Search Console.

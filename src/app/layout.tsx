@@ -3,6 +3,8 @@ import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
 import { ConsentBanner } from "@/components/tracking/ConsentBanner";
+import { ConsentBootstrap } from "@/components/tracking/ConsentBootstrap";
+import { GoogleAds } from "@/components/tracking/GoogleAds";
 import { GTM, GTMNoscript } from "@/components/tracking/GTM";
 import { MetaPixel } from "@/components/tracking/MetaPixel";
 import { RouteChangePixel } from "@/components/tracking/RouteChangePixel";
@@ -234,6 +236,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="nl" className={`${dmSans.variable} ${playfair.variable}`}>
       <head>
+        {/* Consent Mode v2 default-deny — bovenaan de <head>, vóór elke
+            Google-tag, zodat er geen cookie valt voordat de bezoeker kiest */}
+        <ConsentBootstrap />
+
+        {/* Google Ads (gtag.js) — basistag voor remarketing en conversies */}
+        <GoogleAds />
+
         {/* Structured data */}
         <script
           type="application/ld+json"
@@ -251,6 +260,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Tracking — preconnect saves ~150ms TLS handshake on first event */}
         <link rel="preconnect" href="https://connect.facebook.net" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.googleadservices.com" />
 
         {/* Geo */}
         <meta name="geo.region" content="NL-DR" />
@@ -264,7 +274,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-title" content="Huynen" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* GTM — Consent Mode v2 default-deny + loader */}
+        {/* GTM-loader — consent-defaults staan hierboven in <ConsentBootstrap /> */}
         <GTM />
       </head>
       <body style={{ background: "#EAE3D2", margin: 0, fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
