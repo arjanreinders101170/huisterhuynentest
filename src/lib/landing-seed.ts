@@ -1195,9 +1195,17 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     h1: "Fochteloërveen: hoogveen en kraanvogels in Drenthe",
     hero_sub:
       "Een van de laatste levende hoogveengebieden van Nederland, op 25 minuten rijden van Zeijen. Wijds, stil en de enige plek in het land waar kraanvogels broeden.",
-    hero_image: "/heide2.jpg",
+    // De hero was heide2.jpg — met een hunebed er prominent op, terwijl de
+    // eigen intro juist zegt "geen bos, geen houtwallen" en er in het veen
+    // geen enkele zwerfkei ligt. Die foto stond ook als og_image, dus elke
+    // gedeelde link naar een hoogveenpagina liet een megalietgraf zien.
+    // wandel_drenthe.jpg toont wat de pagina beschrijft: een vlonderpad over
+    // nat veen met pijpenstrootje en veenplassen.
+    hero_image: "/wandel_drenthe.jpg",
     hero_image_alt:
-      "Wijds veen- en heidelandschap in Noord-Drenthe, vergelijkbaar met het Fochteloërveen bij Zeijen",
+      "Vlonderpad over nat hoogveen met pijpenstrootje, veenplassen en berkenopslag in Noord-Drenthe",
+    hero_focus: "50% 60%",
+    updated_at: "2026-08-24",
     price_from: PRICE,
     intro:
       "Het Fochteloërveen is anders dan de rest van Drenthe. Geen bos, geen houtwallen, maar een wijds, open veenlandschap op de grens van Drenthe en Friesland — met een horizon die u in Nederland zelden ziet. Het is een van de laatste plekken waar het hoogveen nog groeit, een officieel stiltegebied, en de enige plaats in Nederland waar kraanvogels broeden. Vanuit Huis ter Huynen in Zeijen rijdt u er in ongeveer 25 minuten naartoe: een ochtend of avond die u niet snel vergeet.",
@@ -1262,7 +1270,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     meta_title: "Fochteloërveen | Hoogveen & Kraanvogels in Drenthe",
     meta_description:
       "Het Fochteloërveen: hoogveen, stilte en de enige broedende kraanvogels van Nederland. Wanneer u ze ziet, waar u wandelt en waar u vlakbij overnacht in Zeijen.",
-    og_image: "/heide2.jpg",
+    og_image: "",
     sort_order: 17,
   },
   {
