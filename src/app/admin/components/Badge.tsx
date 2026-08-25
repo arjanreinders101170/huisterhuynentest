@@ -1,9 +1,9 @@
 "use client";
-import { STATUS_COLORS } from "../types";
+import { STATUS_COLORS, statusLabel } from "../types";
 
 export function Badge({ status }: { status: string }) {
   const c = STATUS_COLORS[status] || { bg: "#F5F5F5", text: "#9E9E9E" };
-  const label = status.replace("_", " ");
+  const label = statusLabel(status);
   return (
     <span style={{ background: c.bg, color: c.text, fontSize: 11, padding: "3px 10px", borderRadius: 6, fontWeight: 500, whiteSpace: "nowrap" }}>
       {label}

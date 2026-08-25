@@ -61,6 +61,31 @@ export type FeeTemplate = {
   actief: boolean; volgorde: number; created_at: string;
 };
 
+/* Statuslabels voor in de interface.
+ *
+ * De ruwe kolomwaarde is voor de database; op het scherm hoort te staan wat er
+ * aan de hand is. Zonder dit werden underscores vervangen door spaties, en dan
+ * nog alleen de eerste — "aanbetaling_verstuurd" bleef half leesbaar. */
+export const STATUS_LABELS: Record<string, string> = {
+  nieuw: "nieuwe aanvraag",
+  in_behandeling: "in behandeling",
+  offerte_verstuurd: "offerte verstuurd",
+  bevestigd: "bevestigd",
+  afgewezen: "afgewezen",
+  verlopen: "verlopen",
+  aanbetaling_verstuurd: "aanbetaling verstuurd",
+  aanbetaling_betaald: "aanbetaling binnen",
+  restbetaling_verstuurd: "restbetaling verstuurd",
+  volledig_betaald: "volledig betaald",
+  geboekt: "geboekt",
+  betaald: "betaald",
+  verstuurd: "verstuurd",
+};
+
+export function statusLabel(status: string): string {
+  return STATUS_LABELS[status] || status.replace(/_/g, " ");
+}
+
 export const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   nieuw: { bg: "#FFF3E0", text: "#E67E22" },
   bevestigd: { bg: "#E8F5E9", text: "#2E7D32" },
