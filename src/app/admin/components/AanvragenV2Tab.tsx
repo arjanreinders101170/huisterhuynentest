@@ -3,7 +3,10 @@ import { useState } from "react";
 import { BookingRequest } from "../types";
 import { Badge } from "./Badge";
 import { timeAgo } from "./Badge";
-import { offerCountdown, offerExpiryDate, formatDateNl, OFFER_VALID_DAYS } from "@/lib/offer-expiry";
+import {
+  offerCountdown, offerExpiryDate, formatDateNl, withinGrace, graceEndDate,
+  OFFER_VALID_DAYS, OFFER_GRACE_DAYS,
+} from "@/lib/offer-expiry";
 import { KANAAL_LABEL, type Kanaal } from "@/lib/attributie";
 
 const BRON_LABELS: Record<string, { icon: string; label: string }> = {
@@ -46,6 +49,13 @@ const SOORT_LABEL: Record<string, { label: string; color: string }> = {
 /** Hoe lang staat dit aanbod nog open? Alleen relevant zolang het loopt. */
 function expiryNote(req: BookingRequest): { text: string; color: string } | null {
   if (req.status === "verlopen") {
+    // Binnen de coulanceperiode kan de gast alsnog bevestigen — dan is het
+    // nog geen verloren aanvraag, en heeft nabellen zin.
+    if (req.offerte_vervalt_op && withinGrace(req.offerte_vervalt_op)) {
+      const tot = new Date(`${graceEndDate(req.offerte_vervalt_op)}T00:00:00`)
+        .toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
+      return { text: `verlopen · kan nog t/m ${tot}`, color: "#E67E22" };
+    }
     return { text: "aanbod verlopen", color: "#9E9E9E" };
   }
   if (req.status !== "offerte_verstuurd" || !req.offerte_vervalt_op) return null;
@@ -468,6 +478,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
           Bedenktijd: <strong style={{ color: C.text }}>{OFFER_VALID_DAYS} dagen</strong> — geldig t/m{" "}
           <strong style={{ color: C.text }}>{formatDateNl(offerExpiryDate(req.check_in))}</strong>.
           De gast krijgt 2 dagen ervoor een herinnering; daarna vervalt het aanbod automatisch.
+          De bevestigingslink blijft daarna nog {OFFER_GRACE_DAYS} dagen werken als laatste kans.
         </div>
 
         <div style={{ marginBottom: 16 }}>

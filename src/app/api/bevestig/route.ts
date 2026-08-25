@@ -6,7 +6,7 @@ import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
-import { todayISO } from "@/lib/offer-expiry";
+import { todayISO, withinGrace, graceEndDate, OFFER_GRACE_DAYS } from "@/lib/offer-expiry";
 import { findConflict, openOffersOverlapping, type Period } from "@/lib/availability";
 
 export const runtime = "nodejs";
@@ -19,6 +19,9 @@ const REJECTED_MESSAGE =
 const EXPIRED_MESSAGE =
   "Dit aanbod is verlopen en de datums zijn weer vrijgegeven. Stuur ons gerust een bericht — " +
   "zijn ze nog vrij, dan maken we het aanbod zo weer voor je in orde.";
+const AL_BEVESTIGD_MESSAGE =
+  "Je hebt voor deze nachten al een reservering bevestigd. Dit tweede aanbod is daarmee komen " +
+  "te vervallen — wil je toch wisselen van lodge, laat het ons dan even weten.";
 
 const TAKEN_MESSAGE =
   "Deze datums zijn helaas net vergeven — iemand anders was je voor. We hebben je aanvraag " +
@@ -85,10 +88,52 @@ function tokenKlopt(opgeslagen: unknown, meegestuurd: string | null): boolean {
   return timingSafeEqual(a, b);
 }
 
-/** Verlopen: door de cron afgehandeld, of de vervaldatum is net gepasseerd. */
-function isExpired(a: LoadedAanvraag): boolean {
-  if (a.rawStatus === "verlopen") return true;
-  return a.rawStatus === "offerte_verstuurd" && !!a.vervaltOp && a.vervaltOp < todayISO();
+type OfferFase = "open" | "coulance" | "verlopen";
+
+/**
+ * In welke fase zit dit aanbod?
+ *
+ * Na de vervaldatum volgt eerst een coulanceperiode waarin de link blijft
+ * werken — de vervalmail nodigt daar expliciet toe uit. Pas daarna is het
+ * aanbod echt dicht.
+ *
+ * Let op de volgorde: staat een aanvraag op 'verlopen' terwijl de vervaldatum
+ * nog niet gepasseerd is, dan is die ingetrokken (met de hand, of omdat de
+ * gast het alternatief voor dezelfde nachten bevestigde). Dat is geen
+ * datumverval en verdient dus geen tweede kans.
+ */
+function offerFase(a: LoadedAanvraag): OfferFase {
+  const vervalt = a.vervaltOp;
+  if (!vervalt) return a.rawStatus === "verlopen" ? "verlopen" : "open";
+
+  const vandaag = todayISO();
+  if (vandaag <= vervalt) return a.rawStatus === "verlopen" ? "verlopen" : "open";
+  return withinGrace(vervalt, vandaag) ? "coulance" : "verlopen";
+}
+
+/**
+ * Heeft deze gast voor dezelfde nachten al iets bevestigd?
+ *
+ * Kreeg iemand twee aanbiedingen (beide lodges) en verlopen die allebei, dan
+ * staan er in de coulanceperiode ook twee werkende links. Zonder deze check
+ * kan één gast zichzelf twee lodges toe-eigenen.
+ */
+async function heeftAlBevestigd(a: LoadedAanvraag): Promise<boolean> {
+  if (!a.checkInIso || !a.checkOutIso) return false;
+  if (!a.guestId && !a.gastEmail) return false;
+
+  const { data } = await getSupabase()
+    .from("booking_requests")
+    .select("id, guest_id, gast_email")
+    .eq("status", "bevestigd")
+    .lt("check_in", a.checkOutIso)
+    .gt("check_out", a.checkInIso)
+    .neq("id", a.id);
+
+  const email = a.gastEmail.toLowerCase();
+  return (data ?? []).some(r =>
+    (!!a.guestId && r.guest_id === a.guestId) ||
+    (!!email && typeof r.gast_email === "string" && r.gast_email.toLowerCase() === email));
 }
 
 type LoadedAanvraag = {
@@ -212,8 +257,12 @@ export async function GET(request: NextRequest) {
     if (a.rawStatus === "afgewezen") {
       return NextResponse.json({ error: REJECTED_MESSAGE }, { status: 410 });
     }
-    if (isExpired(a)) {
+    const fase = offerFase(a);
+    if (fase === "verlopen") {
       return NextResponse.json({ error: EXPIRED_MESSAGE }, { status: 410 });
+    }
+    if (fase === "coulance" && await heeftAlBevestigd(a)) {
+      return NextResponse.json({ error: AL_BEVESTIGD_MESSAGE }, { status: 410 });
     }
 
     return NextResponse.json({
@@ -225,6 +274,9 @@ export async function GET(request: NextRequest) {
       offerte_bedrag: a.offerte_bedrag,
       gastNaam: a.gastNaam,
       gastEmail: a.gastEmail,
+      // Laatste kans: de bedenktijd is voorbij, maar bevestigen mag nog.
+      coulance: fase === "coulance",
+      coulanceTot: fase === "coulance" && a.vervaltOp ? fmtDate(graceEndDate(a.vervaltOp)) : null,
     });
   } catch (err) {
     console.error("Bevestig GET catch:", err);
@@ -249,9 +301,16 @@ export async function POST(request: NextRequest) {
     if (a.rawStatus === "afgewezen") {
       return NextResponse.json({ error: REJECTED_MESSAGE }, { status: 410 });
     }
-    // Idem voor een verlopen aanbod — de datums zijn weer vrijgegeven.
-    if (isExpired(a)) {
+    /* Een verlopen aanbod mag nog binnen de coulanceperiode bevestigd worden;
+     * daarna is het definitief dicht. De conflictcheck hieronder bepaalt of de
+     * datums intussen niet aan iemand anders zijn vergeven. */
+    const fase = offerFase(a);
+    if (fase === "verlopen") {
       return NextResponse.json({ error: EXPIRED_MESSAGE }, { status: 410 });
+    }
+    const naCoulance = fase === "coulance";
+    if (naCoulance && await heeftAlBevestigd(a)) {
+      return NextResponse.json({ error: AL_BEVESTIGD_MESSAGE }, { status: 410 });
     }
 
     /* Twee gasten kunnen tegelijk een aanbod voor dezelfde nachten hebben —
@@ -388,6 +447,11 @@ export async function POST(request: NextRequest) {
             ...(ingetrokken.length > 0 ? [calloutBlock(
               "Alternatief ingetrokken",
               `Deze gast had ook een openstaand aanbod voor ${ingetrokken.map(l => `Lodge ${esc(l)}`).join(" en ")} in dezelfde periode. Dat staat nu op &lsquo;verlopen&rsquo;, zodat het niet alsnog bevestigd kan worden.`,
+              { background: "muted" },
+            )] : []),
+            ...(naCoulance ? [calloutBlock(
+              "Bevestigd na de vervaldatum",
+              `Dit aanbod was al verlopen; de gast heeft het binnen de coulanceperiode van ${OFFER_GRACE_DAYS} dagen alsnog bevestigd. De agenda is gecontroleerd &mdash; de nachten waren nog vrij.`,
               { background: "muted" },
             )] : []),
             ...(blijvenStaan.length > 0 ? [calloutBlock(
