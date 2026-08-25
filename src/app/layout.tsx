@@ -7,6 +7,7 @@ import { ConsentBootstrap } from "@/components/tracking/ConsentBootstrap";
 import { GoogleAds } from "@/components/tracking/GoogleAds";
 import { GTM, GTMNoscript } from "@/components/tracking/GTM";
 import { MetaPixel } from "@/components/tracking/MetaPixel";
+import { GA4 } from "@/components/tracking/GA4";
 import { RouteChangePixel } from "@/components/tracking/RouteChangePixel";
 import { TrackingListeners } from "@/components/tracking/TrackingListeners";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
@@ -280,6 +281,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body style={{ background: "#EAE3D2", margin: 0, fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
         <GTMNoscript />
         <MetaPixel />
+        <GA4 />
         <RouteChangePixel />
         <TrackingListeners />
         {children}

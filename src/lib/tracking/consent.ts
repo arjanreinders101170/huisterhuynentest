@@ -35,8 +35,11 @@ export function writeConsent(state: ConsentState): void {
   if (typeof window === "undefined") return;
   const normalized: ConsentState = { ...state, functional: true };
   localStorage.setItem(KEY, JSON.stringify({ v: VERSION, state: normalized, ts: Date.now() }));
-  window.dispatchEvent(new CustomEvent("hth:consent-change", { detail: normalized }));
+  /* Consent Mode eerst, luisteraars daarna. Luisteraars laden tags (GA4,
+   * Meta Pixel) en die tags vuren meteen hun eerste hit af; staat de update
+   * dan nog achter ons, dan vertrekt die hit onder een 'denied'-vlag. */
   applyConsentToDataLayer(normalized);
+  window.dispatchEvent(new CustomEvent("hth:consent-change", { detail: normalized }));
 }
 
 export function getConsentSnapshot(): ConsentSnapshot {

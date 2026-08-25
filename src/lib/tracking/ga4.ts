@@ -58,6 +58,16 @@ function ensureGa4Loaded(): boolean {
   return true;
 }
 
+/* Laadt de GA4-tag zodra er toestemming is, los van de eventstroom.
+ *
+ * De config-call in ensureGa4Loaded() stuurt zelf de page_view van de huidige
+ * pagina (Enhanced Measurement), dus hier hoeft niets extra's af te vuren.
+ * Idempotent: bij een tweede aanroep is `loaded` al true en gebeurt er niets.
+ * Zonder GA4_ID blijft dit een stille no-op, net als de rest van dit bestand. */
+export function initGa4(): void {
+  ensureGa4Loaded();
+}
+
 export function fireGa4Event(payload: TrackingEvent): void {
   if (!GA4_ID) return;
   if (!payload.consent_snapshot.statistics) return;
