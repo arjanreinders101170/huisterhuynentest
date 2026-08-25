@@ -17,6 +17,9 @@ type Aanvraag = {
   offerte_bedrag: number | null;
   gastNaam: string;
   gastEmail: string;
+  /** Bedenktijd is voorbij, bevestigen mag nog t/m coulanceTot. */
+  coulance?: boolean;
+  coulanceTot?: string | null;
 };
 
 function BevestigContent() {
@@ -101,12 +104,27 @@ function BevestigContent() {
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div style={{ fontSize: 40, marginBottom: 16 }}>🌿</div>
         <h1 style={{ fontFamily: "Georgia, serif", fontSize: 26, fontWeight: "bold", color: T.text, margin: "0 0 6px" }}>
-          Jouw aanbod
+          {data?.coulance ? "Je laatste kans" : "Jouw aanbod"}
         </h1>
         <p style={{ fontFamily: "Arial, sans-serif", fontSize: 14, color: T.muted, margin: 0 }}>
           Speciaal voor {data?.gastNaam || "jou"}
         </p>
       </div>
+
+      {/* De bedenktijd is verstreken, maar bevestigen kan nog even. Eerlijk zijn
+          over het voorbehoud: de datums kunnen intussen vergeven zijn. */}
+      {data?.coulance && (
+        <div style={{ background: "#F9F4E8", border: `1px solid ${T.gold}`, borderRadius: 8, padding: "14px 16px", marginBottom: 20 }}>
+          <p style={{ margin: "0 0 4px", fontFamily: "Georgia, serif", fontSize: 15, fontWeight: "bold", color: T.text }}>
+            De bedenktijd is verstreken
+          </p>
+          <p style={{ margin: 0, fontFamily: "Arial, sans-serif", fontSize: 13, color: T.muted, lineHeight: 1.5 }}>
+            Je kunt dit aanbod{data.coulanceTot ? ` nog t/m ${data.coulanceTot}` : " nog heel even"} bevestigen tegen de
+            oorspronkelijke prijs, onder voorbehoud van beschikbaarheid. Is iemand je voor geweest, dan hoor je dat direct
+            en denken we mee over alternatieve datums.
+          </p>
+        </div>
+      )}
 
       {/* Period */}
       <div style={{ background: "#F5F1E8", borderRadius: 8, padding: "18px 20px", marginBottom: 20, textAlign: "center" }}>
@@ -142,7 +160,7 @@ function BevestigContent() {
         cursor: confirming ? "not-allowed" : "pointer",
         boxShadow: confirming ? "none" : "0 8px 32px rgba(47,79,62,.25)",
       }}>
-        {confirming ? "Bevestigen..." : "Bevestig mijn reservering"}
+        {confirming ? "Bevestigen..." : data?.coulance ? "Toch nog boeken" : "Bevestig mijn reservering"}
       </button>
 
       <p style={{
@@ -157,7 +175,7 @@ function BevestigContent() {
         marginTop: 24, paddingTop: 16, borderTop: `1px solid ${T.border}`,
         fontFamily: "Arial, sans-serif", fontSize: 12, color: T.muted, textAlign: "center",
       }}>
-        Vragen? Bel <a href="tel:+31612345678" style={{ color: T.green, textDecoration: "none", fontWeight: "bold" }}>+31 6 12 34 56 78</a>
+        Vragen? Bel of WhatsApp <a href="tel:+31642568603" style={{ color: T.green, textDecoration: "none", fontWeight: "bold" }}>+31 6 42568603</a>
       </div>
     </div>
   );

@@ -4,10 +4,14 @@ import { logSentEmail } from "@/lib/mail-log";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import {
   esc, welcomeEmail, lateCheckoutEmail, thankYouEmail, followUpEmail, lodgePhoto,
-  offerReminderEmail, offerExpiredEmail, expiredOffersSummaryEmail, type ExpiredSummaryRow,
+  offerReminderEmail, offerExpiredEmail, offerReminderSubject, offerExpiredSubject,
+  expiredOffersSummaryEmail, type ExpiredSummaryRow,
 } from "@/lib/email";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
-import { todayISO, addDaysISO, daysBetweenISO, formatDateNl, OFFER_REMINDER_DAYS_BEFORE } from "@/lib/offer-expiry";
+import {
+  todayISO, addDaysISO, daysBetweenISO, formatDateNl, graceEndDate,
+  OFFER_REMINDER_DAYS_BEFORE, OFFER_GRACE_DAYS,
+} from "@/lib/offer-expiry";
 
 export const runtime = "nodejs";
 
@@ -196,6 +200,17 @@ export async function GET(request: NextRequest) {
         };
       };
 
+      /* Onderwerpregels gaan onbewerkt over de lijn — geen HTML, dus geen esc().
+       * De aankomstdatum kort ("28 maart") is waar de gast op aanslaat. */
+      const subjectContext = (req: { gast_naam: string | null; check_in: string | null }) => {
+        return {
+          firstName: (req.gast_naam || "").split(" ")[0] || "",
+          wanneer: req.check_in
+            ? new Date(req.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "long" })
+            : "",
+        };
+      };
+
       let reminderSent = 0;
       let expiredCount = 0;
       const expiredRows: ExpiredSummaryRow[] = [];
@@ -223,16 +238,28 @@ export async function GET(request: NextRequest) {
             totaal: ctx.totaal,
           });
           if (!req.gast_email) continue;
+          /* Laatste kans: de link blijft nog een paar coulancedagen werken.
+           * Zonder token (offertes van vóór de confirm-links) valt de mail
+           * terug op de open uitnodiging om te reageren. */
+          const coulanceTot = graceEndDate(expiry);
           try {
             await resend.emails.send({
               from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
               to: [req.gast_email],
-              subject: "Je aanbod is verlopen — Huis ter Huynen",
+              subject: offerExpiredSubject({
+                ...subjectContext(req),
+                laatsteKans: !!req.confirm_token,
+                coulanceDagen: OFFER_GRACE_DAYS,
+              }),
               replyTo: "lodge@huisterhuynen.nl",
               html: offerExpiredEmail({
                 ...ctx,
                 geldigTot: formatDateNl(expiry),
                 siteUrl: baseUrl,
+                confirmUrl: req.confirm_token
+                  ? `${baseUrl}/bevestig?id=${req.id}&t=${req.confirm_token}`
+                  : null,
+                coulanceTot: formatDateNl(coulanceTot),
               }),
             });
           } catch (e) {
@@ -241,14 +268,25 @@ export async function GET(request: NextRequest) {
           continue;
         }
 
-        // Herinnering: exact op de herinneringsdag, en maar één keer.
+        /* Herinnering: vanaf de herinneringsdag, en maar één keer.
+         *
+         * Niet `today === reminderDay`: die exacte match sloeg de herinnering
+         * stilletjes over zodra de dag ertussenuit viel. Dat gebeurde bij elke
+         * korte offerte — is de vervaldatum gecapt op de dag vóór aankomst,
+         * dan ligt de herinneringsdag al in het verleden op het moment van
+         * versturen — en ook bij één gemiste cronrun. `herinnering_verstuurd_op`
+         * bewaakt dat het bij één mail blijft; het verlopen-blok hierboven
+         * garandeert dat we hier alleen komen zolang het aanbod nog loopt. */
         const reminderDay = addDaysISO(expiry, -OFFER_REMINDER_DAYS_BEFORE);
-        if (today === reminderDay && !req.herinnering_verstuurd_op && req.gast_email && req.confirm_token) {
+        if (today >= reminderDay && !req.herinnering_verstuurd_op && req.gast_email && req.confirm_token) {
           try {
             await resend.emails.send({
               from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
               to: [req.gast_email],
-              subject: "Je persoonlijke aanbod staat nog klaar — Huis ter Huynen",
+              subject: offerReminderSubject({
+                ...subjectContext(req),
+                dagenResterend: daysBetweenISO(today, expiry),
+              }),
               replyTo: "lodge@huisterhuynen.nl",
               html: offerReminderEmail({
                 ...ctx,

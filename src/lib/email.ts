@@ -447,12 +447,66 @@ export type OfferMailOpts = {
   dagenResterend: number;
 };
 
+/* ── Onderwerpregels voor de offertemails ──────────────────────────────────
+ *
+ * Een onderwerp als "Je aanbod is verlopen" beschrijft ons proces, niet iets
+ * waar de gast blij van wordt — en het leest als een afsluiting, dus wordt het
+ * niet geopend. Deze regels doen het omgekeerde: de datum waar het om gaat
+ * vooraan, de naam erin, en een open vraag of een concrete termijn. Geen
+ * kapitalen of uitroeptekens; dat leest als een nieuwsbrief en niet als een
+ * mailtje van je gastheer. */
+
+/** Datumlabel voor in het onderwerp, bv. "28 maart". Leeg is prima. */
+function onderwerpWanneer(wanneer: string | null | undefined): string {
+  return wanneer?.trim() || "die datums";
+}
+
+function cap(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+const DAGWOORD: Record<number, string> = { 1: "één dag", 2: "twee dagen", 3: "drie dagen" };
+
+function dagen(n: number): string {
+  return DAGWOORD[n] || `${n} dagen`;
+}
+
+export type OfferSubjectOpts = {
+  /** Voornaam van de gast; leeg = onderwerp zonder aanspreking. */
+  firstName?: string | null;
+  /** Aankomstdatum kort, bv. "28 maart". Leeg valt terug op "die datums". */
+  wanneer?: string | null;
+};
+
+/** Onderwerp van de herinneringsmail: een vraag, geen mededeling. */
+export function offerReminderSubject(opts: OfferSubjectOpts & { dagenResterend: number }): string {
+  const naam = opts.firstName ? `, ${opts.firstName}` : "";
+  const wanneer = onderwerpWanneer(opts.wanneer);
+  return opts.dagenResterend <= 1
+    ? `Laatste dag: zullen we ${wanneer} vrijhouden${naam}?`
+    : `Zullen we ${wanneer} voor je vrijhouden${naam}?`;
+}
+
+/** Onderwerp van de vervalmail. Met coulance is er nog iets te winnen. */
+export function offerExpiredSubject(
+  opts: OfferSubjectOpts & { laatsteKans: boolean; coulanceDagen: number },
+): string {
+  const naam = opts.firstName ? `, ${opts.firstName}` : "";
+  const wanneer = opts.wanneer?.trim();
+  // Zonder datum past "die datums" niet in de eerste zin — dan "Je aanbod".
+  return opts.laatsteKans
+    ? `${wanneer ? cap(wanneer) : "Je aanbod"} staat nog ${dagen(opts.coulanceDagen)} voor je open${naam}`
+    : `Zonde om ${onderwerpWanneer(wanneer)} te laten schieten${naam}?`;
+}
+
 /** Herinnering enkele dagen voordat het aanbod verloopt. */
 export function offerReminderEmail(opts: OfferMailOpts): string {
   const bedrag = opts.totaal != null ? `&euro; ${opts.totaal.toFixed(2)}` : null;
-  const resterend = opts.dagenResterend === 1
-    ? "nog één dag"
-    : `nog ${opts.dagenResterend} dagen`;
+  const resterend = opts.dagenResterend <= 0
+    ? "vandaag nog"
+    : opts.dagenResterend === 1
+      ? "nog één dag"
+      : `nog ${opts.dagenResterend} dagen`;
 
   return lodgeEmail({
     photoUrl: opts.photoUrl,
@@ -471,21 +525,53 @@ export function offerReminderEmail(opts: OfferMailOpts): string {
   });
 }
 
-/** Bericht dat het aanbod is verlopen. Nadrukkelijk een open deur, geen afwijzing. */
-export function offerExpiredEmail(opts: Omit<OfferMailOpts, "confirmUrl" | "dagenResterend"> & { siteUrl: string }): string {
+/**
+ * Bericht dat het aanbod is verlopen — met een laatste kans om alsnog te boeken.
+ *
+ * De deadline is verstreken, maar de link werkt nog een paar coulancedagen door.
+ * Precies op dit moment is de koopintentie het hoogst; een doodlopende straat
+ * kost hier boekingen. Zonder `confirmUrl` (offertes van vóór de tokens) valt
+ * de mail terug op de open uitnodiging om te reageren.
+ */
+export function offerExpiredEmail(
+  opts: Omit<OfferMailOpts, "confirmUrl" | "dagenResterend"> & {
+    siteUrl: string;
+    /** Bevestigingslink inclusief token; leeg = geen laatste kans tonen. */
+    confirmUrl?: string | null;
+    /** Laatste dag van de coulanceperiode, als leesbare datum. */
+    coulanceTot?: string;
+  },
+): string {
+  const bedrag = opts.totaal != null ? `&euro; ${opts.totaal.toFixed(2)}` : null;
+  const laatsteKans = !!opts.confirmUrl && !!opts.coulanceTot;
+
   return lodgeEmail({
     photoUrl: opts.photoUrl,
     photoAlt: `Lodge ${opts.lodgeNaam}`,
-    title: `Je aanbod is verlopen${opts.firstName ? `, ${opts.firstName}` : ""}`,
-    intro: `Het persoonlijke aanbod voor Lodge ${esc(opts.lodgeNaam)} was geldig tot en met ${esc(opts.geldigTot)}. We hebben de datums weer vrijgegeven, zodat andere gasten ze kunnen aanvragen.`,
-    blocks: [
-      infoBlock("Het ging om", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}`),
-      calloutBlock(
-        "Toch nog interesse?",
-        "Laat het ons gerust weten &mdash; reageer op deze mail of stuur een WhatsApp. Zijn de datums nog vrij, dan maken we het aanbod zo weer voor je in orde.",
-      ),
-      ctaButton(`${opts.siteUrl}/#reserveren`, "Bekijk beschikbaarheid &#8594;"),
-    ],
+    title: laatsteKans
+      ? `Nog één kans op je aanbod${opts.firstName ? `, ${opts.firstName}` : ""}`
+      : `Je aanbod is verlopen${opts.firstName ? `, ${opts.firstName}` : ""}`,
+    intro: laatsteKans
+      ? `De bedenktijd voor Lodge ${esc(opts.lodgeNaam)} liep af op ${esc(opts.geldigTot)} — maar we geven je aanbod niet zomaar op. Je kunt het nog tot en met ${esc(opts.coulanceTot!)} bevestigen, zolang de datums vrij zijn.`
+      : `Het persoonlijke aanbod voor Lodge ${esc(opts.lodgeNaam)} was geldig tot en met ${esc(opts.geldigTot)}. De datums staan weer open voor andere gasten.`,
+    blocks: laatsteKans
+      ? [
+        infoBlock("Het ging om", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}${bedrag ? ` &middot; ${bedrag}` : ""}`),
+        calloutBlock(
+          "Je oorspronkelijke prijs staat nog",
+          `Klik hieronder en de reservering is rond &mdash; tegen precies het bedrag uit je offerte. Na ${esc(opts.coulanceTot!)} vervalt de link definitief en moet je opnieuw aanvragen.`,
+        ),
+        ctaButton(opts.confirmUrl!, "Toch nog boeken &#8594;", { prominent: true, marginBottom: 14 }),
+        smallNote("Onder voorbehoud van beschikbaarheid &mdash; is iemand je voor geweest, dan laten we het je meteen weten en denken we mee over alternatieven."),
+      ]
+      : [
+        infoBlock("Het ging om", esc(opts.periodeLabel), `Lodge ${esc(opts.lodgeNaam)}${bedrag ? ` &middot; ${bedrag}` : ""}`),
+        calloutBlock(
+          "Toch nog interesse?",
+          "Laat het ons gerust weten &mdash; reageer op deze mail of stuur een WhatsApp. Zijn de datums nog vrij, dan maken we het aanbod zo weer voor je in orde.",
+        ),
+        ctaButton(`${opts.siteUrl}/#reserveren`, "Bekijk beschikbaarheid &#8594;"),
+      ],
   });
 }
 

@@ -3,7 +3,10 @@ import { useState } from "react";
 import { BookingRequest } from "../types";
 import { Badge } from "./Badge";
 import { timeAgo } from "./Badge";
-import { offerCountdown, offerExpiryDate, formatDateNl, OFFER_VALID_DAYS } from "@/lib/offer-expiry";
+import {
+  offerCountdown, offerExpiryDate, formatDateNl, withinGrace, graceEndDate,
+  OFFER_VALID_DAYS, OFFER_GRACE_DAYS,
+} from "@/lib/offer-expiry";
 import { KANAAL_LABEL, type Kanaal } from "@/lib/attributie";
 
 const BRON_LABELS: Record<string, { icon: string; label: string }> = {
@@ -32,6 +35,94 @@ function herkomst(r: BookingRequest): { label: string; titel: string } | null {
   return { label, titel: regels.join("\n") };
 }
 
+/* ── Fases ────────────────────────────────────────────────────────────────
+ *
+ * Tien losse statussen op één hoop zeggen weinig over wat er moet gebeuren.
+ * De vraag die je bij dit scherm hebt is steeds dezelfde: ligt de bal bij mij,
+ * bij de gast, of is het klaar? Daarom worden de statussen in vier fases
+ * gegroepeerd, met blokkeringen van Booking.com apart — dat zijn geen
+ * aanvragen maar dichtgezette datums. */
+export type Fase = "actie" | "wachten" | "geboekt" | "gesloten" | "blokkering";
+
+const FASE_INFO: Record<Fase, { label: string; uitleg: string; kleur: string; bedragLabel?: string }> = {
+  actie:      { label: "Actie nodig",   uitleg: "Wacht op jou — offerte maken of afwijzen", kleur: "#E67E22" },
+  wachten:    { label: "Wacht op gast", uitleg: "Offerte verstuurd, bal ligt bij de gast",  kleur: "#1565C0", bedragLabel: "open" },
+  geboekt:    { label: "Geboekt",       uitleg: "Bevestigd — en de betaling erna",          kleur: "#2E7D32", bedragLabel: "omzet" },
+  gesloten:   { label: "Gesloten",      uitleg: "Afgewezen of definitief verlopen",         kleur: "#9E9E9E", bedragLabel: "misgelopen" },
+  blokkering: { label: "Blokkeringen",  uitleg: "Handmatig dichtgezet, bv. Booking.com",    kleur: "#8A7D6A" },
+};
+
+const FASE_VOLGORDE: Fase[] = ["actie", "wachten", "geboekt", "gesloten", "blokkering"];
+
+function faseVan(r: BookingRequest): Fase {
+  if (r.bron === "handmatig") return "blokkering";
+  switch (r.status) {
+    case "nieuw":
+    case "in_behandeling":
+      return "actie";
+    case "offerte_verstuurd":
+      return "wachten";
+    case "verlopen":
+      // Binnen de coulanceperiode kan de gast nog bevestigen — dat is wachten,
+      // geen gesloten dossier.
+      return r.offerte_vervalt_op && withinGrace(r.offerte_vervalt_op) ? "wachten" : "gesloten";
+    case "afgewezen":
+      return "gesloten";
+    default:
+      return "geboekt";
+  }
+}
+
+/** Wat is hier de volgende handeling? Alleen tonen als die bij jou ligt. */
+function volgendeStap(r: BookingRequest): string | null {
+  switch (r.status) {
+    case "nieuw":
+    case "in_behandeling":
+      return "offerte maken";
+    case "bevestigd":
+      return "aanbetaling versturen";
+    case "aanbetaling_betaald":
+      return "restbetaling versturen";
+    default:
+      return null;
+  }
+}
+
+/* Binnen een fase telt een andere volgorde. Bij 'actie' is de oudste aanvraag
+ * het meest urgent, bij 'wachten' de offerte die het eerst verloopt, en bij
+ * 'geboekt' de eerstvolgende aankomst. Aflopend sorteren op datum van
+ * binnenkomst — de oude standaard — zette juist de urgentste regels onderaan. */
+function sorteerSleutel(r: BookingRequest, fase: Fase): number {
+  const tijd = (v: string | null | undefined) => (v ? Date.parse(v) : NaN);
+  switch (fase) {
+    case "actie":
+      return tijd(r.created_at);                                   // oudste eerst
+    case "wachten": {
+      const vervalt = tijd(r.offerte_vervalt_op);                  // eerst verlopend eerst
+      return Number.isNaN(vervalt) ? tijd(r.created_at) : vervalt;
+    }
+    case "geboekt":
+    case "blokkering": {
+      const aankomst = tijd(r.check_in);
+      if (Number.isNaN(aankomst)) return Number.MAX_SAFE_INTEGER;
+      // Verleden onderaan, toekomst op volgorde van aankomst.
+      return aankomst < Date.now() ? Number.MAX_SAFE_INTEGER - 1 : aankomst;
+    }
+    default:
+      return -tijd(r.created_at);                                  // recentste eerst
+  }
+}
+
+/** Bedrag in Nederlandse notatie: € 1.521,15 in plaats van € 1521.15. */
+function euroBedrag(n: number): string {
+  return `€ ${n.toLocaleString("nl-NL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+/** Waarde van een regel: de definitieve offerte, anders het voorstel. */
+function bedragVan(r: BookingRequest): number {
+  return Number(r.totaal ?? r.voorgestelde_prijs ?? 0);
+}
+
 const LODGE_SHORT_NAMES: Record<string, string> = {
   lodge_1: "De Heide",
   lodge_2: "De Eik",
@@ -46,15 +137,25 @@ const SOORT_LABEL: Record<string, { label: string; color: string }> = {
 /** Hoe lang staat dit aanbod nog open? Alleen relevant zolang het loopt. */
 function expiryNote(req: BookingRequest): { text: string; color: string } | null {
   if (req.status === "verlopen") {
+    // Binnen de coulanceperiode kan de gast alsnog bevestigen — dan is het
+    // nog geen verloren aanvraag, en heeft nabellen zin.
+    if (req.offerte_vervalt_op && withinGrace(req.offerte_vervalt_op)) {
+      const tot = new Date(`${graceEndDate(req.offerte_vervalt_op)}T00:00:00`)
+        .toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
+      return { text: `verlopen · kan nog t/m ${tot}`, color: "#E67E22" };
+    }
     return { text: "aanbod verlopen", color: "#9E9E9E" };
   }
   if (req.status !== "offerte_verstuurd" || !req.offerte_vervalt_op) return null;
 
+  /* De herinnering erbij: anders zie je niet of die gast al een duwtje heeft
+   * gehad, en dat bepaalt of zelf nabellen zin heeft. */
+  const herinnerd = req.herinnering_verstuurd_op ? " · herinnerd" : "";
   const c = offerCountdown(req.offerte_vervalt_op);
-  if (c.state === "expired") return { text: "verloopt vannacht", color: "#C62828" };
-  if (c.state === "today") return { text: "verloopt vandaag", color: "#C62828" };
+  if (c.state === "expired") return { text: `verloopt vannacht${herinnerd}`, color: "#C62828" };
+  if (c.state === "today") return { text: `verloopt vandaag${herinnerd}`, color: "#C62828" };
   return {
-    text: `verloopt over ${c.days} ${c.days === 1 ? "dag" : "dagen"}`,
+    text: `verloopt over ${c.days} ${c.days === 1 ? "dag" : "dagen"}${herinnerd}`,
     color: c.days <= 2 ? "#E67E22" : "#8A7D6A",
   };
 }
@@ -89,7 +190,8 @@ type OfferteForm = {
 export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingRequest[]; setRequests: (r: BookingRequest[]) => void }) {
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
   const [filterBron, setFilterBron] = useState<"all" | "homepage" | "app" | "terugkomer">("all");
-  const [filterStatus, setFilterStatus] = useState<"all" | BookingRequest["status"]>("all");
+  const [filterFase, setFilterFase] = useState<"all" | Fase>("all");
+  const [toonAlleGesloten, setToonAlleGesloten] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [loadingPrefill, setLoadingPrefill] = useState<string | null>(null);
   const [forms, setForms] = useState<Record<string, OfferteForm>>({});
@@ -364,10 +466,24 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     setRequests(requests.filter(r => r.id !== id));
   };
 
-  const filtered = requests.filter(r =>
-    (filterBron === "all" || r.bron === filterBron) &&
-    (filterStatus === "all" || r.status === filterStatus)
-  );
+  const zichtbaar = requests.filter(r => filterBron === "all" || r.bron === filterBron);
+
+  /* Per fase gegroepeerd en gesorteerd. Dat is wat het overzicht terugbrengt:
+   * bovenaan wat vandaag moet gebeuren, onderaan het archief. */
+  const groepen = FASE_VOLGORDE.map(fase => {
+    const rijen = zichtbaar
+      .filter(r => faseVan(r) === fase)
+      .sort((a, b) => sorteerSleutel(a, fase) - sorteerSleutel(b, fase));
+    return {
+      fase,
+      rijen,
+      bedrag: rijen.reduce((som, r) => som + bedragVan(r), 0),
+    };
+  });
+
+  const zichtbareGroepen = groepen.filter(g =>
+    g.rijen.length > 0 && (filterFase === "all" || g.fase === filterFase));
+  const totaalZichtbaar = zichtbareGroepen.reduce((n, g) => n + g.rijen.length, 0);
 
   const fmtDate = (iso: string | null) =>
     iso ? new Date(iso).toLocaleDateString("nl-NL", { day: "numeric", month: "short", year: "numeric" }) : "—";
@@ -391,6 +507,8 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     app:        requests.filter(r => r.bron === "app").length,
     terugkomer: requests.filter(r => r.bron === "terugkomer").length,
   };
+
+  const euro = (n: number) => `€ ${n.toLocaleString("nl-NL", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
   const renderEditor = (req: BookingRequest) => {
     const f = forms[req.id];
@@ -468,6 +586,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
           Bedenktijd: <strong style={{ color: C.text }}>{OFFER_VALID_DAYS} dagen</strong> — geldig t/m{" "}
           <strong style={{ color: C.text }}>{formatDateNl(offerExpiryDate(req.check_in))}</strong>.
           De gast krijgt 2 dagen ervoor een herinnering; daarna vervalt het aanbod automatisch.
+          De bevestigingslink blijft daarna nog {OFFER_GRACE_DAYS} dagen werken als laatste kans.
         </div>
 
         <div style={{ marginBottom: 16 }}>
@@ -616,6 +735,95 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     );
   };
 
+  /* Eén regel in de lijst. Zat vroeger inline in de map; nu een functie,
+   * zodat elke fasegroep dezelfde rij kan tekenen. */
+  const renderRij = (r: BookingRequest) => {
+        const bron = BRON_LABELS[r.bron] || { icon: "·", label: r.bron };
+        const name = r.guest?.naam || r.gast_naam || "—";
+        const email = r.guest?.email || r.gast_email || "";
+        const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
+        const isExpanded = expandedId === r.id;
+        // Verlopen aanvragen blijven bewerkbaar: een nieuwe offerte start de bedenktijd opnieuw.
+        const isEditable = r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd" || r.status === "verlopen";
+    const fase = faseVan(r);
+    const toonAankomst = fase === "geboekt" || fase === "blokkering";
+    const stap = volgendeStap(r);
+        const isPayable = r.status === "bevestigd" || r.status === "aanbetaling_verstuurd" || r.status === "aanbetaling_betaald" || r.status === "restbetaling_verstuurd" || r.status === "volledig_betaald";
+        const isExpandable = isEditable || isPayable;
+        const res = result[r.id];
+
+        return (
+          <div key={r.id} style={{ borderTop: `1px solid ${C.border}` }}>
+            <div
+              onClick={() => isExpandable && openEditor(r, isEditable)}
+              style={{
+                display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px",
+                padding: "14px 16px", fontSize: 13, color: C.text, alignItems: "center",
+                cursor: isExpandable ? "pointer" : "default",
+                background: isExpanded ? "#FAFAF7" : "transparent",
+              }}
+            >
+              <div title={bron.label} style={{ fontSize: 14 }}>
+                {bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span>
+                {herkomst(r) && (
+                  <div title={herkomst(r)!.titel} style={{ fontSize: 10, color: C.gold, marginTop: 2, fontWeight: 600 }}>
+                    {herkomst(r)!.label}
+                  </div>
+                )}
+              </div>
+              <div>
+                <div style={{ fontWeight: 500 }}>{name}</div>
+                <div style={{ fontSize: 11, color: C.muted }}>{email}</div>
+              </div>
+              <div style={{ fontSize: 12, color: C.muted }}>
+                {period(r)}
+                <div style={{ fontSize: 11 }}>
+                  {r.bron === "handmatig" && r.bericht && (
+                    <span style={{ color: C.gold, fontWeight: 600 }}>{r.bericht}</span>
+                  )}
+                  {r.bron !== "handmatig" && (r.personen ?? 0) > 0 && `${r.personen}p`}
+                  {r.bron !== "handmatig" && r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
+                  {r.bron !== "handmatig" && r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
+                </div>
+              </div>
+              <div style={{ fontSize: 12, color: C.muted }}>{lodge}</div>
+              <div style={{ textAlign: "right", fontWeight: 500, color: r.voorgestelde_prijs || r.totaal ? C.text : C.light }}>
+                {r.totaal ? euroBedrag(Number(r.totaal)) : (r.voorgestelde_prijs ? euroBedrag(Number(r.voorgestelde_prijs)) : "—")}
+              </div>
+              <div>
+                <Badge status={r.status} />
+                {expiryNote(r)
+                  ? <div style={{ fontSize: 11, color: expiryNote(r)!.color, marginTop: 2 }}>{expiryNote(r)!.text}</div>
+                  : stap && <div style={{ fontSize: 11, color: C.gold, marginTop: 2 }}>{stap}</div>}
+                {res?.ok && <div style={{ fontSize: 11, color: "#2E7D32", marginTop: 2 }}>✓ {res.msg}</div>}
+              </div>
+              {/* Laatste kolom volgt de fase: bij lopende aanvragen telt hoe
+                  lang ze al wachten, bij een boeking wanneer de gast komt. */}
+              <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>
+                {toonAankomst ? (
+                  <span title={r.check_in ? `Aankomst ${fmtDate(r.check_in)}` : undefined}>
+                    {r.check_in ? fmtDate(r.check_in) : "—"}
+                  </span>
+                ) : (
+                  <span title={`Binnengekomen op ${new Date(r.created_at).toLocaleString("nl-NL")}`}>
+                    {timeAgo(r.created_at)}
+                  </span>
+                )}
+                {r.bron === "handmatig" && (
+                  <button
+                    onClick={e => { e.stopPropagation(); deleteManualBooking(r.id); }}
+                    title="Verwijder blokkering"
+                    style={{ background: "none", border: "none", color: "#C62828", fontSize: 16, cursor: "pointer", padding: "0 0 0 8px" }}
+                  >×</button>
+                )}
+                {isExpandable && <div style={{ fontSize: 10, color: C.gold, marginTop: 2 }}>{isExpanded ? "▲" : "▼"}</div>}
+              </div>
+            </div>
+            {isExpanded && (isEditable ? renderEditor(r) : renderPayment(r))}
+          </div>
+        );
+  };
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
@@ -714,108 +922,90 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
         <button onClick={() => setFilterBron("terugkomer")} style={chipStyle(filterBron === "terugkomer")}>↩️ Terugkomer ({counts.terugkomer})</button>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
-        <button onClick={() => setFilterStatus("all")} style={chipStyle(filterStatus === "all")}>Alle statussen</button>
-        {(["nieuw", "in_behandeling", "offerte_verstuurd", "bevestigd", "verlopen", "afgewezen"] as const).map(s => (
-          <button key={s} onClick={() => setFilterStatus(s)} style={chipStyle(filterStatus === s)}>{s.replace("_", " ")}</button>
-        ))}
+      {/* Samenvatting per fase — meteen ook het filter. Vervangt de rij met
+          ruwe statusnamen: die vertelde wel hoe het heet, niet wat het betekent. */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 20 }}>
+        {FASE_VOLGORDE.map(f => {
+          const g = groepen.find(x => x.fase === f)!;
+          const info = FASE_INFO[f];
+          const actief = filterFase === f;
+          return (
+            <button
+              key={f}
+              onClick={() => setFilterFase(actief ? "all" : f)}
+              title={`${info.uitleg}${actief ? " — klik om het filter op te heffen" : ""}`}
+              style={{
+                textAlign: "left", cursor: "pointer", padding: "12px 14px", borderRadius: 12,
+                border: `1px solid ${actief ? info.kleur : C.border}`,
+                background: actief ? "#FAFAF7" : C.card,
+                boxShadow: actief ? `inset 3px 0 0 ${info.kleur}` : "none",
+                opacity: g.rijen.length === 0 ? .55 : 1,
+              }}
+            >
+              <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, fontWeight: 500 }}>
+                {info.label}
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 600, color: g.rijen.length ? info.kleur : C.light, lineHeight: 1.3 }}>
+                {g.rijen.length}
+              </div>
+              <div style={{ fontSize: 11, color: C.light }}>
+                {info.bedragLabel && g.bedrag > 0 ? `${euro(g.bedrag)} ${info.bedragLabel}` : info.uitleg}
+              </div>
+            </button>
+          );
+        })}
       </div>
 
-      {filtered.length === 0 && (
+      {totaalZichtbaar === 0 && (
         <div style={{ fontSize: 13, color: C.light, padding: 40, textAlign: "center", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12 }}>
           Geen aanvragen in deze selectie
         </div>
       )}
 
-      {filtered.length > 0 && (
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px", padding: "12px 16px", background: C.bg, fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, fontWeight: 500 }}>
-            <div>Bron</div>
-            <div>Gast</div>
-            <div>Periode</div>
-            <div>Lodge</div>
-            <div style={{ textAlign: "right" }}>Voorstel</div>
-            <div>Status</div>
-            <div style={{ textAlign: "right" }}>Ontvangen</div>
-          </div>
-          {filtered.map(r => {
-            const bron = BRON_LABELS[r.bron] || { icon: "·", label: r.bron };
-            const name = r.guest?.naam || r.gast_naam || "—";
-            const email = r.guest?.email || r.gast_email || "";
-            const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
-            const isExpanded = expandedId === r.id;
-            // Verlopen aanvragen blijven bewerkbaar: een nieuwe offerte start de bedenktijd opnieuw.
-            const isEditable = r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd" || r.status === "verlopen";
-            const isPayable = r.status === "bevestigd" || r.status === "aanbetaling_verstuurd" || r.status === "aanbetaling_betaald" || r.status === "restbetaling_verstuurd" || r.status === "volledig_betaald";
-            const isExpandable = isEditable || isPayable;
-            const res = result[r.id];
+      {zichtbareGroepen.map(g => {
+        const info = FASE_INFO[g.fase];
+        /* Het archief hoort niet het scherm te vullen: gesloten dossiers staan
+         * ingeklapt tot je ze opvraagt. */
+        const inklapbaar = g.fase === "gesloten" && filterFase === "all" && g.rijen.length > 5;
+        const rijen = inklapbaar && !toonAlleGesloten ? g.rijen.slice(0, 5) : g.rijen;
 
-            return (
-              <div key={r.id} style={{ borderTop: `1px solid ${C.border}` }}>
-                <div
-                  onClick={() => isExpandable && openEditor(r, isEditable)}
-                  style={{
-                    display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px",
-                    padding: "14px 16px", fontSize: 13, color: C.text, alignItems: "center",
-                    cursor: isExpandable ? "pointer" : "default",
-                    background: isExpanded ? "#FAFAF7" : "transparent",
-                  }}
-                >
-                  <div title={bron.label} style={{ fontSize: 14 }}>
-                    {bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span>
-                    {herkomst(r) && (
-                      <div title={herkomst(r)!.titel} style={{ fontSize: 10, color: C.gold, marginTop: 2, fontWeight: 600 }}>
-                        {herkomst(r)!.label}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 500 }}>{name}</div>
-                    <div style={{ fontSize: 11, color: C.muted }}>{email}</div>
-                  </div>
-                  <div style={{ fontSize: 12, color: C.muted }}>
-                    {period(r)}
-                    <div style={{ fontSize: 11 }}>
-                      {r.bron === "handmatig" && r.bericht && (
-                        <span style={{ color: C.gold, fontWeight: 600 }}>{r.bericht}</span>
-                      )}
-                      {r.bron !== "handmatig" && (r.personen ?? 0) > 0 && `${r.personen}p`}
-                      {r.bron !== "handmatig" && r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
-                      {r.bron !== "handmatig" && r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 12, color: C.muted }}>{lodge}</div>
-                  <div style={{ textAlign: "right", fontWeight: 500, color: r.voorgestelde_prijs || r.totaal ? C.text : C.light }}>
-                    {r.totaal ? `€ ${Number(r.totaal).toFixed(2)}` : (r.voorgestelde_prijs ? `€ ${Number(r.voorgestelde_prijs).toFixed(2)}` : "—")}
-                  </div>
-                  <div>
-                    <Badge status={r.status} />
-                    {expiryNote(r) && (
-                      <div style={{ fontSize: 11, color: expiryNote(r)!.color, marginTop: 2 }}>{expiryNote(r)!.text}</div>
-                    )}
-                    {res?.ok && <div style={{ fontSize: 11, color: "#2E7D32", marginTop: 2 }}>✓ {res.msg}</div>}
-                  </div>
-                  <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>
-                    {r.bron === "handmatig" ? (
-                      <button
-                        onClick={e => { e.stopPropagation(); deleteManualBooking(r.id); }}
-                        title="Verwijder blokkering"
-                        style={{ background: "none", border: "none", color: "#C62828", fontSize: 16, cursor: "pointer", padding: 0 }}
-                      >×</button>
-                    ) : (
-                      <>
-                        {timeAgo(r.created_at)}
-                        {isExpandable && <div style={{ fontSize: 10, color: C.gold, marginTop: 2 }}>{isExpanded ? "▲" : "▼"}</div>}
-                      </>
-                    )}
-                  </div>
-                </div>
-                {isExpanded && (isEditable ? renderEditor(r) : renderPayment(r))}
-              </div>
-            );
-          })}
-        </div>
-      )}
+        return (
+          <div key={g.fase} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, overflow: "hidden", marginBottom: 16 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "12px 16px", borderBottom: `1px solid ${C.border}`, borderLeft: `3px solid ${info.kleur}` }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{info.label}</span>
+              <span style={{ fontSize: 12, color: C.muted }}>{g.rijen.length}</span>
+              {info.bedragLabel && g.bedrag > 0 && (
+                <span style={{ fontSize: 12, color: C.muted }}>· {euro(g.bedrag)} {info.bedragLabel}</span>
+              )}
+              <span style={{ fontSize: 11, color: C.light, marginLeft: "auto" }}>{info.uitleg}</span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px", padding: "10px 16px", background: C.bg, fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, fontWeight: 500 }}>
+              <div>Bron</div>
+              <div>Gast</div>
+              <div>Periode</div>
+              <div>Lodge</div>
+              <div style={{ textAlign: "right" }}>Voorstel</div>
+              <div>Status</div>
+              <div style={{ textAlign: "right" }}>{g.fase === "geboekt" || g.fase === "blokkering" ? "Aankomst" : "Ontvangen"}</div>
+            </div>
+
+            {rijen.map(renderRij)}
+
+            {inklapbaar && (
+              <button
+                onClick={() => setToonAlleGesloten(!toonAlleGesloten)}
+                style={{
+                  width: "100%", padding: "10px 16px", border: "none", borderTop: `1px solid ${C.border}`,
+                  background: C.bg, color: C.muted, fontSize: 12, cursor: "pointer",
+                }}
+              >
+                {toonAlleGesloten ? "Toon minder" : `Toon alle ${g.rijen.length} gesloten aanvragen`}
+              </button>
+            )}
+          </div>
+        );
+      })}
 
     </>
   );
