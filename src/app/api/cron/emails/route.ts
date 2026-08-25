@@ -4,12 +4,13 @@ import { logSentEmail } from "@/lib/mail-log";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import {
   esc, welcomeEmail, lateCheckoutEmail, thankYouEmail, followUpEmail, lodgePhoto,
-  offerReminderEmail, offerExpiredEmail, expiredOffersSummaryEmail, type ExpiredSummaryRow,
+  offerReminderEmail, offerExpiredEmail, offerReminderSubject, offerExpiredSubject,
+  expiredOffersSummaryEmail, type ExpiredSummaryRow,
 } from "@/lib/email";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
 import {
   todayISO, addDaysISO, daysBetweenISO, formatDateNl, graceEndDate,
-  OFFER_REMINDER_DAYS_BEFORE,
+  OFFER_REMINDER_DAYS_BEFORE, OFFER_GRACE_DAYS,
 } from "@/lib/offer-expiry";
 
 export const runtime = "nodejs";
@@ -199,6 +200,17 @@ export async function GET(request: NextRequest) {
         };
       };
 
+      /* Onderwerpregels gaan onbewerkt over de lijn — geen HTML, dus geen esc().
+       * De aankomstdatum kort ("28 maart") is waar de gast op aanslaat. */
+      const subjectContext = (req: { gast_naam: string | null; check_in: string | null }) => {
+        return {
+          firstName: (req.gast_naam || "").split(" ")[0] || "",
+          wanneer: req.check_in
+            ? new Date(req.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "long" })
+            : "",
+        };
+      };
+
       let reminderSent = 0;
       let expiredCount = 0;
       const expiredRows: ExpiredSummaryRow[] = [];
@@ -234,9 +246,11 @@ export async function GET(request: NextRequest) {
             await resend.emails.send({
               from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
               to: [req.gast_email],
-              subject: req.confirm_token
-                ? "Nog één kans op je aanbod — Huis ter Huynen"
-                : "Je aanbod is verlopen — Huis ter Huynen",
+              subject: offerExpiredSubject({
+                ...subjectContext(req),
+                laatsteKans: !!req.confirm_token,
+                coulanceDagen: OFFER_GRACE_DAYS,
+              }),
               replyTo: "lodge@huisterhuynen.nl",
               html: offerExpiredEmail({
                 ...ctx,
@@ -269,7 +283,10 @@ export async function GET(request: NextRequest) {
             await resend.emails.send({
               from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
               to: [req.gast_email],
-              subject: "Je persoonlijke aanbod staat nog klaar — Huis ter Huynen",
+              subject: offerReminderSubject({
+                ...subjectContext(req),
+                dagenResterend: daysBetweenISO(today, expiry),
+              }),
               replyTo: "lodge@huisterhuynen.nl",
               html: offerReminderEmail({
                 ...ctx,

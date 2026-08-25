@@ -447,6 +447,58 @@ export type OfferMailOpts = {
   dagenResterend: number;
 };
 
+/* ── Onderwerpregels voor de offertemails ──────────────────────────────────
+ *
+ * Een onderwerp als "Je aanbod is verlopen" beschrijft ons proces, niet iets
+ * waar de gast blij van wordt — en het leest als een afsluiting, dus wordt het
+ * niet geopend. Deze regels doen het omgekeerde: de datum waar het om gaat
+ * vooraan, de naam erin, en een open vraag of een concrete termijn. Geen
+ * kapitalen of uitroeptekens; dat leest als een nieuwsbrief en niet als een
+ * mailtje van je gastheer. */
+
+/** Datumlabel voor in het onderwerp, bv. "28 maart". Leeg is prima. */
+function onderwerpWanneer(wanneer: string | null | undefined): string {
+  return wanneer?.trim() || "die datums";
+}
+
+function cap(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+const DAGWOORD: Record<number, string> = { 1: "één dag", 2: "twee dagen", 3: "drie dagen" };
+
+function dagen(n: number): string {
+  return DAGWOORD[n] || `${n} dagen`;
+}
+
+export type OfferSubjectOpts = {
+  /** Voornaam van de gast; leeg = onderwerp zonder aanspreking. */
+  firstName?: string | null;
+  /** Aankomstdatum kort, bv. "28 maart". Leeg valt terug op "die datums". */
+  wanneer?: string | null;
+};
+
+/** Onderwerp van de herinneringsmail: een vraag, geen mededeling. */
+export function offerReminderSubject(opts: OfferSubjectOpts & { dagenResterend: number }): string {
+  const naam = opts.firstName ? `, ${opts.firstName}` : "";
+  const wanneer = onderwerpWanneer(opts.wanneer);
+  return opts.dagenResterend <= 1
+    ? `Laatste dag: zullen we ${wanneer} vrijhouden${naam}?`
+    : `Zullen we ${wanneer} voor je vrijhouden${naam}?`;
+}
+
+/** Onderwerp van de vervalmail. Met coulance is er nog iets te winnen. */
+export function offerExpiredSubject(
+  opts: OfferSubjectOpts & { laatsteKans: boolean; coulanceDagen: number },
+): string {
+  const naam = opts.firstName ? `, ${opts.firstName}` : "";
+  const wanneer = opts.wanneer?.trim();
+  // Zonder datum past "die datums" niet in de eerste zin — dan "Je aanbod".
+  return opts.laatsteKans
+    ? `${wanneer ? cap(wanneer) : "Je aanbod"} staat nog ${dagen(opts.coulanceDagen)} voor je open${naam}`
+    : `Zonde om ${onderwerpWanneer(wanneer)} te laten schieten${naam}?`;
+}
+
 /** Herinnering enkele dagen voordat het aanbod verloopt. */
 export function offerReminderEmail(opts: OfferMailOpts): string {
   const bedrag = opts.totaal != null ? `&euro; ${opts.totaal.toFixed(2)}` : null;
