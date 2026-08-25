@@ -502,7 +502,7 @@ export default function LandingPage() {
                     fontSize: 14, fontWeight: 600, textDecoration: "none",
                     letterSpacing: "0.3px",
                   }}>
-                    Claim datum voor {lodge.name}
+                    Bekijk beschikbaarheid voor {lodge.name}
                   </a>
                   <DirectBookingUSP tone="onLight" size={11.5} style={{ marginTop: 12 }} />
                 </div>
@@ -550,7 +550,7 @@ export default function LandingPage() {
               textDecoration: "none", padding: "14px 36px", borderRadius: 10,
               letterSpacing: "0.3px", display: "inline-block",
             }}>
-              Claim uw weekend als Eerste Gast →
+              Bekijk beschikbaarheid →
             </a>
             <DirectBookingUSP tone="onDark" size={12} />
             <div style={{
@@ -811,7 +811,7 @@ export default function LandingPage() {
                 padding: "12px 28px", borderRadius: 10,
                 textDecoration: "none", letterSpacing: "0.3px", whiteSpace: "nowrap",
               }}>
-                Controleer beschikbaarheid →
+                Bekijk beschikbaarheid →
               </a>
               <DirectBookingUSP tone="onDark" size={11} style={{ gap: "4px 12px" }} />
             </div>
@@ -1038,7 +1038,7 @@ export default function LandingPage() {
               textDecoration: "none", letterSpacing: "0.3px",
               boxShadow: "0 4px 20px rgba(180,154,94,.35)",
             }}>
-              Claim uw datum nu →
+              Bekijk beschikbaarheid →
             </a>
             <DirectBookingUSP tone="onLight" size={12} style={{ marginTop: 14 }} />
           </div>
@@ -1069,7 +1069,7 @@ export default function LandingPage() {
                 color: "white", background: T.green, padding: "13px 32px",
                 borderRadius: 10, textDecoration: "none", letterSpacing: "0.3px",
               }}>
-                Claim uw datum als Eerste Gast →
+                Bekijk beschikbaarheid →
               </a>
               <DirectBookingUSP tone="onLight" size={12} style={{ marginTop: 14 }} />
             </div>

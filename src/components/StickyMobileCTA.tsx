@@ -1,9 +1,29 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
- * Renders a spacer so page content isn't hidden behind the fixed bar on mobile. */
-export function StickyMobileCTA({ bookingHref = "/#reserveren", locale = "nl" }: { bookingHref?: string; locale?: "nl" | "de" }) {
+ * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
+ *
+ * De CTA belooft niet meer dan wat er achter de klik zit: de bezoeker komt op
+ * het aanvraagformulier, niet op een afrekenpagina. "Bekijk beschikbaarheid"
+ * is dezelfde belofte als op de landingspagina's (LandingTemplate → ctaAvail)
+ * en in i18n/nl.ts → checkAvailability.
+ *
+ * De balk hangt in de root-layout en dekt dus ook /de/*; de taal komt daarom
+ * uit het pad in plaats van uit een prop die niemand meegeeft. */
+
+const COPY = {
+  nl: { cta: "Bekijk beschikbaarheid →", href: "/#reserveren" },
+  de: { cta: "Verfügbarkeit prüfen →", href: "/de#verfugbarkeit" },
+} as const;
+
+export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string; locale?: "nl" | "de" }) {
+  const pathname = usePathname();
+  const taal = locale ?? (pathname === "/de" || pathname?.startsWith("/de/") ? "de" : "nl");
+  const copy = COPY[taal];
+
   return (
     <>
       <div className="hth-sticky-cta-spacer" aria-hidden />
@@ -17,16 +37,16 @@ export function StickyMobileCTA({ bookingHref = "/#reserveren", locale = "nl" }:
           alignItems: "stretch",
         }}
       >
-        <DirectBookingUSP locale={locale} tone="onDark" size={10.5} style={{ gap: "4px 12px" }} />
+        <DirectBookingUSP locale={taal} tone="onDark" size={10.5} style={{ gap: "4px 12px" }} />
         <Link
-          href={bookingHref}
+          href={bookingHref ?? copy.href}
           style={{
             textAlign: "center", padding: "13px 0", borderRadius: 10,
             background: "#B49A5E", color: "#1A2E24", fontWeight: 700, fontSize: 15,
             textDecoration: "none", fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
           }}
         >
-          Claim uw datum →
+          {copy.cta}
         </Link>
       </div>
     </>
