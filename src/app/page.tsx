@@ -6,8 +6,17 @@ import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { BookingFaq } from "@/components/BookingFaq";
-import { LANDING_NAV } from "@/lib/site";
+import { footerLandingLinks } from "@/lib/site";
 const RequestForm = dynamic(() => import("@/components/RequestForm"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Formulier laden...</div> });
+
+/** Interne links in lopende tekst — zelfde stijl als op de landingspagina's. */
+const INLINE_LINK = {
+  color: "#2F4F3E",
+  fontWeight: 500,
+  textDecoration: "underline",
+  textDecorationThickness: 1,
+  textUnderlineOffset: 2,
+} as const;
 
 interface GoogleReview {
   author: string;
@@ -380,13 +389,26 @@ export default function LandingPage() {
           }}>
             Dit type verblijf bestaat op slechts twee plekken in Drenthe, beide hier.
           </p>
+          {/* Contextuele links naar de drie commerciële hoofdpagina's. De
+              homepage is met positie 8,5 de sterkste pagina van de site; deze
+              drie links geven die autoriteit gericht door, in plaats van via
+              een footerblok dat op elke pagina hetzelfde zegt. */}
+          <p style={{
+            fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300,
+            textAlign: "center", margin: "16px auto 0", maxWidth: 620, lineHeight: 1.8,
+          }}>
+            Zoekt u iets specifieks? Lees verder over een{" "}
+            <a href="/wellness-vakantie-drenthe" style={INLINE_LINK}>wellness huisje met privé-sauna</a>, over een{" "}
+            <a href="/romantisch-weekend-weg-drenthe" style={INLINE_LINK}>romantisch weekend weg in Drenthe</a> of over ons{" "}
+            <a href="/vakantiehuis-met-hottub-drenthe" style={INLINE_LINK}>vakantiehuis met privé-jacuzzi</a>.
+          </p>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════
           LODGES
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.bg, padding: "80px 40px" }}>
+      <section id="lodges" style={{ background: T.bg, padding: "80px 40px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Onze accommodaties"
@@ -1214,7 +1236,7 @@ export default function LandingPage() {
               gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
               gap: "12px 32px",
             }}>
-              {LANDING_NAV.map((l) => (
+              {footerLandingLinks("home").map((l) => (
                 <a key={l.href} href={l.href} style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 300,
                   color: "rgba(255,255,255,.8)", textDecoration: "none",
@@ -1302,7 +1324,7 @@ export default function LandingPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {[
-                  { label: "Onze lodges", href: "#" },
+                  { label: "Onze lodges", href: "#lodges" },
                   { label: "De omgeving", href: "#omgeving" },
                   { label: "Reserveren", href: "#reserveren" },
                   { label: "Blog & Verhalen", href: "/blog" },

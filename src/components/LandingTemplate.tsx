@@ -1,7 +1,10 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { SITE_URL, LANDING_NAV } from "@/lib/site";
+import { SITE_URL, footerLandingLinks, landingRol } from "@/lib/site";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
+import { metInlineLinks, zonderInlineLinks } from "@/lib/inline-links";
+import { matrixLinksVoor, pasMatrixToe } from "@/lib/link-matrix";
 
 /* ═══ Reusable SEO landing page ═══
  * Server component (no hydration). One config object drives content +
@@ -92,6 +95,16 @@ const T = {
   sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
+/** Interne links midden in de lopende tekst: zichtbaar als link, maar zonder
+ *  de leesbaarheid van een alinea te breken. */
+const INLINE_LINK: CSSProperties = {
+  color: T.green,
+  fontWeight: 500,
+  textDecoration: "underline",
+  textDecorationThickness: 1,
+  textUnderlineOffset: 2,
+};
+
 /** Kop → anker. Zonder id's kan de inhoudsopgave nergens heen linken en heeft
  *  Google geen kapstok voor "ga naar dit deel"-sitelinks. */
 export function sectionAnchor(section: LandingSection, index: number): string {
@@ -170,7 +183,7 @@ export function landingSchemas(config: LandingConfig): object[] {
       mainEntity: config.faq.map((f) => ({
         "@type": "Question",
         name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
+        acceptedAnswer: { "@type": "Answer", text: zonderInlineLinks(f.a) },
       })),
     });
   }
@@ -192,6 +205,7 @@ const I18N = {
     footerMore: "Meer vakanties in Drenthe",
     toc: "Op deze pagina",
     updated: "Laatst bijgewerkt",
+    verderLezen: "Lees verder",
   },
   de: {
     home: "Huis ter Huynen",
@@ -206,12 +220,33 @@ const I18N = {
     footerMore: "Weitere Unterkünfte in Drenthe",
     toc: "Auf dieser Seite",
     updated: "Zuletzt aktualisiert",
+    verderLezen: "Weiterlesen",
   },
 };
 
 export function LandingTemplate({ config }: { config: LandingConfig }) {
   const t = I18N[config.locale ?? "nl"];
   const anchors = config.sections.map((s, i) => sectionAnchor(s, i));
+
+  /* Interne linkmatrix: de contextuele links die deze pagina hoort te geven.
+     Ze worden in de bestaande alinea's gezet; wat geen plek vindt (omdat de
+     tekst in de admin is herschreven) valt terug op het blok "lees verder". */
+  const matrix = matrixLinksVoor(`/${config.slug}`);
+  const { blokken, rest: matrixRest } = pasMatrixToe(
+    config.sections.flatMap((s) => s.body),
+    matrix,
+  );
+  let alineaOffset = 0;
+  const secties = config.sections.map((s) => {
+    const body = blokken.slice(alineaOffset, alineaOffset + s.body.length);
+    alineaOffset += s.body.length;
+    return { ...s, body };
+  });
+
+  const footerLinks = footerLandingLinks(
+    config.locale === "de" ? "de" : landingRol(config.slug),
+    `/${config.slug}`,
+  );
   const toonToc = config.sections.length >= TOC_DREMPEL;
   const bijgewerkt = config.updatedAt
     ? new Date(config.updatedAt).toLocaleDateString(config.locale === "de" ? "de-DE" : "nl-NL", {
@@ -292,7 +327,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       <section className="lp-pad" style={{ background: T.card, paddingTop: 56, paddingBottom: 8 }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
           <p style={{ fontFamily: T.sans, fontSize: 18, color: T.text, lineHeight: 1.8, margin: 0, fontWeight: 400, borderLeft: `3px solid ${T.gold}`, paddingLeft: 20 }}>
-            {config.intro}
+            {metInlineLinks(config.intro, INLINE_LINK)}
           </p>
 
           {/* Inhoudsopgave: alleen bij lange pagina's. Echte ankerlinks, zodat
@@ -326,7 +361,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       {/* Content sections */}
       <section className="lp-pad" style={{ background: T.card, paddingTop: 32, paddingBottom: 64 }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
-          {config.sections.map((s, i) => (
+          {secties.map((s, i) => (
             <div key={i} id={anchors[i]} className="lp-anchor" style={{ marginTop: i === 0 ? 24 : 44 }}>
               {s.eyebrow && (
                 <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldInk, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>
@@ -338,7 +373,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               </h2>
               {s.body.map((p, j) => (
                 <p key={j} style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, lineHeight: 1.85, margin: "0 0 16px", fontWeight: 300 }}>
-                  {p}
+                  {metInlineLinks(p, INLINE_LINK)}
                 </p>
               ))}
               {s.bullets && (
@@ -346,7 +381,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                   {s.bullets.map((b, k) => (
                     <li key={k} style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.6, padding: "8px 0", borderBottom: k < s.bullets!.length - 1 ? `1px solid ${T.border}` : "none", display: "flex", gap: 10, alignItems: "baseline" }}>
                       <span style={{ color: T.goldInk, flexShrink: 0 }} aria-hidden>✓</span>
-                      {b}
+                      <span>{metInlineLinks(b, INLINE_LINK)}</span>
                     </li>
                   ))}
                 </ul>
@@ -396,6 +431,20 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               )}
             </div>
           ))}
+
+          {/* Links uit de matrix die geen plek in de lopende tekst vonden.
+              Staat er niets in, dan rendert dit blok niet. */}
+          {matrixRest.length > 0 && (
+            <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.8, margin: "36px 0 0", paddingTop: 20, borderTop: `1px solid ${T.border}` }}>
+              <strong style={{ fontWeight: 600, color: T.text }}>{t.verderLezen}:</strong>{" "}
+              {matrixRest.map((l, i) => (
+                <span key={l.href}>
+                  {i > 0 && " · "}
+                  <Link href={l.href} style={INLINE_LINK}>{l.anchor}</Link>
+                </span>
+              ))}
+            </p>
+          )}
         </div>
       </section>
 
@@ -418,7 +467,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                     {f.q}
                   </h3>
                   <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, margin: 0, lineHeight: 1.7 }}>
-                    {f.a}
+                    {metInlineLinks(f.a, INLINE_LINK)}
                   </p>
                 </div>
               ))}
@@ -490,7 +539,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
               gap: "10px 28px",
             }}>
-              {LANDING_NAV.filter((l) => l.href !== `/${config.slug}`).map((l) => (
+              {footerLinks.map((l) => (
                 <Link key={l.href} href={l.href} style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 300,
                   color: "rgba(255,255,255,.8)", textDecoration: "none",

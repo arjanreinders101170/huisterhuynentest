@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
 import { SITE_URL, blogOgImageUrl, jsonLdScript } from "@/lib/site";
+import { metInlineLinks } from "@/lib/inline-links";
+import { matrixLinksVoor, pasMatrixToe } from "@/lib/link-matrix";
 
 export const revalidate = 60;
 
@@ -78,10 +80,19 @@ const T = {
   sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
+/** Interne link midden in de lopende tekst — zie src/lib/inline-links.tsx. */
+const INLINE_LINK = {
+  color: T.green,
+  fontWeight: 500,
+  textDecoration: "underline",
+  textDecorationThickness: 1,
+  textUnderlineOffset: 2,
+} as const;
+
 /** Parses plain-text blog content into React elements.
- *  #   → <h1>, ## → <h2>, ### → <h3>, blank line → paragraph break */
-function renderInhoud(inhoud: string) {
-  const blocks = inhoud.split(/\n\n+/);
+ *  #   → <h1>, ## → <h2>, ### → <h3>, blank line → paragraph break
+ *  [tekst](/pad) wordt een interne link. */
+function renderInhoud(blocks: string[]) {
   return blocks.map((block, i) => {
     const trimmed = block.trim();
     if (!trimmed) return null;
@@ -121,7 +132,7 @@ function renderInhoud(inhoud: string) {
         lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
       }}>
         {trimmed.split("\n").map((line, j, arr) => (
-          <span key={j}>{line}{j < arr.length - 1 && <br />}</span>
+          <span key={j}>{metInlineLinks(line, INLINE_LINK)}{j < arr.length - 1 && <br />}</span>
         ))}
       </p>
     );
@@ -140,6 +151,14 @@ export default async function ArtikelPagina(
   const postOrNull = await getPost(slug);
   if (!postOrNull) notFound();
   const post = postOrNull as BlogPost;
+
+  /* Interne linkmatrix: dit artikel is een donor als het in
+     src/lib/link-matrix.ts staat. De links worden in de bestaande alinea's
+     gezet; wat daar geen plek vindt, komt onder het artikel te staan. */
+  const { blokken, rest: matrixRest } = pasMatrixToe(
+    post.inhoud.split(/\n\n+/),
+    matrixLinksVoor(`/blog/${post.slug}`),
+  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -243,7 +262,24 @@ export default async function ArtikelPagina(
         }}>
           {post.intro}
         </p>
-        {renderInhoud(post.inhoud)}
+        {renderInhoud(blokken)}
+
+        {/* Links uit de matrix die geen plek in de lopende tekst vonden. */}
+        {matrixRest.length > 0 && (
+          <p style={{
+            fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300,
+            lineHeight: 1.8, margin: "32px 0 0", paddingTop: 20,
+            borderTop: `1px solid ${T.border}`,
+          }}>
+            <strong style={{ fontWeight: 600, color: T.text }}>Lees verder:</strong>{" "}
+            {matrixRest.map((l, i) => (
+              <span key={l.href}>
+                {i > 0 && " · "}
+                <Link href={l.href} style={INLINE_LINK}>{l.anchor}</Link>
+              </span>
+            ))}
+          </p>
+        )}
 
         {/* CTA blok */}
         <div style={{

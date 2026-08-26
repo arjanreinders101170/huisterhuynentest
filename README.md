@@ -118,6 +118,31 @@ public/
 
 ---
 
+## 🔗 Interne links (SEO)
+
+Interne links zijn hub-and-spoke georganiseerd in plaats van iedereen-linkt-naar-iedereen:
+
+- **`src/lib/link-matrix.ts`** — de contextuele links per pagina: welke informatieve
+  pagina (donor) welke commerciële pagina (ontvanger) een duw geeft, met welke
+  ankertekst en achter welke alinea. Bij het renderen wordt elke link één keer in
+  de lopende tekst gezet; wat geen plek vindt, komt in het "lees verder"-blok
+  onder het artikel. Zo blijft de link bestaan nadat de tekst in de admin is
+  herschreven.
+- **`src/lib/inline-links.tsx`** — `[ankertekst](/pad)` in redactionele tekst wordt
+  een echte link. Alleen interne paden; een externe href blijft platte tekst.
+- **`footerLandingLinks()` in `src/lib/site.ts`** — het footerblok toont maximaal
+  zes landingspagina's, en per paginatype een andere set. Stond er eerder één
+  blok met álle landingspagina's op elke pagina, dan ontvangt elke pagina evenveel
+  interne links en springt er geen enkele uit.
+
+Controleren waar de matrixlinks landen:
+
+```bash
+node --experimental-strip-types scripts/check-linkmatrix.mjs
+```
+
+---
+
 ## 🔑 API Keys verkrijgen
 
 ### OpenAI
