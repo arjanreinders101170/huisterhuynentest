@@ -1,0 +1,1314 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Wad &amp; Wold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --img-hero:url("../public/heide3.jpg");
+  --img-heide:url("../public/lodge-heide.jpg");
+  --img-eik:url("../public/lodge-eik.jpg");
+  --img-veen:url("../public/wandel_drenthe.jpg");
+  --img-schapen:url("../public/heide1.jpg");
+  --img-borrel:url("../public/borrel1.jpg");
+  --img-wellness:url("../public/welness_drenthe.jpg");
+  --img-fiets:url("../public/rent_a_bike.jpg");
+  --img-ontbijt:url("../public/late_check_out.jpg");
+  --img-band:url("../public/heide2.jpg");
+}
+
+:root{
+  --paper:#F7F3EA;
+  --surface:#FFFDF8;
+  --surface-2:#EDE7D9;
+  --ink:#211D16;
+  --ink-2:#5F5849;
+  --ink-3:#8B8272;
+  --line:#DFD6C3;
+  --line-soft:#EBE4D6;
+
+  --wold:#2F4F3E;
+  --wold-solid:#2F4F3E;
+  --wold-on:#F7F3EA;
+  --wold-soft:#E4EBE4;
+
+  --wad:#3C5F6B;
+  --wad-solid:#3C5F6B;
+  --wad-on:#F7F3EA;
+  --wad-soft:#DFE9EC;
+
+  --gold:#A2853F;
+  --ok:#2F6B4F;
+  --ok-soft:#E1EDE4;
+  --warn:#8A6415;
+  --warn-soft:#F4EBD6;
+  --crit:#8C3A2E;
+  --crit-soft:#F3E2DE;
+
+  --shadow:0 1px 2px rgba(33,29,22,.05), 0 12px 28px -18px rgba(33,29,22,.35);
+  --radius:14px;
+
+  --display:'Fraunces','Iowan Old Style',Georgia,'Times New Roman',serif;
+  --sans:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#15140F;
+    --surface:#1D1B15;
+    --surface-2:#26231A;
+    --ink:#F1EBDD;
+    --ink-2:#B3AA9A;
+    --ink-3:#8A8272;
+    --line:#39352A;
+    --line-soft:#2C2921;
+
+    --wold:#94C4A6;
+    --wold-solid:#3C6A53;
+    --wold-on:#F4FBF6;
+    --wold-soft:#1E2B22;
+
+    --wad:#93BCC9;
+    --wad-solid:#3E6674;
+    --wad-on:#F3FAFC;
+    --wad-soft:#1B272C;
+
+    --gold:#CFAF66;
+    --ok:#78BB95;
+    --ok-soft:#1C2A22;
+    --warn:#D4AC5E;
+    --warn-soft:#2C2517;
+    --crit:#D98A7B;
+    --crit-soft:#2E1E1A;
+
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 30px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15140F;
+  --surface:#1D1B15;
+  --surface-2:#26231A;
+  --ink:#F1EBDD;
+  --ink-2:#B3AA9A;
+  --ink-3:#8A8272;
+  --line:#39352A;
+  --line-soft:#2C2921;
+
+  --wold:#94C4A6;
+  --wold-solid:#3C6A53;
+  --wold-on:#F4FBF6;
+  --wold-soft:#1E2B22;
+
+  --wad:#93BCC9;
+  --wad-solid:#3E6674;
+  --wad-on:#F3FAFC;
+  --wad-soft:#1B272C;
+
+  --gold:#CFAF66;
+  --ok:#78BB95;
+  --ok-soft:#1C2A22;
+  --warn:#D4AC5E;
+  --warn-soft:#2C2517;
+  --crit:#D98A7B;
+  --crit-soft:#2E1E1A;
+
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 30px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-weight:300;
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+button{font:inherit;color:inherit;cursor:pointer;}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px;}
+h1,h2,h3,h4{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;line-height:1.14;letter-spacing:-.012em;}
+
+/* ─────────── prototype chrome ─────────── */
+.chrome{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.chrome-in{
+  max-width:1240px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.proto-mark{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);white-space:nowrap;
+}
+.proto-mark b{color:var(--ink);font-weight:500;}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;margin-left:auto;}
+.tab{
+  background:none;border:0;padding:7px 13px;border-radius:999px;
+  font-size:13.5px;font-weight:400;color:var(--ink-2);
+  transition:background .18s,color .18s;
+}
+.tab:hover{background:var(--surface-2);color:var(--ink);}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper);font-weight:500;}
+.urlbar{
+  width:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:7px 12px;border:1px solid var(--line);border-radius:9px;
+  background:var(--surface);
+  font-family:var(--mono);font-size:12px;color:var(--ink-2);
+}
+.urlbar .path{color:var(--ink);}
+.urlbar .dim{color:var(--ink-3);}
+.flag{
+  font-family:var(--sans);font-size:10.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;white-space:nowrap;
+}
+.flag-idx{background:var(--ok-soft);color:var(--ok);}
+.flag-no{background:var(--crit-soft);color:var(--crit);}
+.urlbar .note{font-family:var(--sans);font-size:12px;color:var(--ink-3);margin-left:auto;}
+
+.screen{display:none;}
+.screen.on{display:block;animation:rise .34s cubic-bezier(.2,.7,.3,1);}
+@keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){
+  .screen.on{animation:none;}
+  *{transition-duration:.01ms !important;}
+}
+
+/* ─────────── site shell ─────────── */
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+.wrap-n{max-width:720px;margin:0 auto;padding:0 24px;}
+.site-head{
+  border-bottom:1px solid var(--line-soft);
+  background:var(--surface);
+}
+.site-head-in{
+  max-width:1120px;margin:0 auto;padding:16px 24px;
+  display:flex;align-items:center;gap:28px;
+}
+.wordmark{font-family:var(--display);font-size:20px;letter-spacing:.02em;white-space:nowrap;}
+.wordmark .amp{font-style:italic;font-weight:300;color:var(--gold);padding:0 1px;}
+.site-nav{display:flex;gap:22px;font-size:14.5px;color:var(--ink-2);flex-wrap:wrap;}
+.site-nav span{cursor:default;padding-bottom:2px;border-bottom:1px solid transparent;}
+.site-nav span:hover{color:var(--ink);border-bottom-color:var(--gold);}
+.site-nav .cur{color:var(--ink);border-bottom-color:var(--gold);}
+.head-cta{margin-left:auto;display:flex;align-items:center;gap:16px;}
+.head-tel{font-size:13.5px;color:var(--ink-2);white-space:nowrap;}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:999px;padding:11px 22px;border:1px solid transparent;
+  font-size:14.5px;font-weight:500;text-decoration:none;white-space:nowrap;
+  transition:transform .16s,box-shadow .16s,background .16s;
+}
+.btn-solid{background:var(--wold-solid);color:var(--wold-on);}
+.btn-solid:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px rgba(47,79,62,.8);}
+.btn-line{border-color:var(--line);background:var(--surface);color:var(--ink);}
+.btn-line:hover{border-color:var(--ink-3);}
+.btn-sm{padding:8px 16px;font-size:13.5px;}
+.btn-wide{width:100%;padding:14px 22px;font-size:15.5px;}
+
+.eyebrow{
+  font-size:11px;font-weight:500;letter-spacing:.19em;text-transform:uppercase;
+  color:var(--gold);margin:0 0 14px;
+}
+.sec{padding:76px 0;}
+.sec-tight{padding:52px 0;}
+.sec-head{max-width:600px;margin-bottom:40px;}
+.sec-head h2{font-size:clamp(26px,3.4vw,38px);}
+.sec-head p{color:var(--ink-2);font-size:16.5px;margin:16px 0 0;}
+.rule{height:1px;background:var(--line-soft);border:0;margin:0;}
+
+/* ─────────── hero ─────────── */
+.hero{position:relative;min-height:clamp(400px,54vh,520px);display:flex;align-items:flex-end;
+  background-image:linear-gradient(to top, rgba(20,24,20,.78) 0%, rgba(20,24,20,.34) 46%, rgba(20,24,20,.12) 100%), var(--img-hero);
+  background-size:cover;background-position:center 62%;}
+.hero-in{max-width:1120px;margin:0 auto;padding:44px 24px 48px;width:100%;color:#F7F3EA;}
+.hero .eyebrow{color:#E4CE96;}
+.hero h1{font-size:clamp(34px,5.4vw,60px);max-width:15ch;font-weight:300;color:#FBF8F1;}
+.hero p{max-width:46ch;font-size:17px;margin:20px 0 0;color:rgba(247,243,234,.86);}
+
+/* availability strip */
+.avail{background:var(--surface);border-bottom:1px solid var(--line-soft);padding-bottom:24px;}
+.avail-in{max-width:1120px;margin:0 auto;padding:0 24px;}
+.avail-card{
+  margin-top:-34px;position:relative;z-index:2;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:0;overflow:hidden;
+}
+.fld{padding:14px 18px;border-right:1px solid var(--line-soft);}
+.fld:nth-child(4){border-right:0;}
+.fld label{display:block;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:500;}
+.fld .val{font-size:15px;color:var(--ink);margin-top:3px;}
+.fld .val.ph{color:var(--ink-3);}
+.avail-card .go{padding:12px;display:flex;align-items:center;}
+.avail-note{font-size:13px;color:var(--ink-3);padding:14px 2px 0;}
+
+/* ─────────── houses ─────────── */
+.houses{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+.house{
+  background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+.house:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--line);}
+.house .ph{aspect-ratio:4/3;background-size:cover;background-position:center;position:relative;}
+.ph-heide{background-image:var(--img-heide);}
+.ph-eik{background-image:var(--img-eik);}
+.ph-soon{background:linear-gradient(150deg,var(--wad-soft),var(--surface-2));display:flex;align-items:center;justify-content:center;}
+.ph-soon span{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--wad);text-align:center;padding:0 20px;}
+.tagline{
+  position:absolute;left:12px;top:12px;
+  background:rgba(20,24,20,.62);color:#F7F3EA;backdrop-filter:blur(4px);
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;
+  padding:5px 11px;border-radius:999px;
+}
+.house-body{padding:20px 22px 24px;display:flex;flex-direction:column;gap:10px;flex:1;}
+.house-body h3{font-size:22px;}
+.house-loc{font-size:13px;color:var(--ink-3);letter-spacing:.03em;}
+.house-body p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.6;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}
+.chip{font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:999px;padding:4px 10px;}
+.house-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.price{font-size:14px;color:var(--ink-2);}
+.price b{font-family:var(--display);font-size:20px;font-weight:400;color:var(--ink);}
+.linkish{font-size:14px;color:var(--wold);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--wold) 40%, transparent);padding-bottom:1px;}
+.linkish:hover{border-bottom-color:var(--wold);}
+
+/* ─────────── two landscapes ─────────── */
+.lands{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden;}
+.land{padding:38px 34px;display:flex;flex-direction:column;gap:14px;min-height:260px;}
+.land-wad{background:var(--wad-soft);}
+.land-wold{background:var(--wold-soft);}
+.land h3{font-size:27px;}
+.land-wad h3{color:var(--wad);}
+.land-wold h3{color:var(--wold);}
+.land p{margin:0;font-size:15px;color:var(--ink-2);}
+.land .kv{font-family:var(--mono);font-size:12px;color:var(--ink-3);}
+.land a{margin-top:auto;align-self:flex-start;}
+
+/* ─────────── usp ─────────── */
+.usps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line-soft);border-radius:var(--radius);overflow:hidden;}
+.usp{background:var(--surface);padding:26px 22px;}
+.usp .n{font-family:var(--display);font-size:26px;color:var(--wold);}
+.usp h4{font-size:15px;font-family:var(--sans);font-weight:500;margin:8px 0 6px;letter-spacing:0;}
+.usp p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.55;}
+
+/* ─────────── reviews ─────────── */
+.revs{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.rev{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:24px;}
+.stars{color:var(--gold);letter-spacing:.16em;font-size:13px;}
+.rev p{font-family:var(--display);font-size:17px;font-weight:300;font-style:italic;line-height:1.5;margin:12px 0 14px;color:var(--ink);}
+.rev cite{font-style:normal;font-size:13px;color:var(--ink-3);}
+
+/* ─────────── stories ─────────── */
+.stories{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.story{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line-soft);background:var(--surface);}
+.story .ph{aspect-ratio:16/10;background-size:cover;background-position:center;}
+.st-veen{background-image:var(--img-veen);}
+.st-schapen{background-image:var(--img-schapen);}
+.st-fiets{background-image:var(--img-fiets);}
+.story-b{padding:18px 20px 22px;}
+.story .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:500;}
+.story h3{font-size:18px;margin:8px 0 6px;}
+.story p{margin:0;font-size:13.5px;color:var(--ink-2);}
+
+/* ─────────── newsletter ─────────── */
+.news{background:var(--wold-solid);color:var(--wold-on);border-radius:var(--radius);padding:44px 40px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center;}
+.news h2{font-size:28px;color:var(--wold-on);}
+.news p{margin:12px 0 0;font-size:15px;color:color-mix(in srgb,var(--wold-on) 78%, transparent);}
+.news-form{display:flex;gap:10px;}
+.news-form .inp{flex:1;background:color-mix(in srgb,var(--wold-on) 12%, transparent);border:1px solid color-mix(in srgb,var(--wold-on) 26%, transparent);border-radius:999px;padding:12px 18px;font-size:14.5px;color:color-mix(in srgb,var(--wold-on) 62%, transparent);}
+.news-form .btn-solid{background:var(--wold-on);color:var(--wold-solid);}
+
+/* ─────────── footer ─────────── */
+.foot{background:var(--surface);border-top:1px solid var(--line);margin-top:0;}
+.foot-in{max-width:1120px;margin:0 auto;padding:56px 24px 28px;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:34px;}
+.foot h4{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:0 0 14px;}
+.foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:var(--ink-2);}
+.foot li:hover{color:var(--ink);}
+.foot-brand p{font-size:13.5px;color:var(--ink-2);margin:12px 0 0;max-width:34ch;}
+.foot-bar{border-top:1px solid var(--line-soft);}
+.foot-bar div{max-width:1120px;margin:0 auto;padding:18px 24px;display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3);}
+.foot-bar .sp{margin-left:auto;}
+
+/* ─────────── collectie / resultaten ─────────── */
+.coll-head{background:var(--surface);border-bottom:1px solid var(--line-soft);padding:34px 0 30px;}
+.crumbs{font-size:12.5px;color:var(--ink-3);margin-bottom:12px;}
+.crumbs span{color:var(--ink-2);}
+.coll-head h1{font-size:clamp(28px,3.6vw,40px);}
+.coll-head p{color:var(--ink-2);max-width:62ch;margin:14px 0 0;font-size:16px;}
+.coll-grid{display:grid;grid-template-columns:250px 1fr;gap:38px;align-items:start;padding:34px 0 76px;}
+.filters{position:sticky;top:104px;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:22px;}
+.filters h3{font-family:var(--sans);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:0 0 14px;}
+.fgroup{padding:14px 0;border-top:1px solid var(--line-soft);}
+.fgroup:first-of-type{border-top:0;padding-top:0;}
+.fgroup .lbl{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:9px;}
+.opt{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-2);padding:3px 0;}
+.box{width:15px;height:15px;border:1px solid var(--line);border-radius:4px;background:var(--surface);flex:none;}
+.box.on{background:var(--wold-solid);border-color:var(--wold-solid);position:relative;}
+.box.on::after{content:"";position:absolute;left:4.5px;top:1.5px;width:4px;height:8px;border:solid var(--wold-on);border-width:0 1.6px 1.6px 0;transform:rotate(43deg);}
+.opt .cnt{margin-left:auto;font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums;}
+.res-bar{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.res-bar .cnt{font-size:14px;color:var(--ink-2);}
+.res-bar .sort{margin-left:auto;font-size:13.5px;color:var(--ink-2);}
+.results{display:flex;flex-direction:column;gap:18px;}
+.result{display:grid;grid-template-columns:290px 1fr;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);overflow:hidden;transition:box-shadow .2s,border-color .2s;}
+.result:hover{box-shadow:var(--shadow);border-color:var(--line);}
+.result .ph{background-size:cover;background-position:center;min-height:206px;position:relative;}
+.res-b{padding:22px 24px;display:grid;grid-template-columns:1fr 190px;gap:22px;}
+.res-b h3{font-size:21px;}
+.res-main .loc{font-size:12.5px;color:var(--ink-3);margin-top:5px;}
+.res-main p{font-size:14px;color:var(--ink-2);margin:10px 0 0;}
+.res-side{border-left:1px solid var(--line-soft);padding-left:20px;display:flex;flex-direction:column;gap:8px;justify-content:center;text-align:right;}
+.res-side .tot{font-family:var(--display);font-size:26px;}
+.res-side .per{font-size:12.5px;color:var(--ink-3);}
+.res-side .brk{font-size:12px;color:var(--ink-3);}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+.pill-ok{background:var(--ok-soft);color:var(--ok);}
+.pill-warn{background:var(--warn-soft);color:var(--warn);}
+.pill-crit{background:var(--crit-soft);color:var(--crit);}
+.result.dim .ph{filter:grayscale(.75);opacity:.7;}
+.alt-note{background:var(--warn-soft);color:var(--warn);font-size:13px;padding:10px 24px;border-top:1px solid color-mix(in srgb,var(--warn) 22%, transparent);grid-column:1/-1;}
+
+/* ─────────── detail ─────────── */
+.gal{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:150px 150px;gap:8px;padding-top:22px;}
+.gal div{background-size:cover;background-position:center;border-radius:8px;}
+.gal .big{grid-row:1/3;background-image:var(--img-heide);border-radius:12px;}
+.g2{background-image:var(--img-band);}
+.g3{background-image:var(--img-wellness);}
+.g4{background-image:var(--img-borrel);}
+.g5{background-image:var(--img-ontbijt);position:relative;}
+.gal .more{position:absolute;inset:0;background:rgba(20,24,20,.5);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#F7F3EA;font-size:13.5px;font-weight:500;}
+.det-grid{display:grid;grid-template-columns:1fr 348px;gap:52px;align-items:start;padding:40px 0 76px;}
+.det h1{font-size:clamp(30px,4vw,42px);}
+.det .sub{font-size:16.5px;color:var(--ink-2);margin:14px 0 0;max-width:56ch;}
+.factbar{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--line-soft);border-radius:12px;overflow:hidden;margin:28px 0 8px;}
+.fact{background:var(--surface);padding:16px 18px;}
+.fact .k{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);font-weight:500;}
+.fact .v{font-size:15px;margin-top:4px;}
+.det h2{font-size:25px;margin-top:44px;}
+.det h3{font-size:18px;margin-top:26px;}
+.det p{color:var(--ink-2);font-size:15.5px;margin:14px 0 0;max-width:66ch;}
+.det ul.feat{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:9px 26px;}
+.det ul.feat li{font-size:14.5px;color:var(--ink-2);display:flex;gap:9px;align-items:baseline;}
+.det ul.feat li::before{content:"—";color:var(--gold);}
+.cal{border:1px solid var(--line-soft);border-radius:12px;padding:20px;margin-top:20px;background:var(--surface);max-width:520px;}
+.cal-head{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:500;margin-bottom:12px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:12.5px;font-variant-numeric:tabular-nums;}
+.cal-grid .dow{color:var(--ink-3);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding-bottom:4px;}
+.day{padding:7px 0;border-radius:6px;color:var(--ink-2);}
+.day.free{background:var(--ok-soft);color:var(--ok);}
+.day.taken{background:var(--surface-2);color:var(--ink-3);text-decoration:line-through;}
+.day.sel{background:var(--wold-solid);color:var(--wold-on);}
+.cal-legend{display:flex;gap:16px;font-size:12px;color:var(--ink-3);margin-top:12px;}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:middle;}
+.faq{border-top:1px solid var(--line-soft);margin-top:12px;}
+.faq details{border-bottom:1px solid var(--line-soft);}
+.faq summary{padding:15px 0;font-size:15.5px;font-weight:500;cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px;}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::before{content:"+";color:var(--gold);font-size:17px;line-height:1;}
+.faq details[open] summary::before{content:"–";}
+.faq p{margin:0 0 16px 24px;font-size:14.5px;}
+.book-card{position:sticky;top:104px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.bc-top{padding:22px 22px 18px;border-bottom:1px solid var(--line-soft);}
+.bc-price{display:flex;align-items:baseline;gap:8px;}
+.bc-price b{font-family:var(--display);font-size:30px;font-weight:400;}
+.bc-price span{font-size:13.5px;color:var(--ink-3);}
+.bc-dates{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:16px;}
+.bc-dates div{padding:10px 14px;}
+.bc-dates div:first-child{border-right:1px solid var(--line);}
+.bc-dates .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:500;}
+.bc-dates .v{font-size:14px;margin-top:2px;}
+.bc-guests{border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-top:8px;}
+.bc-lines{padding:18px 22px;font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:9px;}
+.bc-lines .ln{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums;}
+.bc-lines .ln.tot{border-top:1px solid var(--line-soft);padding-top:11px;margin-top:3px;color:var(--ink);font-weight:500;font-size:15px;}
+.bc-cta{padding:0 22px 20px;}
+.bc-trust{background:var(--surface-2);padding:14px 22px;font-size:12.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:6px;}
+.bc-trust b{font-weight:500;color:var(--ink);}
+.cross{background:var(--surface-2);border-radius:var(--radius);padding:30px 32px;margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center;}
+.cross h3{font-size:21px;}
+.cross p{margin:10px 0 0;font-size:14.5px;color:var(--ink-2);}
+
+/* ─────────── boekingsflow ─────────── */
+.flow-head{background:var(--surface);border-bottom:1px solid var(--line-soft);}
+.flow-head-in{max-width:1000px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;gap:22px;}
+.steps{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap;}
+.stp{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-3);}
+.stp .num{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:11.5px;font-variant-numeric:tabular-nums;}
+.stp.on{color:var(--ink);font-weight:500;}
+.stp.on .num{background:var(--wold-solid);color:var(--wold-on);border-color:var(--wold-solid);}
+.stp.done .num{background:var(--wold-soft);color:var(--wold);border-color:transparent;}
+.stp-sep{width:22px;height:1px;background:var(--line);}
+.flow{max-width:1000px;margin:0 auto;padding:38px 24px 80px;display:grid;grid-template-columns:1fr 330px;gap:40px;align-items:start;}
+.flow h2{font-size:24px;margin-bottom:6px;}
+.flow .hint{font-size:14px;color:var(--ink-2);margin:0 0 22px;}
+.extra{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--line-soft);border-radius:11px;background:var(--surface);margin-bottom:10px;}
+.extra .box{margin-top:3px;}
+.extra .nm{font-size:15px;font-weight:500;}
+.extra .ds{font-size:13.5px;color:var(--ink-2);margin-top:3px;}
+.extra .pr{margin-left:auto;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.extra.req{background:var(--surface-2);}
+.extra.req .pr{color:var(--ink-2);}
+.summary{position:sticky;top:104px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.sum-top{display:flex;gap:14px;padding:16px;border-bottom:1px solid var(--line-soft);}
+.sum-top .th{width:74px;height:60px;border-radius:8px;background-image:var(--img-heide);background-size:cover;background-position:center;flex:none;}
+.sum-top .nm{font-family:var(--display);font-size:17px;}
+.sum-top .dt{font-size:12.5px;color:var(--ink-3);margin-top:4px;}
+.sum-lines{padding:16px;font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:9px;}
+.sum-lines .ln{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums;}
+.sum-lines .ln.tot{border-top:1px solid var(--line-soft);padding-top:11px;color:var(--ink);font-size:16px;font-weight:500;}
+.sum-lines .ln.small{font-size:12.5px;color:var(--ink-3);}
+.pay{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.paybtn{border:1px solid var(--line);border-radius:9px;padding:11px 16px;font-size:14px;background:var(--surface);}
+.paybtn.on{border-color:var(--wold-solid);background:var(--wold-soft);color:var(--wold);font-weight:500;}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.inp-f label{display:block;font-size:12px;color:var(--ink-2);margin-bottom:5px;}
+.inp-f .inp{border:1px solid var(--line);border-radius:9px;padding:11px 14px;font-size:14.5px;background:var(--surface);color:var(--ink-3);}
+
+/* ─────────── structuur / doc ─────────── */
+.doc{max-width:1000px;margin:0 auto;padding:44px 24px 90px;}
+.doc-lede{border-left:2px solid var(--gold);padding-left:22px;margin-bottom:44px;}
+.doc-lede h1{font-size:clamp(28px,3.6vw,40px);max-width:20ch;}
+.doc-lede p{color:var(--ink-2);font-size:16.5px;margin:16px 0 0;max-width:64ch;}
+.doc h2{font-size:26px;margin:52px 0 6px;padding-top:26px;border-top:1px solid var(--line-soft);}
+.doc h2:first-of-type{border-top:0;padding-top:0;}
+.doc h3{font-size:17.5px;margin:30px 0 8px;}
+.doc p{color:var(--ink-2);font-size:15.5px;margin:14px 0 0;max-width:68ch;}
+.doc ul{color:var(--ink-2);font-size:15px;max-width:68ch;padding-left:20px;}
+.doc li{margin:7px 0;}
+.doc strong{font-weight:500;color:var(--ink);}
+.tbl-w{overflow-x:auto;margin-top:20px;border:1px solid var(--line-soft);border-radius:11px;}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:600px;}
+th{text-align:left;font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:12px 16px;background:var(--surface-2);white-space:nowrap;}
+td{padding:13px 16px;border-top:1px solid var(--line-soft);color:var(--ink-2);vertical-align:top;}
+td:first-child{color:var(--ink);}
+td code,p code,li code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--ink);}
+.tree{white-space:pre;font-family:var(--mono);font-size:13px;line-height:1.95;background:var(--surface);border:1px solid var(--line-soft);border-radius:11px;padding:22px 24px;margin-top:20px;overflow-x:auto;color:var(--ink-2);}
+.tree b{font-weight:500;color:var(--ink);}
+.tree .cm{color:var(--ink-3);}
+.tree .no{color:var(--crit);}
+.tree .new{color:var(--wad);}
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px;}
+.kard{border:1px solid var(--line-soft);border-radius:11px;padding:22px;background:var(--surface);}
+.kard h4{font-family:var(--sans);font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin:0 0 10px;}
+.kard.no h4{color:var(--crit);}
+.kard.yes h4{color:var(--ok);}
+.kard ul{margin:0;padding-left:18px;font-size:14px;}
+.callout{background:var(--wold-soft);border-radius:11px;padding:24px 26px;margin-top:24px;}
+.callout .lb{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--wold);font-weight:500;}
+.callout p{margin-top:8px;color:var(--ink);max-width:none;}
+.gauge{display:flex;gap:4px;align-items:center;}
+.gauge i{width:16px;height:6px;border-radius:2px;background:var(--line);display:block;}
+.gauge i.f{background:var(--gold);}
+
+/* ─────────── responsive ─────────── */
+@media (max-width:900px){
+  .houses,.revs,.stories,.usps,.lands,.news,.cross,.cards2{grid-template-columns:1fr;}
+  .foot-in{grid-template-columns:1fr 1fr;}
+  .coll-grid,.det-grid,.flow{grid-template-columns:1fr;}
+  .filters,.book-card,.summary{position:static;}
+  .avail-card{grid-template-columns:1fr 1fr;}
+  .fld{border-right:0;border-bottom:1px solid var(--line-soft);}
+  .avail-card .go{grid-column:1/-1;}
+  .result{grid-template-columns:1fr;}
+  .res-b{grid-template-columns:1fr;}
+  .res-side{border-left:0;border-top:1px solid var(--line-soft);padding-left:0;padding-top:14px;text-align:left;}
+  .factbar{grid-template-columns:1fr 1fr;}
+  .gal{grid-template-columns:1fr 1fr;grid-template-rows:170px 110px;}
+  .gal .big{grid-column:1/-1;grid-row:1;}
+  .g5{display:none;}
+  .det ul.feat{grid-template-columns:1fr;}
+}
+@media (max-width:620px){
+  .site-nav{display:none;}
+  .head-tel{display:none;}
+  .usps{grid-template-columns:1fr;}
+  .foot-in{grid-template-columns:1fr;}
+  .avail-card{grid-template-columns:1fr;}
+  .steps .stp span:last-child{display:none;}
+  .inp-row{grid-template-columns:1fr;}
+}
+</style>
+
+</head>
+<body>
+<header class="chrome">
+  <div class="chrome-in">
+    <div class="proto-mark"><b>Wad &amp; Wold</b> · frontend-mockup v1</div>
+    <nav class="tabs" role="tablist" aria-label="Schermen">
+      <button class="tab" role="tab" aria-selected="true" data-screen="home">Home</button>
+      <button class="tab" role="tab" aria-selected="false" data-screen="collectie">Onze huizen</button>
+      <button class="tab" role="tab" aria-selected="false" data-screen="detail">Huispagina</button>
+      <button class="tab" role="tab" aria-selected="false" data-screen="boeken">Boeken</button>
+      <button class="tab" role="tab" aria-selected="false" data-screen="structuur">Structuur &amp; SEO</button>
+    </nav>
+    <div class="urlbar">
+      <span class="dim">https://</span><span class="path" id="url">wadenwold.nl/</span>
+      <span class="flag flag-idx" id="flag">indexeerbaar</span>
+      <span class="note" id="urlnote">Merkdak · hub voor alle huizen</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════ HOME ══════════════════ -->
+<main class="screen on" id="s-home">
+  <div class="site-head">
+    <div class="site-head-in">
+      <div class="wordmark">Wad <span class="amp">&amp;</span> Wold</div>
+      <nav class="site-nav"><span>Onze huizen</span><span>Het Wold</span><span>Het Wad</span><span>Verhalen</span><span>Praktisch</span></nav>
+      <div class="head-cta">
+        <span class="head-tel">0592 – 12 34 56</span>
+        <span class="btn btn-solid btn-sm">Bekijk beschikbaarheid</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">Drenthe &amp; de Waddenkust</p>
+      <h1>Vakantiehuizen van het wad tot het wold</h1>
+      <p>Een kleine collectie privéhuizen in het noorden. Geen park, geen receptie — wel een eigen landschap voor de deur en één gastheer die opneemt.</p>
+    </div>
+  </section>
+
+  <section class="avail">
+    <div class="avail-in">
+      <div class="avail-card">
+        <div class="fld"><label>Aankomst</label><div class="val">vr 16 okt 2026</div></div>
+        <div class="fld"><label>Vertrek</label><div class="val">ma 19 okt 2026</div></div>
+        <div class="fld"><label>Gasten</label><div class="val">2 volwassenen</div></div>
+        <div class="fld"><label>Landschap</label><div class="val ph">Alle huizen</div></div>
+        <div class="go"><span class="btn btn-solid">Zoek</span></div>
+      </div>
+      <p class="avail-note">3 nachten · direct bevestigd · geen boekingskosten</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">De collectie</p>
+        <h2>Drie huizen, twee landschappen</h2>
+        <p>Elk huis staat op zichzelf: eigen oprit, eigen uitzicht, eigen hottub. Wat ze delen is de manier waarop we ze verhuren — rechtstreeks, met een sleutel die op je telefoon staat.</p>
+      </div>
+      <div class="houses">
+
+        <article class="house">
+          <div class="ph ph-heide"><span class="tagline">Het Wold</span></div>
+          <div class="house-body">
+            <h3>De Heide</h3>
+            <div class="house-loc">Zeijen, Drenthe · 2 personen</div>
+            <p>Aan de rand van de Zeijerstrubben. Vanaf de veranda loop je zo de heide op — geen weg over te steken.</p>
+            <div class="chips"><span class="chip">Privé hottub</span><span class="chip">Sauna</span><span class="chip">Hond welkom</span></div>
+            <div class="house-foot">
+              <div class="price">vanaf <b>€165</b> / nacht</div>
+              <a class="linkish" href="#">Bekijk het huis</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="house">
+          <div class="ph ph-eik"><span class="tagline">Het Wold</span></div>
+          <div class="house-body">
+            <h3>De Eik</h3>
+            <div class="house-loc">Zeijen, Drenthe · 4 personen</div>
+            <p>In de luwte van een eik van tweehonderd jaar. Ruimer dan De Heide, met een tweede slaapkamer onder het dak.</p>
+            <div class="chips"><span class="chip">Privé hottub</span><span class="chip">Open haard</span><span class="chip">Hond welkom</span></div>
+            <div class="house-foot">
+              <div class="price">vanaf <b>€185</b> / nacht</div>
+              <a class="linkish" href="#">Bekijk het huis</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="house">
+          <div class="ph ph-soon"><span>Huis nummer drie<br>foto's volgen</span></div>
+          <div class="house-body">
+            <h3>Aan het Wad</h3>
+            <div class="house-loc">Waddenkust · in voorbereiding</div>
+            <p>Achter de dijk, met de kwelder en het getij voor de deur. We verwachten de eerste gasten in het voorjaar van 2027.</p>
+            <div class="chips"><span class="chip">Opent 2027</span><span class="chip">Locatie volgt</span></div>
+            <div class="house-foot">
+              <div class="price">Nog geen prijzen</div>
+              <a class="linkish" href="#">Hou me op de hoogte</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Waar je terechtkomt</p>
+        <h2>Twee landschappen</h2>
+        <p>De naam is geen woordspeling maar een adres. Het wad is de kust; het wold is het oude bos- en heidelandschap van Drenthe. Kies eerst het landschap, dan het huis.</p>
+      </div>
+      <div class="lands">
+        <div class="land land-wold">
+          <p class="kv">/het-wold/</p>
+          <h3>Het Wold</h3>
+          <p>Heide die in augustus paars kleurt, hunebedden ouder dan de piramides, en boswachterijen waar het 's nachts echt donker is. Assen op een kwartier, Groningen op een half uur.</p>
+          <p class="kv">2 huizen · Zeijen, Drenthe</p>
+          <a class="btn btn-line btn-sm" href="#">Ontdek het Wold</a>
+        </div>
+        <div class="land land-wad">
+          <p class="kv">/het-wad/</p>
+          <h3>Het Wad</h3>
+          <p>Eb en vloed, wierdendorpen en een horizon zonder onderbreking. Werelderfgoed dat twee keer per dag van kleur verandert, en 's avonds de donkerste hemel van Nederland.</p>
+          <p class="kv">1 huis · vanaf voorjaar 2027</p>
+          <a class="btn btn-line btn-sm" href="#">Ontdek het Wad</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-tight">
+    <div class="wrap">
+      <div class="usps">
+        <div class="usp"><div class="n">€0</div><h4>Boekingskosten</h4><p>Geen platformmarge tussen jou en het huis. Dezelfde prijs, meer aandacht.</p></div>
+        <div class="usp"><div class="n">24u</div><h4>Persoonlijk antwoord</h4><p>Je aanvraag komt bij de gastheer binnen, niet in een wachtrij.</p></div>
+        <div class="usp"><div class="n">1</div><h4>Huis per erf</h4><p>Geen slagboom, geen buren aan de andere kant van de schutting.</p></div>
+        <div class="usp"><div class="n">14</div><h4>Dagen annuleren</h4><p>Kosteloos annuleren tot veertien dagen voor aankomst.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Beoordelingen</p>
+        <h2>Wat gasten schrijven</h2>
+        <p style="font-family:var(--mono);font-size:12.5px;color:var(--ink-3);">mockup — live uit Google Business Profile via /api/google-reviews</p>
+      </div>
+      <div class="revs">
+        <div class="rev"><div class="stars">★★★★★</div><p>“Twee dagen niets gedaan en toch het gevoel dat we ergens zijn geweest.”</p><cite>Voorbeeldreview · Google</cite></div>
+        <div class="rev"><div class="stars">★★★★★</div><p>“De hottub met uitzicht op de heide is precies wat er op de foto's staat.”</p><cite>Voorbeeldreview · Google</cite></div>
+        <div class="rev"><div class="stars">★★★★★</div><p>“Aankomen zonder gedoe: code op de telefoon, deur open, klaar.”</p><cite>Voorbeeldreview · Google</cite></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-tight">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Verhalen</p>
+        <h2>Uit het noorden</h2>
+        <p>De artikelen die gasten naar ons toe brengen. Elk verhaal wijst door naar het landschap en het huis waar het over gaat.</p>
+      </div>
+      <div class="stories">
+        <article class="story"><div class="ph st-schapen"></div><div class="story-b"><div class="kicker">Het Wold · seizoen</div><h3>Waar de heide in augustus paars kleurt</h3><p>Vijf plekken binnen twintig minuten van Zeijen, en wanneer je er het beste staat.</p></div></article>
+        <article class="story"><div class="ph st-veen"></div><div class="story-b"><div class="kicker">Het Wold · natuur</div><h3>Het Fochteloërveen bij zonsopkomst</h3><p>Kraanvogels, veenmos en een vlonderpad. Wat je nodig hebt en hoe laat je moet vertrekken.</p></div></article>
+        <article class="story"><div class="ph st-fiets"></div><div class="story-b"><div class="kicker">Het Wold · routes</div><h3>Fietsen van Zeijen naar Norg</h3><p>34 kilometer over zandpaden en door de boswachterij, met twee stops onderweg.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="news">
+        <div>
+          <h2>Als er een huis bijkomt, hoor jij het eerst</h2>
+          <p>Eén mail per maand: wanneer de heide bloeit, wanneer er data vrijkomen, en wanneer het huis aan het wad opengaat.</p>
+        </div>
+        <div class="news-form">
+          <div class="inp">jouw@email.nl</div>
+          <span class="btn btn-solid">Aanmelden</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="foot-in">
+      <div class="foot-brand">
+        <div class="wordmark">Wad <span class="amp">&amp;</span> Wold</div>
+        <p>Kleinschalige vakantiehuizen in Drenthe en aan de Waddenkust. Rechtstreeks te boeken bij de eigenaar.</p>
+      </div>
+      <div>
+        <h4>Onze huizen</h4>
+        <ul><li>De Heide — Zeijen</li><li>De Eik — Zeijen</li><li>Aan het Wad — 2027</li><li>Alle huizen vergelijken</li></ul>
+      </div>
+      <div>
+        <h4>Zo zoeken gasten</h4>
+        <ul><li>Vakantiehuis met hottub Drenthe</li><li>Luxe lodge Drenthe</li><li>Romantisch weekend weg</li><li>Wellness &amp; digitale detox</li><li>Vakantiehuis met hond</li><li>Bijzonder overnachten</li></ul>
+      </div>
+      <div>
+        <h4>Praktisch</h4>
+        <ul><li>Veelgestelde vragen</li><li>Huisregels</li><li>Annuleren &amp; wijzigen</li><li>Contact</li><li>Algemene voorwaarden</li><li>Privacy</li></ul>
+      </div>
+    </div>
+    <div class="foot-bar"><div><span>© 2026 Wad &amp; Wold</span><span>KvK 00000000</span><span class="sp">Nederlands</span><span>Deutsch</span></div></div>
+  </footer>
+</main>
+
+<!-- ══════════════════ COLLECTIE ══════════════════ -->
+<main class="screen" id="s-collectie">
+  <div class="site-head">
+    <div class="site-head-in">
+      <div class="wordmark">Wad <span class="amp">&amp;</span> Wold</div>
+      <nav class="site-nav"><span class="cur">Onze huizen</span><span>Het Wold</span><span>Het Wad</span><span>Verhalen</span><span>Praktisch</span></nav>
+      <div class="head-cta"><span class="head-tel">0592 – 12 34 56</span><span class="btn btn-solid btn-sm">Bekijk beschikbaarheid</span></div>
+    </div>
+  </div>
+
+  <div class="coll-head">
+    <div class="wrap">
+      <div class="crumbs">Wad &amp; Wold <span>›</span> Onze huizen</div>
+      <h1>Onze huizen in Drenthe en aan het Wad</h1>
+      <p>Drie privéhuizen, geen park. Vergelijk ze op landschap, grootte en wat er buiten staat — en zie meteen of ze vrij zijn op jouw data.</p>
+      <div class="chips" style="margin-top:18px;">
+        <span class="chip">16 – 19 okt 2026 ✕</span><span class="chip">2 gasten ✕</span><span class="chip">Privé hottub ✕</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="coll-grid">
+      <aside class="filters">
+        <h3>Verfijnen</h3>
+        <div class="fgroup">
+          <div class="lbl">Landschap</div>
+          <div class="opt"><span class="box on"></span> Het Wold <span class="cnt">2</span></div>
+          <div class="opt"><span class="box"></span> Het Wad <span class="cnt">1</span></div>
+        </div>
+        <div class="fgroup">
+          <div class="lbl">Gasten</div>
+          <div class="opt"><span class="box on"></span> 1 – 2 personen <span class="cnt">2</span></div>
+          <div class="opt"><span class="box"></span> 3 – 4 personen <span class="cnt">1</span></div>
+        </div>
+        <div class="fgroup">
+          <div class="lbl">Buiten</div>
+          <div class="opt"><span class="box on"></span> Privé hottub <span class="cnt">3</span></div>
+          <div class="opt"><span class="box"></span> Sauna <span class="cnt">1</span></div>
+          <div class="opt"><span class="box"></span> Open haard <span class="cnt">2</span></div>
+        </div>
+        <div class="fgroup">
+          <div class="lbl">Meenemen</div>
+          <div class="opt"><span class="box"></span> Hond welkom <span class="cnt">3</span></div>
+          <div class="opt"><span class="box"></span> Laadpaal <span class="cnt">2</span></div>
+        </div>
+      </aside>
+
+      <div>
+        <div class="res-bar">
+          <div class="cnt"><strong style="font-weight:500;color:var(--ink);">2 van 3 huizen</strong> vrij van 16 t/m 19 oktober</div>
+          <div class="sort">Sorteer: aanbevolen ▾</div>
+        </div>
+
+        <div class="results">
+
+          <article class="result">
+            <div class="ph ph-heide"><span class="tagline">Het Wold</span></div>
+            <div class="res-b">
+              <div class="res-main">
+                <span class="pill pill-ok">Vrij op deze data</span>
+                <h3 style="margin-top:10px;">De Heide</h3>
+                <div class="loc">Zeijen, Drenthe · 2 personen · 1 slaapkamer · 48 m²</div>
+                <p>Aan de rand van de Zeijerstrubben, met de hottub op het zuiden. Sauna binnen, heide buiten.</p>
+                <div class="chips" style="margin-top:12px;"><span class="chip">Privé hottub</span><span class="chip">Sauna</span><span class="chip">Hond welkom</span><span class="chip">Laadpaal</span></div>
+              </div>
+              <div class="res-side">
+                <div class="per">3 nachten, 2 gasten</div>
+                <div class="tot">€ 495</div>
+                <div class="brk">€ 165 per nacht<br>+ €55 eindschoonmaak</div>
+                <span class="btn btn-solid btn-sm" style="margin-top:6px;">Bekijk &amp; boek</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="result">
+            <div class="ph ph-eik"><span class="tagline">Het Wold</span></div>
+            <div class="res-b">
+              <div class="res-main">
+                <span class="pill pill-warn">Nog 2 van 3 nachten vrij</span>
+                <h3 style="margin-top:10px;">De Eik</h3>
+                <div class="loc">Zeijen, Drenthe · 4 personen · 2 slaapkamers · 72 m²</div>
+                <p>Ruimer, met een tweede slaapkamer onder het dak en een open haard voor de donkere maanden.</p>
+                <div class="chips" style="margin-top:12px;"><span class="chip">Privé hottub</span><span class="chip">Open haard</span><span class="chip">Hond welkom</span><span class="chip">Laadpaal</span></div>
+              </div>
+              <div class="res-side">
+                <div class="per">2 nachten, 2 gasten</div>
+                <div class="tot">€ 370</div>
+                <div class="brk">€ 185 per nacht<br>+ €55 eindschoonmaak</div>
+                <span class="btn btn-line btn-sm" style="margin-top:6px;">Bekijk data</span>
+              </div>
+            </div>
+            <div class="alt-note">17 oktober is bezet. Wel vrij: <strong>17 t/m 19 oktober</strong> of het hele weekend van 23 t/m 26 oktober.</div>
+          </article>
+
+          <article class="result dim">
+            <div class="ph ph-soon"><span>Foto's volgen</span></div>
+            <div class="res-b">
+              <div class="res-main">
+                <span class="pill pill-crit">Opent voorjaar 2027</span>
+                <h3 style="margin-top:10px;">Aan het Wad</h3>
+                <div class="loc">Waddenkust · locatie wordt bekendgemaakt</div>
+                <p>Het derde huis staat achter de dijk, met de kwelder voor de deur. Nog niet te boeken — wel alvast te volgen.</p>
+              </div>
+              <div class="res-side">
+                <div class="per">Nog geen tarieven</div>
+                <span class="btn btn-line btn-sm">Zet me op de lijst</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="callout" style="margin-top:30px;">
+          <div class="lb">Geen match op deze data?</div>
+          <p style="font-size:15px;">Zeg wanneer je wél kunt en welk landschap je zoekt — dan kijken we handmatig mee. Vaak schuift er nog iets, zeker doordeweeks.</p>
+          <div style="margin-top:14px;"><span class="btn btn-solid btn-sm">Stuur een aanvraag</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div class="foot-in">
+      <div class="foot-brand"><div class="wordmark">Wad <span class="amp">&amp;</span> Wold</div><p>Kleinschalige vakantiehuizen in Drenthe en aan de Waddenkust.</p></div>
+      <div><h4>Onze huizen</h4><ul><li>De Heide — Zeijen</li><li>De Eik — Zeijen</li><li>Aan het Wad — 2027</li></ul></div>
+      <div><h4>Zo zoeken gasten</h4><ul><li>Vakantiehuis met hottub Drenthe</li><li>Luxe lodge Drenthe</li><li>Romantisch weekend weg</li><li>Vakantiehuis met hond</li></ul></div>
+      <div><h4>Praktisch</h4><ul><li>Veelgestelde vragen</li><li>Huisregels</li><li>Contact</li><li>Privacy</li></ul></div>
+    </div>
+    <div class="foot-bar"><div><span>© 2026 Wad &amp; Wold</span><span class="sp">Nederlands</span><span>Deutsch</span></div></div>
+  </footer>
+</main>
+
+<!-- ══════════════════ HUISPAGINA ══════════════════ -->
+<main class="screen" id="s-detail">
+  <div class="site-head">
+    <div class="site-head-in">
+      <div class="wordmark">Wad <span class="amp">&amp;</span> Wold</div>
+      <nav class="site-nav"><span class="cur">Onze huizen</span><span>Het Wold</span><span>Het Wad</span><span>Verhalen</span><span>Praktisch</span></nav>
+      <div class="head-cta"><span class="head-tel">0592 – 12 34 56</span><span class="btn btn-solid btn-sm">Bekijk beschikbaarheid</span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="crumbs" style="padding-top:20px;">Wad &amp; Wold <span>›</span> Huis ter Huynen, Zeijen <span>›</span> De Heide</div>
+    <div class="gal">
+      <div class="big"></div><div class="g2"></div><div class="g3"></div><div class="g4"></div>
+      <div class="g5"><div class="more">+ 14 foto's</div></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="det-grid">
+      <article class="det">
+        <p class="eyebrow">Het Wold · Zeijen, Drenthe</p>
+        <h1>De Heide — privéhuis met hottub op de Drentse heide</h1>
+        <p class="sub">Achtenveertig vierkante meter voor twee, met de Zeijerstrubben achter de tuin en geen buren in zicht. De hottub staat het hele jaar op temperatuur.</p>
+
+        <div class="factbar">
+          <div class="fact"><div class="k">Gasten</div><div class="v">2 personen</div></div>
+          <div class="fact"><div class="k">Slaapkamers</div><div class="v">1 · tweepersoons</div></div>
+          <div class="fact"><div class="k">Oppervlak</div><div class="v">48 m² + veranda</div></div>
+          <div class="fact"><div class="k">Aankomst</div><div class="v">vanaf 15:00</div></div>
+        </div>
+
+        <h2>Het huis</h2>
+        <p>Eén ruimte van voor naar achter: een keuken die op de eettafel uitkomt, een bank die naar buiten kijkt en een bed dat je 's ochtends wakker laat worden met licht van de heidekant. De schuifpui gaat over de volle breedte open. Vloerverwarming onder eikenhout, en een badkamer met regendouche en een eigen sauna voor twee.</p>
+        <p>Wat er niet is: een televisie, een receptie en buren die je hoort. Wat er wel is: goede wifi voor als je toch iets moet, en een gastheer die binnen een uur reageert.</p>
+
+        <h3>Wat je aantreft</h3>
+        <ul class="feat">
+          <li>Privé hottub, 38 °C, het hele jaar</li>
+          <li>Infraroodsauna voor twee</li>
+          <li>Volledig uitgeruste keuken met vaatwasser</li>
+          <li>Regendouche en vloerverwarming</li>
+          <li>Nespresso, thee en een gevulde koelkast bij aankomst</li>
+          <li>Wasmachine en droger</li>
+          <li>Laadpaal op de oprit (11 kW)</li>
+          <li>Hond welkom, €15 per verblijf</li>
+        </ul>
+
+        <h2>Wat er buiten staat</h2>
+        <p>De veranda ligt op het zuidwesten en vangt de avondzon tot na tienen in juni. Vanaf het hek loop je in vier minuten de Zeijerstrubben in — een oud eikenhakhoutbos met kronkelstammen, waar in augustus de heide er direct achter paars kleurt. Er komt geen weg tussen.</p>
+
+        <h2>De omgeving</h2>
+        <p>Zeijen ligt tussen Assen en Norg, op een steenworp van het Ballooërveld en het Fochteloërveen. Boodschappen doe je in Vries (7 minuten), uit eten in Norg (12 minuten) en Groningen bereik je in een half uur.</p>
+        <ul class="feat">
+          <li>Zeijerstrubben — 4 min lopen</li>
+          <li>Hunebed D8 Anderen — 15 min</li>
+          <li>Fochteloërveen — 25 min</li>
+          <li>Assen &amp; Drents Museum — 15 min</li>
+          <li>Norg, terrassen — 12 min</li>
+          <li>Groningen — 30 min</li>
+        </ul>
+
+        <h2>Beschikbaarheid</h2>
+        <div class="cal">
+          <div class="cal-head"><span>‹</span><span>Oktober 2026</span><span>›</span></div>
+          <div class="cal-grid">
+            <div class="dow">ma</div><div class="dow">di</div><div class="dow">wo</div><div class="dow">do</div><div class="dow">vr</div><div class="dow">za</div><div class="dow">zo</div>
+            <div></div><div></div><div></div>
+            <div class="day free">1</div><div class="day taken">2</div><div class="day taken">3</div><div class="day taken">4</div>
+            <div class="day free">5</div><div class="day free">6</div><div class="day free">7</div><div class="day free">8</div><div class="day taken">9</div><div class="day taken">10</div><div class="day taken">11</div>
+            <div class="day free">12</div><div class="day free">13</div><div class="day free">14</div><div class="day free">15</div><div class="day sel">16</div><div class="day sel">17</div><div class="day sel">18</div>
+            <div class="day free">19</div><div class="day free">20</div><div class="day free">21</div><div class="day free">22</div><div class="day taken">23</div><div class="day taken">24</div><div class="day taken">25</div>
+            <div class="day free">26</div><div class="day free">27</div><div class="day free">28</div><div class="day free">29</div><div class="day free">30</div><div class="day free">31</div>
+          </div>
+          <div class="cal-legend">
+            <span><i class="dot" style="background:var(--ok-soft);"></i>vrij</span>
+            <span><i class="dot" style="background:var(--surface-2);"></i>bezet</span>
+            <span><i class="dot" style="background:var(--wold-solid);"></i>jouw keuze</span>
+            <span style="margin-left:auto;">min. 2 nachten · doordeweeks vanaf €165</span>
+          </div>
+        </div>
+
+        <h2>Veelgestelde vragen</h2>
+        <div class="faq">
+          <details open><summary>Is de hottub privé?</summary><p>Ja. Hij staat op je eigen terras, is niet vanaf het pad te zien en wordt tussen elk verblijf ververst. Je deelt hem met niemand.</p></details>
+          <details><summary>Mag onze hond mee?</summary><p>Eén hond is welkom voor €15 per verblijf. Buiten kan hij los op het erf; binnen vragen we hem van de bank te houden.</p></details>
+          <details><summary>Hoe werkt het inchecken?</summary><p>Je krijgt de ochtend van aankomst een code op je telefoon. Vanaf 15:00 open je de deur zelf — je hoeft niemand te treffen, tenzij je dat wilt.</p></details>
+          <details><summary>Kan ik kosteloos annuleren?</summary><p>Tot veertien dagen voor aankomst annuleer je zonder kosten en krijg je de aanbetaling terug. Daarna verrekenen we de eerste nacht.</p></details>
+          <details><summary>Hoe boek ik rechtstreeks?</summary><p>Via de knop hiernaast. Je betaalt 30% aanbetaling online, de rest een week voor aankomst. Geen boekingskosten, en je bevestiging is direct.</p></details>
+        </div>
+
+        <div class="cross">
+          <div>
+            <p class="eyebrow" style="margin-bottom:8px;">Ook in het Wold</p>
+            <h3>Met z'n vieren? Neem De Eik</h3>
+            <p>Tweehonderd meter verderop, twee slaapkamers, dezelfde heide. Vanaf €185 per nacht.</p>
+          </div>
+          <div style="text-align:right;"><span class="btn btn-line btn-sm">Bekijk De Eik</span></div>
+        </div>
+      </article>
+
+      <aside>
+        <div class="book-card">
+          <div class="bc-top">
+            <div class="bc-price"><b>€165</b><span>per nacht · 3 nachten</span></div>
+            <div class="bc-dates">
+              <div><div class="k">Aankomst</div><div class="v">vr 16 okt</div></div>
+              <div><div class="k">Vertrek</div><div class="v">ma 19 okt</div></div>
+            </div>
+            <div class="bc-guests"><div class="k">Gasten</div><div class="v">2 volwassenen · 1 hond</div></div>
+          </div>
+          <div class="bc-lines">
+            <div class="ln"><span>€165 × 3 nachten</span><span>€ 495,00</span></div>
+            <div class="ln"><span>Eindschoonmaak</span><span>€ 55,00</span></div>
+            <div class="ln"><span>Hond</span><span>€ 15,00</span></div>
+            <div class="ln"><span>Toeristenbelasting (2 × 3)</span><span>€ 9,60</span></div>
+            <div class="ln tot"><span>Totaal</span><span>€ 574,60</span></div>
+          </div>
+          <div class="bc-cta"><span class="btn btn-solid btn-wide">Reserveer deze data</span></div>
+          <div class="bc-trust">
+            <span><b>Geen boekingskosten.</b> Rechtstreeks bij de eigenaar.</span>
+            <span><b>30% nu, de rest later.</b> Kosteloos annuleren tot 14 dagen vooraf.</span>
+            <span><b>Direct bevestigd.</b> De deurcode staat op je telefoon.</span>
+          </div>
+        </div>
+        <p style="font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:14px;line-height:1.7;">
+          schema: LodgingBusiness + Offer<br>+ FAQPage + BreadcrumbList<br>+ ImageObject × 8
+        </p>
+      </aside>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div class="foot-in">
+      <div class="foot-brand"><div class="wordmark">Wad <span class="amp">&amp;</span> Wold</div><p>Kleinschalige vakantiehuizen in Drenthe en aan de Waddenkust.</p></div>
+      <div><h4>Onze huizen</h4><ul><li>De Heide — Zeijen</li><li>De Eik — Zeijen</li><li>Aan het Wad — 2027</li></ul></div>
+      <div><h4>Rond De Heide</h4><ul><li>Zeijerstrubben wandelen</li><li>Hunebedden in Drenthe</li><li>Paarse heide in augustus</li><li>Fietsen rond Zeijen</li></ul></div>
+      <div><h4>Praktisch</h4><ul><li>Veelgestelde vragen</li><li>Huisregels</li><li>Contact</li><li>Privacy</li></ul></div>
+    </div>
+    <div class="foot-bar"><div><span>© 2026 Wad &amp; Wold</span><span class="sp">Nederlands</span><span>Deutsch</span></div></div>
+  </footer>
+</main>
+
+<!-- ══════════════════ BOEKEN ══════════════════ -->
+<main class="screen" id="s-boeken">
+  <div class="flow-head">
+    <div class="flow-head-in">
+      <div class="wordmark">Wad <span class="amp">&amp;</span> Wold</div>
+      <div class="steps">
+        <div class="stp on"><span class="num">1</span><span>Verblijf &amp; extra's</span></div>
+        <div class="stp-sep"></div>
+        <div class="stp"><span class="num">2</span><span>Jouw gegevens</span></div>
+        <div class="stp-sep"></div>
+        <div class="stp"><span class="num">3</span><span>Betalen</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div>
+      <h2>Verblijf &amp; extra's</h2>
+      <p class="hint">De Heide · vrijdag 16 t/m maandag 19 oktober 2026 · 2 gasten</p>
+
+      <p style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:26px 0 10px;">Zit er al bij</p>
+      <div class="extra req"><span class="box on"></span><div><div class="nm">Eindschoonmaak</div><div class="ds">Verplicht, één keer per verblijf.</div></div><div class="pr">€ 55,00</div></div>
+      <div class="extra req"><span class="box on"></span><div><div class="nm">Toeristenbelasting</div><div class="ds">€1,60 per persoon per nacht — gemeente Tynaarlo.</div></div><div class="pr">€ 9,60</div></div>
+      <div class="extra req"><span class="box on"></span><div><div class="nm">Bed- en badlinnen</div><div class="ds">Opgemaakte bedden, handdoeken en badjassen.</div></div><div class="pr">inbegrepen</div></div>
+
+      <p style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:30px 0 10px;">Erbij, als je wilt</p>
+      <div class="extra"><span class="box on"></span><div><div class="nm">Hond</div><div class="ds">Eén hond per verblijf, handdoek en bak staan klaar.</div></div><div class="pr">€ 15,00</div></div>
+      <div class="extra"><span class="box"></span><div><div class="nm">Borrelplank bij aankomst</div><div class="ds">Noordelijke kazen, worst en een fles bubbels — staat klaar als je binnenkomt.</div></div><div class="pr">€ 32,50</div></div>
+      <div class="extra"><span class="box"></span><div><div class="nm">Ontbijtmand</div><div class="ds">Vers brood van de bakker in Vries, per ochtend, per persoon.</div></div><div class="pr">€ 18,50 p.p.</div></div>
+      <div class="extra"><span class="box"></span><div><div class="nm">E-bikes</div><div class="ds">Twee e-bikes voor de duur van je verblijf, bezorgd bij het huis.</div></div><div class="pr">€ 22,50 p.d.</div></div>
+      <div class="extra"><span class="box"></span><div><div class="nm">Late check-out tot 14:00</div><div class="ds">Alleen als er die dag niemand na je komt — we bevestigen het de dag ervoor.</div></div><div class="pr">€ 35,00</div></div>
+
+      <div class="callout" style="margin-top:30px;">
+        <div class="lb">Waarom deze volgorde</div>
+        <p style="font-size:15px;">Verplichte kosten staan bóven de optionele, met bedrag en reden erbij. Wie pas bij het afrekenen ontdekt dat er €65 bijkomt, haakt af — en komt terug op Booking.com, waar het totaalbedrag wél meteen zichtbaar was.</p>
+      </div>
+
+      <hr class="rule" style="margin:44px 0 0;">
+      <p style="font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin:22px 0 0;">⟨ hierna: stap 2 en 3 — verkort weergegeven ⟩</p>
+
+      <h2 style="margin-top:26px;">2 · Jouw gegevens</h2>
+      <div class="inp-row"><div class="inp-f"><label>Voornaam</label><div class="inp">Anna</div></div><div class="inp-f"><label>Achternaam</label><div class="inp">de Vries</div></div></div>
+      <div class="inp-row"><div class="inp-f"><label>E-mail</label><div class="inp">anna@voorbeeld.nl</div></div><div class="inp-f"><label>Telefoon</label><div class="inp">06 – 12 34 56 78</div></div></div>
+      <div class="inp-f" style="margin-bottom:12px;"><label>Verwachte aankomsttijd</label><div class="inp">tussen 17:00 en 19:00</div></div>
+      <div class="inp-f"><label>Iets wat we moeten weten? (optioneel)</label><div class="inp">We vieren onze tiende trouwdag.</div></div>
+
+      <h2 style="margin-top:38px;">3 · Betalen</h2>
+      <p class="hint">Je betaalt nu 30%. De rest schrijven we een week voor aankomst af — daar krijg je vooraf bericht van.</p>
+      <div class="pay">
+        <div class="paybtn on">iDEAL</div><div class="paybtn">Creditcard</div><div class="paybtn">Bancontact</div><div class="paybtn">Overboeking</div>
+      </div>
+      <div class="callout" style="margin-top:24px;">
+        <div class="lb">Drie stappen, niet vijf</div>
+        <p style="font-size:15px;">Elke extra stap kost conversie. Kies datum en huis op de huispagina, niet nog eens in de module — die keuze is al gemaakt. De module begint dus bij de extra's, niet bij een lege zoekbalk.</p>
+      </div>
+    </div>
+
+    <aside>
+      <div class="summary">
+        <div class="sum-top">
+          <div class="th"></div>
+          <div><div class="nm">De Heide</div><div class="dt">vr 16 okt – ma 19 okt 2026<br>3 nachten · 2 gasten · 1 hond</div></div>
+        </div>
+        <div class="sum-lines">
+          <div class="ln"><span>€165 × 3 nachten</span><span>€ 495,00</span></div>
+          <div class="ln"><span>Eindschoonmaak</span><span>€ 55,00</span></div>
+          <div class="ln"><span>Hond</span><span>€ 15,00</span></div>
+          <div class="ln"><span>Toeristenbelasting</span><span>€ 9,60</span></div>
+          <div class="ln tot"><span>Totaal</span><span>€ 574,60</span></div>
+          <div class="ln small"><span>Nu te betalen (30%)</span><span>€ 172,38</span></div>
+          <div class="ln small"><span>Op 9 okt 2026</span><span>€ 402,22</span></div>
+          <div style="margin-top:12px;"><span class="btn btn-solid btn-wide">Verder naar gegevens</span></div>
+          <div class="ln small" style="justify-content:center;margin-top:4px;">Kosteloos annuleren tot 2 okt</div>
+        </div>
+      </div>
+      <p style="font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:14px;line-height:1.7;">
+        boeken.wadenwold.nl<br>noindex, nofollow<br>canonical → huispagina<br>GA4 + Meta CAPI: begin_checkout
+      </p>
+    </aside>
+  </div>
+</main>
+
+<!-- ══════════════════ STRUCTUUR ══════════════════ -->
+<main class="screen" id="s-structuur">
+  <div class="doc">
+    <div class="doc-lede">
+      <p class="eyebrow">Onderbouwing</p>
+      <h1>Waarom de site zo in elkaar zit</h1>
+      <p>Wad &amp; Wold is een merkdak, geen vakantiepark. Dat ene verschil bepaalt de hele opbouw — want de standaardtemplate van een reserveringssysteem is precies voor het omgekeerde gebouwd: één terrein met veel accommodatietypes.</p>
+    </div>
+
+    <h2>Wat de Booking&nbsp;Experts-template doet</h2>
+    <p>Het systeem denkt in vier lagen. Die lagen zijn goed gekozen — ons probleem zit niet in het model, maar in de website-template die erbovenop zit.</p>
+    <div class="tbl-w">
+      <table>
+        <thead><tr><th>Laag in het systeem</th><th>Wat het is</th><th>Wat de bezoeker ervan ziet</th></tr></thead>
+        <tbody>
+          <tr><td>Administratie</td><td>Het bedrijf</td><td>Het merk in de header — bij ons: Wad &amp; Wold</td></tr>
+          <tr><td>Vestiging</td><td>Eén park of terrein, met adres en tarieven</td><td>De homepage van een park — bij ons: een <strong>locatie</strong>, zoals Huis ter Huynen in Zeijen</td></tr>
+          <tr><td>Accommodatietype</td><td>Wat er geboekt wordt: prijs, foto's, kenmerken</td><td>De kaart in de zoekresultaten en de detailpagina — bij ons: <strong>het huis</strong></td></tr>
+          <tr><td>Accommodatie</td><td>De fysieke unit met een nummer</td><td>Niets. Blijft intern, en dat hoort ook zo</td></tr>
+          <tr><td>Bijboekbare artikelen</td><td>Schoonmaak, linnen, toeristenbelasting, extra's</td><td>Stap 1 van de boekingsflow</td></tr>
+          <tr><td>Zoek &amp; Boek</td><td>De funnel: mandje, gegevens, betaling</td><td>Een module op een eigen (sub)domein — niet indexeerbaar</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-family:var(--mono);font-size:12px;color:var(--ink-3);">Opmerking bij deze tabel: bookingexperts.nl was vanuit deze omgeving niet te openen. Bovenstaande is gebaseerd op hun publieke productbeschrijving en het standaardpatroon van parkwebsites — laat het bevestigen bij je accountmanager voordat het bindend wordt.</p>
+
+    <h2>Waar die template voor ons misgaat</h2>
+    <div class="cards2">
+      <div class="kard no">
+        <h4>De parktemplate</h4>
+        <ul>
+          <li>Opent met een <strong>zoekbalk over de hero</strong> — logisch bij 40 types, zinloos bij 3 huizen.</li>
+          <li>De typegrid is ontworpen voor 12+ kaarten. Met drie kaarten oogt de pagina leeg in plaats van exclusief.</li>
+          <li>Kent één adres per vestiging. Twee landschappen die elk hun eigen zoekvraag zijn, passen er niet in.</li>
+          <li>Content — verhalen, themapagina's — heeft naast de types geen plek.</li>
+          <li>Alles hangt aan parameter-URL's die Google niet mag indexeren, dus er blijft geen SEO over.</li>
+        </ul>
+      </div>
+      <div class="kard yes">
+        <h4>Wat wij ervoor in de plaats doen</h4>
+        <ul>
+          <li>De hero toont het <strong>landschap</strong>; de datumbalk staat eronder, waar hij niemand in de weg zit.</li>
+          <li>Drie huizen krijgen ruimte in plaats van een raster: grote foto, eigen naam, eigen landschap.</li>
+          <li>Het landschap is een eigen laag — <code>/het-wold/</code> en <code>/het-wad/</code> — met eigen zoekvraag en eigen content.</li>
+          <li>Alles wat gevonden moet worden staat op de eigen stack; alleen de funnel draait bij het systeem.</li>
+          <li>Prijs en beschikbaarheid komen server-side via de API op de huispagina — indexeerbaar, dus.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>De verdeling: wat waar draait</h2>
+    <div class="tbl-w">
+      <table>
+        <thead><tr><th>Onderdeel</th><th>Waar</th><th>Indexeerbaar</th><th>Waarom</th></tr></thead>
+        <tbody>
+          <tr><td>Merk, huizen, landschappen, verhalen, themapagina's</td><td>Eigen Next.js-stack</td><td><span class="flag flag-idx">ja</span></td><td>Hier zit alle organische winst. Volledige controle over titels, schema en snelheid.</td></tr>
+          <tr><td>Prijs en beschikbaarheid op de huispagina</td><td>API van het boekingssysteem, server-side gerenderd</td><td><span class="flag flag-idx">ja</span></td><td>Een prijs in een iframe ziet Google niet. Server-side wél — en dat voedt het Offer-schema.</td></tr>
+          <tr><td>Mandje, gegevens, betaling</td><td>Zoek &amp; Boek op <code>boeken.wadenwold.nl</code></td><td><span class="flag flag-no">nee</span></td><td>Niets te winnen, wel dunne parameterpagina's te verliezen. Noindex, nofollow.</td></tr>
+          <tr><td>Mijn boeking, gastportaal</td><td>Boekingssysteem / bestaande gasten-app</td><td><span class="flag flag-no">nee</span></td><td>Persoonlijke data. Achter een link met token, buiten de sitemap.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>De URL-structuur</h2>
+    <div class="tree">
+<b>wadenwold.nl/</b>
+├── <b>/</b>                                  <span class="cm">merkdak · "vakantiehuizen noord-nederland" + merknaam</span>
+├── <b>/huizen/</b>                           <span class="cm">vergelijken + filteren · geen tweede regio-landingspagina</span>
+├── <b>/huis-ter-huynen/</b>                  <span class="cm">LOCATIE Zeijen ← 301 van huisterhuynen.nl/</span>
+│   ├── <b>/huis-ter-huynen/de-heide/</b>     <span class="cm">HUIS · de geldpagina</span>
+│   └── <b>/huis-ter-huynen/de-eik/</b>       <span class="cm">HUIS</span>
+├── <b>/&lt;locatie-2&gt;/</b>                      <span class="new">LOCATIE Waddenkust · vanaf 2027</span>
+│   └── <b>/&lt;locatie-2&gt;/&lt;huis&gt;/</b>
+├── <b>/het-wold/</b>                         <span class="cm">LANDSCHAP · "vakantiehuis drenthe"</span>
+├── <b>/het-wad/</b>                          <span class="new">LANDSCHAP · pas publiceren als er iets te boeken is</span>
+├── <b>/vakantiehuis-met-hottub-drenthe/</b>  <span class="cm">THEMA · pad-identiek overgezet</span>
+├── <b>/luxe-lodge-drenthe/</b>               <span class="cm">THEMA</span>
+├── <b>/romantisch-weekend-weg-drenthe/</b>   <span class="cm">THEMA · nog 11 van deze</span>
+├── <b>/verhalen/</b> → <b>/verhalen/&lt;artikel&gt;/</b>   <span class="cm">de spokes die naar de hubs linken</span>
+├── <b>/praktisch/</b>                        <span class="cm">faq · huisregels · annuleren · contact</span>
+└── <b>/de/…</b>                              <span class="cm">Duitse markt, hreflang-paar per pagina</span>
+
+<b>boeken.wadenwold.nl/…</b>                   <span class="no">noindex, nofollow · buiten de sitemap</span>
+    </div>
+    <p><strong>Eén regel maakt de migratie veilig:</strong> themapagina's houden hun pad en wisselen alleen van domein. <code>huisterhuynen.nl/vakantiehuis-met-hottub-drenthe</code> wordt <code>wadenwold.nl/vakantiehuis-met-hottub-drenthe</code>. Een domeinverhuizing en een padwijziging tegelijk doen, is twee keer risico voor één verhuizing.</p>
+    <p>Zodra het derde huis er is, krijgt elk thema een eigen regio-variant — <code>/vakantiehuis-met-hottub-groningen/</code> naast de Drentse. Twee pagina's op hetzelfde thema zonder regio-onderscheid vechten om dezelfde zoekopdracht en verliezen allebei.</p>
+
+    <h2>Per paginatype: één taak, één H1</h2>
+    <div class="tbl-w">
+      <table>
+        <thead><tr><th>Paginatype</th><th>Zoekvraag die het pakt</th><th>H1</th><th>Schema</th></tr></thead>
+        <tbody>
+          <tr><td>Merkdak <code>/</code></td><td>merknaam · "vakantiehuis noord-nederland"</td><td>Vakantiehuizen van het wad tot het wold</td><td>Organization · WebSite · BreadcrumbList</td></tr>
+          <tr><td>Landschap <code>/het-wold/</code></td><td>"vakantiehuis drenthe" · "overnachten drenthe"</td><td>Vakantiehuizen in Drenthe, op de heide bij Zeijen</td><td>CollectionPage · FAQPage · Breadcrumb</td></tr>
+          <tr><td>Locatie <code>/huis-ter-huynen/</code></td><td>merknaam "huis ter huynen"</td><td>Huis ter Huynen — twee lodges op de heide in Zeijen</td><td>LodgingBusiness · Breadcrumb</td></tr>
+          <tr><td>Huis <code>/…/de-heide/</code></td><td>"privéhuis hottub drenthe 2 personen"</td><td>De Heide — privéhuis met hottub op de Drentse heide</td><td>LodgingBusiness · Offer · FAQPage · Breadcrumb</td></tr>
+          <tr><td>Thema <code>/vakantiehuis-met-hottub-drenthe/</code></td><td>exact-match themazoekopdracht</td><td>Vakantiehuis met hottub in Drenthe</td><td>FAQPage · Breadcrumb · ItemList naar de huizen</td></tr>
+          <tr><td>Verhaal <code>/verhalen/…/</code></td><td>informatief, bovenin de trechter</td><td>de titel van het artikel</td><td>Article · Breadcrumb</td></tr>
+          <tr><td>Resultaten <code>/huizen/?…</code></td><td>geen — dit is gereedschap</td><td>Onze huizen</td><td>noindex bij parameters, canonical naar <code>/huizen/</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Niet te druk, wel voldoende</h2>
+    <p>De vraag is niet hoeveel content er op een pagina past, maar hoeveel er nodig is om één zoekvraag beter te beantwoorden dan de concurrent — en dan stoppen. Dit is het budget dat we aanhouden.</p>
+    <div class="tbl-w">
+      <table>
+        <thead><tr><th>Paginatype</th><th>Woorden</th><th>H2's</th><th>Foto's</th><th>Interne links</th><th>Dichtheid</th></tr></thead>
+        <tbody>
+          <tr><td>Merkdak</td><td>350 – 500</td><td>5</td><td>8 – 10</td><td>12 – 18</td><td><span class="gauge"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></span></td></tr>
+          <tr><td>Landschap</td><td>700 – 1.000</td><td>4 – 5</td><td>5 – 7</td><td>10 – 14</td><td><span class="gauge"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></span></td></tr>
+          <tr><td>Locatie</td><td>500 – 700</td><td>3 – 4</td><td>6 – 8</td><td>6 – 8</td><td><span class="gauge"><i class="f"></i><i class="f"></i><i></i><i></i><i></i></span></td></tr>
+          <tr><td>Huis</td><td>900 – 1.300</td><td>5 – 6</td><td>15 – 20</td><td>8 – 12</td><td><span class="gauge"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></td></tr>
+          <tr><td>Thema</td><td>700 – 900</td><td>3</td><td>4 – 6</td><td>6 – 8</td><td><span class="gauge"><i class="f"></i><i class="f"></i><i class="f"></i><i></i><i></i></span></td></tr>
+          <tr><td>Verhaal</td><td>1.200 – 1.800</td><td>5 – 8</td><td>3 – 5</td><td>3 – 4</td><td><span class="gauge"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <div class="lb">De drie regels erachter</div>
+      <p><strong>Eén primaire actie per scherm.</strong> Een tweede knop mag, een derde niet. Op de huispagina wint “Reserveer deze data”; alles daarnaast is een tekstlink.</p>
+      <p><strong>Boven de vouw staat één ding.</strong> Op de homepage het landschap, op de huispagina de foto's met de prijs ernaast. De datumbalk mag eronder — wie zoekt, scrollt.</p>
+      <p><strong>Elke sectie beantwoordt een vraag die de bezoeker echt stelt.</strong> Kan ik hier met de hond terecht? Hoe kom ik binnen? Wat kost het écht? Wat er geen vraag beantwoordt, gaat eruit.</p>
+    </div>
+
+    <h2>De domeinkeuze — de enige beslissing die je maar één keer neemt</h2>
+    <div class="tbl-w">
+      <table>
+        <thead><tr><th>Optie</th><th>Wat het kost</th><th>Advies</th></tr></thead>
+        <tbody>
+          <tr><td>Alles naar <code>wadenwold.nl</code>, oude domein 301</td><td>Twee tot zes maanden dip; merkzoekopdrachten op “huis ter huynen” moeten opnieuw landen — dat vangt de locatiepagina op</td><td><strong>Doen.</strong> Eén autoriteitspot die meegroeit met huis vier en vijf</td></tr>
+          <tr><td>Twee domeinen naast elkaar</td><td>Autoriteit splitst, dezelfde thema's op twee plekken, dubbel onderhoud</td><td>Niet doen</td></tr>
+          <tr><td>Wad &amp; Wold alleen als merkverhaal op het huidige domein</td><td>Werkt tot huis drie. Daarna staat er een Waddenhuis op een domein dat “Drenthe” heet</td><td>Alleen als huis drie er niet komt</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Verhuis in één keer, niet in etappes. Zet de 301's per pagina klaar (geen ketens, geen verzamel-redirect naar de homepage), houd het oude domein minstens drie jaar aan, en dien beide sitemaps in. Reken op een dip van vier tot acht weken — dat is normaal, en niet het moment om de structuur nóg eens om te gooien.</p>
+
+    <h2>Wat we bewust laten liggen</h2>
+    <ul>
+      <li><strong>Geen aggregateRating in het schema</strong> zolang er geen echte, verifieerbare beoordelingen staan. Sterren die je jezelf toekent, zijn een handmatige maatregel waard — en die kost meer dan hij oplevert.</li>
+      <li><strong>Geen jacht op het VacationRental-rich-result.</strong> Dat vraagt deelname aan Googles vakantiewoning-programma via Hotel Center; voor een verhuurder met drie huizen leveren <code>LodgingBusiness</code>, <code>Offer</code> en <code>FAQPage</code> meer op voor minder werk.</li>
+      <li><strong>Geen “nog 1 beschikbaar”-teller</strong> die niet klopt. Bij drie huizen weet de bezoeker dat je het verzint, en dan is het vertrouwen weg op de pagina waar het het duurst is.</li>
+      <li><strong>Geen carrousel in de hero.</strong> Slide twee wordt niet gezien, en de eerste foto laadt trager. Eén sterke foto, de rest in de galerij.</li>
+      <li><strong>Geen chatvenster dat vanzelf opengaat.</strong> De bestaande conciërge blijft, maar op uitnodiging.</li>
+      <li><strong>Geen boekingsmodule in een iframe op de huispagina.</strong> Prijs en beschikbaarheid server-side; alleen de funnel op het subdomein.</li>
+    </ul>
+
+    <h2>Wat er als eerste af moet</h2>
+    <ul>
+      <li><strong>Nu:</strong> merkdak, twee huispagina's, de locatiepagina en <code>/het-wold/</code>. Vier sjablonen, meer niet.</li>
+      <li><strong>Bij de migratie:</strong> de dertien themapagina's en de verhalen pad-identiek over, 301's per pagina, sitemaps opnieuw indienen.</li>
+      <li><strong>Als het derde huis rond is:</strong> <code>/het-wad/</code>, de tweede locatiepagina, en de regio-varianten van de best presterende thema's.</li>
+      <li><strong>Pas bij vijf of meer huizen:</strong> <code>/huizen/</code> uitbouwen tot een echte vergelijker met kaartweergave.</li>
+    </ul>
+  </div>
+</main>
+
+<script>
+(function(){
+  var meta = {
+    home:      {url:"wadenwold.nl/",                              idx:true,  note:"Merkdak · hub voor alle huizen"},
+    collectie: {url:"wadenwold.nl/huizen/?van=16-10&tot=19-10&gasten=2", idx:false, note:"Gereedschap · parameters noindex, canonical → /huizen/"},
+    detail:    {url:"wadenwold.nl/huis-ter-huynen/de-heide/",     idx:true,  note:"De geldpagina · LodgingBusiness + Offer + FAQPage"},
+    boeken:    {url:"boeken.wadenwold.nl/reserveren/de-heide",    idx:false, note:"Zoek & Boek · buiten de sitemap"},
+    structuur: {url:"— blauwdruk, geen pagina —",                 idx:null,  note:"Onderbouwing van de indeling hierboven"}
+  };
+  var tabs = document.querySelectorAll('.tab');
+  var url = document.getElementById('url');
+  var flag = document.getElementById('flag');
+  var note = document.getElementById('urlnote');
+  var dim = url.previousElementSibling;
+
+  function show(name){
+    tabs.forEach(function(t){ t.setAttribute('aria-selected', String(t.dataset.screen === name)); });
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on', s.id === 's' + '-' + name); });
+    var m = meta[name];
+    url.textContent = m.url;
+    note.textContent = m.note;
+    dim.style.display = m.idx === null ? 'none' : '';
+    if (m.idx === null) { flag.style.display = 'none'; }
+    else {
+      flag.style.display = '';
+      flag.textContent = m.idx ? 'indexeerbaar' : 'noindex';
+      flag.className = 'flag ' + (m.idx ? 'flag-idx' : 'flag-no');
+    }
+    window.scrollTo({top:0, behavior:'instant'});
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.dataset.screen); }); });
+})();
+</script>
+</body>
+</html>
