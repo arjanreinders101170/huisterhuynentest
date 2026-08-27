@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
     guestId = data;
   } catch (e) { console.error("Guest upsert failed:", e); }
 
-  await safeInsertBookingRequest({
+  const aanvraagId = await safeInsertBookingRequest({
     bron: "homepage",
     guest_id: guestId,
     gast_naam: naam,
@@ -178,6 +178,14 @@ export async function POST(request: NextRequest) {
     // Herkomst: welk kanaal deze aanvraag heeft opgeleverd.
     ...attributieKolommen(_attr),
   });
+
+  /* De insert mag de aanvraag niet opeten. Lukt hij niet, dan bestaat deze
+   * aanvraag alleen nog in deze mail — en dan moet dat er ook in staan,
+   * anders wacht de gast op een aanbod dat nooit in de admin verschijnt. */
+  const nietOpgeslagen = !aanvraagId;
+  if (nietOpgeslagen) {
+    console.error(`[reservering] aanvraag niet opgeslagen — alleen per e-mail bekend (${lodge} ${checkIn}–${checkOut})`);
+  }
 
   const resendKey = process.env.RESEND_API_KEY;
   if (!resendKey) {
@@ -211,6 +219,11 @@ export async function POST(request: NextRequest) {
         title: "Nieuwe reserveringsaanvraag",
         intro: `Een nieuwe aanvraag voor Lodge ${esc(lodgeLabel)} via de homepage. Beoordeel in admin en stuur een offerte.`,
         blocks: [
+          ...(nietOpgeslagen ? [calloutBlock(
+            "⚠️ Niet opgeslagen in de admin",
+            "Deze aanvraag kon niet in de database worden gezet en staat dus <strong>niet</strong> in de Aanvragen-tab. " +
+            "Neem hem handmatig over of reageer rechtstreeks op deze mail.",
+          )] : []),
           infoBlock("Aanvraag", periodLine, subLine),
           calloutBlock("Geschatte prijs", prijsLine),
           detailsBlock("Gast", [

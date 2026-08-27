@@ -223,6 +223,7 @@ export default function BookingCalendar() {
   const [huisdieren, setHuisdieren] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   const [promoCode, setPromoCode] = useState("");
   const [promoOpen, setPromoOpen] = useState(false);
@@ -397,6 +398,7 @@ export default function BookingCalendar() {
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
+    setError("");
     setSending(true);
     try {
       const priceLabel = priceBreakdown.map(b => b.label).join(" / ");
@@ -422,7 +424,7 @@ export default function BookingCalendar() {
         user: { ...baseIC.user, em: email.trim(), fn: firstName, ln: lastName },
       });
 
-      await fetch("/api/reservering", {
+      const res = await fetch("/api/reservering", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -443,6 +445,16 @@ export default function BookingCalendar() {
         }),
       });
 
+      /* Het antwoord telt. Zonder deze controle kreeg de gast het
+       * bevestigingsscherm ook als de server de aanvraag had geweigerd —
+       * en dan wacht hij op een aanbod dat nooit in de admin is aangekomen. */
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error || "Er ging iets mis. Probeer het opnieuw of WhatsApp ons.");
+        setSending(false);
+        return;
+      }
+
       /* ─── Meta: Lead (after request landed) — reuse the same event_id so
        * a later Mollie Purchase still has its own dedup key. */
       const baseLead = baseEnvelope("Lead");
@@ -454,7 +466,9 @@ export default function BookingCalendar() {
       });
 
       setSent(true);
-    } catch {}
+    } catch {
+      setError("Er ging iets mis. Probeer het opnieuw of WhatsApp ons.");
+    }
     setSending(false);
   };
 
@@ -750,6 +764,12 @@ export default function BookingCalendar() {
                         </div>
                       )}
                     </div>
+
+                    {error && (
+                      <div style={{ marginBottom: 12, padding: "10px 14px", borderRadius: 8, background: "rgba(198,40,40,.07)", border: "1px solid #FFCDD2", fontFamily: T.sans, fontSize: 13, color: "#C62828" }}>
+                        {error}
+                      </div>
+                    )}
 
                     <button onClick={handleSubmit} disabled={!canSubmit} style={{
                       width: "100%", padding: "15px", borderRadius: 12, border: "none",
