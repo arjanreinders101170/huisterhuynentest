@@ -1,23 +1,39 @@
 # Mockups
 
-## wad-en-wold.html
+Twee frontend-mockups van het merkdak **Wad & Wold**: één merk boven meerdere
+vakantiewoningen. Beide zijn zelfstandige HTML-bestanden die de foto's uit
+`../public/` lezen — open ze rechtstreeks in een browser.
 
-Frontend-mockup van het merkdak **Wad & Wold**: één merk boven meerdere
-vakantiewoningen, verspreid over twee landschappen (de Waddenkust en het
-Drentse wold).
+Bovenin schakel je tussen de schermen; de adresbalk erboven laat per scherm
+zien welke URL erbij hoort en of die pagina geïndexeerd mag worden.
 
-Open het bestand rechtstreeks in een browser — het is één zelfstandig
-HTML-bestand dat de foto's uit `../public/` leest. Bovenin schakel je tussen
-vijf schermen; de adresbalk erboven laat per scherm zien welke URL erbij hoort
-en of die pagina geïndexeerd mag worden.
+## wad-en-wold-v2.html — huidige versie
+
+Payoff: *luxe vakantiehuizen tussen wad en wold*. Zes landschappen (zon, zee,
+strand, wad, duinen, bos & heide) in plaats van twee streken, een relaxte
+luxe-sfeer zonder gastheer-taal, en de omzetknoppen erbij: arrangementen,
+cadeaubon en midweek.
 
 | Scherm | Wat het toont |
 |---|---|
-| Home | Het merkdak: landschap eerst, datumbalk eronder, drie huizen |
-| Onze huizen | Resultaten met filters, inclusief een deels bezet huis en een huis dat nog niet open is |
-| Huispagina | De geldpagina: galerij, sticky boekingskaart, kalender, FAQ |
-| Boeken | De funnel in drie stappen, met verplichte kosten vóór de optionele |
-| Structuur & SEO | Waarom de opbouw zo is: de lagen van het reserveringssysteem, de URL-structuur, het contentbudget per paginatype en de domeinkeuze |
+| Home | Diptiek-hero, landschappenband, drie huizen, arrangementen, midweek |
+| Onze huizen | Resultaten met filters op wat er voor de deur ligt |
+| Huispagina | Galerij, sticky boekingskaart, kalender, arrangement-upsell, FAQ |
+| Boeken | Drie stappen; verplichte kosten vóór de optionele, arrangementen erachter |
+| Structuur & SEO | De payoff-versus-zoekterm-afweging, de landschapslaag, URL-structuur, contentbudget en de domeinkeuze |
+| Bouwplan | De `LodgeId`-blokkade, het datacontract dat ervoor in de plaats komt, route-naar-bestand, kwaliteitsbudget, shotlist en volgorde |
 
-De inhoud is mockup-materiaal. Prijzen sluiten aan op `PRICE_FROM_EUR` uit
-`src/lib/site.ts`; reviews en het derde huis zijn als voorbeeld gemarkeerd.
+Vijf van de zes landschapstegels zijn ontworpen kleurvlakken in afwachting van
+fotografie. Ze zijn expres als art direction vormgegeven, niet als kapotte
+afbeelding. De shotlist staat in het tabblad Bouwplan.
+
+## wad-en-wold.html — eerste versie
+
+Bewaard ter vergelijking. Zelfde structuur, maar met heide en bos als
+dominante sfeer en zonder de marketing- en bouwlaag.
+
+---
+
+Alle inhoud is mockup-materiaal. Prijzen sluiten aan op `PRICE_FROM_EUR` uit
+`src/lib/site.ts`; reviews, het derde huis en de arrangementsprijzen zijn als
+voorbeeld gemarkeerd.
