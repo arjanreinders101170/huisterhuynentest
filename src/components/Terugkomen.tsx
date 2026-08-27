@@ -41,6 +41,7 @@ export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
   const [returningGuest, setReturningGuest] = useState<string | null>(null);
 
   const checkGuest = async (val: string) => {
@@ -184,9 +185,10 @@ export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: 
 
   const submit = async () => {
     if (!canSubmit || !matchedLodge) return;
+    setError("");
     setLoading(true);
     try {
-      await fetch("/api/terugkomen", {
+      const res = await fetch("/api/terugkomen", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -201,7 +203,25 @@ export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: 
           bron,
         }),
       });
-    } catch {}
+
+      /* Het bedankscherm hoort alleen te verschijnen als de aanvraag ook
+       * echt is aangenomen. Verscheen het ook bij een fout, dan wachtte de
+       * gast op een aanbod dat nooit in de admin is beland. */
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error || (lang === "de"
+          ? "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+          : "Er ging iets mis. Probeer het opnieuw of app ons via WhatsApp."));
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setError(lang === "de"
+        ? "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+        : "Er ging iets mis. Probeer het opnieuw of app ons via WhatsApp.");
+      setLoading(false);
+      return;
+    }
     setLoading(false);
     setSuccess(true);
   };
@@ -544,6 +564,12 @@ export function Terugkomen({ onNavigate, preferredLodge, bron = "terugkomer" }: 
                 rows={2} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: `1px solid ${T.border}`, background: T.card, fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 300, outline: "none", resize: "none", lineHeight: 1.5 }} />
             </div>
           </div>
+
+          {error && (
+            <div style={{ marginTop: 16, padding: "10px 14px", borderRadius: 12, background: "rgba(198,40,40,.07)", border: "1px solid #FFCDD2", fontFamily: T.sans, fontSize: 13, color: "#C62828" }}>
+              {error}
+            </div>
+          )}
 
           {/* CTA */}
           <button onClick={submit} disabled={!canSubmit} style={{

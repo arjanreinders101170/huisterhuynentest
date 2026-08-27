@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       } catch (e) { console.error("computeStayPrice (terugkomen) failed:", e); }
     }
 
-    await safeInsertBookingRequest({
+    const aanvraagId = await safeInsertBookingRequest({
       bron,
       guest_id: guestId,
       gast_naam: name || "",
@@ -87,6 +87,13 @@ export async function POST(request: NextRequest) {
       voorgestelde_prijs_label: voorgesteldeLabel,
       status: "nieuw",
     });
+
+    /* Zie /api/reservering: lukt de insert niet, dan bestaat de aanvraag
+     * alleen nog in de mail hieronder. Dat hoort er dan ook in te staan. */
+    const nietOpgeslagen = !aanvraagId;
+    if (nietOpgeslagen) {
+      console.error(`[terugkomen] aanvraag niet opgeslagen — alleen per e-mail bekend (bron=${bron})`);
+    }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK;
     const baseUrl = new URL(appUrl).origin;
@@ -117,6 +124,11 @@ export async function POST(request: NextRequest) {
               ? "Een gast heeft via de concierge-app een aanvraag gedaan. Open in admin om een persoonlijk aanbod op te bouwen."
               : "Een gast wil graag terugkomen. Open in admin om een persoonlijk aanbod op te bouwen.",
             blocks: [
+              ...(nietOpgeslagen ? [calloutBlock(
+                "⚠️ Niet opgeslagen in de admin",
+                "Deze aanvraag kon niet in de database worden gezet en staat dus <strong>niet</strong> in de Aanvragen-tab. " +
+                "Neem hem handmatig over of reageer rechtstreeks op deze mail.",
+              )] : []),
               infoBlock("Gewenste periode", periodLine, subLine),
               detailsBlock("Gast", [
                 ...(name ? [{ label: "Naam", value: esc(name) }] : []),
