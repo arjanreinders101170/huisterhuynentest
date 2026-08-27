@@ -12,7 +12,13 @@ import { attributieKolommen } from "@/lib/attributie";
 
 export const runtime = "nodejs";
 
-const OWNER_EMAIL = "lodge@huisterhuynen.nl";
+/* Dezelfde variabele als /api/terugkomen gebruikt. Stond hier hard
+ * ingesteld, waardoor OWNER_EMAIL uit de omgeving wél de aanvragen van
+ * terugkomers en de app bereikte, maar niet die van de homepage. Die gingen
+ * altijd naar lodge@huisterhuynen.nl — en omdat de afzender hetzelfde adres
+ * is, is dat ook nog eens het soort bericht dat een mailserver met DMARC
+ * geneigd is stil te laten verdwijnen. */
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "lodge@huisterhuynen.nl";
 const LODGE_NAME = "Huis ter Huynen";
 const LODGE_LABELS: Record<string, string> = {
   lodge_1: "De Heide",
