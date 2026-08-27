@@ -64,28 +64,40 @@ where lower(g.email) = lower('kira.groenland@gmail.com')
 
 
 -- ═══ 2. Daan — daan.langenkamp95@gmail.com — aanvraag van 25 aug 14:20 ═══
-/*
+--
+-- INGEVULD uit de eigenaarsmail in Resend. Daan gaf geen bericht mee.
+--
+-- ⚠️ LET OP: dezelfde lodge en dezelfde nachten als Kira (blok 1).
+-- De Heide, 15 t/m 17 januari 2027. Beide aanvragen kunnen niet doorgaan.
+-- Daan vroeg twee dagen eerder dan Kira.
+
 with mail as (
-  select date   '2026-__-__' as check_in,
-         date   '2026-__-__' as check_out,
-         'lodge_1'::text     as lodge,
-         2                   as personen,
-         false               as huisdieren,
-         null::text          as bericht
+  select date '2027-01-15'  as check_in,
+         date '2027-01-17'  as check_out,
+         'lodge_1'::text    as lodge,          -- De Heide
+         2                  as personen,
+         false              as huisdieren,
+         372.90::numeric    as prijs
 )
 insert into booking_requests (
   bron, guest_id, gast_naam, gast_email, lodge, check_in, check_out,
-  nachten, personen, huisdieren, bericht, status, created_at, confirm_token
+  nachten, personen, huisdieren, bericht, voorgestelde_prijs,
+  voorgestelde_prijs_label, status, created_at, confirm_token
 )
 select 'homepage', g.id, 'Daan', 'daan.langenkamp95@gmail.com',
        m.lodge, m.check_in, m.check_out, (m.check_out - m.check_in),
        m.personen, m.huisdieren,
-       coalesce(m.bericht || E'\n\n', '') || '[Hersteld uit e-mail — aanvraag was niet opgeslagen]',
+       '[Hersteld uit de eigenaarsmail — de aanvraag zelf was niet opgeslagen. Gast gaf geen bericht mee.]',
+       m.prijs, '2 nachten',
        'nieuw', timestamptz '2026-08-25 14:20:35+00',
        md5(random()::text) || md5(random()::text)
 from guests g, mail m
-where lower(g.email) = lower('daan.langenkamp95@gmail.com');
-*/
+where lower(g.email) = lower('daan.langenkamp95@gmail.com')
+  and not exists (
+    select 1 from booking_requests br
+    where lower(br.gast_email) = lower('daan.langenkamp95@gmail.com')
+      and br.check_in = m.check_in
+  );
 
 
 -- ═══ 3. Paul — paul.devries87@gmail.com — aanvraag van 23 aug 04:59 ═══
