@@ -123,6 +123,12 @@ function bedragVan(r: BookingRequest): number {
   return Number(r.totaal ?? r.voorgestelde_prijs ?? 0);
 }
 
+/* Kop en regels delen één kolomdefinitie, anders lopen ze uit elkaar zodra
+ * er één breedte verandert. Voorstel en status hebben ruimte nodig: een bedrag
+ * van vier cijfers en een tekst als "verlopen · kan nog t/m 27 aug" botsten
+ * eerder op elkaar. */
+const KOLOMMEN = "90px 1fr 1fr 100px 100px 190px 100px";
+
 const LODGE_SHORT_NAMES: Record<string, string> = {
   lodge_1: "De Heide",
   lodge_2: "De Eik",
@@ -864,13 +870,13 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
             <div
               onClick={() => isExpandable && openEditor(r, isEditable)}
               style={{
-                display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px",
-                padding: "14px 16px", fontSize: 13, color: C.text, alignItems: "center",
+                display: "grid", gridTemplateColumns: KOLOMMEN, columnGap: 14,
+                padding: "14px 16px", fontSize: 13, color: C.text, alignItems: "start",
                 cursor: isExpandable ? "pointer" : "default",
                 background: isExpanded ? "#FAFAF7" : "transparent",
               }}
             >
-              <div title={bron.label} style={{ fontSize: 14 }}>
+              <div title={bron.label} style={{ fontSize: 14, lineHeight: "20px" }}>
                 {bron.icon} <span style={{ fontSize: 11, color: C.muted }}>{bron.label}</span>
                 {herkomst(r) && (
                   <div title={herkomst(r)!.titel} style={{ fontSize: 10, color: C.gold, marginTop: 2, fontWeight: 600 }}>
@@ -878,11 +884,11 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
                   </div>
                 )}
               </div>
-              <div>
+              <div style={{ lineHeight: "20px" }}>
                 <div style={{ fontWeight: 500 }}>{name}</div>
                 <div style={{ fontSize: 11, color: C.muted }}>{email}</div>
               </div>
-              <div style={{ fontSize: 12, color: C.muted }}>
+              <div style={{ fontSize: 12, color: C.muted, lineHeight: "20px" }}>
                 {period(r)}
                 <div style={{ fontSize: 11 }}>
                   {r.bron === "handmatig" && r.bericht && (
@@ -893,11 +899,11 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
                   {r.bron !== "handmatig" && r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
                 </div>
               </div>
-              <div style={{ fontSize: 12, color: C.muted }}>{lodge}</div>
-              <div style={{ textAlign: "right", fontWeight: 500, color: r.voorgestelde_prijs || r.totaal ? C.text : C.light }}>
+              <div style={{ fontSize: 12, color: C.muted, lineHeight: "20px" }}>{lodge}</div>
+              <div style={{ textAlign: "right", fontWeight: 500, whiteSpace: "nowrap", lineHeight: "20px", color: r.voorgestelde_prijs || r.totaal ? C.text : C.light }}>
                 {r.totaal ? euroBedrag(Number(r.totaal)) : (r.voorgestelde_prijs ? euroBedrag(Number(r.voorgestelde_prijs)) : "—")}
               </div>
-              <div>
+              <div style={{ lineHeight: "20px" }}>
                 <Badge status={r.status} />
                 {expiryNote(r)
                   ? <div style={{ fontSize: 11, color: expiryNote(r)!.color, marginTop: 2 }}>{expiryNote(r)!.text}</div>
@@ -906,7 +912,7 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
               </div>
               {/* Laatste kolom volgt de fase: bij lopende aanvragen telt hoe
                   lang ze al wachten, bij een boeking wanneer de gast komt. */}
-              <div style={{ textAlign: "right", fontSize: 12, color: C.muted }}>
+              <div style={{ textAlign: "right", fontSize: 12, color: C.muted, lineHeight: "20px", whiteSpace: "nowrap" }}>
                 {toonAankomst ? (
                   <span title={r.check_in ? `Aankomst ${fmtDate(r.check_in)}` : undefined}>
                     {r.check_in ? fmtDate(r.check_in) : "—"}
@@ -1087,7 +1093,7 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
               <span style={{ fontSize: 11, color: C.light, marginLeft: "auto" }}>{info.uitleg}</span>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "90px 1fr 1fr 110px 90px 110px 100px", padding: "10px 16px", background: C.bg, fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, fontWeight: 500 }}>
+            <div style={{ display: "grid", gridTemplateColumns: KOLOMMEN, columnGap: 14, padding: "10px 16px", background: C.bg, fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: .5, fontWeight: 500 }}>
               <div>Bron</div>
               <div>Gast</div>
               <div>Periode</div>
