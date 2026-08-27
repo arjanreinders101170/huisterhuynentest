@@ -129,6 +129,26 @@ export async function computeStayPrice(input: StayPriceInput): Promise<StayPrice
   };
 }
 
+/* De kolommen die de aanvraag zélf zijn: wie, welke lodge, welke nachten, wat
+ * de gast erbij schreef. Ze staan er sinds de tabel bestaat
+ * (migrations/2026_05_15_unified_booking_requests.sql). Alles daarbuiten —
+ * Meta-tracking en herkomst — is er ná die migratie bij gekomen en is
+ * rapportage, geen aanvraag. Zie de terugval hieronder. */
+const KERNKOLOMMEN = [
+  "confirm_token", "bron", "guest_id", "gast_naam", "gast_email",
+  "lodge", "check_in", "check_out", "nachten", "personen", "huisdieren",
+  "bericht", "periode_tekst", "voorgestelde_prijs", "voorgestelde_prijs_label",
+  "promo_code", "status", "legacy_terugkeer_id",
+] as const;
+
+function alleenKern(row: Record<string, unknown>): Record<string, unknown> {
+  const uit: Record<string, unknown> = {};
+  for (const k of KERNKOLOMMEN) {
+    if (k in row) uit[k] = row[k];
+  }
+  return uit;
+}
+
 /** Helper voor dual-write — vangt fouten af zodat hoofdflow nooit breekt op nieuwe tabel. */
 export async function safeInsertBookingRequest(row: Record<string, unknown>): Promise<string | null> {
   try {
@@ -157,6 +177,30 @@ export async function safeInsertBookingRequest(row: Record<string, unknown>): Pr
          * om te zien wat er misging. */
         row: { bron: row.bron, lodge: row.lodge, check_in: row.check_in, nachten: row.nachten },
       }));
+
+      /* Terugval: nog één poging met alleen de kolommen die de aanvraag zelf
+       * zijn. Ontbreekt er in de database een tracking- of attributiekolom —
+       * bijvoorbeeld omdat een migratie niet is gedraaid — dan sneuvelde tot
+       * nu toe de hele aanvraag op een veld dat alleen voor rapportage dient.
+       * Een aanvraag zonder herkomst is oneindig veel beter dan geen
+       * aanvraag: de gast wacht op een aanbod, de cijfers kunnen wachten. */
+      const kern = alleenKern(rowMetToken);
+      if (Object.keys(kern).length < Object.keys(rowMetToken).length) {
+        const { data: kernData, error: kernError } = await getSupabase()
+          .from("booking_requests")
+          .insert(kern)
+          .select("id")
+          .single();
+        if (!kernError) {
+          console.warn(
+            `[booking_requests] opgeslagen zonder tracking-kolommen: ${kernData?.id} (bron=${row.bron}). ` +
+            "Controleer of alle migraties zijn gedraaid — de herkomst van deze aanvraag is niet vastgelegd."
+          );
+          return kernData?.id || null;
+        }
+        console.error("[booking_requests] ook de terugval faalde:", kernError.message);
+      }
+
       return null;
     }
     console.log(`[booking_requests] inserted ${data?.id} (bron=${row.bron})`);
