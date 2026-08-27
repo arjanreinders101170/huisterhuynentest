@@ -106,18 +106,35 @@ export async function POST(request: NextRequest) {
       guestId = data;
     } catch (e) { console.error("Guest upsert:", e); }
 
-    // Create booking with status "pending"
+    /* Create booking with status "pending"
+     *
+     * De fout hier moet uitgelezen worden. Supabase geeft een geweigerde
+     * insert terug als waarde en niet als exception, dus de try/catch
+     * eromheen ving hem niet: bookingId bleef stil op null, waarna de
+     * betaling alsnog naar Mollie ging met een lege bookingId in de
+     * metadata. De gast betaalt dan, maar de webhook heeft niets om de
+     * betaling aan te koppelen. */
     let bookingId = null;
     try {
-      const { data } = await getSupabase().from("bookings").insert({
+      const { data, error } = await getSupabase().from("bookings").insert({
         guest_id: guestId,
         product: productName,
         prijs: amount,
         status: "nieuw",
         metadata: { ...(metadata || {}), ...trackingMeta },
       }).select("id").single();
+      if (error) console.error("[checkout] booking insert geweigerd:", error.message, error.code);
       bookingId = data?.id;
-    } catch (e) { console.error("Booking insert:", e); }
+    } catch (e) { console.error("[checkout] booking insert wierp:", e); }
+
+    /* Zonder boekingsrij is de betaling straks niet te herleiden. De gast
+     * mag daar niet op stranden, dus de betaling gaat door — maar dan moet
+     * de eigenaar het wél weten, want alleen de mail legt deze bestelling
+     * dan nog vast. */
+    if (!bookingId) {
+      console.error(`[checkout] GEEN boekingsrij voor ${productName} (${gastEmail}) — betaling wordt niet automatisch gekoppeld`);
+      await sendFallbackNotification(productName, amount, gastNaam, gastEmail);
+    }
 
     if (!mollieKey) {
       // No Mollie key — fallback to email-only booking

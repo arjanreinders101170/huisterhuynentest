@@ -38,6 +38,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
   const [gastDatum, setGastDatum] = useState("");
   const [sending, setSending] = useState(false);
   const [confirmed, setConfirmed] = useState<string | null>(null);
+  const [fout, setFout] = useState("");
   const [showForm, setShowForm] = useState<string | null>(null);
   const [fietsSelection, setFietsSelection] = useState<Record<string, number>>({});
   const [fietsDagen, setFietsDagen] = useState(1);
@@ -77,6 +78,7 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
   /* ═══ PAYMENT ═══ */
   const startPayment = async (productId: string, displayPrice: number, meta?: Record<string, unknown>) => {
     if (!gastNaam.trim() || !gastEmail.includes("@") || sending) return;
+    setFout("");
     setSending(true);
     const eventId = newEventId();
     try {
@@ -96,8 +98,19 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
       });
       const d = await r.json();
       if (d.checkoutUrl) { window.location.href = d.checkoutUrl; return; }
-      if (d.fallback || d.success) { onBook(productId); setConfirmed(productId); setShowForm(null); setExpanded(null); }
-    } catch { onBook(productId); setConfirmed(productId); }
+      if (d.fallback || d.success) {
+        onBook(productId); setConfirmed(productId); setShowForm(null); setExpanded(null);
+      } else {
+        /* Wat hier overblijft is een geweigerde bestelling. Die kreeg eerst
+         * geen enkele reactie: het scherm bleef staan alsof er niets was
+         * gebeurd. */
+        setFout(d.error || "Er ging iets mis. Probeer het opnieuw of app ons via WhatsApp.");
+      }
+    } catch {
+      /* Niet meer bevestigen bij een netwerkfout. De gast kreeg dan te zien
+       * dat de bestelling rond was terwijl er niets was aangekomen. */
+      setFout("Geen verbinding. Probeer het opnieuw of app ons via WhatsApp.");
+    }
     setSending(false);
   };
 
@@ -110,6 +123,14 @@ export function Reserveren({ booked, onBook, upsells }: Props) {
 
   return (
     <div style={{ padding: "0 20px 110px" }}>
+      {/* Eén plek voor de foutmelding: welke van de drie bestelknoppen ook
+          faalt, de gast krijgt het hier te zien in plaats van een scherm dat
+          onveranderd blijft staan. */}
+      {fout && (
+        <div style={{ margin: "16px 0 0", padding: "11px 14px", borderRadius: 12, background: "rgba(198,40,40,.07)", border: "1px solid #FFCDD2", fontFamily: T.sans, fontSize: 13, color: "#C62828" }}>
+          {fout}
+        </div>
+      )}
       <div style={{ paddingTop: 28 }}>
         <h1 style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 6px" }}>Extra's</h1>
         <p style={{ fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300, margin: 0 }}>Maak je verblijf nog mooier</p>

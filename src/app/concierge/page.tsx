@@ -166,6 +166,8 @@ function AppInner() {
   const [door, setDoor] = useState<DoorStatus>("locked");
   const [wifiCopied, setWifiCopied] = useState(false);
   const [booked, setBooked] = useState<string | null>(null);
+  const [bezigMetBoeken, setBezigMetBoeken] = useState<string | null>(null);
+  const [boekFout, setBoekFout] = useState("");
   const [weather, setWeather] = useState<Weather | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -272,14 +274,24 @@ function AppInner() {
 
   /* ═══ BOOKING ═══ */
   const handleBook = async (productId: string) => {
-    if (booked === productId) return;
-    setBooked(productId);
+    if (booked === productId || bezigMetBoeken === productId) return;
+
     /* Zonder verblijf valt er niets te registreren: /api/booking leidt naam,
      * e-mailadres en prijs af uit het stay-token en weigert zonder. */
     const token = stay?.token || tokenParam;
-    if (!token) return;
+    if (!token) {
+      setBoekFout("We konden je verblijf niet herkennen. Open de app opnieuw via de link uit je welkomstmail.");
+      return;
+    }
+
+    /* Pas "besteld" tonen als de server het heeft aangenomen. Dit stond
+     * eerder bovenaan, vóór het verzoek: een bestelling die onderweg
+     * sneuvelde zag de gast dan alsnog als geplaatst, terwijl er niets
+     * werd geregistreerd. */
+    setBoekFout("");
+    setBezigMetBoeken(productId);
     try {
-      await fetch("/api/booking", {
+      const r = await fetch("/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -288,9 +300,16 @@ function AppInner() {
           datum: new Date().toISOString().split("T")[0],
         }),
       });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d.success) {
+        setBooked(productId);
+      } else {
+        setBoekFout(d.error || "Je bestelling kwam niet door. Probeer het opnieuw of app ons via WhatsApp.");
+      }
     } catch {
-      // Booking registered client-side regardless
+      setBoekFout("Geen verbinding. Probeer het opnieuw of app ons via WhatsApp.");
     }
+    setBezigMetBoeken(null);
   };
 
   /* ═══ WIFI ═══ */
@@ -372,11 +391,20 @@ function AppInner() {
             />
           )}
           {route === "reserveren" && (
-            <Reserveren
-              booked={booked}
-              onBook={handleBook}
-              upsells={activeUpsells}
-            />
+            <>
+              {/* Een bestelling die de server niet haalde, hoort de gast te
+                  zien. Zonder dit bleef het scherm onveranderd staan. */}
+              {boekFout && (
+                <div style={{ margin: "16px 20px 0", padding: "11px 14px", borderRadius: 12, background: "rgba(198,40,40,.07)", border: "1px solid #FFCDD2", fontFamily: "Arial, sans-serif", fontSize: 13, color: "#C62828" }}>
+                  {boekFout}
+                </div>
+              )}
+              <Reserveren
+                booked={booked}
+                onBook={handleBook}
+                upsells={activeUpsells}
+              />
+            </>
           )}
           {route === "info" && (
             <Info onNavigate={(r: Route) => setRoute(r)} />

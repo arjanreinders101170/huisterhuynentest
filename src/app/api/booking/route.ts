@@ -238,16 +238,32 @@ export async function POST(request: NextRequest) {
       ? `€ ${prijsNum.toFixed(2)}`
       : "Prijs op aanvraag";
 
-    // Boeking vastleggen op de gast die bij dit verblijf hoort.
+    /* Boeking vastleggen op de gast die bij dit verblijf hoort.
+     *
+     * De fout moet uitgelezen worden: Supabase geeft een geweigerde insert
+     * terug als waarde, niet als exception, dus de try/catch ving hem niet.
+     * De bestelling verdween dan geruisloos terwijl de gast in de app
+     * "besteld" te zien kreeg. */
+    let bestellingOpgeslagen = true;
     try {
-      await getSupabase().from("bookings").insert({
+      const { error } = await getSupabase().from("bookings").insert({
         guest_id: verblijf.guestId,
         product,
         prijs: prijsNum > 0 ? prijsNum : null,
         status: "nieuw",
         metadata: { ...(metadata || {}), stay_id: verblijf.id, lodge: verblijf.lodge },
       });
-    } catch (e) { console.error("Booking insert failed:", e); }
+      if (error) {
+        bestellingOpgeslagen = false;
+        console.error("[booking] insert geweigerd:", error.message, error.code, `product=${product}`);
+      }
+    } catch (e) {
+      bestellingOpgeslagen = false;
+      console.error("[booking] insert wierp:", e, `product=${product}`);
+    }
+    if (!bestellingOpgeslagen) {
+      console.error(`[booking] bestelling "${product}" staat NIET in de database — alleen de mail hieronder legt hem vast`);
+    }
 
     // 3. Send emails
     const resendKey = process.env.RESEND_API_KEY;
@@ -259,8 +275,14 @@ export async function POST(request: NextRequest) {
         await resend.emails.send({
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
           to: [OWNER_EMAIL],
-          subject: `Nieuwe boeking: ${product} — ${gastNaam}`,
-          html: ownerEmailHtml(esc(product), esc(bookingPrijs), esc(gastNaam), esc(gastEmail), esc(bookingDate)),
+          subject: `${bestellingOpgeslagen ? "" : "[NIET OPGESLAGEN] "}Nieuwe boeking: ${product} — ${gastNaam}`,
+          html: (bestellingOpgeslagen
+            ? ""
+            : `<div style="padding:14px 18px;margin:0 0 16px;background:#FDECEA;border:1px solid #F5C6C2;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;color:#B3261E;">` +
+              `<strong>Let op: deze bestelling staat niet in de database.</strong><br/>` +
+              `Hij is dus niet terug te vinden in de admin — neem hem handmatig over of reageer rechtstreeks op deze mail.` +
+              `</div>`
+          ) + ownerEmailHtml(esc(product), esc(bookingPrijs), esc(gastNaam), esc(gastEmail), esc(bookingDate)),
           replyTo: gastEmail,
         });
 
@@ -271,15 +293,15 @@ export async function POST(request: NextRequest) {
           html: guestEmailHtml(esc(product), esc(bookingPrijs), esc(gastNaam)),
         });
 
-        return NextResponse.json({ success: true, emailSent: true });
+        return NextResponse.json({ success: true, emailSent: true, opgeslagen: bestellingOpgeslagen });
       } catch (e) {
         console.error("Email failed:", e);
-        return NextResponse.json({ success: true, emailSent: false });
+        return NextResponse.json({ success: true, emailSent: false, opgeslagen: bestellingOpgeslagen });
       }
     }
 
     console.log(`[BOOKING] ${product} | ${gastNaam} | ***@${gastEmail.split("@")[1] ?? "?"} | ${bookingPrijs}`);
-    return NextResponse.json({ success: true, emailSent: false });
+    return NextResponse.json({ success: true, emailSent: false, opgeslagen: bestellingOpgeslagen });
   } catch {
     return NextResponse.json({ error: "Kon boeking niet verwerken" }, { status: 500 });
   }
