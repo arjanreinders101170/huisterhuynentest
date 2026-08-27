@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { BookingRequest } from "../types";
+import { BookingRequest, FeeTemplate } from "../types";
 import { Badge } from "./Badge";
 import { timeAgo } from "./Badge";
 import {
@@ -179,15 +179,50 @@ Hartelijke groet,
 Huis ter Huynen`;
 }
 
+type Soort = "toeslag" | "korting" | "belasting";
+
+/* Een regel in de offerte. `templateId` onthoudt uit welke template in de
+ * Toeslagen-tab de regel komt, zodat het keuzemenu bij die regel de juiste
+ * keuze toont. Regels die de host zelf typt hebben `templateId: null`. */
+type ExtraRegel = {
+  label: string;
+  bedrag: string;
+  soort: Soort;
+  templateId: string | null;
+};
+
 type OfferteForm = {
   prijsVerblijf: string;
   schoonmaak: string;
   toeristenbelasting: string;
-  extraRegels: { label: string; bedrag: string; soort: "toeslag" | "korting" | "belasting" }[];
+  extraRegels: ExtraRegel[];
+  /* Nodig om het bedrag van een template uit te rekenen wanneer de host er
+   * later een bijkiest: per persoon en per nacht schalen mee. */
+  personen: number;
+  nachten: number;
   bericht: string;
 };
 
-export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingRequest[]; setRequests: (r: BookingRequest[]) => void }) {
+/** Wat een template kost voor dit verblijf — dezelfde som als de prefill maakt. */
+function templateBedrag(t: FeeTemplate, nachten: number, personen: number): number {
+  const base = t.bedrag ?? 0;
+  switch (t.basis) {
+    case "eenmalig":              return base;
+    case "per_nacht":             return base * nachten;
+    case "per_persoon":           return base * personen;
+    case "per_persoon_per_nacht": return base * personen * nachten;
+    default:                      return base;
+  }
+}
+
+export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
+  requests: BookingRequest[];
+  setRequests: (r: BookingRequest[]) => void;
+  /* De templates uit de Toeslagen-tab. De offerte-editor stelt ze niet alleen
+   * voor, je kunt ze er ook zelf bijkiezen — ook een template dat je net hebt
+   * aangemaakt, of een die de prefill oversloeg (huisdier zonder huisdier). */
+  feeTemplates?: FeeTemplate[];
+}) {
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
   const [filterBron, setFilterBron] = useState<"all" | "homepage" | "app" | "terugkomer">("all");
   const [filterFase, setFilterFase] = useState<"all" | Fase>("all");
@@ -213,6 +248,13 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box",
   };
 
+  /* Zonder templates heeft een keuzemenu niets te kiezen; dan blijft de regel
+   * zoals hij was: label, bedrag, soort. */
+  const heeftTemplates = feeTemplates.length > 0;
+  const regelKolommen = heeftTemplates
+    ? "minmax(0,1fr) minmax(0,1fr) 110px 130px 28px"
+    : "minmax(0,1fr) 110px 130px 28px";
+
   const openEditor = async (req: BookingRequest, editable = true) => {
     if (expandedId === req.id) {
       setExpandedId(null);
@@ -221,7 +263,13 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     setExpandedId(req.id);
     if (!editable) return;       // betaalpaneel heeft geen prefill nodig
     if (forms[req.id]) return; // al geladen
+    await loadPrefill(req);
+  };
 
+  /* Opnieuw ophalen wat de Toeslagen-tab nu voorstelt. Handig wanneer je net
+   * een template hebt aangemaakt of aangepast terwijl deze offerte al openstond:
+   * dan hoef je de pagina niet te verversen om hem alsnog voorgesteld te krijgen. */
+  const loadPrefill = async (req: BookingRequest) => {
     setLoadingPrefill(req.id);
     try {
       const r = await fetch("/api/admin/data", {
@@ -240,10 +288,15 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
             prijsVerblijf: d.prefill.verblijf > 0 ? String(d.prefill.verblijf) : "",
             schoonmaak: d.prefill.schoonmaak > 0 ? String(d.prefill.schoonmaak) : "",
             toeristenbelasting: d.prefill.toeristenbelasting > 0 ? String(d.prefill.toeristenbelasting) : "",
-            extraRegels: (d.prefill.extraRegels || []).map((x: { label: string; bedrag: number; soort: string }) => ({
-              label: x.label, bedrag: String(x.bedrag), soort: (x.soort as "toeslag" | "korting" | "belasting"),
+            extraRegels: (d.prefill.extraRegels || []).map((x: { label: string; bedrag: number; soort: string; fee_template_id?: string }) => ({
+              label: x.label, bedrag: String(x.bedrag), soort: (x.soort as Soort),
+              templateId: x.fee_template_id ?? null,
             })),
-            bericht: "",
+            personen: Number(d.prefill.personen) || req.personen || 2,
+            nachten: Number(d.prefill.nachten) || req.nachten || 0,
+            /* Een al getypt persoonlijk bericht blijft staan: opnieuw
+             * voorstellen gaat over de bedragen, niet over jouw tekst. */
+            bericht: prev[req.id]?.bericht ?? "",
           },
         }));
       }
@@ -257,11 +310,31 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     setForms(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }));
   };
 
-  const addRegel = (id: string, regel: { label: string; bedrag: string; soort: "toeslag" | "korting" | "belasting" }) => {
+  const addRegel = (id: string, regel: ExtraRegel) => {
     setForms(prev => ({
       ...prev,
       [id]: { ...prev[id], extraRegels: [...(prev[id]?.extraRegels || []), regel] },
     }));
+  };
+
+  /* Een regel invullen vanuit een template uit de Toeslagen-tab: label, soort
+   * en het bedrag voor dít verblijf in één keer. "eigen" laat de regel leeg,
+   * dan typt de host zelf. Het bedrag blijft daarna gewoon aanpasbaar. */
+  const kiesTemplate = (id: string, idx: number, templateId: string) => {
+    if (templateId === "") {
+      updateRegel(id, idx, { templateId: null, label: "", bedrag: "" });
+      return;
+    }
+    const t = feeTemplates.find(x => x.id === templateId);
+    if (!t) return;
+    const f = forms[id];
+    const bedrag = templateBedrag(t, f?.nachten ?? 0, f?.personen ?? 2);
+    updateRegel(id, idx, {
+      templateId: t.id,
+      label: t.label,
+      soort: t.soort,
+      bedrag: bedrag ? String(Math.round(bedrag * 100) / 100) : "",
+    });
   };
 
   const removeRegel = (id: string, idx: number) => {
@@ -271,7 +344,7 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
     }));
   };
 
-  const updateRegel = (id: string, idx: number, patch: Partial<{ label: string; bedrag: string; soort: "toeslag" | "korting" | "belasting" }>) => {
+  const updateRegel = (id: string, idx: number, patch: Partial<ExtraRegel>) => {
     setForms(prev => ({
       ...prev,
       [id]: {
@@ -553,14 +626,39 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
 
         {f.extraRegels.length > 0 && (
           <div style={{ marginBottom: 12 }}>
-            <div style={{ fontSize: 11, color: C.muted, marginBottom: 6 }}>Extra regels</div>
+            <div style={{ display: "grid", gridTemplateColumns: regelKolommen, gap: 8, marginBottom: 6 }}>
+              {heeftTemplates && <div style={{ fontSize: 11, color: C.muted }}>Uit toeslagen</div>}
+              <div style={{ fontSize: 11, color: C.muted }}>Omschrijving</div>
+              <div style={{ fontSize: 11, color: C.muted }}>Bedrag (€)</div>
+              <div style={{ fontSize: 11, color: C.muted }}>Soort</div>
+              <div />
+            </div>
             {f.extraRegels.map((r, idx) => {
               const soort = SOORT_LABEL[r.soort];
+              /* Een verwijderd template laat een regel achter waar geen keuze
+               * meer bij hoort; die valt terug op de vrije omschrijving. */
+              const gekozen = r.templateId && feeTemplates.some(t => t.id === r.templateId) ? r.templateId : "";
               return (
-                <div key={idx} style={{ display: "grid", gridTemplateColumns: "1fr 110px 130px 28px", gap: 8, marginBottom: 6, alignItems: "center" }}>
-                  <input value={r.label} onChange={e => updateRegel(req.id, idx, { label: e.target.value })} placeholder="Label" style={inputStyle} />
+                <div key={idx} style={{ display: "grid", gridTemplateColumns: regelKolommen, gap: 8, marginBottom: 6, alignItems: "center" }}>
+                  {heeftTemplates && (
+                    <select
+                      value={gekozen}
+                      onChange={e => kiesTemplate(req.id, idx, e.target.value)}
+                      title="Kies een toeslag, korting of belasting uit de Toeslagen-tab"
+                      style={inputStyle}
+                    >
+                      <option value="">Eigen regel…</option>
+                      {feeTemplates.map(t => (
+                        <option key={t.id} value={t.id}>
+                          {t.label} — {euroBedrag(templateBedrag(t, f.nachten, f.personen))}
+                          {t.actief ? "" : " (uit)"}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  <input value={r.label} onChange={e => updateRegel(req.id, idx, { label: e.target.value, templateId: null })} placeholder="Label" style={inputStyle} />
                   <input value={r.bedrag} onChange={e => updateRegel(req.id, idx, { bedrag: e.target.value })} type="number" step="0.01" placeholder="0.00" style={inputStyle} />
-                  <select value={r.soort} onChange={e => updateRegel(req.id, idx, { soort: e.target.value as "toeslag" | "korting" | "belasting" })} style={{ ...inputStyle, color: soort.color, fontWeight: 500 }}>
+                  <select value={r.soort} onChange={e => updateRegel(req.id, idx, { soort: e.target.value as Soort })} style={{ ...inputStyle, color: soort.color, fontWeight: 500 }}>
                     <option value="toeslag">Toeslag</option>
                     <option value="korting">Korting</option>
                     <option value="belasting">Belasting</option>
@@ -575,11 +673,20 @@ export function AanvragenV2Tab({ requests, setRequests }: { requests: BookingReq
           </div>
         )}
 
-        <div style={{ marginBottom: 14 }}>
-          <button onClick={() => addRegel(req.id, { label: "", bedrag: "", soort: "toeslag" })} style={{
+        <div style={{ marginBottom: 14, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <button onClick={() => addRegel(req.id, { label: "", bedrag: "", soort: "toeslag", templateId: null })} style={{
             padding: "8px 14px", borderRadius: 6, border: `1px dashed ${C.green}`,
             background: "transparent", fontSize: 12, fontWeight: 600, color: C.green, cursor: "pointer",
           }}>+ Extra regel</button>
+          <button onClick={() => loadPrefill(req)} title="Haal de toeslagen opnieuw op — handig als je er net een hebt aangemaakt of aangepast" style={{
+            padding: "8px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
+            background: C.card, fontSize: 12, color: C.muted, cursor: "pointer",
+          }}>↻ Toeslagen opnieuw voorstellen</button>
+          {heeftTemplates && (
+            <span style={{ fontSize: 11, color: C.light }}>
+              Kies per regel een toeslag uit de Toeslagen-tab, of typ er zelf een.
+            </span>
+          )}
         </div>
 
         <div style={{ marginBottom: 14, padding: "10px 14px", background: "#F9F4E8", borderRadius: 8, fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
