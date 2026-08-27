@@ -101,28 +101,43 @@ where lower(g.email) = lower('daan.langenkamp95@gmail.com')
 
 
 -- ═══ 3. Paul — paul.devries87@gmail.com — aanvraag van 23 aug 04:59 ═══
-/*
+--
+-- INGEVULD uit de bevestigingsmail in Resend. Geen datumconflict met de
+-- andere aanvragen: dit is mei 2027, Kira en Daan willen januari.
+--
+-- Let bij de offerte op de toeristenbelasting: die rekent per persoon per
+-- nacht over alle vier de personen, terwijl twee van hen jonger dan vier
+-- zijn. Controleer of de verordening van Tynaarlo daar een vrijstelling
+-- voor kent voordat je het bedrag overneemt.
+
 with mail as (
-  select date   '2026-__-__' as check_in,
-         date   '2026-__-__' as check_out,
-         'lodge_1'::text     as lodge,
-         2                   as personen,
-         false               as huisdieren,
-         null::text          as bericht
+  select date '2027-05-14'  as check_in,
+         date '2027-05-16'  as check_out,
+         'lodge_1'::text    as lodge,          -- De Heide
+         4                  as personen,
+         false              as huisdieren,
+         372.90::numeric    as prijs,
+         'Waarvan 2 kids jonger dan 4 jaar'::text as bericht
 )
 insert into booking_requests (
   bron, guest_id, gast_naam, gast_email, lodge, check_in, check_out,
-  nachten, personen, huisdieren, bericht, status, created_at, confirm_token
+  nachten, personen, huisdieren, bericht, voorgestelde_prijs,
+  voorgestelde_prijs_label, status, created_at, confirm_token
 )
 select 'homepage', g.id, 'Paul', 'paul.devries87@gmail.com',
        m.lodge, m.check_in, m.check_out, (m.check_out - m.check_in),
        m.personen, m.huisdieren,
-       coalesce(m.bericht || E'\n\n', '') || '[Hersteld uit e-mail — aanvraag was niet opgeslagen]',
+       m.bericht || E'\n\n[Hersteld uit de bevestigingsmail — de aanvraag zelf was niet opgeslagen]',
+       m.prijs, '2 nachten',
        'nieuw', timestamptz '2026-08-23 04:59:00+00',
        md5(random()::text) || md5(random()::text)
 from guests g, mail m
-where lower(g.email) = lower('paul.devries87@gmail.com');
-*/
+where lower(g.email) = lower('paul.devries87@gmail.com')
+  and not exists (
+    select 1 from booking_requests br
+    where lower(br.gast_email) = lower('paul.devries87@gmail.com')
+      and br.check_in = m.check_in
+  );
 
 
 -- ═══ 4. toine — ajorbarnhoorn@hotmail.com — aanvraag van 19 aug 18:05 ═══
