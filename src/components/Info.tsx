@@ -62,6 +62,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
   const [tekst, setTekst] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [reviewFout, setReviewFout] = useState("");
 
   // Fetch internal reviews + Google reviews on mount
   useEffect(() => {
@@ -80,6 +81,7 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
 
   const submitReview = async () => {
     if (!naam.trim() || !tekst.trim() || sterren === 0 || sending) return;
+    setReviewFout("");
     setSending(true);
     try {
       const r = await fetch("/api/reviews", {
@@ -92,8 +94,15 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
         // Refresh reviews
         const d = await fetch("/api/reviews").then(r => r.json());
         setReviews(d.reviews || []);
+      } else {
+        /* Zonder deze tak gebeurde er bij een fout zichtbaar niets: de knop
+         * werd weer klikbaar en de gast wist niet of zijn review was
+         * aangekomen. */
+        setReviewFout("Je review kon niet worden opgeslagen. Probeer het later nog eens.");
       }
-    } catch {}
+    } catch {
+      setReviewFout("Geen verbinding. Probeer het later nog eens.");
+    }
     setSending(false);
   };
 
@@ -280,6 +289,11 @@ export function Info({ onNavigate }: { onNavigate: (r: Route) => void }) {
       )}
 
       {/* Review form or CTA */}
+      {reviewFout && (
+        <div style={{ margin: "0 0 12px", padding: "11px 14px", borderRadius: 12, background: "rgba(198,40,40,.07)", border: "1px solid #FFCDD2", fontFamily: T.sans, fontSize: 13, color: "#C62828" }}>
+          {reviewFout}
+        </div>
+      )}
       {submitted ? (
         <div style={{
           ...cardStyle, padding: "24px 20px", textAlign: "center",
