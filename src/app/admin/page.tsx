@@ -478,7 +478,7 @@ export default function AdminDashboard() {
             )}
 
             {tab === "aanvragen_v2" && (
-              <AanvragenV2Tab requests={bookingRequests} setRequests={setBookingRequests} />
+              <AanvragenV2Tab requests={bookingRequests} setRequests={setBookingRequests} feeTemplates={feeTemplates} />
             )}
 
             {tab === "toeslagen" && (
