@@ -1,6 +1,6 @@
 import {
   esc, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist,
-  teaserBlock, detailsBlock,
+  teaserBlock, detailsBlock, termsFooter,
 } from "@/lib/email";
 import { timingSafeEqual } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
@@ -491,6 +491,7 @@ export async function POST(request: NextRequest) {
               "Praktische info volgt per gast-app",
             ]),
           ],
+          footer: termsFooter(baseUrlBv),
         }),
       });
     }
