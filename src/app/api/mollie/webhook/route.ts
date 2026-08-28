@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, lodgeEmail, infoBlock, detailsBlock, checklist } from "@/lib/email";
+import { esc, lodgeEmail, infoBlock, detailsBlock, checklist, calloutBlock } from "@/lib/email";
 import { generateInvoicePdf } from "@/lib/invoice";
 import { findOrCreateRelation, pushInvoice } from "@/lib/eboekhouden";
 import { sendCapi, buildUser } from "@/lib/tracking/capi";
@@ -99,12 +99,55 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     }).eq("id", bookingId);
 
-    // Sync de gekoppelde aanvraag bij aanbetaling/restbetaling-links uit de admin
+    /* Sync de gekoppelde aanvraag bij aanbetaling/restbetaling-links uit de
+     * admin. Een restbetaling mag de aanvraag alleen op 'volledig_betaald'
+     * zetten als de aanbetaling er daadwerkelijk is: een gast die een oude
+     * betaallink bewaart kan anders de 70% voldoen terwijl de 30% nog
+     * openstaat, en dan zegt het dashboard dat alles binnen is. */
+    let aanbetalingOntbreekt = false;
     if (bookingStatus === "betaald" && meta.bookingRequestId && meta.betaalfase) {
       try {
-        await getSupabase().from("booking_requests").update({
-          status: meta.betaalfase === "aanbetaling" ? "aanbetaling_betaald" : "volledig_betaald",
-        }).eq("id", meta.bookingRequestId);
+        if (meta.betaalfase === "aanbetaling") {
+          await getSupabase().from("booking_requests").update({
+            status: "aanbetaling_betaald",
+          }).eq("id", meta.bookingRequestId);
+        } else {
+          // Het geld zelf is de harde bron: een betaalde bookings-rij voor de
+          // aanbetaling van dezelfde aanvraag. De aanvraagstatus geldt als
+          // tweede signaal, voor het geval de JSON-filter niets teruggeeft.
+          const { data: aanbetaling } = await getSupabase()
+            .from("bookings")
+            .select("id")
+            .eq("metadata->>bookingRequestId", meta.bookingRequestId)
+            .eq("metadata->>betaalfase", "aanbetaling")
+            .eq("status", "betaald")
+            .limit(1);
+
+          const { data: aanvraag } = await getSupabase()
+            .from("booking_requests")
+            .select("status")
+            .eq("id", meta.bookingRequestId)
+            .single();
+
+          const statusZegtBetaald = ["aanbetaling_betaald", "restbetaling_verstuurd", "volledig_betaald"]
+            .includes(aanvraag?.status ?? "");
+
+          if ((aanbetaling?.length ?? 0) > 0 || statusZegtBetaald) {
+            await getSupabase().from("booking_requests").update({
+              status: "volledig_betaald",
+            }).eq("id", meta.bookingRequestId);
+          } else {
+            // Niet op 'volledig_betaald' zetten. De betaling zelf staat al in
+            // bookings, dus het geld is geregistreerd; de aanvraag blijft
+            // zichtbaar als openstaand tot de aanbetaling alsnog binnen is.
+            aanbetalingOntbreekt = true;
+            console.error(
+              `Mollie webhook: restbetaling binnen voor aanvraag ${meta.bookingRequestId} ` +
+              `terwijl de aanbetaling niet als betaald bekend staat (status ${aanvraag?.status ?? "onbekend"}, ` +
+              `payment ${paymentId}) — status niet op volledig_betaald gezet`
+            );
+          }
+        }
       } catch (e) {
         console.error("booking_request betaalfase-sync mislukt:", e);
       }
@@ -180,6 +223,10 @@ export async function POST(request: NextRequest) {
                   { label: "Naam", value: naam },
                   { label: "E-mail", value: esc(meta.gastEmail), href: `mailto:${esc(meta.gastEmail)}` },
                 ]),
+                ...(aanbetalingOntbreekt ? [calloutBlock(
+                  "Let op: aanbetaling staat nog open",
+                  "Deze restbetaling is binnen, maar van de aanbetaling is geen betaling bekend. De aanvraag is daarom niet op &lsquo;volledig betaald&rsquo; gezet &mdash; controleer of de 30% alsnog voldaan moet worden.",
+                )] : []),
               ],
               footer: `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(meta.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(meta.gastEmail)}</a>`,
             }),

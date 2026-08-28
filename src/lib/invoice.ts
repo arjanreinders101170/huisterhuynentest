@@ -200,13 +200,18 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
       btwTotals[item.btwPercentage].btw += btw;
 
       doc.font("Helvetica").fontSize(9).fillColor(COLORS.text);
+      // Omschrijvingen van een verblijf ("Aanbetaling (30%) — Lodge De Heide ·
+      // 14 mei 2027 t/m 17 mei 2027") lopen over meer dan één regel. Met een
+      // vaste regelhoogte schoof de volgende factuurregel daar overheen, dus
+      // de hoogte volgt nu de tekst.
+      const omschrijvingHoogte = doc.heightOfString(item.omschrijving, { width: 220 });
       doc.text(item.omschrijving, cols[0], y, { width: 220 });
       doc.text(String(item.aantal), cols[1], y, { width: 50, align: "right" });
       doc.text(fmt(excl), cols[2], y, { width: 60, align: "right" });
       doc.text(fmt(btw), cols[3], y, { width: 60, align: "right" });
       doc.font("Helvetica-Bold").fillColor(COLORS.text);
       doc.text(fmt(incl), cols[4], y, { width: 60, align: "right" });
-      y += 18;
+      y += Math.max(18, Math.ceil(omschrijvingHoogte) + 7);
     }
 
     // Bottom line
