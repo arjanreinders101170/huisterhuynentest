@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, lodgeEmail, infoBlock, detailsBlock, checklist, calloutBlock } from "@/lib/email";
+import { esc, lodgeEmail, infoBlock, detailsBlock, checklist, calloutBlock, termsFooter } from "@/lib/email";
+import { APP_URL_FALLBACK } from "@/data/lodge";
 import { generateInvoicePdf } from "@/lib/invoice";
 import { findOrCreateRelation, pushInvoice } from "@/lib/eboekhouden";
 import { sendCapi, buildUser } from "@/lib/tracking/capi";
@@ -279,6 +280,7 @@ export async function POST(request: NextRequest) {
                 infoBlock(fase ? "Je verblijf" : "Je bestelling", esc(product), `<span style="color:#2E7D32;">${prijs}</span>`),
                 checklist(bedanktLijst),
               ],
+              footer: termsFooter(new URL(process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK).origin),
             }),
           });
         } catch (e) {
