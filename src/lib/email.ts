@@ -165,7 +165,18 @@ export type LodgeEmailOpts = {
   footer?: string;
 };
 
-const DEFAULT_FOOTER = `Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`;
+export const DEFAULT_FOOTER = `Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`;
+
+/** Voettekst met verwijzing naar de algemene voorwaarden, gevolgd door de
+ *  gewone contactregel. Gebruik deze in elke mail waarin de gast een
+ *  betaalverplichting aangaat: daar hoort zichtbaar te zijn welk deel bij
+ *  annulering wordt terugbetaald (artikel 4 van de voorwaarden).
+ *  `baseUrl` is de origin van de site, dus zonder slash op het eind. */
+export function termsFooter(baseUrl: string): string {
+  const link = (href: string, text: string) =>
+    `<a href="${href}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${text}</a>`;
+  return `Op je reservering zijn onze ${link(`${baseUrl}/terms`, "algemene voorwaarden")} van toepassing. In ${link(`${baseUrl}/terms#artikel-4`, "artikel 4")} lees je welk deel je bij annulering terugkrijgt.<br /><br />${DEFAULT_FOOTER}`;
+}
 
 /** Hoofd-template. Alle uitgaande mails moeten hier doorheen. */
 export function lodgeEmail(opts: LodgeEmailOpts): string {

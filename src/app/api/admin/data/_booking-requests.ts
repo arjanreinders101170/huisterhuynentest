@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, type OfferteRegel } from "@/lib/email";
+import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, termsFooter, type OfferteRegel } from "@/lib/email";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
 import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
@@ -291,25 +291,38 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         return NextResponse.json({ error: "Mollie niet bereikbaar" }, { status: 500 });
       }
 
-      // Betaalmail naar de gast
+      // Betaalmail naar de gast. Gaat dit mis, dan bestaat de Mollie-betaling
+      // wel maar weet de gast van niets. De status blijft dan staan waar hij
+      // stond en we geven de checkout-URL terug, zodat de host de link zelf
+      // kan doorsturen in plaats van te denken dat de mail eruit is.
       const resendKey = process.env.RESEND_API_KEY;
-      if (resendKey && checkoutUrl) {
+      let mailError: string | null = null;
+
+      if (!resendKey) {
+        mailError = "RESEND_API_KEY ontbreekt";
+      } else if (!checkoutUrl) {
+        mailError = "Mollie gaf geen checkout-URL terug";
+      } else {
         const { url: photoUrl } = lodgePhoto(origin, req.lodge);
         const firstName = esc((req.gast_naam || "").split(" ")[0] || "");
         try {
           const { Resend } = await import("resend");
           const resend = new Resend(resendKey);
-          await resend.emails.send({
+          const { error } = await resend.emails.send({
             from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
             to: [req.gast_email],
             subject: `${faseLabel} voor je verblijf — Huis ter Huynen`,
             html: lodgeEmail({
               photoUrl, photoAlt: `Lodge ${lodgeNaam}`,
+              // De reservering is al bevestigd op het moment dat deze mail
+              // uitgaat — de bevestigingsmail zegt dat de data vastliggen.
+              // Deze mail mag dus niet suggereren dat de betaling dat alsnog
+              // moet doen; het is de eerste betaaltermijn, niet de bevestiging.
               title: phase === "aanbetaling"
-                ? `Bevestig je verblijf${firstName ? `, ${firstName}` : ""}`
+                ? `Je reservering staat vast${firstName ? `, ${firstName}` : ""}`
                 : `Laatste stap${firstName ? `, ${firstName}` : ""}`,
               intro: phase === "aanbetaling"
-                ? `Je reservering voor Lodge ${esc(lodgeNaam)} staat klaar. Met de aanbetaling van 30% leg je je data definitief vast.`
+                ? `Je reservering voor Lodge ${esc(lodgeNaam)} is bevestigd en de data staan op jouw naam. Rond nu de aanbetaling van 30% af; de resterende 70% volgt uiterlijk 30 dagen voor aankomst.`
                 : `Bijna klaar! Voldoe de restbetaling en je verblijf in Lodge ${esc(lodgeNaam)} is volledig geregeld.`,
               blocks: [
                 infoBlock("Je verblijf", esc(periodeLabel || "—"), `Lodge ${esc(lodgeNaam)}`),
@@ -322,8 +335,8 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
                   phase === "aanbetaling"
                     ? [
                         "Veilig betalen via iDEAL",
-                        "Je data zijn vastgelegd zodra de aanbetaling binnen is",
-                        "De restbetaling volgt later, ruim voor aankomst",
+                        "Je reservering is al bevestigd &mdash; dit is de eerste betaaltermijn",
+                        "De restbetaling (70%) volgt uiterlijk 30 dagen voor aankomst",
                       ]
                     : [
                         "Veilig betalen via iDEAL",
@@ -332,11 +345,24 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
                       ],
                 ),
               ],
+              footer: termsFooter(origin),
             }),
           });
+          if (error) mailError = error.message || "Resend weigerde de mail";
         } catch (e) {
-          console.error("Payment-link email failed:", e);
+          mailError = e instanceof Error ? e.message : "Onbekende fout bij Resend";
         }
+      }
+
+      if (mailError) {
+        console.error("Payment-link email failed:", mailError);
+        return NextResponse.json({
+          error: `De betaallink is aangemaakt, maar de mail naar de gast is niet verstuurd (${mailError}). Stuur de link hieronder zelf door.`,
+          checkoutUrl,
+          amount,
+          totaal,
+          fase: phase,
+        }, { status: 502 });
       }
 
       await sb.from("booking_requests").update({

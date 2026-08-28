@@ -237,7 +237,7 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
   const [loadingPrefill, setLoadingPrefill] = useState<string | null>(null);
   const [forms, setForms] = useState<Record<string, OfferteForm>>({});
   const [saving, setSaving] = useState<string | null>(null);
-  const [result, setResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
+  const [result, setResult] = useState<Record<string, { ok: boolean; msg: string; link?: string }>>({});
   const [payLoading, setPayLoading] = useState<string | null>(null);
   const [rejectOpen, setRejectOpen] = useState<string | null>(null);
   const [rejectText, setRejectText] = useState("");
@@ -483,7 +483,17 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
         setRequests(requests.map(x => x.id === req.id ? { ...x, status: newStatus } : x));
         setResult(prev => ({ ...prev, [req.id]: { ok: true, msg: `${faseLabel} € ${Number(d.amount).toFixed(2)} verstuurd` } }));
       } else {
-        setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: d.error || "Kon betaallink niet versturen" } }));
+        // De server zet de status alleen op 'verstuurd' als de mail er echt
+        // uit is. Kwam de betaallink wel tot stand maar de mail niet, dan
+        // krijgen we die link terug om zelf door te sturen.
+        setResult(prev => ({
+          ...prev,
+          [req.id]: {
+            ok: false,
+            msg: d.error || "Kon betaallink niet versturen",
+            link: typeof d.checkoutUrl === "string" ? d.checkoutUrl : undefined,
+          },
+        }));
       }
     } catch {
       setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "Verbindingsfout" } }));
@@ -840,7 +850,31 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
               </div>
             )}
             {res && !res.ok && res.msg && (
-              <div style={{ fontSize: 12, color: "#E24B4A", marginTop: 10 }}>{res.msg}</div>
+              <div style={{ marginTop: 10 }}>
+                <div style={{ fontSize: 12, color: "#E24B4A" }}>{res.msg}</div>
+                {res.link && (
+                  <div style={{ marginTop: 6, padding: "8px 10px", background: "#FFF3F3", border: "1px solid #F5C6C4", borderRadius: 6 }}>
+                    <a
+                      href={res.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: 11, color: C.green, wordBreak: "break-all", textDecoration: "none" }}
+                    >
+                      {res.link}
+                    </a>
+                    <button
+                      onClick={() => navigator.clipboard?.writeText(res.link || "")}
+                      style={{
+                        marginLeft: 8, padding: "3px 8px", borderRadius: 5,
+                        border: `1px solid ${C.border}`, background: "#fff",
+                        fontSize: 11, color: C.text, cursor: "pointer",
+                      }}
+                    >
+                      Kopieer
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </>
         )}
