@@ -21,6 +21,7 @@ bestemming — beide lopen door dezelfde `pushEvent()` in de code.
 | CSP-uitzonderingen voor GA4 | `next.config.ts` | Toegevoegd in PR #178 |
 | Google Ads-basistag (`AW-18397549973`) | `src/components/tracking/GoogleAds.tsx` | Klaar — laadt `gtag.js`, consent-gated via Consent Mode v2 |
 | Google Ads-conversies | `src/lib/tracking/googleAds.ts` | Code klaar — vuurt zodra er een conversielabel in `NEXT_PUBLIC_GOOGLE_ADS_LABEL_*` staat |
+| Verbeterde conversies (gehasht e-mailadres) | `src/lib/tracking/googleAds.ts` | Code klaar — aan met `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`, pas ná de instelling in Ads |
 | Sitemap | `src/app/sitemap.ts` → `/sitemap.xml` | Klaar, inclusief hreflang nl/de |
 | `robots.txt` | `public/robots.txt` | Klaar, verwijst naar de sitemap |
 
@@ -212,6 +213,27 @@ De cookiebanner staat op default-deny (`analytics_storage: denied`). **Zonder
   Zolang er geen label staat meet Google Ads alleen pageviews en remarketing —
   en heeft een biedstrategie als *Conversiewaarde maximaliseren* niets om op
   te sturen.
+- **Waarde 0 wordt bewust niet meegestuurd.** `RequestForm` en `RequestFormDE`
+  vuren `Lead` met `value: 0` ("op aanvraag"); alleen de kalender op de
+  homepage kent de verblijfsprijs. Een conversie van € 0 vertelt
+  *Conversiewaarde maximaliseren* dat die aanvraag niets waard is, dus
+  `googleAds.ts` laat het waardeveld dan weg en Ads gebruikt de
+  **standaardwaarde van de conversieactie**. Zet die in Ads op een realistische
+  gemiddelde boekingswaarde, anders telt zo'n aanvraag alsnog als nul.
+- **Verbeterde conversies** zitten in dezelfde module, achter
+  `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`. Staat die aan, dan gaat bij `Lead` en
+  `Purchase` het e-mailadres als SHA-256-hash mee (`sha256_email_address`),
+  gehasht in de browser met Web Crypto — nooit in platte tekst. Dat koppelt
+  aanvragen die anders wegvallen omdat Safari/iOS het conversiecookie blokkeert.
+  Twee voorwaarden vóór je hem aanzet:
+  1. Google Ads → Doelen → Instellingen → **Verbeterde conversies** aan,
+     methode *Google-tag*, voorwaarden accepteren.
+  2. De privacytekst moet het delen van een gehasht e-mailadres met Google
+     noemen — die alinea staat sinds deze wijziging in `/privacy` (§4) en
+     `/datenschutz` (§4.4).
+
+  Zonder `crypto.subtle` (geen secure context) vuurt de conversie gewoon
+  zónder e-mailadres: liever een conversie zonder match dan platte PII.
 - **Conversiedata blijft voorlopig leeg.** `purchase` en `begin_checkout`
   vullen zich pas als de boekingsstroom draait. Bouw het Looker-dashboard
   daarom eerst op verkeer + Search Console.

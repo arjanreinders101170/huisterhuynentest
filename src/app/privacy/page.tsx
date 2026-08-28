@@ -24,6 +24,9 @@ export default function PrivacyPage() {
               Cookie-instellingen openen
             </button>.
           </p>
+          <p>
+            Heeft u toestemming gegeven voor gepersonaliseerde advertenties en verstuurt u een aanvraag of rondt u een betaling af, dan sturen wij bij die conversie een <strong>versleutelde (gehashte) versie van uw e-mailadres</strong> mee naar Google Ads (verbeterde conversies). Uw e-mailadres verlaat uw browser dus nooit in leesbare vorm; Google gebruikt de versleutelde waarde alleen om te bepalen of de aanvraag uit een advertentieklik voortkwam. Zonder uw toestemming voor de categorie marketing gebeurt dit niet.
+          </p>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginTop: 32, marginBottom: 12 }}>5. Contact</h2>
           <p>Huis ter Huynen · Zuiderstraat 6 p · 9491 TH Zeijen · <a href="tel:+31642568603" style={{ color: C.gold }}>+31 6 42568603</a></p>
         </div>

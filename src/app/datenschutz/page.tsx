@@ -82,6 +82,9 @@ export default function DatenschutzPage() {
             Auf dieser Website verwenden wir – nach Ihrer Einwilligung – das Meta Pixel (Facebook) sowie die Conversions API der Meta Platforms Ireland Ltd., 4 Grand Canal Square, Dublin 2, Irland. Damit erfassen wir das Verhalten von Nutzern, die durch Klicks auf Meta-Werbeanzeigen auf unsere Website weitergeleitet wurden, sowie nach einem Kauf-/Buchungsabschluss.
           </p>
           <p style={S.p}>
+            <strong>Erweiterte Conversions:</strong> Haben Sie in die Kategorie „Personalisierte Werbung“ eingewilligt und senden Sie eine Anfrage ab oder schließen eine Zahlung ab, übermitteln wir mit dieser Conversion zusätzlich Ihre <strong>E-Mail-Adresse in gehashter Form</strong> (SHA-256) an Google Ads. Ihre E-Mail-Adresse verlässt Ihren Browser somit niemals im Klartext; Google verwendet den Hashwert ausschließlich, um die Anfrage einem Anzeigenklick zuzuordnen. Ohne Ihre Einwilligung unterbleibt diese Übermittlung.
+          </p>
+          <p style={S.p}>
             <strong>Drittlandübermittlung:</strong> Eine Übermittlung Ihrer Daten in die USA findet statt. Meta Platforms, Inc. ist nach dem EU-US Data Privacy Framework zertifiziert. Wir haben mit Meta Standardvertragsklauseln gemäß Art. 46 DSGVO abgeschlossen.
           </p>
           <p style={S.p}>
