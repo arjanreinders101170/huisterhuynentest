@@ -11,6 +11,12 @@ export type InvoiceItem = {
   aantal: number;
   prijsExcl: number;
   btwPercentage: number; // 0, 9, or 21
+  /** Exacte BTW voor één stuk van deze regel. Geef dit mee wanneer de regel is
+   *  afgeleid van een brutobedrag (zoals een betaalde termijn): dan is excl een
+   *  afronding en zou excl × percentage er een cent naast kunnen zitten,
+   *  waardoor het factuurtotaal niet meer gelijk is aan wat de gast betaalde.
+   *  Weggelaten: BTW wordt berekend als excl × percentage, zoals voorheen. */
+  btwBedrag?: number;
 };
 
 export type InvoiceData = {
@@ -183,7 +189,9 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
 
     for (const item of data.items) {
       const excl = item.prijsExcl * item.aantal;
-      const btw = excl * (item.btwPercentage / 100);
+      const btw = item.btwBedrag !== undefined
+        ? item.btwBedrag * item.aantal
+        : excl * (item.btwPercentage / 100);
       const incl = excl + btw;
 
       subtotalExcl += excl;

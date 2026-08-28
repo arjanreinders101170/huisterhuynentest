@@ -132,7 +132,30 @@ export async function POST(request: NextRequest) {
         }
       } catch {}
 
-      const prijsExcl = amountValue / (1 + btwPct / 100);
+      /* Toeristenbelasting valt buiten de BTW en hoort op een eigen regel met
+       * eigen grootboek (8040). De betaallink geeft mee welk deel bij deze
+       * termijn hoort. Ontbreekt dat — losse producten via /api/checkout, of
+       * betalingen van vóór deze wijziging — dan blijft het één regel zoals
+       * voorheen en verandert er niets aan de factuur. */
+      const toeristenbelasting = Math.min(
+        Math.max(parseFloat(String(meta.toeristenbelasting ?? "0")) || 0, 0),
+        amountValue,
+      );
+      const logiesIncl = Math.round((amountValue - toeristenbelasting) * 100) / 100;
+
+      /* De gast betaalt een brutobedrag, dus de BTW wordt daaruit teruggerekend
+       * en het excl-bedrag is de rest. Andersom — excl afronden en er daarna
+       * BTW over rekenen — komt bij sommige bedragen een cent naast het
+       * betaalde bedrag uit, en dan sluit de factuur niet aan op de bank. */
+      const logiesBtw = Math.round(logiesIncl * (btwPct / (100 + btwPct)) * 100) / 100;
+      const logiesExcl = Math.round((logiesIncl - logiesBtw) * 100) / 100;
+
+      const factuurRegels = [
+        { omschrijving: product, aantal: 1, prijsExcl: logiesExcl, btwPercentage: btwPct, btwBedrag: logiesBtw },
+        ...(toeristenbelasting > 0
+          ? [{ omschrijving: "Toeristenbelasting", aantal: 1, prijsExcl: toeristenbelasting, btwPercentage: 0, btwBedrag: 0 }]
+          : []),
+      ];
 
       const resendKey = process.env.RESEND_API_KEY;
       if (resendKey) {
@@ -172,16 +195,29 @@ export async function POST(request: NextRequest) {
               gastNaam: meta.gastNaam || "Gast",
               gastEmail: meta.gastEmail || "",
               betaalmethode: "iDEAL",
-              items: [{
-                omschrijving: payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling",
-                aantal: 1,
-                prijsExcl: Math.round(prijsExcl * 100) / 100,
-                btwPercentage: btwPct,
-              }],
+              items: factuurRegels,
             });
           } catch (e) {
             console.error("Invoice generation failed:", e);
           }
+
+          /* Een termijnbetaling van een verblijf is iets anders dan een losse
+           * bestelling: bij een aanbetaling moet de gast weten dat de 70% nog
+           * komt, en bij de restbetaling dat hij klaar is. Zonder betaalfase
+           * (losse producten via /api/checkout) blijft de oude tekst staan. */
+          const fase = meta.betaalfase === "aanbetaling" || meta.betaalfase === "restbetaling"
+            ? meta.betaalfase
+            : null;
+          const bedankt = fase === "aanbetaling"
+            ? `Bedankt, ${naam}! Je aanbetaling is binnen. De restbetaling van 70% volgt uiterlijk 30 dagen voor aankomst — daarvoor krijg je op tijd een nieuwe betaallink.`
+            : fase === "restbetaling"
+              ? `Bedankt, ${naam}! Je verblijf is hiermee volledig betaald.`
+              : `Bedankt, ${naam}! Je betaling is succesvol verwerkt.`;
+          const bedanktLijst = fase === "aanbetaling"
+            ? ["Aanbetaling verwerkt", "Je reservering staat vast", "De restbetaling volgt uiterlijk 30 dagen voor aankomst"]
+            : fase === "restbetaling"
+              ? ["Restbetaling verwerkt", "Je verblijf is volledig betaald", "Je gast-app volgt enkele dagen voor aankomst"]
+              : ["Betaling verwerkt", "We regelen alles voor je", "Vragen? We helpen graag"];
 
           // Confirmation to guest (with invoice attachment)
           await resend.emails.send({
@@ -191,14 +227,10 @@ export async function POST(request: NextRequest) {
             ...(invoicePdf ? { attachments: [{ filename: `factuur-${factuurnummer}.pdf`, content: invoicePdf }] } : {}),
             html: lodgeEmail({
               title: "Betaling ontvangen",
-              intro: `Bedankt, ${naam}! Je betaling is succesvol verwerkt.${invoicePdf ? " Je factuur vind je in de bijlage." : ""}`,
+              intro: `${bedankt}${invoicePdf ? " Je factuur vind je in de bijlage." : ""}`,
               blocks: [
-                infoBlock("Je bestelling", esc(product), `<span style="color:#2E7D32;">${prijs}</span>`),
-                checklist([
-                  "Betaling verwerkt",
-                  "We regelen alles voor je",
-                  "Vragen? We helpen graag",
-                ]),
+                infoBlock(fase ? "Je verblijf" : "Je bestelling", esc(product), `<span style="color:#2E7D32;">${prijs}</span>`),
+                checklist(bedanktLijst),
               ],
             }),
           });
@@ -259,8 +291,8 @@ export async function POST(request: NextRequest) {
 
       // ═══ SAVE INVOICE TO DB + PUSH TO E-BOEKHOUDEN ═══
       try {
-        const amountExcl = Math.round(prijsExcl * 100) / 100;
-        const vatAmount = Math.round((amountValue - prijsExcl) * 100) / 100;
+        const amountExcl = Math.round((logiesExcl + toeristenbelasting) * 100) / 100;
+        const vatAmount = logiesBtw;
 
         // Save invoice record — unique constraint op booking_id vangt webhook-retries op
         const { error: invoiceInsertError } = await getSupabase().from("invoices").insert({
@@ -305,12 +337,12 @@ export async function POST(request: NextRequest) {
               invoiceNumber: factuurnummer,
               relationId,
               description: `Huis ter Huynen — ${product}`,
-              lines: [{
-                description: product,
-                amountExcl: amountExcl,
-                btwPercentage: btwPct,
-                grootboekCode,
-              }],
+              lines: [
+                { description: product, amountExcl: logiesExcl, btwPercentage: btwPct, grootboekCode, amountIncl: logiesIncl },
+                ...(toeristenbelasting > 0
+                  ? [{ description: "Toeristenbelasting", amountExcl: toeristenbelasting, btwPercentage: 0, grootboekCode: "8040", amountIncl: toeristenbelasting }]
+                  : []),
+              ],
             });
 
             if (accountingRef) {

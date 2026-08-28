@@ -246,15 +246,36 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const faseLabel = phase === "aanbetaling" ? "Aanbetaling" : "Restbetaling";
       const productLabel = `${faseLabel} (${pctLabel}) — Lodge ${lodgeNaam}${periodeLabel ? ` · ${periodeLabel}` : ""}`;
 
-      // Maak een bookings-rij: dit is de bron-van-waarheid voor de Mollie-webhook
-      const { data: booking } = await sb.from("bookings").insert({
+      // Toeristenbelasting valt buiten de BTW en hoort op een eigen factuurregel
+      // met eigen grootboek. De betaallink dekt een deel van het totaal, dus de
+      // belasting gaat naar rato mee — op dezelfde manier verdeeld als het
+      // bedrag zelf, zodat de twee termijnen samen exact het hele bedrag zijn.
+      const tbTotaal = Number(req.toeristenbelasting) || 0;
+      const tbDeposit = Math.round(tbTotaal * DEPOSIT_PCT * 100) / 100;
+      const tbRest = Math.round((tbTotaal - tbDeposit) * 100) / 100;
+      const tbDeel = Math.min(Math.max(phase === "aanbetaling" ? tbDeposit : tbRest, 0), amount);
+
+      // Maak een bookings-rij: dit is de bron-van-waarheid voor de Mollie-webhook.
+      // Supabase geeft een geweigerde insert terug als wáárde, niet als exception,
+      // dus de fout moet expliciet uitgelezen worden. Blijft bookingId leeg, dan
+      // krijgt de webhook straks een lege bookingId in de metadata en kan hij de
+      // betaling nergens aan koppelen: geen status, geen factuur, geen bedankmail.
+      // Anders dan bij /api/checkout staat de gast hier nog niet af te rekenen,
+      // dus breken we af vóórdat er een betaling bestaat.
+      const { data: booking, error: bookingErr } = await sb.from("bookings").insert({
         guest_id: req.guest_id,
         product: productLabel,
         prijs: amount,
         status: "nieuw",
         metadata: { bookingRequestId: requestId, betaalfase: phase, gastNaam: req.gast_naam, gastEmail: req.gast_email },
       }).select("id").single();
-      const bookingId = booking?.id;
+      if (bookingErr || !booking?.id) {
+        console.error("[send_payment_link] booking insert geweigerd:", bookingErr?.message, bookingErr?.code);
+        return NextResponse.json({
+          error: "Kon geen boekingsregel aanmaken — er is geen betaallink verstuurd.",
+        }, { status: 500 });
+      }
+      const bookingId = booking.id;
 
       // Mollie-betaling aanmaken
       let checkoutUrl: string | null = null;
@@ -265,14 +286,19 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
           body: JSON.stringify({
             amount: { currency: "EUR", value: amount.toFixed(2) },
             description: `Huis ter Huynen — ${productLabel}`,
-            redirectUrl: `${origin}/betaald?booking=${bookingId || ""}`,
+            // De bedankpagina leest ?product uit voor de titel en de foto; zonder
+            // die parameter landt de gast op "je bestelling" met een borrelfoto.
+            redirectUrl: `${origin}/betaald?product=${encodeURIComponent(productLabel)}&booking=${bookingId}`,
             webhookUrl: `${origin}/api/mollie/webhook`,
             metadata: {
-              bookingId: bookingId || "",
+              bookingId,
               betaalfase: phase,
               bookingRequestId: requestId,
               gastNaam: req.gast_naam,
               gastEmail: req.gast_email,
+              // Als bedrag met twee decimalen, zodat de webhook niet hoeft te
+              // gokken hoe Mollie een getal terugserialiseert.
+              toeristenbelasting: tbDeel.toFixed(2),
             },
           }),
         });
@@ -283,7 +309,7 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         }
         const payment = await mollieRes.json();
         checkoutUrl = payment._links?.checkout?.href || null;
-        if (bookingId && payment.id) {
+        if (payment.id) {
           await sb.from("bookings").update({ mollie_payment_id: payment.id }).eq("id", bookingId);
         }
       } catch (e) {
