@@ -11,6 +11,7 @@ import { GA4 } from "@/components/tracking/GA4";
 import { RouteChangePixel } from "@/components/tracking/RouteChangePixel";
 import { TrackingListeners } from "@/components/tracking/TrackingListeners";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
+import { GOOGLE_MAPS_PLACE_URL } from "@/lib/google-reviews";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -228,7 +229,7 @@ const jsonLd = {
     opens: "00:00",
     closes: "23:59",
   },
-  hasMap: "https://maps.google.com/?q=Zeijen,Drenthe",
+  hasMap: GOOGLE_MAPS_PLACE_URL,
   keywords:
     "lodge Drenthe, vakantiewoning Drenthe, hottub Drenthe, chalet Drenthe, romantisch weekend, wandelen heide, fietsen Drenthe, Assen vakantie",
 };
