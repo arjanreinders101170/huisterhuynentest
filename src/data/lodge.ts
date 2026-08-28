@@ -26,6 +26,18 @@ export function lodgeName(id: string): string {
   return LODGE_NAMES[id as LodgeId] || "Lodge";
 }
 
+/* BTW-tarief voor logies, in procenten.
+ *
+ * Tot en met 2025 gold het verlaagde tarief van 9%. Per 1 januari 2026 is dat
+ * voor logies vervallen: overnachtingen in hotels, pensions, vakantiewoningen,
+ * B&B's en stacaravans vallen sindsdien onder het algemene tarief. Alleen
+ * kampeerplaatsen houden 9%, en die verhuren wij niet.
+ *
+ * Let op bij een wijziging: het moment van de overnáchting bepaalt het tarief,
+ * niet het moment van betalen of factureren. Een aanbetaling die nu binnenkomt
+ * voor een verblijf onder een ander tarief hoort dus tegen dát tarief. */
+export const LOGIES_BTW_PCT = 21;
+
 /* Max guests per lodge. Both lodges sleep 4. */
 export const MAX_GUESTS_PER_LODGE = 4;
 

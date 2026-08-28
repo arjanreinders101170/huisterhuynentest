@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, termsFooter, type OfferteRegel } from "@/lib/email";
-import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
+import { APP_URL_FALLBACK, LOGIES_BTW_PCT, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
 import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
 import { findConflict, openOffersOverlapping } from "@/lib/availability";
@@ -296,9 +296,12 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
               bookingRequestId: requestId,
               gastNaam: req.gast_naam,
               gastEmail: req.gast_email,
-              // Als bedrag met twee decimalen, zodat de webhook niet hoeft te
-              // gokken hoe Mollie een getal terugserialiseert.
+              // Beide als string, zodat de webhook niet hoeft te gokken hoe
+              // Mollie een getal terugserialiseert.
               toeristenbelasting: tbDeel.toFixed(2),
+              // Expliciet meesturen: dit is een verblijf, geen rij uit de
+              // products-tabel, dus de webhook kan het tarief nergens opzoeken.
+              btwPct: String(LOGIES_BTW_PCT),
             },
           }),
         });

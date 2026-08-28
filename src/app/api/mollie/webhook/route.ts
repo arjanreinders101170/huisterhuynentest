@@ -11,6 +11,12 @@ export const runtime = "nodejs";
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
 
+/* Terugvaltarief wanneer noch de betaling noch het product een btw-percentage
+ * aanlevert. Het logiestarief zelf staat in LOGIES_BTW_PCT (src/data/lodge.ts)
+ * en wordt door de betaallink meegestuurd; deze waarde geldt alleen voor
+ * betalingen die helemaal niets meegeven. */
+const STANDAARD_BTW_PCT = 21;
+
 export async function POST(request: NextRequest) {
   try {
     // Mollie sends payment ID as form-encoded body
@@ -163,18 +169,41 @@ export async function POST(request: NextRequest) {
       const factuurdatum = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
       const product = payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling";
 
-      // Look up BTW rate from products table
-      let btwPct = 21;
-      try {
-        const { data: productData } = await getSupabase()
+      /* BTW-tarief bepalen, in volgorde van betrouwbaarheid:
+       *   1. wat de betaling zelf meegaf — betaallinks voor een verblijf
+       *      sturen het logiestarief expliciet mee;
+       *   2. het tarief van het product, bij een losse bestelling via
+       *      /api/checkout;
+       *   3. het algemene tarief, als geen van beide iets oplevert.
+       *
+       * Voorheen stond hier alleen stap 2, met een kale 21 als beginwaarde en
+       * een lege catch eromheen. Bij elke betaallink mislukte die lookup — die
+       * stuurt geen productId mee — en bleef de 21 stil staan. Het bedrag
+       * klopte, maar niemand had het gekozen en een fout was onzichtbaar. */
+      const btwUitMetadata = Number(meta.btwPct);
+      const btwUitMetadataGeldig = Number.isFinite(btwUitMetadata) && btwUitMetadata >= 0 && btwUitMetadata <= 100;
+      let btwPct = btwUitMetadataGeldig ? btwUitMetadata : STANDAARD_BTW_PCT;
+
+      if (!btwUitMetadataGeldig && productId) {
+        const { data: productData, error: productError } = await getSupabase()
           .from("products")
           .select("btw_percentage")
           .eq("id", productId)
-          .single();
-        if (productData?.btw_percentage !== undefined) {
+          .maybeSingle();
+        if (productError) {
+          console.error(
+            `Mollie webhook: btw-tarief van product ${productId} niet op te halen ` +
+            `(${productError.message}) — ${STANDAARD_BTW_PCT}% aangehouden voor payment ${paymentId}`
+          );
+        } else if (productData?.btw_percentage != null) {
           btwPct = productData.btw_percentage;
+        } else {
+          console.warn(
+            `Mollie webhook: product ${productId} heeft geen btw_percentage — ` +
+            `${STANDAARD_BTW_PCT}% aangehouden voor payment ${paymentId}`
+          );
         }
-      } catch {}
+      }
 
       /* Toeristenbelasting valt buiten de BTW en hoort op een eigen regel met
        * eigen grootboek (8040). De betaallink geeft mee welk deel bij deze
