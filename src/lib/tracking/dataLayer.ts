@@ -6,6 +6,7 @@
 import type { BaseEvent, Locale, TrackingEvent } from "./types";
 import { getConsentSnapshot } from "./consent";
 import { fireGa4Event } from "./ga4";
+import { fireGoogleAdsConversion } from "./googleAds";
 
 const ANON_KEY = "hth-aid";
 const USER_CACHE_KEY = "hth-user-ctx";
@@ -184,6 +185,9 @@ export function pushEvent(payload: TrackingEvent): void {
 
   /* Fire GA4 directly (opt-in via NEXT_PUBLIC_GA4_ID), consent-gated on statistics. */
   fireGa4Event(payload);
+
+  /* Google Ads-conversie (opt-in per conversielabel), consent-gated on marketing. */
+  fireGoogleAdsConversion(payload);
 
   if (shouldMirrorToCapi(payload)) {
     fireCapi(payload);

@@ -20,6 +20,7 @@ bestemming — beide lopen door dezelfde `pushEvent()` in de code.
 | Consent Mode v2 default-deny | `src/lib/tracking/consent.ts` | Klaar |
 | CSP-uitzonderingen voor GA4 | `next.config.ts` | Toegevoegd in PR #178 |
 | Google Ads-basistag (`AW-18397549973`) | `src/components/tracking/GoogleAds.tsx` | Klaar — laadt `gtag.js`, consent-gated via Consent Mode v2 |
+| Google Ads-conversies | `src/lib/tracking/googleAds.ts` | Code klaar — vuurt zodra er een conversielabel in `NEXT_PUBLIC_GOOGLE_ADS_LABEL_*` staat |
 | Sitemap | `src/app/sitemap.ts` → `/sitemap.xml` | Klaar, inclusief hreflang nl/de |
 | `robots.txt` | `public/robots.txt` | Klaar, verwijst naar de sitemap |
 
@@ -190,12 +191,27 @@ De cookiebanner staat op default-deny (`analytics_storage: denied`). **Zonder
 - **Google Ads staat sinds augustus 2026 live.** De basistag
   (`AW-18397549973`) zit in `src/components/tracking/GoogleAds.tsx` en de CSP
   in `next.config.ts` laat nu `*.doubleclick.net`, `googleadservices.com` en
-  de Google-landdomeinen door. Wat er nog niet is: een **conversielabel**.
-  Maak in Google Ads → Doelen → Conversies een conversieactie aan, kopieer het
-  `send_to`-label (`AW-18397549973/xxxxxxxx`) en vuur dat af op het
-  boekingsmoment — bijvoorbeeld naast de bestaande `Purchase`-event in
-  `src/lib/tracking/dataLayer.ts`. Zolang dat label ontbreekt meet Google Ads
-  alleen pageviews en remarketing, geen conversies.
+  de Google-landdomeinen door. De conversiekant loopt sinds deze wijziging via
+  `src/lib/tracking/googleAds.ts`: elk event uit `pushEvent()` wordt naar een
+  conversielabel gekeken, en zonder label gebeurt er niets. Wat er dus nog
+  moet: **de conversieacties aanmaken in Google Ads** (Doelen → Conversies →
+  "tag zelf installeren"), het stuk ná de schuine streep uit `send_to`
+  kopiëren en in Vercel zetten:
+
+  | Env-variabele | Vuurt bij | Waarde |
+  |---|---|---|
+  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_LEAD` | aanvraag verzonden (`Lead`) | verblijfsprijs |
+  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_PURCHASE` | betaling afgerond (`Purchase`) | betaald bedrag |
+  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_CHECKOUT` | formulier gestart (`InitiateCheckout`) | verblijfsprijs |
+  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_CONTACT` | telefoon/WhatsApp/e-mail (`Contact`) | — |
+
+  Zet alleen `Lead` (en later `Purchase`) op **primair**; `InitiateCheckout` en
+  `Contact` horen op *secundair*, anders telt Google dezelfde aanvraag dubbel
+  en gaat de biedstrategie op de verkeerde stap sturen. `transaction_id` gaat
+  als `event_id` mee, dus een herlaadde bedanktpagina telt niet twee keer.
+  Zolang er geen label staat meet Google Ads alleen pageviews en remarketing —
+  en heeft een biedstrategie als *Conversiewaarde maximaliseren* niets om op
+  te sturen.
 - **Conversiedata blijft voorlopig leeg.** `purchase` en `begin_checkout`
   vullen zich pas als de boekingsstroom draait. Bouw het Looker-dashboard
   daarom eerst op verkeer + Search Console.
