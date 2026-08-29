@@ -11,6 +11,7 @@ import { GA4 } from "@/components/tracking/GA4";
 import { RouteChangePixel } from "@/components/tracking/RouteChangePixel";
 import { TrackingListeners } from "@/components/tracking/TrackingListeners";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
+import { LODGE_LAT, LODGE_LON } from "@/data/lodge";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -145,8 +146,8 @@ const jsonLd = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 53.0167,
-    longitude: 6.5667,
+    latitude: LODGE_LAT,
+    longitude: LODGE_LON,
   },
   image: [OG_IMAGE],
   priceRange: "€€€",
@@ -266,8 +267,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Geo */}
         <meta name="geo.region" content="NL-DR" />
         <meta name="geo.placename" content="Zeijen, Drenthe" />
-        <meta name="geo.position" content="53.0167;6.5667" />
-        <meta name="ICBM" content="53.0167, 6.5667" />
+        <meta name="geo.position" content={`${LODGE_LAT};${LODGE_LON}`} />
+        <meta name="ICBM" content={`${LODGE_LAT}, ${LODGE_LON}`} />
 
         {/* PWA — iOS */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

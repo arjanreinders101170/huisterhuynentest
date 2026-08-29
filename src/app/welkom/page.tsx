@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { APP_URL_FALLBACK, WIFI_SSID } from "@/data/lodge";
+import { APP_URL_FALLBACK, LODGE_LAT, LODGE_LON, WIFI_SSID } from "@/data/lodge";
 import { getSupabase } from "@/lib/supabase";
 import { wifiPassword } from "@/lib/wifi";
 
@@ -43,7 +43,7 @@ export default async function WelkomPage({ searchParams }: Props) {
   // QR encodes the token so a guest scanning gets the personalized app
   const appLink = token ? `${appUrl}?s=${encodeURIComponent(token)}` : appUrl;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(appLink)}&size=200x200&color=2F4F3E&bgcolor=FDFBF6`;
-  const mapsUrl = "https://www.google.com/maps/dir/?api=1&destination=53.1047,6.5070&travelmode=driving";
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${LODGE_LAT},${LODGE_LON}&travelmode=driving`;
 
   return (
     <div style={{

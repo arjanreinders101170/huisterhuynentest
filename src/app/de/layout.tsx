@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
+import { LODGE_LAT, LODGE_LON } from "@/data/lodge";
 
 const SITE = "https://www.huisterhuynen.nl";
 const OG_IMAGE = `${SITE}/lodge-heide.jpg`;
@@ -83,8 +84,8 @@ const jsonLd = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 53.0167,
-    longitude: 6.5667,
+    latitude: LODGE_LAT,
+    longitude: LODGE_LON,
   },
   image: [OG_IMAGE],
   priceRange: "€€€",
