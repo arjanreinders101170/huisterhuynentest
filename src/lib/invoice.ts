@@ -11,6 +11,12 @@ export type InvoiceItem = {
   aantal: number;
   prijsExcl: number;
   btwPercentage: number; // 0, 9, or 21
+  /** Exacte BTW voor één stuk van deze regel. Geef dit mee wanneer de regel is
+   *  afgeleid van een brutobedrag (zoals een betaalde termijn): dan is excl een
+   *  afronding en zou excl × percentage er een cent naast kunnen zitten,
+   *  waardoor het factuurtotaal niet meer gelijk is aan wat de gast betaalde.
+   *  Weggelaten: BTW wordt berekend als excl × percentage, zoals voorheen. */
+  btwBedrag?: number;
 };
 
 export type InvoiceData = {
@@ -183,7 +189,9 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
 
     for (const item of data.items) {
       const excl = item.prijsExcl * item.aantal;
-      const btw = excl * (item.btwPercentage / 100);
+      const btw = item.btwBedrag !== undefined
+        ? item.btwBedrag * item.aantal
+        : excl * (item.btwPercentage / 100);
       const incl = excl + btw;
 
       subtotalExcl += excl;
@@ -192,13 +200,18 @@ export async function generateInvoicePdf(data: InvoiceData): Promise<Buffer> {
       btwTotals[item.btwPercentage].btw += btw;
 
       doc.font("Helvetica").fontSize(9).fillColor(COLORS.text);
+      // Omschrijvingen van een verblijf ("Aanbetaling (30%) — Lodge De Heide ·
+      // 14 mei 2027 t/m 17 mei 2027") lopen over meer dan één regel. Met een
+      // vaste regelhoogte schoof de volgende factuurregel daar overheen, dus
+      // de hoogte volgt nu de tekst.
+      const omschrijvingHoogte = doc.heightOfString(item.omschrijving, { width: 220 });
       doc.text(item.omschrijving, cols[0], y, { width: 220 });
       doc.text(String(item.aantal), cols[1], y, { width: 50, align: "right" });
       doc.text(fmt(excl), cols[2], y, { width: 60, align: "right" });
       doc.text(fmt(btw), cols[3], y, { width: 60, align: "right" });
       doc.font("Helvetica-Bold").fillColor(COLORS.text);
       doc.text(fmt(incl), cols[4], y, { width: 60, align: "right" });
-      y += 18;
+      y += Math.max(18, Math.ceil(omschrijvingHoogte) + 7);
     }
 
     // Bottom line
