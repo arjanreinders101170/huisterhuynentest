@@ -14,8 +14,17 @@ export type GoogleReviewsData = {
   reviewUrl: string;
 };
 
+/* Place-ID van de Google Business Profile-vermelding. Bevestigd via het
+ * itemrapport van de locatie-items in Google Ads (28-08-2026): daar staat
+ * dezelfde ID onder "Plaats-ID", dus de reviewlinks in de mails en de
+ * locatie-extensie in de advertenties wijzen naar één en dezelfde vermelding. */
 const PLACE_ID = process.env.GOOGLE_PLACE_ID ?? "ChIJEZ3h8BUxyEcRqPvq9qnzXyk";
 export const GOOGLE_REVIEW_URL = `https://search.google.com/local/writereview?placeid=${PLACE_ID}`;
+
+/* Kaartlink naar de vermelding zelf (niet naar het dorp), voor hasMap in de
+ * JSON-LD. Een place_id-URL laat Google de site en de vermelding aan elkaar
+ * knopen; een zoek-URL op plaatsnaam doet dat niet. */
+export const GOOGLE_MAPS_PLACE_URL = `https://www.google.com/maps/place/?q=place_id:${PLACE_ID}`;
 
 export async function fetchGoogleReviews(): Promise<GoogleReviewsData> {
   const fallback: GoogleReviewsData = { reviews: [], rating: 0, total: 0, reviewUrl: GOOGLE_REVIEW_URL };

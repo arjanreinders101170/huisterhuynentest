@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
+import { GOOGLE_MAPS_PLACE_URL } from "@/lib/google-reviews";
 
 const SITE = "https://www.huisterhuynen.nl";
 const OG_IMAGE = `${SITE}/lodge-heide.jpg`;
@@ -158,7 +159,7 @@ const jsonLd = {
       ],
     },
   ],
-  hasMap: "https://maps.google.com/?q=Zeijen,Drenthe",
+  hasMap: GOOGLE_MAPS_PLACE_URL,
   keywords:
     "Wellness Lodge Drenthe, Luxus Ferienhaus Niederlande, Hot Tub Ferienhaus, Boutique Lodge Holland, Sauna Wochenende, Wandern Heide, Radfahren Drenthe",
 };
