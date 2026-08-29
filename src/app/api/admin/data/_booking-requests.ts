@@ -7,6 +7,7 @@ import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
 import { findConflict, openOffersOverlapping, zelfdeGast } from "@/lib/availability";
 
 const DEPOSIT_PCT = 0.30;
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 
 export async function handleBookingRequestsGet(table: string): Promise<NextResponse | null> {
   if (table !== "booking_requests") return null;
@@ -331,6 +332,12 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
 
       // Mollie-betaling aanmaken
       let checkoutUrl: string | null = null;
+      /* Of deze betaling in test- of livemodus staat, bepaalt Mollie aan de
+       * hand van de gebruikte sleutel. Een testlink ziet er voor de gast uit
+       * als een echte, maar er gaat geen geld — die mag dus nooit naar een
+       * gast. De webhook weigert een testbetaling al te verwerken; hier
+       * voorkomen we dat de gast überhaupt zo'n link in handen krijgt. */
+      let testbetaling = false;
       try {
         const mollieRes = await fetch("https://api.mollie.com/v2/payments", {
           method: "POST",
@@ -364,6 +371,7 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         }
         const payment = await mollieRes.json();
         checkoutUrl = payment._links?.checkout?.href || null;
+        testbetaling = payment.mode === "test";
         if (payment.id) {
           await sb.from("bookings").update({ mollie_payment_id: payment.id }).eq("id", bookingId);
         }
@@ -378,6 +386,47 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       // kan doorsturen in plaats van te denken dat de mail eruit is.
       const resendKey = process.env.RESEND_API_KEY;
       let mailError: string | null = null;
+
+      /* Testmodus: de link gaat naar de eigenaar in plaats van naar de gast,
+       * en de aanvraag blijft op zijn oude status staan. Zo blijft de keten op
+       * productie te testen zonder dat een gast een link krijgt waarmee niets
+       * wordt afgeschreven. */
+      if (testbetaling) {
+        console.warn(`[send_payment_link] TESTmodus voor aanvraag ${requestId} — link niet naar de gast gestuurd`);
+        if (resendKey && checkoutUrl) {
+          try {
+            const { Resend } = await import("resend");
+            await new Resend(resendKey).emails.send({
+              from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+              to: [OWNER_EMAIL],
+              subject: `[TEST] Betaallink aangemaakt — ${faseLabel} ${esc(req.gast_naam || "")}`,
+              html: lodgeEmail({
+                title: "Testlink aangemaakt",
+                intro: `Mollie staat in testmodus, dus deze link is niet naar ${esc(req.gast_email)} gestuurd. Er wordt niets afgeschreven als je hem gebruikt.`,
+                blocks: [
+                  infoBlock("Betaallink", `${esc(faseLabel)} (${pctLabel})`, `&euro; ${amount.toFixed(2)} &middot; Lodge ${esc(lodgeNaam)}`),
+                  ctaButton(checkoutUrl, "Open de testbetaling", { prominent: true }),
+                  calloutBlock(
+                    "De aanvraag is niet bijgewerkt",
+                    "De status blijft staan waar hij stond, dus je kunt de echte link straks gewoon versturen. Zet de live Mollie-sleutel in de omgeving om echte betalingen te kunnen doen.",
+                  ),
+                ],
+                footer: `Aanvraag ${esc(String(requestId))} &middot; testmodus`,
+              }),
+            });
+          } catch (e) {
+            console.error("[send_payment_link] testmelding naar eigenaar mislukt:", e);
+          }
+        }
+        return NextResponse.json({
+          success: true,
+          test: true,
+          checkoutUrl,
+          amount,
+          totaal,
+          fase: phase,
+        });
+      }
 
       if (!resendKey) {
         mailError = "RESEND_API_KEY ontbreekt";

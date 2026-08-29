@@ -492,7 +492,18 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
         body: JSON.stringify({ action: "send_payment_link", requestId: req.id, fase }),
       });
       const d = await r.json();
-      if (d.success) {
+      if (d.success && d.test) {
+        // Mollie staat in testmodus: de gast heeft niets gekregen en de status
+        // op de server is niet bijgewerkt, dus hier ook niet verspringen.
+        setResult(prev => ({
+          ...prev,
+          [req.id]: {
+            ok: false,
+            msg: "Mollie staat in testmodus — de link is naar jou gemaild, niet naar de gast. De aanvraag is niet bijgewerkt.",
+            link: typeof d.checkoutUrl === "string" ? d.checkoutUrl : undefined,
+          },
+        }));
+      } else if (d.success) {
         const newStatus = fase === "aanbetaling" ? "aanbetaling_verstuurd" : "restbetaling_verstuurd";
         setRequests(requests.map(x => x.id === req.id ? { ...x, status: newStatus } : x));
         setResult(prev => ({ ...prev, [req.id]: { ok: true, msg: `${faseLabel} € ${Number(d.amount).toFixed(2)} verstuurd` } }));
