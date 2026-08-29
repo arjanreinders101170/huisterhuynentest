@@ -239,6 +239,26 @@ export async function POST(request: NextRequest) {
           const prijs = `€ ${payment.amount?.value || "0.00"}`;
           const naam = esc(meta.gastNaam || "Gast");
 
+          /* Factuur eerst maken, dan pas mailen. Mislukt het, dan hoort dat in
+           * de mail naar de eigenaar te staan: de gast krijgt zijn bevestiging
+           * namelijk gewoon, alleen zonder bijlage, en de fout verdween
+           * voorheen in console.error waar niemand hem zag. */
+          let invoicePdf: Buffer | null = null;
+          let factuurFout: string | null = null;
+          try {
+            invoicePdf = await generateInvoicePdf({
+              factuurnummer,
+              factuurdatum,
+              gastNaam: meta.gastNaam || "Gast",
+              gastEmail: meta.gastEmail || "",
+              betaalmethode: "iDEAL",
+              items: factuurRegels,
+            });
+          } catch (e) {
+            factuurFout = e instanceof Error ? e.message : String(e);
+            console.error(`Invoice generation failed voor ${factuurnummer} (payment ${paymentId}):`, e);
+          }
+
           // Email to owner
           await resend.emails.send({
             from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
@@ -257,26 +277,15 @@ export async function POST(request: NextRequest) {
                   "Let op: aanbetaling staat nog open",
                   "Deze restbetaling is binnen, maar van de aanbetaling is geen betaling bekend. De aanvraag is daarom niet op &lsquo;volledig betaald&rsquo; gezet &mdash; controleer of de 30% alsnog voldaan moet worden.",
                 )] : []),
+                ...(factuurFout ? [calloutBlock(
+                  "Factuur niet meegestuurd",
+                  `De factuur ${esc(factuurnummer)} kon niet worden gemaakt, dus de gast kreeg zijn bevestiging zonder bijlage. Stuur de factuur handmatig na. Foutmelding: ${esc(factuurFout)}`,
+                )] : []),
               ],
               footer: `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(meta.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(meta.gastEmail)}</a>`,
             }),
             replyTo: meta.gastEmail,
           });
-
-          // Generate invoice PDF
-          let invoicePdf: Buffer | null = null;
-          try {
-            invoicePdf = await generateInvoicePdf({
-              factuurnummer,
-              factuurdatum,
-              gastNaam: meta.gastNaam || "Gast",
-              gastEmail: meta.gastEmail || "",
-              betaalmethode: "iDEAL",
-              items: factuurRegels,
-            });
-          } catch (e) {
-            console.error("Invoice generation failed:", e);
-          }
 
           /* Een termijnbetaling van een verblijf is iets anders dan een losse
            * bestelling: bij een aanbetaling moet de gast weten dat de 70% nog
