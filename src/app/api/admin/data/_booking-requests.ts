@@ -4,7 +4,7 @@ import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBloc
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
 import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
-import { findConflict, openOffersOverlapping } from "@/lib/availability";
+import { findConflict, openOffersOverlapping, zelfdeGast } from "@/lib/availability";
 
 const DEPOSIT_PCT = 0.30;
 
@@ -97,13 +97,16 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         try {
           const [{ conflict }, andere] = await Promise.all([
             findConflict({ lodge: req.lodge, checkIn: req.check_in, checkOut: req.check_out, excludeRequestId: req.id }),
-            openOffersOverlapping({ checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge, excludeRequestId: req.id }),
+            openOffersOverlapping({
+              checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge,
+              excludeRequestId: req.id, inclusiefCoulance: true,
+            }),
           ]);
           if (conflict) {
             waarschuwingen.push(`Deze nachten zijn al bezet — ${conflict.bron || "bestaande reservering"} (${conflict.start} t/m ${conflict.end}). De gast kan niet bevestigen.`);
           }
-          for (const o of andere) {
-            waarschuwingen.push(`Er staat al een open offerte voor deze lodge en periode bij ${o.gast_naam || "een andere gast"}. Wie het eerst bevestigt, krijgt de plek.`);
+          for (const o of andere.filter(o => !zelfdeGast(o, req))) {
+            waarschuwingen.push(`Er ligt al een aanbod voor deze lodge en periode bij ${o.gast_naam || "een andere gast"}. Versturen wordt geweigerd, tenzij je bewust doorzet.`);
           }
         } catch (e) {
           console.error("Beschikbaarheidscheck bij prefill faalde:", e);
@@ -145,6 +148,55 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", requestId).single();
       if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
       if (!req.gast_email) return NextResponse.json({ error: "Aanvraag heeft geen e-mailadres" }, { status: 400 });
+
+      /* Niet twee gasten hetzelfde beloven.
+       *
+       * Een offerte zet de agenda niet dicht, dus technisch kun je dezelfde
+       * nachten aan iedereen aanbieden. Zeggen ze allebei ja, dan wint de
+       * snelste en moet de ander alsnog worden teleurgesteld — met een aanbod
+       * op zak. Daarom weigert het versturen hier zolang er al een aanbod ligt
+       * of de nachten bezet zijn. Bewust doorzetten kan: dan stuurt de
+       * interface `tochVersturen` mee, bijvoorbeeld om iemand als reserve op
+       * de lijst te zetten.
+       *
+       * Aanbiedingen aan dezelfde gast tellen niet mee: die kan er maar één
+       * bevestigen, en het bevestigen trekt het alternatief in. */
+      const tochVersturen = body.tochVersturen === true;
+      if (!tochVersturen && req.lodge && req.check_in && req.check_out) {
+        try {
+          const [{ conflict }, andere] = await Promise.all([
+            findConflict({ lodge: req.lodge, checkIn: req.check_in, checkOut: req.check_out, excludeRequestId: req.id }),
+            openOffersOverlapping({
+              checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge,
+              excludeRequestId: req.id, inclusiefCoulance: true,
+            }),
+          ]);
+          const blokkade: string[] = [];
+          if (conflict) {
+            blokkade.push(
+              `Deze nachten zijn al bezet — ${conflict.bron || "bestaande reservering"} ` +
+              `(${conflict.start} t/m ${conflict.end}). De gast kan dit aanbod niet bevestigen.`,
+            );
+          }
+          for (const o of andere.filter(o => !zelfdeGast(o, req))) {
+            blokkade.push(
+              `${o.gast_naam || "Een andere gast"} heeft al een aanbod voor deze lodge en deze nachten ` +
+              `(${o.check_in} t/m ${o.check_out}). Zeggen ze allebei ja, dan moet je er één teleurstellen.`,
+            );
+          }
+          if (blokkade.length > 0) {
+            return NextResponse.json({
+              error: "Offerte niet verstuurd — deze nachten liggen al bij iemand anders.",
+              blokkade,
+              kanForceren: true,
+            }, { status: 409 });
+          }
+        } catch (e) {
+          /* Een storing in de check mag het versturen niet tegenhouden; de
+           * dubbelboekingscheck bij het bevestigen blijft hoe dan ook staan. */
+          console.error("Dubbel-aanbodcheck bij versturen faalde:", e);
+        }
+      }
 
       const extraSum = cleanRegels.reduce((s, r) => s + (r.soort === "korting" ? -Math.abs(r.bedrag) : Math.abs(r.bedrag)), 0);
       const totaal = Math.max(0, Math.round((verblijf + cleaning + tax + extraSum) * 100) / 100);

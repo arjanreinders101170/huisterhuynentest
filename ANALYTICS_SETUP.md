@@ -4,8 +4,9 @@ Stap-voor-stap recept om de meting live te krijgen. Dit is de voorwaarde voor
 het Looker Studio-dashboard (Fase 6 uit `seo-cro-uitvoeringsplan.md`): Looker
 verzamelt zelf niets, het toont alleen wat GA4 en Search Console al hebben.
 
-Voor de Meta Pixel/CAPI-kant: zie `META_TRACKING.md`. Dezelfde stack, andere
-bestemming — beide lopen door dezelfde `pushEvent()` in de code.
+Voor de Meta Pixel/CAPI-kant: zie `META_TRACKING.md`; voor Google
+Ads-conversies: `GOOGLE_ADS_SETUP.md`. Dezelfde stack, andere bestemming — alle
+drie lopen door dezelfde `pushEvent()` in de code.
 
 **Tijdsinschatting:** blok A ~10 min · blok B ~30 min · blok C ~20 min.
 
@@ -20,6 +21,7 @@ bestemming — beide lopen door dezelfde `pushEvent()` in de code.
 | Consent Mode v2 default-deny | `src/lib/tracking/consent.ts` | Klaar |
 | CSP-uitzonderingen voor GA4 | `next.config.ts` | Toegevoegd in PR #178 |
 | Google Ads-basistag (`AW-18397549973`) | `src/components/tracking/GoogleAds.tsx` | Klaar — laadt `gtag.js`, consent-gated via Consent Mode v2 |
+| Google Ads-conversies | `src/lib/tracking/googleAds.ts` | Klaar — wacht op een conversielabel, zie `GOOGLE_ADS_SETUP.md` |
 | Sitemap | `src/app/sitemap.ts` → `/sitemap.xml` | Klaar, inclusief hreflang nl/de |
 | `robots.txt` | `public/robots.txt` | Klaar, verwijst naar de sitemap |
 
