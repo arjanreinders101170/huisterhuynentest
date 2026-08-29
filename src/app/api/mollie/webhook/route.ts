@@ -45,6 +45,10 @@ export async function POST(request: NextRequest) {
 
     const payment = await mollieResponse.json();
     const status = payment.status; // paid, failed, canceled, expired, pending
+    /* Mollie geeft per betaling mee of hij in test- of livemodus is gedaan.
+     * Een testbetaling bereikt gewoon de status 'paid' terwijl er geen geld
+     * gaat, dus alles wat naar buiten werkt moet daarbij achterwege blijven. */
+    const testbetaling = payment.mode === "test";
     const meta = payment.metadata || {};
     const bookingId = meta.bookingId;
 
@@ -105,6 +109,43 @@ export async function POST(request: NextRequest) {
       mollie_payment_id: paymentId,
       updated_at: new Date().toISOString(),
     }).eq("id", bookingId);
+
+    /* Een testbetaling gaat niet verder dan de boekingsrij hierboven. Geen
+     * bevestiging naar de gast, geen statuswissel op de aanvraag, geen
+     * factuurnummer en niets naar de boekhouding — anders krijgt een echte
+     * gast bericht over geld dat nooit binnenkwam en staat er een
+     * verkoopfactuur in de boeken voor een bedrag dat niet bestaat. Precies
+     * dat gebeurde op 29 augustus 2026. De eigenaar krijgt wél bericht, zodat
+     * de keten op productie te testen blijft. */
+    if (testbetaling) {
+      console.log(`Mollie webhook: TESTbetaling ${paymentId} (${status}) — gastmail, factuur en boekhouding overgeslagen`);
+      const resendKeyTest = process.env.RESEND_API_KEY;
+      if (resendKeyTest && bookingStatus === "betaald") {
+        try {
+          const { Resend } = await import("resend");
+          await new Resend(resendKeyTest).emails.send({
+            from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
+            to: [OWNER_EMAIL],
+            subject: `[TEST] Testbetaling verwerkt — ${esc(payment.description || "onbekend")}`,
+            html: lodgeEmail({
+              title: "Testbetaling verwerkt",
+              intro: "Dit was een betaling in testmodus. De webhook is goed aangekomen en de boekingsrij staat op betaald.",
+              blocks: [
+                infoBlock("Testbetaling", esc(payment.description || "onbekend"), `<span style="color:#2E7D32;">&euro; ${esc(payment.amount?.value || "0.00")}</span>`),
+                calloutBlock(
+                  "Bewust overgeslagen",
+                  "De gast heeft géén bevestiging gekregen, er is geen factuurnummer vergeven en er is niets naar e-Boekhouden gestuurd. De aanvraag staat nog steeds als onbetaald in het dashboard.",
+                ),
+              ],
+              footer: `Betaling ${esc(paymentId)} &middot; testmodus`,
+            }),
+          });
+        } catch (e) {
+          console.error("Testbetaling-melding naar eigenaar mislukt:", e);
+        }
+      }
+      return NextResponse.json({ received: true, test: true });
+    }
 
     /* Sync de gekoppelde aanvraag bij aanbetaling/restbetaling-links uit de
      * admin. Een restbetaling mag de aanvraag alleen op 'volledig_betaald'
@@ -239,6 +280,26 @@ export async function POST(request: NextRequest) {
           const prijs = `€ ${payment.amount?.value || "0.00"}`;
           const naam = esc(meta.gastNaam || "Gast");
 
+          /* Factuur eerst maken, dan pas mailen. Mislukt het, dan hoort dat in
+           * de mail naar de eigenaar te staan: de gast krijgt zijn bevestiging
+           * namelijk gewoon, alleen zonder bijlage, en de fout verdween
+           * voorheen in console.error waar niemand hem zag. */
+          let invoicePdf: Buffer | null = null;
+          let factuurFout: string | null = null;
+          try {
+            invoicePdf = await generateInvoicePdf({
+              factuurnummer,
+              factuurdatum,
+              gastNaam: meta.gastNaam || "Gast",
+              gastEmail: meta.gastEmail || "",
+              betaalmethode: "iDEAL",
+              items: factuurRegels,
+            });
+          } catch (e) {
+            factuurFout = e instanceof Error ? e.message : String(e);
+            console.error(`Invoice generation failed voor ${factuurnummer} (payment ${paymentId}):`, e);
+          }
+
           // Email to owner
           await resend.emails.send({
             from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
@@ -257,26 +318,15 @@ export async function POST(request: NextRequest) {
                   "Let op: aanbetaling staat nog open",
                   "Deze restbetaling is binnen, maar van de aanbetaling is geen betaling bekend. De aanvraag is daarom niet op &lsquo;volledig betaald&rsquo; gezet &mdash; controleer of de 30% alsnog voldaan moet worden.",
                 )] : []),
+                ...(factuurFout ? [calloutBlock(
+                  "Factuur niet meegestuurd",
+                  `De factuur ${esc(factuurnummer)} kon niet worden gemaakt, dus de gast kreeg zijn bevestiging zonder bijlage. Stuur de factuur handmatig na. Foutmelding: ${esc(factuurFout)}`,
+                )] : []),
               ],
               footer: `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(meta.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(meta.gastEmail)}</a>`,
             }),
             replyTo: meta.gastEmail,
           });
-
-          // Generate invoice PDF
-          let invoicePdf: Buffer | null = null;
-          try {
-            invoicePdf = await generateInvoicePdf({
-              factuurnummer,
-              factuurdatum,
-              gastNaam: meta.gastNaam || "Gast",
-              gastEmail: meta.gastEmail || "",
-              betaalmethode: "iDEAL",
-              items: factuurRegels,
-            });
-          } catch (e) {
-            console.error("Invoice generation failed:", e);
-          }
 
           /* Een termijnbetaling van een verblijf is iets anders dan een losse
            * bestelling: bij een aanbetaling moet de gast weten dat de 70% nog
