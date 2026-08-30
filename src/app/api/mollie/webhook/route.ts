@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, lodgeEmail, infoBlock, detailsBlock, checklist } from "@/lib/email";
+import { esc, lodgeEmail, infoBlock, detailsBlock, checklist, calloutBlock, termsFooter } from "@/lib/email";
+import { APP_URL_FALLBACK } from "@/data/lodge";
 import { generateInvoicePdf } from "@/lib/invoice";
 import { findOrCreateRelation, pushInvoice } from "@/lib/eboekhouden";
 import { sendCapi, buildUser } from "@/lib/tracking/capi";
@@ -9,6 +10,12 @@ export const runtime = "nodejs";
 
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
+
+/* Terugvaltarief wanneer noch de betaling noch het product een btw-percentage
+ * aanlevert. Het logiestarief zelf staat in LOGIES_BTW_PCT (src/data/lodge.ts)
+ * en wordt door de betaallink meegestuurd; deze waarde geldt alleen voor
+ * betalingen die helemaal niets meegeven. */
+const STANDAARD_BTW_PCT = 21;
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,6 +45,10 @@ export async function POST(request: NextRequest) {
 
     const payment = await mollieResponse.json();
     const status = payment.status; // paid, failed, canceled, expired, pending
+    /* Mollie geeft per betaling mee of hij in test- of livemodus is gedaan.
+     * Een testbetaling bereikt gewoon de status 'paid' terwijl er geen geld
+     * gaat, dus alles wat naar buiten werkt moet daarbij achterwege blijven. */
+    const testbetaling = payment.mode === "test";
     const meta = payment.metadata || {};
     const bookingId = meta.bookingId;
 
@@ -99,12 +110,92 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     }).eq("id", bookingId);
 
-    // Sync de gekoppelde aanvraag bij aanbetaling/restbetaling-links uit de admin
+    /* Een testbetaling gaat niet verder dan de boekingsrij hierboven. Geen
+     * bevestiging naar de gast, geen statuswissel op de aanvraag, geen
+     * factuurnummer en niets naar de boekhouding — anders krijgt een echte
+     * gast bericht over geld dat nooit binnenkwam en staat er een
+     * verkoopfactuur in de boeken voor een bedrag dat niet bestaat. Precies
+     * dat gebeurde op 29 augustus 2026. De eigenaar krijgt wél bericht, zodat
+     * de keten op productie te testen blijft. */
+    if (testbetaling) {
+      console.log(`Mollie webhook: TESTbetaling ${paymentId} (${status}) — gastmail, factuur en boekhouding overgeslagen`);
+      const resendKeyTest = process.env.RESEND_API_KEY;
+      if (resendKeyTest && bookingStatus === "betaald") {
+        try {
+          const { Resend } = await import("resend");
+          await new Resend(resendKeyTest).emails.send({
+            from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
+            to: [OWNER_EMAIL],
+            subject: `[TEST] Testbetaling verwerkt — ${esc(payment.description || "onbekend")}`,
+            html: lodgeEmail({
+              title: "Testbetaling verwerkt",
+              intro: "Dit was een betaling in testmodus. De webhook is goed aangekomen en de boekingsrij staat op betaald.",
+              blocks: [
+                infoBlock("Testbetaling", esc(payment.description || "onbekend"), `<span style="color:#2E7D32;">&euro; ${esc(payment.amount?.value || "0.00")}</span>`),
+                calloutBlock(
+                  "Bewust overgeslagen",
+                  "De gast heeft géén bevestiging gekregen, er is geen factuurnummer vergeven en er is niets naar e-Boekhouden gestuurd. De aanvraag staat nog steeds als onbetaald in het dashboard.",
+                ),
+              ],
+              footer: `Betaling ${esc(paymentId)} &middot; testmodus`,
+            }),
+          });
+        } catch (e) {
+          console.error("Testbetaling-melding naar eigenaar mislukt:", e);
+        }
+      }
+      return NextResponse.json({ received: true, test: true });
+    }
+
+    /* Sync de gekoppelde aanvraag bij aanbetaling/restbetaling-links uit de
+     * admin. Een restbetaling mag de aanvraag alleen op 'volledig_betaald'
+     * zetten als de aanbetaling er daadwerkelijk is: een gast die een oude
+     * betaallink bewaart kan anders de 70% voldoen terwijl de 30% nog
+     * openstaat, en dan zegt het dashboard dat alles binnen is. */
+    let aanbetalingOntbreekt = false;
     if (bookingStatus === "betaald" && meta.bookingRequestId && meta.betaalfase) {
       try {
-        await getSupabase().from("booking_requests").update({
-          status: meta.betaalfase === "aanbetaling" ? "aanbetaling_betaald" : "volledig_betaald",
-        }).eq("id", meta.bookingRequestId);
+        if (meta.betaalfase === "aanbetaling") {
+          await getSupabase().from("booking_requests").update({
+            status: "aanbetaling_betaald",
+          }).eq("id", meta.bookingRequestId);
+        } else {
+          // Het geld zelf is de harde bron: een betaalde bookings-rij voor de
+          // aanbetaling van dezelfde aanvraag. De aanvraagstatus geldt als
+          // tweede signaal, voor het geval de JSON-filter niets teruggeeft.
+          const { data: aanbetaling } = await getSupabase()
+            .from("bookings")
+            .select("id")
+            .eq("metadata->>bookingRequestId", meta.bookingRequestId)
+            .eq("metadata->>betaalfase", "aanbetaling")
+            .eq("status", "betaald")
+            .limit(1);
+
+          const { data: aanvraag } = await getSupabase()
+            .from("booking_requests")
+            .select("status")
+            .eq("id", meta.bookingRequestId)
+            .single();
+
+          const statusZegtBetaald = ["aanbetaling_betaald", "restbetaling_verstuurd", "volledig_betaald"]
+            .includes(aanvraag?.status ?? "");
+
+          if ((aanbetaling?.length ?? 0) > 0 || statusZegtBetaald) {
+            await getSupabase().from("booking_requests").update({
+              status: "volledig_betaald",
+            }).eq("id", meta.bookingRequestId);
+          } else {
+            // Niet op 'volledig_betaald' zetten. De betaling zelf staat al in
+            // bookings, dus het geld is geregistreerd; de aanvraag blijft
+            // zichtbaar als openstaand tot de aanbetaling alsnog binnen is.
+            aanbetalingOntbreekt = true;
+            console.error(
+              `Mollie webhook: restbetaling binnen voor aanvraag ${meta.bookingRequestId} ` +
+              `terwijl de aanbetaling niet als betaald bekend staat (status ${aanvraag?.status ?? "onbekend"}, ` +
+              `payment ${paymentId}) — status niet op volledig_betaald gezet`
+            );
+          }
+        }
       } catch (e) {
         console.error("booking_request betaalfase-sync mislukt:", e);
       }
@@ -119,20 +210,66 @@ export async function POST(request: NextRequest) {
       const factuurdatum = new Date().toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
       const product = payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling";
 
-      // Look up BTW rate from products table
-      let btwPct = 21;
-      try {
-        const { data: productData } = await getSupabase()
+      /* BTW-tarief bepalen, in volgorde van betrouwbaarheid:
+       *   1. wat de betaling zelf meegaf — betaallinks voor een verblijf
+       *      sturen het logiestarief expliciet mee;
+       *   2. het tarief van het product, bij een losse bestelling via
+       *      /api/checkout;
+       *   3. het algemene tarief, als geen van beide iets oplevert.
+       *
+       * Voorheen stond hier alleen stap 2, met een kale 21 als beginwaarde en
+       * een lege catch eromheen. Bij elke betaallink mislukte die lookup — die
+       * stuurt geen productId mee — en bleef de 21 stil staan. Het bedrag
+       * klopte, maar niemand had het gekozen en een fout was onzichtbaar. */
+      const btwUitMetadata = Number(meta.btwPct);
+      const btwUitMetadataGeldig = Number.isFinite(btwUitMetadata) && btwUitMetadata >= 0 && btwUitMetadata <= 100;
+      let btwPct = btwUitMetadataGeldig ? btwUitMetadata : STANDAARD_BTW_PCT;
+
+      if (!btwUitMetadataGeldig && productId) {
+        const { data: productData, error: productError } = await getSupabase()
           .from("products")
           .select("btw_percentage")
           .eq("id", productId)
-          .single();
-        if (productData?.btw_percentage !== undefined) {
+          .maybeSingle();
+        if (productError) {
+          console.error(
+            `Mollie webhook: btw-tarief van product ${productId} niet op te halen ` +
+            `(${productError.message}) — ${STANDAARD_BTW_PCT}% aangehouden voor payment ${paymentId}`
+          );
+        } else if (productData?.btw_percentage != null) {
           btwPct = productData.btw_percentage;
+        } else {
+          console.warn(
+            `Mollie webhook: product ${productId} heeft geen btw_percentage — ` +
+            `${STANDAARD_BTW_PCT}% aangehouden voor payment ${paymentId}`
+          );
         }
-      } catch {}
+      }
 
-      const prijsExcl = amountValue / (1 + btwPct / 100);
+      /* Toeristenbelasting valt buiten de BTW en hoort op een eigen regel met
+       * eigen grootboek (8040). De betaallink geeft mee welk deel bij deze
+       * termijn hoort. Ontbreekt dat — losse producten via /api/checkout, of
+       * betalingen van vóór deze wijziging — dan blijft het één regel zoals
+       * voorheen en verandert er niets aan de factuur. */
+      const toeristenbelasting = Math.min(
+        Math.max(parseFloat(String(meta.toeristenbelasting ?? "0")) || 0, 0),
+        amountValue,
+      );
+      const logiesIncl = Math.round((amountValue - toeristenbelasting) * 100) / 100;
+
+      /* De gast betaalt een brutobedrag, dus de BTW wordt daaruit teruggerekend
+       * en het excl-bedrag is de rest. Andersom — excl afronden en er daarna
+       * BTW over rekenen — komt bij sommige bedragen een cent naast het
+       * betaalde bedrag uit, en dan sluit de factuur niet aan op de bank. */
+      const logiesBtw = Math.round(logiesIncl * (btwPct / (100 + btwPct)) * 100) / 100;
+      const logiesExcl = Math.round((logiesIncl - logiesBtw) * 100) / 100;
+
+      const factuurRegels = [
+        { omschrijving: product, aantal: 1, prijsExcl: logiesExcl, btwPercentage: btwPct, btwBedrag: logiesBtw },
+        ...(toeristenbelasting > 0
+          ? [{ omschrijving: "Toeristenbelasting", aantal: 1, prijsExcl: toeristenbelasting, btwPercentage: 0, btwBedrag: 0 }]
+          : []),
+      ];
 
       const resendKey = process.env.RESEND_API_KEY;
       if (resendKey) {
@@ -142,6 +279,26 @@ export async function POST(request: NextRequest) {
 
           const prijs = `€ ${payment.amount?.value || "0.00"}`;
           const naam = esc(meta.gastNaam || "Gast");
+
+          /* Factuur eerst maken, dan pas mailen. Mislukt het, dan hoort dat in
+           * de mail naar de eigenaar te staan: de gast krijgt zijn bevestiging
+           * namelijk gewoon, alleen zonder bijlage, en de fout verdween
+           * voorheen in console.error waar niemand hem zag. */
+          let invoicePdf: Buffer | null = null;
+          let factuurFout: string | null = null;
+          try {
+            invoicePdf = await generateInvoicePdf({
+              factuurnummer,
+              factuurdatum,
+              gastNaam: meta.gastNaam || "Gast",
+              gastEmail: meta.gastEmail || "",
+              betaalmethode: "iDEAL",
+              items: factuurRegels,
+            });
+          } catch (e) {
+            factuurFout = e instanceof Error ? e.message : String(e);
+            console.error(`Invoice generation failed voor ${factuurnummer} (payment ${paymentId}):`, e);
+          }
 
           // Email to owner
           await resend.emails.send({
@@ -157,31 +314,37 @@ export async function POST(request: NextRequest) {
                   { label: "Naam", value: naam },
                   { label: "E-mail", value: esc(meta.gastEmail), href: `mailto:${esc(meta.gastEmail)}` },
                 ]),
+                ...(aanbetalingOntbreekt ? [calloutBlock(
+                  "Let op: aanbetaling staat nog open",
+                  "Deze restbetaling is binnen, maar van de aanbetaling is geen betaling bekend. De aanvraag is daarom niet op &lsquo;volledig betaald&rsquo; gezet &mdash; controleer of de 30% alsnog voldaan moet worden.",
+                )] : []),
+                ...(factuurFout ? [calloutBlock(
+                  "Factuur niet meegestuurd",
+                  `De factuur ${esc(factuurnummer)} kon niet worden gemaakt, dus de gast kreeg zijn bevestiging zonder bijlage. Stuur de factuur handmatig na. Foutmelding: ${esc(factuurFout)}`,
+                )] : []),
               ],
               footer: `Reageer rechtstreeks naar de gast: <a href="mailto:${esc(meta.gastEmail)}" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">${esc(meta.gastEmail)}</a>`,
             }),
             replyTo: meta.gastEmail,
           });
 
-          // Generate invoice PDF
-          let invoicePdf: Buffer | null = null;
-          try {
-            invoicePdf = await generateInvoicePdf({
-              factuurnummer,
-              factuurdatum,
-              gastNaam: meta.gastNaam || "Gast",
-              gastEmail: meta.gastEmail || "",
-              betaalmethode: "iDEAL",
-              items: [{
-                omschrijving: payment.description?.replace("Huis ter Huynen — ", "") || "Bestelling",
-                aantal: 1,
-                prijsExcl: Math.round(prijsExcl * 100) / 100,
-                btwPercentage: btwPct,
-              }],
-            });
-          } catch (e) {
-            console.error("Invoice generation failed:", e);
-          }
+          /* Een termijnbetaling van een verblijf is iets anders dan een losse
+           * bestelling: bij een aanbetaling moet de gast weten dat de 70% nog
+           * komt, en bij de restbetaling dat hij klaar is. Zonder betaalfase
+           * (losse producten via /api/checkout) blijft de oude tekst staan. */
+          const fase = meta.betaalfase === "aanbetaling" || meta.betaalfase === "restbetaling"
+            ? meta.betaalfase
+            : null;
+          const bedankt = fase === "aanbetaling"
+            ? `Bedankt, ${naam}! Je aanbetaling is binnen. De restbetaling van 70% volgt uiterlijk 30 dagen voor aankomst — daarvoor krijg je op tijd een nieuwe betaallink.`
+            : fase === "restbetaling"
+              ? `Bedankt, ${naam}! Je verblijf is hiermee volledig betaald.`
+              : `Bedankt, ${naam}! Je betaling is succesvol verwerkt.`;
+          const bedanktLijst = fase === "aanbetaling"
+            ? ["Aanbetaling verwerkt", "Je reservering staat vast", "De restbetaling volgt uiterlijk 30 dagen voor aankomst"]
+            : fase === "restbetaling"
+              ? ["Restbetaling verwerkt", "Je verblijf is volledig betaald", "Je gast-app volgt enkele dagen voor aankomst"]
+              : ["Betaling verwerkt", "We regelen alles voor je", "Vragen? We helpen graag"];
 
           // Confirmation to guest (with invoice attachment)
           await resend.emails.send({
@@ -191,15 +354,12 @@ export async function POST(request: NextRequest) {
             ...(invoicePdf ? { attachments: [{ filename: `factuur-${factuurnummer}.pdf`, content: invoicePdf }] } : {}),
             html: lodgeEmail({
               title: "Betaling ontvangen",
-              intro: `Bedankt, ${naam}! Je betaling is succesvol verwerkt.${invoicePdf ? " Je factuur vind je in de bijlage." : ""}`,
+              intro: `${bedankt}${invoicePdf ? " Je factuur vind je in de bijlage." : ""}`,
               blocks: [
-                infoBlock("Je bestelling", esc(product), `<span style="color:#2E7D32;">${prijs}</span>`),
-                checklist([
-                  "Betaling verwerkt",
-                  "We regelen alles voor je",
-                  "Vragen? We helpen graag",
-                ]),
+                infoBlock(fase ? "Je verblijf" : "Je bestelling", esc(product), `<span style="color:#2E7D32;">${prijs}</span>`),
+                checklist(bedanktLijst),
               ],
+              footer: termsFooter(new URL(process.env.NEXT_PUBLIC_APP_URL || APP_URL_FALLBACK).origin),
             }),
           });
         } catch (e) {
@@ -259,8 +419,8 @@ export async function POST(request: NextRequest) {
 
       // ═══ SAVE INVOICE TO DB + PUSH TO E-BOEKHOUDEN ═══
       try {
-        const amountExcl = Math.round(prijsExcl * 100) / 100;
-        const vatAmount = Math.round((amountValue - prijsExcl) * 100) / 100;
+        const amountExcl = Math.round((logiesExcl + toeristenbelasting) * 100) / 100;
+        const vatAmount = logiesBtw;
 
         // Save invoice record — unique constraint op booking_id vangt webhook-retries op
         const { error: invoiceInsertError } = await getSupabase().from("invoices").insert({
@@ -305,12 +465,12 @@ export async function POST(request: NextRequest) {
               invoiceNumber: factuurnummer,
               relationId,
               description: `Huis ter Huynen — ${product}`,
-              lines: [{
-                description: product,
-                amountExcl: amountExcl,
-                btwPercentage: btwPct,
-                grootboekCode,
-              }],
+              lines: [
+                { description: product, amountExcl: logiesExcl, btwPercentage: btwPct, grootboekCode, amountIncl: logiesIncl },
+                ...(toeristenbelasting > 0
+                  ? [{ description: "Toeristenbelasting", amountExcl: toeristenbelasting, btwPercentage: 0, grootboekCode: "8040", amountIncl: toeristenbelasting }]
+                  : []),
+              ],
             });
 
             if (accountingRef) {

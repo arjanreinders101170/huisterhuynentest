@@ -237,11 +237,13 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
   const [loadingPrefill, setLoadingPrefill] = useState<string | null>(null);
   const [forms, setForms] = useState<Record<string, OfferteForm>>({});
   const [saving, setSaving] = useState<string | null>(null);
-  const [result, setResult] = useState<Record<string, { ok: boolean; msg: string }>>({});
+  const [result, setResult] = useState<Record<string, { ok: boolean; msg: string; link?: string }>>({});
   const [payLoading, setPayLoading] = useState<string | null>(null);
   const [rejectOpen, setRejectOpen] = useState<string | null>(null);
   const [rejectText, setRejectText] = useState("");
   const [warnings, setWarnings] = useState<Record<string, string[]>>({});
+  /* Redenen waarom het versturen is geweigerd — de host beslist of hij toch doorzet. */
+  const [blokkade, setBlokkade] = useState<Record<string, string[]>>({});
 
   const [manualOpen, setManualOpen] = useState(false);
   const [manualForm, setManualForm] = useState({ naam: "", platform: "Booking.com", lodge: "lodge_1", checkIn: "", checkOut: "" });
@@ -264,6 +266,9 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
   const openEditor = async (req: BookingRequest, editable = true) => {
     if (expandedId === req.id) {
       setExpandedId(null);
+      /* Een openstaande weigering hoort niet te blijven staan tot de volgende
+       * keer: bij heropenen wordt er sowieso opnieuw gecontroleerd. */
+      setBlokkade(prev => { const n = { ...prev }; delete n[req.id]; return n; });
       return;
     }
     setExpandedId(req.id);
@@ -371,7 +376,9 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
     return Math.max(0, v + s + t + extras);
   };
 
-  const sendOfferte = async (req: BookingRequest) => {
+  /* `tochVersturen` zet de dubbel-aanbodcheck opzij. Dat gebeurt alleen na een
+   * expliciete klik van de host, nooit vanzelf bij een nieuwe poging. */
+  const sendOfferte = async (req: BookingRequest, tochVersturen = false) => {
     const f = forms[req.id];
     if (!f || !f.prijsVerblijf) return;
     setSaving(req.id);
@@ -388,9 +395,16 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
           toeristenbelasting: f.toeristenbelasting,
           extraRegels: f.extraRegels.map(x => ({ label: x.label, bedrag: parseFloat(x.bedrag) || 0, soort: x.soort })),
           bericht: f.bericht,
+          tochVersturen,
         }),
       });
       const d = await r.json();
+      if (r.status === 409 && Array.isArray(d.blokkade)) {
+        setBlokkade(prev => ({ ...prev, [req.id]: d.blokkade }));
+        setSaving(null);
+        return;
+      }
+      setBlokkade(prev => { const n = { ...prev }; delete n[req.id]; return n; });
       if (d.success) {
         setRequests(requests.map(x => x.id === req.id
           ? { ...x, status: "offerte_verstuurd", totaal: d.totaal, offerte_vervalt_op: d.vervaltOp ?? null, herinnering_verstuurd_op: null, verlopen_op: null }
@@ -478,12 +492,33 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
         body: JSON.stringify({ action: "send_payment_link", requestId: req.id, fase }),
       });
       const d = await r.json();
-      if (d.success) {
+      if (d.success && d.test) {
+        // Mollie staat in testmodus: de gast heeft niets gekregen en de status
+        // op de server is niet bijgewerkt, dus hier ook niet verspringen.
+        setResult(prev => ({
+          ...prev,
+          [req.id]: {
+            ok: false,
+            msg: "Mollie staat in testmodus — de link is naar jou gemaild, niet naar de gast. De aanvraag is niet bijgewerkt.",
+            link: typeof d.checkoutUrl === "string" ? d.checkoutUrl : undefined,
+          },
+        }));
+      } else if (d.success) {
         const newStatus = fase === "aanbetaling" ? "aanbetaling_verstuurd" : "restbetaling_verstuurd";
         setRequests(requests.map(x => x.id === req.id ? { ...x, status: newStatus } : x));
         setResult(prev => ({ ...prev, [req.id]: { ok: true, msg: `${faseLabel} € ${Number(d.amount).toFixed(2)} verstuurd` } }));
       } else {
-        setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: d.error || "Kon betaallink niet versturen" } }));
+        // De server zet de status alleen op 'verstuurd' als de mail er echt
+        // uit is. Kwam de betaallink wel tot stand maar de mail niet, dan
+        // krijgen we die link terug om zelf door te sturen.
+        setResult(prev => ({
+          ...prev,
+          [req.id]: {
+            ok: false,
+            msg: d.error || "Kon betaallink niet versturen",
+            link: typeof d.checkoutUrl === "string" ? d.checkoutUrl : undefined,
+          },
+        }));
       }
     } catch {
       setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "Verbindingsfout" } }));
@@ -544,6 +579,35 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
     });
     setRequests(requests.filter(r => r.id !== id));
   };
+
+  /* Aanbiedingen die elkaar in de weg zitten.
+   *
+   * Twee gasten met een aanbod voor dezelfde lodge en dezelfde nachten is één
+   * ja te veel: bevestigen ze allebei, dan krijgt de snelste de plek en moet de
+   * ander worden teleurgesteld. Nieuwe dubbelingen worden bij het versturen
+   * geweigerd; deze markering laat zien welke er nu nog openstaan. */
+  const nogTeBevestigen = (r: BookingRequest): boolean => {
+    if (!r.lodge || !r.check_in || !r.check_out) return false;
+    if (r.status === "offerte_verstuurd") return true;
+    // Een verlopen aanbod telt mee zolang de coulancedagen nog lopen.
+    return r.status === "verlopen" && !!r.offerte_vervalt_op && withinGrace(r.offerte_vervalt_op);
+  };
+
+  const dubbelAanbod: Record<string, string[]> = {};
+  {
+    const live = requests.filter(nogTeBevestigen);
+    for (const a of live) {
+      for (const b of live) {
+        if (a.id === b.id || a.lodge !== b.lodge) continue;
+        // Dezelfde gast met twee aanbiedingen kan er maar één bevestigen.
+        const zelfdeGast = (a.guest_id && a.guest_id === b.guest_id) ||
+          (!!a.gast_email && a.gast_email.toLowerCase() === (b.gast_email || "").toLowerCase());
+        if (zelfdeGast) continue;
+        if (!(a.check_in! < b.check_out! && b.check_in! < a.check_out!)) continue;
+        (dubbelAanbod[a.id] ||= []).push(b.guest?.naam || b.gast_naam || "een andere gast");
+      }
+    }
+  }
 
   const zichtbaar = requests.filter(r => filterBron === "all" || r.bron === filterBron);
 
@@ -742,6 +806,42 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
           </div>
         )}
 
+        {(blokkade[req.id] || []).length > 0 && (
+          <div style={{ marginBottom: 16, padding: "16px 18px", background: "#FFF6F5", border: "1px solid #F3D5D2", borderRadius: 10 }}>
+            <div style={{ fontSize: 11, color: "#C62828", textTransform: "uppercase", letterSpacing: .5, marginBottom: 8, fontWeight: 600 }}>
+              Niet verstuurd — deze nachten liggen al bij iemand anders
+            </div>
+            {(blokkade[req.id] || []).map((b, i) => (
+              <div key={i} style={{ fontSize: 12, color: "#8A3A38", lineHeight: 1.5, marginTop: i === 0 ? 0 : 6 }}>• {b}</div>
+            ))}
+            <p style={{ margin: "10px 0 0", fontSize: 12, color: C.muted, lineHeight: 1.5 }}>
+              Wijs deze aanvraag af, bied de andere lodge of andere datums aan, of wacht tot het
+              andere aanbod vervalt. Zet je toch door, dan hebben twee gasten hetzelfde aanbod —
+              wie het eerst bevestigt krijgt de plek en de ander moet je zelf teleurstellen.
+            </p>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
+              <button
+                onClick={() => setBlokkade(prev => { const n = { ...prev }; delete n[req.id]; return n; })}
+                disabled={isSaving}
+                style={{
+                  padding: "8px 16px", borderRadius: 8, border: `1px solid ${C.border}`,
+                  background: C.card, fontSize: 12, color: C.muted, cursor: isSaving ? "not-allowed" : "pointer",
+                }}
+              >Annuleren</button>
+              <button
+                onClick={() => sendOfferte(req, true)}
+                disabled={isSaving}
+                title="Verstuur het aanbod ondanks de dubbeling"
+                style={{
+                  padding: "8px 20px", borderRadius: 8, border: "1px solid #C62828",
+                  background: C.card, fontSize: 12, fontWeight: 500,
+                  color: "#C62828", cursor: isSaving ? "not-allowed" : "pointer",
+                }}
+              >{isSaving ? "Versturen..." : "Toch versturen →"}</button>
+            </div>
+          </div>
+        )}
+
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 12, borderTop: `1px solid ${C.border}` }}>
           <div style={{ fontSize: 16, fontWeight: 500, color: C.green }}>
             Totaal: € {total.toFixed(2)}
@@ -840,7 +940,31 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
               </div>
             )}
             {res && !res.ok && res.msg && (
-              <div style={{ fontSize: 12, color: "#E24B4A", marginTop: 10 }}>{res.msg}</div>
+              <div style={{ marginTop: 10 }}>
+                <div style={{ fontSize: 12, color: "#E24B4A" }}>{res.msg}</div>
+                {res.link && (
+                  <div style={{ marginTop: 6, padding: "8px 10px", background: "#FFF3F3", border: "1px solid #F5C6C4", borderRadius: 6 }}>
+                    <a
+                      href={res.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: 11, color: C.green, wordBreak: "break-all", textDecoration: "none" }}
+                    >
+                      {res.link}
+                    </a>
+                    <button
+                      onClick={() => navigator.clipboard?.writeText(res.link || "")}
+                      style={{
+                        marginLeft: 8, padding: "3px 8px", borderRadius: 5,
+                        border: `1px solid ${C.border}`, background: "#fff",
+                        fontSize: 11, color: C.text, cursor: "pointer",
+                      }}
+                    >
+                      Kopieer
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </>
         )}
@@ -905,6 +1029,14 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
               </div>
               <div style={{ lineHeight: "20px" }}>
                 <Badge status={r.status} />
+                {(dubbelAanbod[r.id] || []).length > 0 && (
+                  <div
+                    title={`Dezelfde lodge en nachten liggen ook bij ${dubbelAanbod[r.id].join(", ")}. Bevestigen ze allebei, dan krijgt de snelste de plek.`}
+                    style={{ fontSize: 11, color: "#C62828", marginTop: 2, fontWeight: 600 }}
+                  >
+                    ⚠ ook aangeboden aan {dubbelAanbod[r.id].join(", ")}
+                  </div>
+                )}
                 {expiryNote(r)
                   ? <div style={{ fontSize: 11, color: expiryNote(r)!.color, marginTop: 2 }}>{expiryNote(r)!.text}</div>
                   : stap && <div style={{ fontSize: 11, color: C.gold, marginTop: 2 }}>{stap}</div>}

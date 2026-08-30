@@ -30,6 +30,10 @@ function BetaaldContent() {
   // Product-specific hero image
   const heroImage = (() => {
     const p = product.toLowerCase();
+    // Aanbetaling en restbetaling van een verblijf: toon de lodge zelf, niet
+    // de borrelfoto die anders als restcategorie wordt gepakt.
+    if (p.includes("lodge de eik")) return "/lodge-eik.jpg";
+    if (p.includes("lodge de heide")) return "/lodge-heide.jpg";
     if (p.includes("fiets") || p.includes("bike") || p.includes("ebike") || p.includes("atb")) return "/rent_a_bike.jpg";
     if (p.includes("late") || p.includes("check-out") || p.includes("checkout")) return "/late_check_out.jpg";
     return "/borrel1.jpg";

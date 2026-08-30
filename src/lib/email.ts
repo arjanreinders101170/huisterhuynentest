@@ -165,7 +165,20 @@ export type LodgeEmailOpts = {
   footer?: string;
 };
 
-const DEFAULT_FOOTER = `Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`;
+export const DEFAULT_FOOTER = `Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">+31 6 42568603</a>`;
+
+/** Eén regel die de algemene voorwaarden van toepassing verklaart. Hoort in
+ *  elke mail waarin de gast zich vastlegt: offerte, bevestiging en de twee
+ *  betaalmails. De link wijst naar de voorwaarden als geheel, niet naar een
+ *  losse passage. `baseUrl` is de origin van de site, dus zonder slash. */
+export function termsLine(baseUrl: string): string {
+  return `Op je reservering zijn onze <a href="${baseUrl}/terms" style="color:#2F4F3E;font-weight:bold;text-decoration:none;">algemene voorwaarden</a> van toepassing.`;
+}
+
+/** Die regel plus de gewone contactregel, als voettekst voor lodgeEmail(). */
+export function termsFooter(baseUrl: string): string {
+  return `${termsLine(baseUrl)}<br /><br />${DEFAULT_FOOTER}`;
+}
 
 /** Hoofd-template. Alle uitgaande mails moeten hier doorheen. */
 export function lodgeEmail(opts: LodgeEmailOpts): string {
@@ -708,6 +721,9 @@ export function buildOfferteHtmlV2(
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #E0D8C8;">
       <tr><td style="padding:16px 0 0;">
+        <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">
+          ${termsLine(appUrl)}
+        </p>
         <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#8A7D6A;">
           Vragen? WhatsApp ons op <a href="tel:+31642568603" style="color:#2F4F3E;text-decoration:none;font-weight:bold;">+31 6 42568603</a>
         </p>

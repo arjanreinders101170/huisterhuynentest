@@ -1,13 +1,19 @@
 import { getSupabase } from "@/lib/supabase";
 import { LODGE_NAMES } from "@/data/lodge";
+import { withinGrace } from "@/lib/offer-expiry";
 
 /* Beschikbaarheid van een lodge, uit twee bronnen tegelijk:
  * de externe agenda (Booking.com) en de eigen bevestigde reserveringen.
  *
  * Een verstuurde offerte blokkeert bewust niets — pas een bevestiging telt.
- * Daardoor kunnen twee gasten tegelijk een aanbod voor dezelfde nachten
+ * Technisch kunnen twee gasten dus tegelijk een aanbod voor dezelfde nachten
  * hebben. Wie het eerst bevestigt heeft de plek; de tweede loopt hier tegen
- * een conflict aan in plaats van in een dubbele boeking te belanden. */
+ * een conflict aan in plaats van in een dubbele boeking te belanden.
+ *
+ * Dat vangnet is het laatste, niet het eerste: dubbel aanbieden betekent dat
+ * één van de twee gasten teleurgesteld moet worden. Daarom controleert het
+ * versturen van een offerte eerst met openOffersOverlapping of er al een
+ * aanbod ligt — zie handleBookingRequestsPost / send_offerte_v2. */
 
 export type Period = { start: string; end: string; bron?: string };
 
@@ -149,23 +155,48 @@ export type OpenOffer = {
   lodge: string | null;
   check_in: string | null;
   check_out: string | null;
+  status?: string | null;
+  offerte_vervalt_op?: string | null;
 };
 
 /**
- * Andere openstaande offertes die met deze periode overlappen.
- * `sameLodgeOnly: false` vindt ook alternatieven in de andere lodge — handig
- * wanneer een gast twee aanbiedingen kreeg en er één accepteert.
+ * Kan dit aanbod nog bevestigd worden?
+ *
+ * Een aanbod op 'verlopen' is niet per se dood: binnen de coulanceperiode
+ * werkt de bevestigingslink door (zie offerFase in /api/bevestig). Voor de
+ * vraag "zit hier al iemand op deze nachten te wachten?" telt zo'n aanbod dus
+ * gewoon mee. Alleen een met de hand ingetrokken aanbod — status 'verlopen'
+ * terwijl de vervaldatum nog niet gepasseerd is — is echt van tafel.
+ */
+function nogTeBevestigen(r: OpenOffer): boolean {
+  if (r.status === "offerte_verstuurd") return true;
+  return !!r.offerte_vervalt_op && withinGrace(r.offerte_vervalt_op);
+}
+
+/**
+ * Andere offertes die met deze periode overlappen en nog bevestigd kunnen
+ * worden. Zonder `lodge` vindt dit ook alternatieven in de andere lodge —
+ * handig wanneer een gast twee aanbiedingen kreeg en er één accepteert.
+ *
+ * `inclusiefCoulance` neemt ook aanbiedingen mee die formeel verlopen zijn
+ * maar nog binnen de coulancedagen bevestigd mogen worden. Aan zetten wanneer
+ * de vraag is of deze nachten vrij zijn om aan te bieden; uit laten wanneer
+ * het gaat om rijen die nog van status moeten veranderen.
  */
 export async function openOffersOverlapping(opts: {
   checkIn: string;
   checkOut: string;
   lodge?: string | null;
   excludeRequestId?: string;
+  inclusiefCoulance?: boolean;
 }): Promise<OpenOffer[]> {
+  const statussen = opts.inclusiefCoulance
+    ? ["offerte_verstuurd", "verlopen"]
+    : ["offerte_verstuurd"];
   let query = getSupabase()
     .from("booking_requests")
-    .select("id, gast_naam, gast_email, guest_id, lodge, check_in, check_out")
-    .eq("status", "offerte_verstuurd")
+    .select("id, gast_naam, gast_email, guest_id, lodge, check_in, check_out, status, offerte_vervalt_op")
+    .in("status", statussen)
     .not("check_in", "is", null)
     .not("check_out", "is", null);
   if (opts.lodge) query = query.eq("lodge", opts.lodge);
@@ -174,6 +205,19 @@ export async function openOffersOverlapping(opts: {
   const { data } = await query;
   const wanted: Period = { start: opts.checkIn, end: opts.checkOut };
   return (data || []).filter((r: OpenOffer) =>
-    r.check_in && r.check_out && overlaps(wanted, { start: r.check_in, end: r.check_out }),
+    r.check_in && r.check_out &&
+    overlaps(wanted, { start: r.check_in, end: r.check_out }) &&
+    nogTeBevestigen(r),
   );
+}
+
+/** Hoort dit aanbod bij dezelfde gast als deze aanvraag? */
+export function zelfdeGast(
+  a: { guest_id?: string | null; gast_email?: string | null },
+  b: { guest_id?: string | null; gast_email?: string | null },
+): boolean {
+  if (a.guest_id && b.guest_id && a.guest_id === b.guest_id) return true;
+  const ea = (a.gast_email || "").trim().toLowerCase();
+  const eb = (b.gast_email || "").trim().toLowerCase();
+  return !!ea && ea === eb;
 }

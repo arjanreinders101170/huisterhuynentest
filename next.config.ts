@@ -39,6 +39,21 @@ const cspHeader = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  /* pdfkit leest zijn lettertype-metrieken pas tijdens het draaien van schijf:
+   *   fs.readFileSync(__dirname + '/data/Helvetica.afm', 'utf8')
+   * Die padopbouw kan de file tracing van Next niet volgen, dus de vijftien
+   * .afm-bestanden belandden niet in de serverless-bundel op Vercel. Gevolg:
+   * generateInvoicePdf() viel om met ENOENT, de gast kreeg een bedankmail
+   * zonder factuur en de fout bleef in console.error steken. Lokaal viel het
+   * niet op, want daar staat node_modules gewoon op schijf.
+   *
+   * serverExternalPackages houdt pdfkit buiten de bundel zodat __dirname naar
+   * de echte map blijft wijzen; outputFileTracingIncludes zorgt dat de
+   * datamap meeverhuist naar de functie die de factuur maakt. */
+  serverExternalPackages: ["pdfkit"],
+  outputFileTracingIncludes: {
+    "/api/mollie/webhook": ["./node_modules/pdfkit/js/data/**"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
   },

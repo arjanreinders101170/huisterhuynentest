@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { LODGE_LAT, LODGE_LON } from "@/data/lodge";
 
 export const runtime = "nodejs";
 
@@ -82,9 +83,8 @@ export async function GET() {
   }
 
   try {
-    // Zeijen coordinates: 53.105, 6.506
     const r = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=53.105&lon=6.506&units=metric&lang=nl&appid=${apiKey}`,
+      `https://api.openweathermap.org/data/2.5/weather?lat=${LODGE_LAT}&lon=${LODGE_LON}&units=metric&lang=nl&appid=${apiKey}`,
       { next: { revalidate: 1800 } }
     );
 

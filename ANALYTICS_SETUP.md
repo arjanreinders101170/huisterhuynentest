@@ -4,8 +4,9 @@ Stap-voor-stap recept om de meting live te krijgen. Dit is de voorwaarde voor
 het Looker Studio-dashboard (Fase 6 uit `seo-cro-uitvoeringsplan.md`): Looker
 verzamelt zelf niets, het toont alleen wat GA4 en Search Console al hebben.
 
-Voor de Meta Pixel/CAPI-kant: zie `META_TRACKING.md`. Dezelfde stack, andere
-bestemming — beide lopen door dezelfde `pushEvent()` in de code.
+Voor de Meta Pixel/CAPI-kant: zie `META_TRACKING.md`; voor Google
+Ads-conversies: `GOOGLE_ADS_SETUP.md`. Dezelfde stack, andere bestemming — alle
+drie lopen door dezelfde `pushEvent()` in de code.
 
 **Tijdsinschatting:** blok A ~10 min · blok B ~30 min · blok C ~20 min.
 
@@ -20,7 +21,7 @@ bestemming — beide lopen door dezelfde `pushEvent()` in de code.
 | Consent Mode v2 default-deny | `src/lib/tracking/consent.ts` | Klaar |
 | CSP-uitzonderingen voor GA4 | `next.config.ts` | Toegevoegd in PR #178 |
 | Google Ads-basistag (`AW-18397549973`) | `src/components/tracking/GoogleAds.tsx` | Klaar — laadt `gtag.js`, consent-gated via Consent Mode v2 |
-| Google Ads-conversies | `src/lib/tracking/googleAds.ts` | Code klaar — vuurt zodra er een conversielabel in `NEXT_PUBLIC_GOOGLE_ADS_LABEL_*` staat |
+| Google Ads-conversies | `src/lib/tracking/googleAds.ts` | Klaar — wacht op een conversielabel, zie `GOOGLE_ADS_SETUP.md` |
 | Verbeterde conversies (gehasht e-mailadres) | `src/lib/tracking/googleAds.ts` | Code klaar — aan met `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`, pas ná de instelling in Ads |
 | Sitemap | `src/app/sitemap.ts` → `/sitemap.xml` | Klaar, inclusief hreflang nl/de |
 | `robots.txt` | `public/robots.txt` | Klaar, verwijst naar de sitemap |
@@ -192,7 +193,7 @@ De cookiebanner staat op default-deny (`analytics_storage: denied`). **Zonder
 - **Google Ads staat sinds augustus 2026 live.** De basistag
   (`AW-18397549973`) zit in `src/components/tracking/GoogleAds.tsx` en de CSP
   in `next.config.ts` laat nu `*.doubleclick.net`, `googleadservices.com` en
-  de Google-landdomeinen door. De conversiekant loopt sinds deze wijziging via
+  de Google-landdomeinen door. De conversiekant loopt via
   `src/lib/tracking/googleAds.ts`: elk event uit `pushEvent()` wordt naar een
   conversielabel gekeken, en zonder label gebeurt er niets. Wat er dus nog
   moet: **de conversieacties aanmaken in Google Ads** (Doelen → Conversies →
@@ -201,15 +202,18 @@ De cookiebanner staat op default-deny (`analytics_storage: denied`). **Zonder
 
   | Env-variabele | Vuurt bij | Waarde |
   |---|---|---|
-  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_LEAD` | aanvraag verzonden (`Lead`) | verblijfsprijs |
-  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_PURCHASE` | betaling afgerond (`Purchase`) | betaald bedrag |
-  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_CHECKOUT` | formulier gestart (`InitiateCheckout`) | verblijfsprijs |
-  | `NEXT_PUBLIC_GOOGLE_ADS_LABEL_CONTACT` | telefoon/WhatsApp/e-mail (`Contact`) | — |
+  | `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | aanvraag verzonden (`Lead`) | verblijfsprijs |
+  | `NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_LABEL` | betaling afgerond (`Purchase`) | betaald bedrag |
+  | `NEXT_PUBLIC_GOOGLE_ADS_SUBSCRIBE_LABEL` | nieuwsbriefinschrijving (`Subscribe`) | — |
+  | `NEXT_PUBLIC_GOOGLE_ADS_CHECKOUT_LABEL` | formulier gestart (`InitiateCheckout`) | verblijfsprijs |
+  | `NEXT_PUBLIC_GOOGLE_ADS_CONTACT_LABEL` | telefoon/WhatsApp/e-mail (`Contact`) | — |
 
-  Zet alleen `Lead` (en later `Purchase`) op **primair**; `InitiateCheckout` en
-  `Contact` horen op *secundair*, anders telt Google dezelfde aanvraag dubbel
-  en gaat de biedstrategie op de verkeerde stap sturen. `transaction_id` gaat
-  als `event_id` mee, dus een herlaadde bedanktpagina telt niet twee keer.
+  Zet alleen `Lead` (en later `Purchase`) op **primair**; `InitiateCheckout`,
+  `Contact` en `Subscribe` horen op *secundair*, anders telt Google dezelfde
+  aanvraag dubbel en gaat de biedstrategie op de verkeerde stap sturen. Het
+  volledige recept per conversieactie staat in `GOOGLE_ADS_SETUP.md`.
+  `transaction_id` gaat als `event_id` mee, dus een herlaadde bedanktpagina
+  telt niet twee keer.
   Zolang er geen label staat meet Google Ads alleen pageviews en remarketing —
   en heeft een biedstrategie als *Conversiewaarde maximaliseren* niets om op
   te sturen.
@@ -221,8 +225,9 @@ De cookiebanner staat op default-deny (`analytics_storage: denied`). **Zonder
   **standaardwaarde van de conversieactie**. Zet die in Ads op een realistische
   gemiddelde boekingswaarde, anders telt zo'n aanvraag alsnog als nul.
 - **Verbeterde conversies** zitten in dezelfde module, achter
-  `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`. Staat die aan, dan gaat bij `Lead` en
-  `Purchase` het e-mailadres als SHA-256-hash mee (`sha256_email_address`),
+  `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`. Staat die aan, dan gaat bij elke
+  conversie waarvan het e-mailadres bekend is (in de praktijk `Lead` en
+  `Purchase`) dat adres als SHA-256-hash mee (`sha256_email_address`),
   gehasht in de browser met Web Crypto — nooit in platte tekst. Dat koppelt
   aanvragen die anders wegvallen omdat Safari/iOS het conversiecookie blokkeert.
   Twee voorwaarden vóór je hem aanzet:

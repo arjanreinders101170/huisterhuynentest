@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, type OfferteRegel } from "@/lib/email";
-import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
+import { esc, buildOfferteHtmlV2, lodgeEmail, lodgePhoto, infoBlock, calloutBlock, checklist, ctaButton, rejectionEmail, termsFooter, type OfferteRegel } from "@/lib/email";
+import { APP_URL_FALLBACK, LOGIES_BTW_PCT, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
 import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
-import { findConflict, openOffersOverlapping } from "@/lib/availability";
+import { findConflict, openOffersOverlapping, zelfdeGast } from "@/lib/availability";
 
 const DEPOSIT_PCT = 0.30;
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 
 export async function handleBookingRequestsGet(table: string): Promise<NextResponse | null> {
   if (table !== "booking_requests") return null;
@@ -97,13 +98,16 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         try {
           const [{ conflict }, andere] = await Promise.all([
             findConflict({ lodge: req.lodge, checkIn: req.check_in, checkOut: req.check_out, excludeRequestId: req.id }),
-            openOffersOverlapping({ checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge, excludeRequestId: req.id }),
+            openOffersOverlapping({
+              checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge,
+              excludeRequestId: req.id, inclusiefCoulance: true,
+            }),
           ]);
           if (conflict) {
             waarschuwingen.push(`Deze nachten zijn al bezet — ${conflict.bron || "bestaande reservering"} (${conflict.start} t/m ${conflict.end}). De gast kan niet bevestigen.`);
           }
-          for (const o of andere) {
-            waarschuwingen.push(`Er staat al een open offerte voor deze lodge en periode bij ${o.gast_naam || "een andere gast"}. Wie het eerst bevestigt, krijgt de plek.`);
+          for (const o of andere.filter(o => !zelfdeGast(o, req))) {
+            waarschuwingen.push(`Er ligt al een aanbod voor deze lodge en periode bij ${o.gast_naam || "een andere gast"}. Versturen wordt geweigerd, tenzij je bewust doorzet.`);
           }
         } catch (e) {
           console.error("Beschikbaarheidscheck bij prefill faalde:", e);
@@ -145,6 +149,55 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", requestId).single();
       if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
       if (!req.gast_email) return NextResponse.json({ error: "Aanvraag heeft geen e-mailadres" }, { status: 400 });
+
+      /* Niet twee gasten hetzelfde beloven.
+       *
+       * Een offerte zet de agenda niet dicht, dus technisch kun je dezelfde
+       * nachten aan iedereen aanbieden. Zeggen ze allebei ja, dan wint de
+       * snelste en moet de ander alsnog worden teleurgesteld — met een aanbod
+       * op zak. Daarom weigert het versturen hier zolang er al een aanbod ligt
+       * of de nachten bezet zijn. Bewust doorzetten kan: dan stuurt de
+       * interface `tochVersturen` mee, bijvoorbeeld om iemand als reserve op
+       * de lijst te zetten.
+       *
+       * Aanbiedingen aan dezelfde gast tellen niet mee: die kan er maar één
+       * bevestigen, en het bevestigen trekt het alternatief in. */
+      const tochVersturen = body.tochVersturen === true;
+      if (!tochVersturen && req.lodge && req.check_in && req.check_out) {
+        try {
+          const [{ conflict }, andere] = await Promise.all([
+            findConflict({ lodge: req.lodge, checkIn: req.check_in, checkOut: req.check_out, excludeRequestId: req.id }),
+            openOffersOverlapping({
+              checkIn: req.check_in, checkOut: req.check_out, lodge: req.lodge,
+              excludeRequestId: req.id, inclusiefCoulance: true,
+            }),
+          ]);
+          const blokkade: string[] = [];
+          if (conflict) {
+            blokkade.push(
+              `Deze nachten zijn al bezet — ${conflict.bron || "bestaande reservering"} ` +
+              `(${conflict.start} t/m ${conflict.end}). De gast kan dit aanbod niet bevestigen.`,
+            );
+          }
+          for (const o of andere.filter(o => !zelfdeGast(o, req))) {
+            blokkade.push(
+              `${o.gast_naam || "Een andere gast"} heeft al een aanbod voor deze lodge en deze nachten ` +
+              `(${o.check_in} t/m ${o.check_out}). Zeggen ze allebei ja, dan moet je er één teleurstellen.`,
+            );
+          }
+          if (blokkade.length > 0) {
+            return NextResponse.json({
+              error: "Offerte niet verstuurd — deze nachten liggen al bij iemand anders.",
+              blokkade,
+              kanForceren: true,
+            }, { status: 409 });
+          }
+        } catch (e) {
+          /* Een storing in de check mag het versturen niet tegenhouden; de
+           * dubbelboekingscheck bij het bevestigen blijft hoe dan ook staan. */
+          console.error("Dubbel-aanbodcheck bij versturen faalde:", e);
+        }
+      }
 
       const extraSum = cleanRegels.reduce((s, r) => s + (r.soort === "korting" ? -Math.abs(r.bedrag) : Math.abs(r.bedrag)), 0);
       const totaal = Math.max(0, Math.round((verblijf + cleaning + tax + extraSum) * 100) / 100);
@@ -246,18 +299,45 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const faseLabel = phase === "aanbetaling" ? "Aanbetaling" : "Restbetaling";
       const productLabel = `${faseLabel} (${pctLabel}) — Lodge ${lodgeNaam}${periodeLabel ? ` · ${periodeLabel}` : ""}`;
 
-      // Maak een bookings-rij: dit is de bron-van-waarheid voor de Mollie-webhook
-      const { data: booking } = await sb.from("bookings").insert({
+      // Toeristenbelasting valt buiten de BTW en hoort op een eigen factuurregel
+      // met eigen grootboek. De betaallink dekt een deel van het totaal, dus de
+      // belasting gaat naar rato mee — op dezelfde manier verdeeld als het
+      // bedrag zelf, zodat de twee termijnen samen exact het hele bedrag zijn.
+      const tbTotaal = Number(req.toeristenbelasting) || 0;
+      const tbDeposit = Math.round(tbTotaal * DEPOSIT_PCT * 100) / 100;
+      const tbRest = Math.round((tbTotaal - tbDeposit) * 100) / 100;
+      const tbDeel = Math.min(Math.max(phase === "aanbetaling" ? tbDeposit : tbRest, 0), amount);
+
+      // Maak een bookings-rij: dit is de bron-van-waarheid voor de Mollie-webhook.
+      // Supabase geeft een geweigerde insert terug als wáárde, niet als exception,
+      // dus de fout moet expliciet uitgelezen worden. Blijft bookingId leeg, dan
+      // krijgt de webhook straks een lege bookingId in de metadata en kan hij de
+      // betaling nergens aan koppelen: geen status, geen factuur, geen bedankmail.
+      // Anders dan bij /api/checkout staat de gast hier nog niet af te rekenen,
+      // dus breken we af vóórdat er een betaling bestaat.
+      const { data: booking, error: bookingErr } = await sb.from("bookings").insert({
         guest_id: req.guest_id,
         product: productLabel,
         prijs: amount,
         status: "nieuw",
         metadata: { bookingRequestId: requestId, betaalfase: phase, gastNaam: req.gast_naam, gastEmail: req.gast_email },
       }).select("id").single();
-      const bookingId = booking?.id;
+      if (bookingErr || !booking?.id) {
+        console.error("[send_payment_link] booking insert geweigerd:", bookingErr?.message, bookingErr?.code);
+        return NextResponse.json({
+          error: "Kon geen boekingsregel aanmaken — er is geen betaallink verstuurd.",
+        }, { status: 500 });
+      }
+      const bookingId = booking.id;
 
       // Mollie-betaling aanmaken
       let checkoutUrl: string | null = null;
+      /* Of deze betaling in test- of livemodus staat, bepaalt Mollie aan de
+       * hand van de gebruikte sleutel. Een testlink ziet er voor de gast uit
+       * als een echte, maar er gaat geen geld — die mag dus nooit naar een
+       * gast. De webhook weigert een testbetaling al te verwerken; hier
+       * voorkomen we dat de gast überhaupt zo'n link in handen krijgt. */
+      let testbetaling = false;
       try {
         const mollieRes = await fetch("https://api.mollie.com/v2/payments", {
           method: "POST",
@@ -265,14 +345,22 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
           body: JSON.stringify({
             amount: { currency: "EUR", value: amount.toFixed(2) },
             description: `Huis ter Huynen — ${productLabel}`,
-            redirectUrl: `${origin}/betaald?booking=${bookingId || ""}`,
+            // De bedankpagina leest ?product uit voor de titel en de foto; zonder
+            // die parameter landt de gast op "je bestelling" met een borrelfoto.
+            redirectUrl: `${origin}/betaald?product=${encodeURIComponent(productLabel)}&booking=${bookingId}`,
             webhookUrl: `${origin}/api/mollie/webhook`,
             metadata: {
-              bookingId: bookingId || "",
+              bookingId,
               betaalfase: phase,
               bookingRequestId: requestId,
               gastNaam: req.gast_naam,
               gastEmail: req.gast_email,
+              // Beide als string, zodat de webhook niet hoeft te gokken hoe
+              // Mollie een getal terugserialiseert.
+              toeristenbelasting: tbDeel.toFixed(2),
+              // Expliciet meesturen: dit is een verblijf, geen rij uit de
+              // products-tabel, dus de webhook kan het tarief nergens opzoeken.
+              btwPct: String(LOGIES_BTW_PCT),
             },
           }),
         });
@@ -283,7 +371,8 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         }
         const payment = await mollieRes.json();
         checkoutUrl = payment._links?.checkout?.href || null;
-        if (bookingId && payment.id) {
+        testbetaling = payment.mode === "test";
+        if (payment.id) {
           await sb.from("bookings").update({ mollie_payment_id: payment.id }).eq("id", bookingId);
         }
       } catch (e) {
@@ -291,25 +380,79 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
         return NextResponse.json({ error: "Mollie niet bereikbaar" }, { status: 500 });
       }
 
-      // Betaalmail naar de gast
+      // Betaalmail naar de gast. Gaat dit mis, dan bestaat de Mollie-betaling
+      // wel maar weet de gast van niets. De status blijft dan staan waar hij
+      // stond en we geven de checkout-URL terug, zodat de host de link zelf
+      // kan doorsturen in plaats van te denken dat de mail eruit is.
       const resendKey = process.env.RESEND_API_KEY;
-      if (resendKey && checkoutUrl) {
+      let mailError: string | null = null;
+
+      /* Testmodus: de link gaat naar de eigenaar in plaats van naar de gast,
+       * en de aanvraag blijft op zijn oude status staan. Zo blijft de keten op
+       * productie te testen zonder dat een gast een link krijgt waarmee niets
+       * wordt afgeschreven. */
+      if (testbetaling) {
+        console.warn(`[send_payment_link] TESTmodus voor aanvraag ${requestId} — link niet naar de gast gestuurd`);
+        if (resendKey && checkoutUrl) {
+          try {
+            const { Resend } = await import("resend");
+            await new Resend(resendKey).emails.send({
+              from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
+              to: [OWNER_EMAIL],
+              subject: `[TEST] Betaallink aangemaakt — ${faseLabel} ${esc(req.gast_naam || "")}`,
+              html: lodgeEmail({
+                title: "Testlink aangemaakt",
+                intro: `Mollie staat in testmodus, dus deze link is niet naar ${esc(req.gast_email)} gestuurd. Er wordt niets afgeschreven als je hem gebruikt.`,
+                blocks: [
+                  infoBlock("Betaallink", `${esc(faseLabel)} (${pctLabel})`, `&euro; ${amount.toFixed(2)} &middot; Lodge ${esc(lodgeNaam)}`),
+                  ctaButton(checkoutUrl, "Open de testbetaling", { prominent: true }),
+                  calloutBlock(
+                    "De aanvraag is niet bijgewerkt",
+                    "De status blijft staan waar hij stond, dus je kunt de echte link straks gewoon versturen. Zet de live Mollie-sleutel in de omgeving om echte betalingen te kunnen doen.",
+                  ),
+                ],
+                footer: `Aanvraag ${esc(String(requestId))} &middot; testmodus`,
+              }),
+            });
+          } catch (e) {
+            console.error("[send_payment_link] testmelding naar eigenaar mislukt:", e);
+          }
+        }
+        return NextResponse.json({
+          success: true,
+          test: true,
+          checkoutUrl,
+          amount,
+          totaal,
+          fase: phase,
+        });
+      }
+
+      if (!resendKey) {
+        mailError = "RESEND_API_KEY ontbreekt";
+      } else if (!checkoutUrl) {
+        mailError = "Mollie gaf geen checkout-URL terug";
+      } else {
         const { url: photoUrl } = lodgePhoto(origin, req.lodge);
         const firstName = esc((req.gast_naam || "").split(" ")[0] || "");
         try {
           const { Resend } = await import("resend");
           const resend = new Resend(resendKey);
-          await resend.emails.send({
+          const { error } = await resend.emails.send({
             from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
             to: [req.gast_email],
             subject: `${faseLabel} voor je verblijf — Huis ter Huynen`,
             html: lodgeEmail({
               photoUrl, photoAlt: `Lodge ${lodgeNaam}`,
+              // De reservering is al bevestigd op het moment dat deze mail
+              // uitgaat — de bevestigingsmail zegt dat de data vastliggen.
+              // Deze mail mag dus niet suggereren dat de betaling dat alsnog
+              // moet doen; het is de eerste betaaltermijn, niet de bevestiging.
               title: phase === "aanbetaling"
-                ? `Bevestig je verblijf${firstName ? `, ${firstName}` : ""}`
+                ? `Je reservering staat vast${firstName ? `, ${firstName}` : ""}`
                 : `Laatste stap${firstName ? `, ${firstName}` : ""}`,
               intro: phase === "aanbetaling"
-                ? `Je reservering voor Lodge ${esc(lodgeNaam)} staat klaar. Met de aanbetaling van 30% leg je je data definitief vast.`
+                ? `Je reservering voor Lodge ${esc(lodgeNaam)} is bevestigd en de data staan op jouw naam. Rond nu de aanbetaling van 30% af; de resterende 70% volgt uiterlijk 30 dagen voor aankomst.`
                 : `Bijna klaar! Voldoe de restbetaling en je verblijf in Lodge ${esc(lodgeNaam)} is volledig geregeld.`,
               blocks: [
                 infoBlock("Je verblijf", esc(periodeLabel || "—"), `Lodge ${esc(lodgeNaam)}`),
@@ -322,8 +465,8 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
                   phase === "aanbetaling"
                     ? [
                         "Veilig betalen via iDEAL",
-                        "Je data zijn vastgelegd zodra de aanbetaling binnen is",
-                        "De restbetaling volgt later, ruim voor aankomst",
+                        "Je reservering is al bevestigd &mdash; dit is de eerste betaaltermijn",
+                        "De restbetaling (70%) volgt uiterlijk 30 dagen voor aankomst",
                       ]
                     : [
                         "Veilig betalen via iDEAL",
@@ -332,11 +475,24 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
                       ],
                 ),
               ],
+              footer: termsFooter(origin),
             }),
           });
+          if (error) mailError = error.message || "Resend weigerde de mail";
         } catch (e) {
-          console.error("Payment-link email failed:", e);
+          mailError = e instanceof Error ? e.message : "Onbekende fout bij Resend";
         }
+      }
+
+      if (mailError) {
+        console.error("Payment-link email failed:", mailError);
+        return NextResponse.json({
+          error: `De betaallink is aangemaakt, maar de mail naar de gast is niet verstuurd (${mailError}). Stuur de link hieronder zelf door.`,
+          checkoutUrl,
+          amount,
+          totaal,
+          fase: phase,
+        }, { status: 502 });
       }
 
       await sb.from("booking_requests").update({

@@ -14,11 +14,12 @@ import Script from "next/script";
  * consent-update en pas dán begint het meten. Dat is meteen wat Google Ads als
  * Consent Mode v2 verwacht voor conversiemodellering.
  *
- * Let op: dit is alleen de basistag (remarketing + pagina's). Een conversie
- * meten vraagt daarnaast om een conversielabel uit Google Ads
- * (gtag('event','conversion',{send_to:'AW-…/…'})); dat label is er nog niet.
+ * Let op: dit is alleen de basistag (remarketing + pagina's). De conversies
+ * zelf vuren via pushEvent() → fireGoogleAdsConversion() in
+ * src/lib/tracking/googleAds.ts, zodra daar een conversielabel is ingevuld.
+ * Zie GOOGLE_ADS_SETUP.md voor waar dat label vandaan komt.
  */
-const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID?.trim() || "AW-18397549973";
+import { GOOGLE_ADS_ID } from "@/lib/tracking/googleAds";
 
 export function GoogleAds() {
   return (

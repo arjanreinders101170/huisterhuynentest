@@ -113,11 +113,15 @@ export async function pushInvoice(data: {
     amountExcl: number;
     btwPercentage: number;
     grootboekCode: string;
+    /** Exact brutobedrag voor deze regel. Meegeven wanneer de regel van een
+     *  brutobedrag is afgeleid, zodat de mutatie tot op de cent overeenkomt
+     *  met wat er op de rekening is bijgeschreven. */
+    amountIncl?: number;
   }[];
 }): Promise<string | null> {
   try {
     const mutationLines: MutationLine[] = data.lines.map(line => ({
-      amount: Math.round(line.amountExcl * (1 + line.btwPercentage / 100) * 100) / 100,
+      amount: line.amountIncl ?? Math.round(line.amountExcl * (1 + line.btwPercentage / 100) * 100) / 100,
       amountExVat: line.amountExcl,
       vatPercentage: line.btwPercentage,
       ledgerAccountCode: line.grootboekCode,
