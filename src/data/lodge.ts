@@ -15,7 +15,12 @@ export const ADDRESS_REGION = "Drenthe";
  * Gebruikt door de schema.org LocalBusiness-geo, de geo/ICBM meta-tags,
  * de Maps-routelink op /welkom en de weer-API. Stonden eerder op drie
  * plekken met drie verschillende (foute) waardes — altijd hiervandaan
- * importeren, nooit opnieuw hardcoden. */
+ * importeren, nooit opnieuw hardcoden.
+ *
+ * Door de eigenaar bevestigd als de exacte plek: aan de straat staat het bord
+ * met de aanwijzing naar het park, dus dit punt is meteen het aankomstpunt en
+ * er hoeft geen apart toegangspunt te komen. Niet "corrigeren" naar een adres-
+ * of dorpscoördinaat — die zaten er 5 tot 6 km naast. */
 export const LODGE_LAT = 53.050119;
 export const LODGE_LON = 6.517024;
 
