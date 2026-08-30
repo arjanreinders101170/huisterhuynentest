@@ -10,6 +10,15 @@ export const WIFI_SSID = "HuynenGast";
 export const ADDRESS_STREET = "Zuiderstraat 6 p";
 export const ADDRESS_CITY = "Zeijen";
 export const ADDRESS_REGION = "Drenthe";
+
+/* Coordinaten van de lodge (Zuiderstraat 6 p, Zeijen), WGS84.
+ * Gebruikt door de schema.org LocalBusiness-geo, de geo/ICBM meta-tags,
+ * de Maps-routelink op /welkom en de weer-API. Stonden eerder op drie
+ * plekken met drie verschillende (foute) waardes — altijd hiervandaan
+ * importeren, nooit opnieuw hardcoden. */
+export const LODGE_LAT = 53.050119;
+export const LODGE_LON = 6.517024;
+
 export const PHONE_RAW = "+31642568603";
 export const PHONE_DISPLAY = "+31 6 42568603";
 
