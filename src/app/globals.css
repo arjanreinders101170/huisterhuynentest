@@ -151,3 +151,399 @@ html { scroll-behavior: smooth; }
     margin-bottom: 3px;
   }
 }
+
+/* ── Horizontale marge van de secties ────────────────────────────────
+ * De secties stonden allemaal los op 40px links en rechts. Op een telefoon
+ * van 320px ging daarmee een kwart van het scherm op aan marge, en wat
+ * overbleef moest ook nog de binnenmarge van de kaarten dragen. Eén token,
+ * zodat elke sectie op elke breedte dezelfde linker- en rechterlijn houdt.
+ * Op desktop blijft het 40px.
+ */
+:root { --hth-gutter: 40px; }
+@media (max-width: 768px) { :root { --hth-gutter: 24px; } }
+@media (max-width: 380px) { :root { --hth-gutter: 16px; } }
+
+.hth-gutter {
+  padding-left: var(--hth-gutter);
+  padding-right: var(--hth-gutter);
+}
+
+/* De hero heeft van zichzelf een smallere marge dan de secties eronder; op
+ * een telefoon volgt hij dezelfde lijn als de rest. */
+.hth-hero-pad { padding-left: 32px; padding-right: 32px; }
+@media (max-width: 768px) {
+  .hth-hero-pad {
+    padding-left: var(--hth-gutter);
+    padding-right: var(--hth-gutter);
+  }
+}
+
+/* De hero-knop stond op een vaste binnenmarge van 52px links en rechts. In
+ * een kolom met align-items:center krimpt een knop niet mee met zijn
+ * container: op 320px stak hij buiten het scherm en kreeg de hele pagina
+ * een horizontale schuifbalk. */
+.hth-hero-cta {
+  max-width: 100%;
+  padding: 17px 52px;
+  justify-content: center;
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .hth-hero-cta { width: 100%; padding: 16px 20px; }
+}
+
+/* ── Aanvraagformulier (NL + DE) ─────────────────────────────────────
+ * Het formulier stond volledig op inline-stijlen met vaste maten, en hield
+ * op elke breedte twee kolommen aan. Op een telefoon liep het label
+ * "Gewenste aankomst *" daardoor over twee regels terwijl "Vertrek *" er
+ * één nam: het ene veld begon een regel lager dan het andere. Hetzelfde bij
+ * "Ik neem een huisdier mee", dat in een halve kolom over vier regels brak
+ * naast een teller van één regel.
+ *
+ * Hieronder staan de maten één keer als tokens, en ligt de uitlijning bij
+ * het raster in plaats van bij losse marges per veld. Kleuren, letters,
+ * randen en hoeken zijn dezelfde als in de inline-stijlen die ze vervangen.
+ */
+.hth-form {
+  --hth-form-pad: 28px;
+  --hth-col-gap: 10px;
+  --hth-label-gap: 5px;
+  --hth-block-gap: 20px;
+  --hth-control-h: 46px;
+  --hth-control-pad: 14px;
+  --hth-control-font: 14px;
+  max-width: 640px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #E0D8C8;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(47,79,62,.08);
+  overflow: hidden;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  overflow-wrap: break-word;
+}
+
+/* Eén afstand tussen de blokken in plaats van zes verschillende marges. */
+.hth-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hth-block-gap);
+  padding: var(--hth-form-pad);
+  min-width: 0;
+}
+.hth-form-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Twee kolommen die op elke breedte precies even breed zijn. minmax(0,1fr)
+ * houdt een datumveld binnen zijn kolom in plaats van het raster op te
+ * rekken tot buiten het scherm. */
+.hth-form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--hth-col-gap);
+  align-items: stretch;
+  min-width: 0;
+}
+
+/* Label en veld zijn eigen rasterregels (de cel eromheen is display:
+ * contents). Alle labels van een rij delen dus één regel en alle velden de
+ * volgende: een label dat over twee regels loopt duwt zijn eigen veld niet
+ * omlaag, en de velden beginnen en eindigen op dezelfde lijn. */
+.hth-form-row--fields { row-gap: var(--hth-label-gap); }
+.hth-form-row--fields > .hth-field { display: contents; }
+.hth-form-row--fields > .hth-field > .hth-label { grid-row: 1; }
+.hth-form-row--fields > .hth-field > :not(.hth-label) { grid-row: 2; }
+.hth-form-row--fields > .hth-field:first-child > * { grid-column: 1; }
+.hth-form-row--fields > .hth-field:last-child > * { grid-column: 2; }
+
+/* Rij waarin de cel zelf uitlijnt: de teller en het huisdier-vinkje staan
+ * onderaan hun cel, en omdat elk bedienbaar element even hoog is sluiten ze
+ * boven én onder op elkaar aan. */
+.hth-form-row--pair > .hth-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--hth-label-gap);
+  min-width: 0;
+}
+
+.hth-label {
+  display: block;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #5A534C;
+  overflow-wrap: break-word;
+}
+
+.hth-form-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5A534C;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  line-height: 1.5;
+}
+
+.hth-form-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #5A534C;
+  overflow-wrap: break-word;
+}
+.hth-form-note--small { font-size: 11px; }
+.hth-form-note--error { color: #C62828; font-weight: 600; }
+.hth-form-note--ok { color: #2E7D32; font-weight: 600; }
+.hth-form-note--center { text-align: center; }
+
+/* Vaste hoogte voor de statusregel, zodat het formulier niet verspringt
+ * zodra er een melding verschijnt. Twee regels op een telefoon. */
+.hth-form-status { min-height: 22px; }
+
+/* ── Eén hoogte voor alles wat je kunt aanraken ─────────────────────── */
+.hth-control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--hth-control-h);
+  padding: 0 var(--hth-control-pad);
+  border: 1px solid #E0D8C8;
+  border-radius: 10px;
+  background: #fff;
+  font-family: inherit;
+  font-size: var(--hth-control-font);
+  line-height: 1.4;
+  color: #2A2418;
+  outline: none;
+  box-sizing: border-box;
+}
+/* Zonder dit negeert iOS de opgegeven hoogte van een datumveld en zet het
+ * de waarde tegen de bovenrand — precies het hoogteverschil met de
+ * keuzelijst ernaast. */
+.hth-control[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  text-align: left;
+}
+.hth-control:disabled { background: #FBF9F4; color: #8A7D6A; cursor: not-allowed; }
+.hth-control:focus-visible {
+  border-color: #2F4F3E;
+  box-shadow: 0 0 0 3px rgba(47,79,62,.12);
+}
+.hth-control--area {
+  min-height: 92px;
+  padding: 11px var(--hth-control-pad);
+  resize: vertical;
+}
+
+/* Teller: de knoppen vullen de hoogte van het veld, zodat de rand van de
+ * teller exact zo hoog is als elk ander veld. */
+.hth-stepper {
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+}
+.hth-stepper-btn {
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 18px;
+  color: #2A2418;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.hth-stepper-value {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--hth-control-font);
+  font-weight: 600;
+  color: #2A2418;
+}
+
+/* Vinkje: dezelfde hoogte en dezelfde binnenmarge als een invoerveld, en
+ * een tekst die netjes afbreekt in plaats van tegen de rand te lopen. */
+.hth-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px var(--hth-control-pad);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.hth-check input {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #2F4F3E;
+  cursor: pointer;
+}
+.hth-check span {
+  font-size: 13px;
+  line-height: 1.35;
+  color: #2A2418;
+  overflow-wrap: break-word;
+}
+.hth-check--on { border-color: #2F4F3E; background: rgba(47,79,62,.06); }
+
+/* Lodgekeuze. De geselecteerde kaart krijgt een rand van 2px; de
+ * binnenmarge gaat met dezelfde pixel omlaag, anders verspringt de tekst
+ * bij het aantikken. */
+.hth-lodge {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid #E0D8C8;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.hth-lodge--on {
+  border: 2px solid #2F4F3E;
+  padding: 13px 15px;
+  background: rgba(47,79,62,.05);
+}
+.hth-lodge-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #2F4F3E;
+  overflow-wrap: break-word;
+}
+.hth-lodge-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #5A534C;
+  overflow-wrap: break-word;
+}
+
+.hth-form-error {
+  padding: 10px 14px;
+  border: 1px solid #FFCDD2;
+  border-radius: 8px;
+  background: rgba(198,40,40,.07);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #C62828;
+  overflow-wrap: break-word;
+}
+
+.hth-form-submit {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 12px;
+  background: #2F4F3E;
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background .15s;
+}
+.hth-form-submit:disabled { background: #E0D8C8; cursor: not-allowed; }
+
+/* Bevestiging na verzenden — zelfde kaart, zelfde marges. */
+.hth-form--sent { text-align: center; }
+.hth-form--sent .hth-form-body { gap: 10px; padding: 48px var(--hth-form-pad); }
+.hth-form-sent-mark { font-size: 36px; line-height: 1; color: #2F4F3E; }
+.hth-form-sent-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #2F4F3E;
+}
+.hth-form-sent-text {
+  margin: 0 auto;
+  max-width: 440px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #5A534C;
+  overflow-wrap: break-word;
+}
+.hth-form-restart {
+  align-self: center;
+  margin-top: 14px;
+  padding: 12px 26px;
+  border: 1px solid #E0D8C8;
+  border-radius: 10px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  color: #5A534C;
+  cursor: pointer;
+}
+
+/* ── Telefoon ────────────────────────────────────────────────────────
+ * Bewust een andere indeling, geen verkleinde desktop: bredere raakvlakken,
+ * en de kolommen die op 320px niet meer eerlijk te verdelen zijn gaan onder
+ * elkaar over de volle breedte.
+ */
+@media (max-width: 768px) {
+  .hth-form {
+    --hth-form-pad: 20px;
+    --hth-block-gap: 18px;
+    --hth-control-h: 48px;
+    /* 16px: onder die maat zoomt iOS in zodra je een veld aantikt, en dan
+     * schuift de hele pagina scheef. */
+    --hth-control-font: 16px;
+  }
+  /* Naam en e-mail onder elkaar: in een halve kolom van 130px werd
+   * "jan@voorbeeld.nl" halverwege afgekapt. Onder elkaar hoort het label
+   * weer bij zijn eigen veld, dus geen gedeelde rasterregels meer. */
+  .hth-form-row--stack { grid-template-columns: minmax(0, 1fr); row-gap: 14px; }
+  .hth-form-row--stack > .hth-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--hth-label-gap);
+    min-width: 0;
+  }
+  /* Teller en huisdier onder elkaar, allebei over de volle breedte en
+   * precies even hoog. Naast elkaar bleef er per kolom te weinig over: de
+   * tekst van het vinkje brak dan over vier regels. */
+  .hth-form-row--pair { grid-template-columns: minmax(0, 1fr); }
+  .hth-form--sent .hth-form-body { padding: 40px var(--hth-form-pad); }
+}
+@media (max-width: 380px) {
+  .hth-form {
+    --hth-form-pad: 16px;
+    --hth-control-pad: 12px;
+    --hth-col-gap: 8px;
+  }
+  /* Een datum- of keuzeveld zet zijn eigen tekst neer en kapt die zelf af.
+   * Op 320px is een halve kolom 123px breed: met 16px letter valt het
+   * jaartal eraf. Deze twee velden krijgen daarom een maat kleiner en wat
+   * minder binnenmarge — het zijn geen velden waarin je typt, dus de
+   * 16px-ondergrens tegen inzoomen op iOS speelt hier niet. */
+  .hth-control[type="date"],
+  select.hth-control {
+    font-size: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .hth-lodge { padding: 12px 13px; }
+  .hth-lodge--on { padding: 11px 12px; }
+  .hth-stepper-btn { flex-basis: 40px; }
+}

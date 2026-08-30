@@ -84,9 +84,9 @@ function SectionHeader({ eyebrow, title, sub, as = "h2" }: { eyebrow: string; ti
 
 function BookingSection() {
   return (
-    <section id="verfugbarkeit" style={{
+    <section id="verfugbarkeit" className="hth-gutter" style={{
       background: T.card,
-      padding: "80px 40px",
+      paddingTop: 80, paddingBottom: 80,
       borderTop: `3px solid ${T.green}`,
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -163,7 +163,7 @@ export default function LandingPageDE() {
           background: "linear-gradient(to bottom, rgba(10,8,4,.12) 0%, rgba(10,8,4,.52) 100%)",
         }} />
 
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "60px 32px" }}>
+        <div className="hth-hero-pad" style={{ position: "relative", zIndex: 2, maxWidth: 720, paddingTop: 60, paddingBottom: 60 }}>
           <div style={{ marginBottom: 28 }}>
             <div style={{
               fontFamily: T.serif, fontSize: 13, fontWeight: 700,
@@ -193,9 +193,8 @@ export default function LandingPageDE() {
             Private Sauna, Hot Tub und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden.
           </p>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-            <a href="#verfugbarkeit" style={{
-              padding: "17px 52px",
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: "100%" }}>
+            <a href="#verfugbarkeit" className="hth-hero-cta" style={{
               background: T.gold,
               color: "#1A2E24",
               border: "none",
@@ -244,10 +243,10 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ STATS STRIP ══ */}
-      <section style={{ background: T.green, padding: "28px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.green, paddingTop: 28, paddingBottom: 28 }}>
         <div style={{
           maxWidth: 1100, margin: "0 auto",
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))",
           gap: 0, textAlign: "center",
         }}>
           {[
@@ -278,7 +277,7 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ USPs — Ruhe, Privatsphäre und Wellness ══ */}
-      <section style={{ background: T.card, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.card, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Warum Huis ter Huynen"
@@ -286,7 +285,7 @@ export default function LandingPageDE() {
             sub="Hochwertige Ausstattung, stilvolles Interieur und maximale Privatsphäre für eine besondere Auszeit in Drenthe."
           />
           <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))",
             gap: "40px 32px",
           }}>
             {[
@@ -323,9 +322,9 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ EXPERIENCE — Ankommen. Abschalten. Durchatmen. ══ */}
-      <section style={{
+      <section className="hth-gutter" style={{
         background: `linear-gradient(180deg, ${T.green} 0%, ${T.green2} 100%)`,
-        padding: "80px 40px",
+        paddingTop: 80, paddingBottom: 80,
       }}>
         <div style={{ maxWidth: 820, margin: "0 auto", textAlign: "center", color: "white" }}>
           <Eyebrow>Das Erlebnis</Eyebrow>
@@ -358,7 +357,7 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ LODGES ══ */}
-      <section style={{ background: "white", padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: "white", paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Unsere Unterkünfte"
@@ -367,7 +366,7 @@ export default function LandingPageDE() {
           />
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
             gap: 32,
           }}>
             {[
@@ -460,7 +459,7 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ WELLNESS — Private Wellness erleben ══ */}
-      <section style={{ background: T.bg, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Wellness"
@@ -482,7 +481,7 @@ export default function LandingPageDE() {
             </div>
             <ul style={{
               listStyle: "none", padding: 0, margin: 0,
-              display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))",
               gap: 14,
             }}>
               {[
@@ -509,7 +508,7 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ AKTIVITÄTEN — 4 Kategorien mit Fotos ══ */}
-      <section style={{ background: T.bg, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Aktivitäten in der Umgebung"
@@ -518,7 +517,7 @@ export default function LandingPageDE() {
           />
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))",
             gap: 24,
           }}>
             {[
@@ -612,7 +611,7 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ REVIEWS ══ */}
-      <section style={{ background: T.bg, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Stimmen unserer Gäste"
@@ -643,7 +642,7 @@ export default function LandingPageDE() {
           )}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))",
             gap: 24,
           }}>
             {googleReviews.map((review, i) => (
@@ -689,7 +688,7 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ TRUST — Ein Ort zum Wohlfühlen ══ */}
-      <section style={{ background: T.card, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.card, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 820, margin: "0 auto", textAlign: "center" }}>
           <SectionHeader
             eyebrow="Vertrauen"
@@ -697,7 +696,7 @@ export default function LandingPageDE() {
             sub="Mit viel Liebe zum Detail geschaffen, bietet Huis ter Huynen eine besondere Kombination aus Luxus, Ruhe und Gastfreundschaft."
           />
           <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
             gap: 18, maxWidth: 760, margin: "0 auto",
           }}>
             {[
@@ -720,9 +719,9 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ FINAL CTA ══ */}
-      <section style={{
+      <section className="hth-gutter" style={{
         background: `linear-gradient(180deg, ${T.green} 0%, ${T.green2} 100%)`,
-        padding: "72px 40px",
+        paddingTop: 72, paddingBottom: 72,
         textAlign: "center",
       }}>
         <div style={{ maxWidth: 700, margin: "0 auto", color: "white" }}>
@@ -770,9 +769,9 @@ export default function LandingPageDE() {
       <BookingSection />
 
       {/* ══ NEWSLETTER ══ */}
-      <section style={{
+      <section className="hth-gutter" style={{
         background: T.green,
-        padding: "72px 40px",
+        paddingTop: 72, paddingBottom: 72,
         textAlign: "center",
       }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
@@ -800,11 +799,11 @@ export default function LandingPageDE() {
       </section>
 
       {/* ══ FOOTER ══ */}
-      <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.55)", padding: "60px 40px 36px" }}>
+      <footer className="hth-gutter" style={{ background: "#1A1A1A", color: "rgba(255,255,255,.55)", paddingTop: 60, paddingBottom: 36 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
             gap: "40px 48px",
             paddingBottom: 48,
             borderBottom: "1px solid rgba(255,255,255,.08)",
