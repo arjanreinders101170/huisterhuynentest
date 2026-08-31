@@ -5,6 +5,7 @@ import { APP_URL_FALLBACK, LOGIES_BTW_PCT, lodgeName } from "@/data/lodge";
 import { computeStayPrice } from "@/lib/pricing";
 import { offerExpiryDate, formatDateNl } from "@/lib/offer-expiry";
 import { findConflict, openOffersOverlapping, zelfdeGast } from "@/lib/availability";
+import { externPlatform, externPlatformUitleg } from "@/lib/platform";
 
 const DEPOSIT_PCT = 0.30;
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
@@ -148,6 +149,13 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const sb = getSupabase();
       const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", requestId).single();
       if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+      /* Reserveringen van Booking.com of Airbnb staan hier alleen om de datums
+       * dicht te zetten; die gast heeft daar al een prijs geaccepteerd. Een
+       * offerte van ons zou een tweede, afwijkend aanbod zijn. */
+      const externOfferte = externPlatform(req);
+      if (externOfferte) {
+        return NextResponse.json({ error: externPlatformUitleg(externOfferte) }, { status: 409 });
+      }
       if (!req.gast_email) return NextResponse.json({ error: "Aanvraag heeft geen e-mailadres" }, { status: 400 });
 
       /* Niet twee gasten hetzelfde beloven.
@@ -273,6 +281,13 @@ export async function handleBookingRequestsPost(action: string, body: Record<str
       const sb = getSupabase();
       const { data: req, error: reqErr } = await sb.from("booking_requests").select("*").eq("id", requestId).single();
       if (reqErr || !req) return NextResponse.json({ error: "Aanvraag niet gevonden" }, { status: 404 });
+      /* Het platform heeft deze reservering al geïnd. Een betaallink van ons
+       * vraagt de gast een tweede keer om geld — dat weigeren we hier, ook als
+       * de aanvraag langs een andere weg dan het overzicht binnenkomt. */
+      const externBetaling = externPlatform(req);
+      if (externBetaling) {
+        return NextResponse.json({ error: externPlatformUitleg(externBetaling) }, { status: 409 });
+      }
       if (!req.gast_email) return NextResponse.json({ error: "Aanvraag heeft geen e-mailadres" }, { status: 400 });
 
       const totaal = Number(req.totaal) || 0;
