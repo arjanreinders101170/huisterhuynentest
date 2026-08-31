@@ -19,7 +19,21 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
   const betaaldeBookings = bookings.filter(b => b.status === "betaald" || b.status === "bevestigd");
   const totaalUpsell = betaaldeBookings.reduce((s, b) => s + (b.prijs || 0), 0);
 
-  const totaalOmzet = totaalVerblijf + totaalUpsell;
+  /* Booking.com-omzet komt uit de geïmporteerde verblijven. Bruto is wat de
+   * gast betaalt, netto is wat er na commissie binnenkomt — het bedrag dat
+   * eerlijk te vergelijken is met een directe boeking, waar geen commissie op
+   * zit. Zie migrations/2026_08_31_booking_com_import.sql. */
+  const getal = (v: number | string | null | undefined): number => {
+    const n = Number(v ?? 0);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const bookingStays = stays.filter(s => s.bron === "booking_com" && s.status !== "geannuleerd");
+  const bookingBruto = bookingStays.reduce((som, s) => som + getal(s.extern_bedrag), 0);
+  const bookingCommissie = bookingStays.reduce((som, s) => som + getal(s.extern_commissie), 0);
+  const bookingNetto = bookingBruto - bookingCommissie;
+  const commissiePct = bookingBruto > 0 ? (bookingCommissie / bookingBruto) * 100 : 0;
+
+  const totaalOmzet = totaalVerblijf + totaalUpsell + bookingNetto;
 
   // Geboekte nachten via stays
   const geboekteStays = stays.filter(s => s.status !== "geannuleerd");
@@ -29,8 +43,8 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
   }, 0);
 
   // Per maand (verblijf op basis van booking_request created_at, upsell op booking created_at)
-  type MaandData = { verblijf: number; upsell: number; boekingen: number };
-  const perMaand: MaandData[] = Array.from({ length: 12 }, () => ({ verblijf: 0, upsell: 0, boekingen: 0 }));
+  type MaandData = { verblijf: number; upsell: number; booking: number; boekingen: number };
+  const perMaand: MaandData[] = Array.from({ length: 12 }, () => ({ verblijf: 0, upsell: 0, booking: 0, boekingen: 0 }));
 
   verblijfsBoekingen.forEach(r => {
     const d = new Date(r.created_at);
@@ -46,7 +60,18 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
     }
   });
 
-  const maxMaand = Math.max(...perMaand.map(m => m.verblijf + m.upsell), 1);
+  /* Op de boekingsdatum, net als de directe boekingen hierboven — anders zou
+   * dezelfde grafiek twee verschillende momenten door elkaar tonen. Ontbreekt
+   * die datum in de export, dan valt hij terug op de aankomstdatum. */
+  bookingStays.forEach(s => {
+    const d = new Date(s.geboekt_op || s.check_in);
+    if (d.getFullYear() === jaar) {
+      perMaand[d.getMonth()].booking += getal(s.extern_bedrag) - getal(s.extern_commissie);
+      perMaand[d.getMonth()].boekingen += 1;
+    }
+  });
+
+  const maxMaand = Math.max(...perMaand.map(m => m.verblijf + m.upsell + m.booking), 1);
 
   // Per lodge (stays)
   const lodge1Stays = geboekteStays.filter(s => s.lodge === "lodge_1");
@@ -79,10 +104,11 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 28 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 28 }}>
         {[
-          { label: "Totale omzet", value: `€ ${totaalOmzet.toFixed(2)}`, color: C.green, sub: "verblijf + upsells" },
-          { label: "Verblijfsomzet", value: `€ ${totaalVerblijf.toFixed(2)}`, color: C.text, sub: `${verblijfsBoekingen.length} boekingen` },
+          { label: "Totale omzet", value: `€ ${totaalOmzet.toFixed(2)}`, color: C.green, sub: "direct + Booking.com netto + upsells" },
+          { label: "Direct geboekt", value: `€ ${totaalVerblijf.toFixed(2)}`, color: C.text, sub: `${verblijfsBoekingen.length} boekingen, geen commissie` },
+          { label: "Booking.com netto", value: `€ ${bookingNetto.toFixed(2)}`, color: "#2F4F6F", sub: `${bookingStays.length} boekingen na commissie` },
           { label: "Upsell omzet", value: `€ ${totaalUpsell.toFixed(2)}`, color: C.gold, sub: `${betaaldeBookings.length} betalingen` },
           { label: "Geboekte nachten", value: String(totaalNachten), color: "#1565C0", sub: `${geboekteStays.length} verblijven` },
         ].map((k, i) => (
@@ -101,9 +127,10 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
         {/* Bar chart */}
         <div style={{ display: "flex", gap: 6, alignItems: "flex-end", height: 120, marginBottom: 8 }}>
           {perMaand.map((m, i) => {
-            const totaal = m.verblijf + m.upsell;
+            const totaal = m.verblijf + m.upsell + m.booking;
             const verblijfH = maxMaand > 0 ? (m.verblijf / maxMaand) * 100 : 0;
             const upsellH = maxMaand > 0 ? (m.upsell / maxMaand) * 100 : 0;
+            const bookingH = maxMaand > 0 ? (m.booking / maxMaand) * 100 : 0;
             return (
               <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
                 {totaal > 0 && (
@@ -111,7 +138,8 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
                 )}
                 <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", height: 90, gap: 1 }}>
                   <div style={{ width: "100%", height: `${upsellH}%`, background: C.gold, borderRadius: "3px 3px 0 0", minHeight: upsellH > 0 ? 2 : 0 }} />
-                  <div style={{ width: "100%", height: `${verblijfH}%`, background: C.green, borderRadius: upsellH > 0 ? 0 : "3px 3px 0 0", minHeight: verblijfH > 0 ? 2 : 0 }} />
+                  <div style={{ width: "100%", height: `${bookingH}%`, background: "#2F4F6F", borderRadius: upsellH > 0 ? 0 : "3px 3px 0 0", minHeight: bookingH > 0 ? 2 : 0 }} />
+                  <div style={{ width: "100%", height: `${verblijfH}%`, background: C.green, borderRadius: upsellH > 0 || bookingH > 0 ? 0 : "3px 3px 0 0", minHeight: verblijfH > 0 ? 2 : 0 }} />
                 </div>
               </div>
             );
@@ -126,7 +154,10 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
         {/* Legenda */}
         <div style={{ display: "flex", gap: 16, marginTop: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.muted }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: C.green }} /> Verblijf
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: C.green }} /> Direct
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.muted }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: "#2F4F6F" }} /> Booking.com (netto)
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.muted }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: C.gold }} /> Upsells
@@ -135,27 +166,59 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
 
         {/* Tabel */}
         <div style={{ marginTop: 20, border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 60px", padding: "8px 16px", background: C.bg, fontSize: 11, color: C.light, borderBottom: `1px solid ${C.border}` }}>
-            <div>Maand</div><div>Verblijf</div><div>Upsells</div><div>Totaal</div><div>Boek.</div>
+          <div style={{ display: "grid", gridTemplateColumns: "70px 1fr 1fr 1fr 1fr 55px", padding: "8px 16px", background: C.bg, fontSize: 11, color: C.light, borderBottom: `1px solid ${C.border}` }}>
+            <div>Maand</div><div>Direct</div><div>Booking.com</div><div>Upsells</div><div>Totaal</div><div>Boek.</div>
           </div>
           {perMaand.map((m, i) => {
-            const totaal = m.verblijf + m.upsell;
+            const totaal = m.verblijf + m.upsell + m.booking;
             if (totaal === 0 && m.boekingen === 0) return null;
             return (
-              <div key={i} style={{ display: "grid", gridTemplateColumns: "80px 1fr 1fr 1fr 60px", padding: "10px 16px", fontSize: 12, borderBottom: `1px solid ${C.border}`, alignItems: "center" }}>
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "70px 1fr 1fr 1fr 1fr 55px", padding: "10px 16px", fontSize: 12, borderBottom: `1px solid ${C.border}`, alignItems: "center" }}>
                 <div style={{ color: C.text, fontWeight: 500 }}>{MAANDEN[i]}</div>
                 <div style={{ color: C.muted }}>{m.verblijf > 0 ? `€ ${m.verblijf.toFixed(2)}` : "—"}</div>
+                <div style={{ color: C.muted }}>{m.booking > 0 ? `€ ${m.booking.toFixed(2)}` : "—"}</div>
                 <div style={{ color: C.muted }}>{m.upsell > 0 ? `€ ${m.upsell.toFixed(2)}` : "—"}</div>
                 <div style={{ color: C.text, fontWeight: 500 }}>{totaal > 0 ? `€ ${totaal.toFixed(2)}` : "—"}</div>
                 <div style={{ color: C.muted }}>{m.boekingen || "—"}</div>
               </div>
             );
           })}
-          {perMaand.every(m => m.verblijf + m.upsell === 0) && (
+          {perMaand.every(m => m.verblijf + m.upsell + m.booking === 0) && (
             <div style={{ padding: 16, fontSize: 12, color: C.light, textAlign: "center" }}>Nog geen omzet in {jaar}</div>
           )}
         </div>
       </div>
+
+      {/* Kanalen — wat een boeking via Booking.com kost ten opzichte van direct */}
+      {bookingStays.length > 0 && (
+        <div style={{ ...cs, marginBottom: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: C.text, marginBottom: 4 }}>Kanalen</div>
+          <div style={{ fontSize: 12, color: C.light, marginBottom: 18 }}>
+            Booking.com-cijfers komen uit de geïmporteerde reserveringsexport
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
+            {[
+              { label: "Bruto via Booking.com", value: `€ ${bookingBruto.toFixed(2)}`, sub: "wat de gast betaalt", color: C.text },
+              { label: "Commissie", value: `− € ${bookingCommissie.toFixed(2)}`, sub: `${commissiePct.toFixed(1)}% van bruto`, color: "#9B3B2E" },
+              { label: "Netto uitbetaald", value: `€ ${bookingNetto.toFixed(2)}`, sub: `${bookingStays.length} boekingen`, color: "#2F4F6F" },
+              { label: "Gemiddeld per boeking", value: `€ ${(bookingStays.length > 0 ? bookingNetto / bookingStays.length : 0).toFixed(2)}`, sub: "netto", color: C.muted },
+            ].map(k => (
+              <div key={k.label} style={{ background: C.bg, borderRadius: 10, padding: "14px 16px" }}>
+                <div style={{ fontSize: 11, color: C.light, marginBottom: 4 }}>{k.label}</div>
+                <div style={{ fontSize: 19, fontWeight: 600, color: k.color }}>{k.value}</div>
+                <div style={{ fontSize: 11, color: C.light, marginTop: 2 }}>{k.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          {bookingCommissie > 0 && (
+            <div style={{ marginTop: 16, padding: "12px 16px", background: "#FDF6F0", borderRadius: 8, fontSize: 12, color: C.text, lineHeight: 1.6 }}>
+              Diezelfde boekingen direct via de eigen site hadden <strong>€ {bookingCommissie.toFixed(2)}</strong> meer opgeleverd.
+            </div>
+          )}
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
         {/* Per lodge */}

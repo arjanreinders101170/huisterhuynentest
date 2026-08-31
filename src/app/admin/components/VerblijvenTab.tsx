@@ -221,6 +221,10 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {stays.map(s => {
             const guest = s.guests;
+            /* Een verblijf uit de Booking.com-export heeft geen gast met
+             * e-mailadres, dus de mailknoppen zouden hier altijd stuklopen. */
+            const viaBooking = s.bron === "booking_com";
+            const kanMailen = Boolean(guest?.email);
             const sc = statusColor(s.status);
             const lodge = s.lodge === "lodge_1" ? "De Heide" : "De Eik";
             const cin = new Date(s.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
@@ -233,8 +237,11 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
               }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-                    <span style={{ fontWeight: 500, fontSize: 14, color: C.text }}>{guest?.naam || "Gast"}</span>
+                    <span style={{ fontWeight: 500, fontSize: 14, color: C.text }}>{guest?.naam || s.gast_naam || "Gast"}</span>
                     <span style={{ background: sc.bg, color: sc.text, fontSize: 11, padding: "2px 8px", borderRadius: 6, fontWeight: 500 }}>{s.status}</span>
+                    {viaBooking && (
+                      <span style={{ background: "#EEF2F7", color: "#2F4F6F", fontSize: 11, padding: "2px 8px", borderRadius: 6, fontWeight: 500 }}>Booking.com</span>
+                    )}
                     <span style={{ fontSize: 12, color: C.light }}>{lodge}</span>
                   </div>
                   <div style={{ fontSize: 12, color: C.muted }}>
@@ -247,16 +254,21 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
                   ) : (
                     <>
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                        <button onClick={() => sendWelcome(s.id)} disabled={sendingId === s.id} style={{
+                        {kanMailen && <button onClick={() => sendWelcome(s.id)} disabled={sendingId === s.id} style={{
                           padding: "6px 14px", borderRadius: 6, border: "none",
                           background: C.green, color: "#fff", fontSize: 12, fontWeight: 500,
                           cursor: sendingId === s.id ? "not-allowed" : "pointer",
-                        }}>{sendingId === s.id ? "Versturen..." : s.welcome_sent ? "Opnieuw versturen" : "Welkomstmail"}</button>
+                        }}>{sendingId === s.id ? "Versturen..." : s.welcome_sent ? "Opnieuw versturen" : "Welkomstmail"}</button>}
+                        {!kanMailen && (
+                          <span style={{ fontSize: 12, color: C.light }}>
+                            {viaBooking ? "Geen e-mailadres uit de export — mail via het extranet" : "Geen e-mailadres bekend"}
+                          </span>
+                        )}
                         <button onClick={() => copyStayLink(s.id)} style={{
                           padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.gold}`,
                           background: C.card, color: C.gold, fontSize: 12, fontWeight: 500, cursor: "pointer",
                         }}>{copiedId === s.id ? "✓ Gekopieerd" : "Kopieer link"}</button>
-                        {s.welcome_sent && (
+                        {kanMailen && s.welcome_sent && (
                           <button onClick={() => sendLateCheckout(s.id)} disabled={sendingId === s.id || lcSentIds.has(s.id)} style={{
                             padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
                             background: lcSentIds.has(s.id) ? "#F0FFF4" : C.card,
@@ -265,7 +277,7 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
                             cursor: sendingId === s.id || lcSentIds.has(s.id) ? "not-allowed" : "pointer",
                           }}>{sendingId === s.id ? "Versturen..." : lcSentIds.has(s.id) ? "✓ Verstuurd" : "Late check-out"}</button>
                         )}
-                        {s.welcome_sent && (
+                        {kanMailen && s.welcome_sent && (
                           <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
                             padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
                             background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
