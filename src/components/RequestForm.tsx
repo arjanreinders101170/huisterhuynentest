@@ -5,13 +5,6 @@ import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 import { getAttribution } from "@/lib/tracking/attribution";
 
-const T = {
-  bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
-  gold: "#B49A5E", text: "#2A2418", muted: "#5A534C",
-  border: "#E0D8C8", serif: "Georgia,'Times New Roman',serif",
-  sans: "var(--font-dm-sans), system-ui, sans-serif",
-};
-
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
 const LODGE_DESC: Record<Lodge, string> = {
@@ -74,16 +67,6 @@ export default function RequestForm() {
       .catch(() => setAvailabilityStatus("idle"));
   }, [lodge, checkIn, checkOut, nights]);
 
-  const inputStyle: React.CSSProperties = {
-    width: "100%", padding: "11px 14px", borderRadius: 10,
-    border: `1px solid ${T.border}`, background: "#fff",
-    fontFamily: T.sans, fontSize: 14, color: T.text,
-    outline: "none", boxSizing: "border-box",
-  };
-  const labelStyle: React.CSSProperties = {
-    display: "block", fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 4,
-  };
-
   const handleSubmit = async () => {
     setError("");
     if (!dateCheck.ok) { setError(dateCheck.error); return; }
@@ -140,184 +123,166 @@ export default function RequestForm() {
 
   if (sent) {
     return (
-      <div style={{ maxWidth: 640, margin: "0 auto", textAlign: "center", padding: "48px 28px", background: "#fff", border: `1px solid ${T.border}`, borderRadius: 16, boxShadow: "0 4px 24px rgba(47,79,62,.08)" }}>
-        <div style={{ fontSize: 36, marginBottom: 14, color: T.green }}>✓</div>
-        <div style={{ fontFamily: T.serif, fontSize: 24, fontWeight: 700, color: T.green, marginBottom: 10 }}>
-          Aanvraag ontvangen
+      <div className="hth-form hth-form--sent">
+        <div className="hth-form-body">
+          <div className="hth-form-sent-mark">✓</div>
+          <div className="hth-form-sent-title">Aanvraag ontvangen</div>
+          <p className="hth-form-sent-text">
+            Bedankt, {naam.split(" ")[0]}. We bekijken je gewenste data persoonlijk en sturen je binnen 24 uur een aanbod op maat via {email}.
+          </p>
+          <button
+            type="button"
+            className="hth-form-restart"
+            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
+          >
+            Nieuwe aanvraag
+          </button>
         </div>
-        <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, lineHeight: 1.7, margin: "0 auto", maxWidth: 440 }}>
-          Bedankt, {naam.split(" ")[0]}. We bekijken je gewenste data persoonlijk en sturen je binnen 24 uur een aanbod op maat via {email}.
-        </p>
-        <button
-          onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
-          style={{ marginTop: 24, padding: "11px 26px", borderRadius: 10, border: `1px solid ${T.border}`, background: "#fff", fontFamily: T.sans, fontSize: 13, color: T.muted, cursor: "pointer" }}
-        >
-          Nieuwe aanvraag
-        </button>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto", background: "#fff", border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 4px 24px rgba(47,79,62,.08)" }}>
-      <div style={{ padding: "28px 28px 24px" }}>
+    <div className="hth-form">
+      <div className="hth-form-body">
         {/* Lodge keuze */}
-        <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.muted, textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: 12 }}>
-          Welke lodge heeft je voorkeur?
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 22 }}>
-          {(["lodge_1", "lodge_2"] as Lodge[]).map(l => (
-            <button
-              key={l}
-              type="button"
-              onClick={() => { setLodge(l); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
-              style={{
-                textAlign: "left", padding: "14px 16px", borderRadius: 12, cursor: "pointer",
-                border: lodge === l ? `2px solid ${T.green}` : `1px solid ${T.border}`,
-                background: lodge === l ? "rgba(47,79,62,.05)" : "#fff",
-                transition: "border-color .15s, background .15s",
-              }}
-            >
-              <div style={{ fontFamily: T.serif, fontSize: 16, fontWeight: 700, color: T.green, marginBottom: 3 }}>
-                Lodge {LODGE_LABELS[l]}
-              </div>
-              <div style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, lineHeight: 1.4 }}>
-                {LODGE_DESC[l]}
-              </div>
-            </button>
-          ))}
+        <div className="hth-form-block">
+          <div className="hth-form-eyebrow">Welke lodge heeft je voorkeur?</div>
+          <div className="hth-form-row">
+            {(["lodge_1", "lodge_2"] as Lodge[]).map(l => (
+              <button
+                key={l}
+                type="button"
+                aria-pressed={lodge === l}
+                className={`hth-lodge${lodge === l ? " hth-lodge--on" : ""}`}
+                onClick={() => { setLodge(l); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
+              >
+                <span className="hth-lodge-title">Lodge {LODGE_LABELS[l]}</span>
+                <span className="hth-lodge-desc">{LODGE_DESC[l]}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Data */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 6 }}>
-          <div>
-            <label style={labelStyle}>Gewenste aankomst *</label>
-            <input type="date" value={checkIn} min={minDate}
-              onChange={e => {
-                const aan = e.target.value;
-                setCheckIn(aan);
-                // Meteen een geldige vertrekdatum klaarzetten, anders moet de
-                // gast zelf uitrekenen welke combinatie mag.
-                const opties = aan && isAankomstdag(aan) ? vertrekdatumsVoor(aan) : [];
-                setCheckOut(opties.length > 0 ? opties[0].datum : "");
-              }}
-              style={inputStyle} />
+        <div className="hth-form-block">
+          <div className="hth-form-row hth-form-row--fields">
+            <div className="hth-field">
+              <label className="hth-label" htmlFor="hth-checkin">Gewenste aankomst *</label>
+              <input id="hth-checkin" className="hth-control" type="date" value={checkIn} min={minDate}
+                onChange={e => {
+                  const aan = e.target.value;
+                  setCheckIn(aan);
+                  // Meteen een geldige vertrekdatum klaarzetten, anders moet de
+                  // gast zelf uitrekenen welke combinatie mag.
+                  const opties = aan && isAankomstdag(aan) ? vertrekdatumsVoor(aan) : [];
+                  setCheckOut(opties.length > 0 ? opties[0].datum : "");
+                }} />
+            </div>
+            <div className="hth-field">
+              <label className="hth-label" htmlFor="hth-checkout">Vertrek *</label>
+              {vertrekOpties.length > 0 ? (
+                <select id="hth-checkout" className="hth-control" value={checkOut} onChange={e => setCheckOut(e.target.value)}>
+                  {vertrekOpties.map(o => (
+                    <option key={o.datum} value={o.datum}>
+                      {new Date(`${o.datum}T00:00:00`).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
+                      {" \u2014 "}{vormLabel(o.vorm)}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input id="hth-checkout" className="hth-control" type="date" value={checkOut} min={checkIn || minDate}
+                  onChange={e => setCheckOut(e.target.value)} disabled={!checkIn} />
+              )}
+            </div>
           </div>
-          <div>
-            <label style={labelStyle}>Vertrek *</label>
-            {vertrekOpties.length > 0 ? (
-              <select value={checkOut} onChange={e => setCheckOut(e.target.value)} style={inputStyle}>
-                {vertrekOpties.map(o => (
-                  <option key={o.datum} value={o.datum}>
-                    {new Date(`${o.datum}T00:00:00`).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
-                    {" — "}{vormLabel(o.vorm)}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input type="date" value={checkOut} min={checkIn || minDate}
-                onChange={e => setCheckOut(e.target.value)} style={inputStyle} disabled={!checkIn} />
+          <p className="hth-form-note">
+            We verhuren per midweek (ma&nbsp;&ndash;&nbsp;vr), weekend (vr&nbsp;&ndash;&nbsp;zo) of hele week (ma&nbsp;&ndash;&nbsp;zo).
+            Aankomst is dus op maandag of vrijdag.
+          </p>
+          {bookingsNotYetOpen() && (
+            <p className="hth-form-note">
+              We openen op {formatOpeningDate()} &mdash; aanvragen kunnen voor data vanaf die dag.
+            </p>
+          )}
+          <div className="hth-form-status" aria-live="polite">
+            {dateError && (
+              <p className="hth-form-note hth-form-note--error">{dateError}</p>
+            )}
+            {!dateError && availabilityStatus === "checking" && (
+              <p className="hth-form-note">Beschikbaarheid controleren...</p>
+            )}
+            {!dateError && availabilityStatus === "available" && datesValid && (
+              <p className="hth-form-note hth-form-note--ok">
+                ✓ Deze periode is beschikbaar &mdash; {nights} nacht{nights !== 1 ? "en" : ""}
+              </p>
+            )}
+            {!dateError && availabilityStatus === "unavailable" && (
+              <p className="hth-form-note hth-form-note--error">
+                ✗ Deze periode is helaas al bezet &mdash; kies andere datums
+              </p>
+            )}
+            {!dateError && availabilityStatus === "idle" && (
+              <p className="hth-form-note hth-form-note--small">
+                Een verblijf duurt minimaal {MIN_NIGHTS} nachten.
+              </p>
             )}
           </div>
         </div>
-        <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: "0 0 6px", lineHeight: 1.6 }}>
-          We verhuren per midweek (ma&nbsp;–&nbsp;vr), weekend (vr&nbsp;–&nbsp;zo) of hele week (ma&nbsp;–&nbsp;zo).
-          Aankomst is dus op maandag of vrijdag.
-        </p>
-        {bookingsNotYetOpen() && (
-          <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: "0 0 6px", lineHeight: 1.6 }}>
-            We openen op {formatOpeningDate()} — aanvragen kunnen voor data vanaf die dag.
-          </p>
-        )}
-
-        <div style={{ margin: "6px 0 20px", minHeight: 22 }}>
-          {dateError && (
-            <p style={{ fontFamily: T.sans, fontSize: 12, color: "#C62828", fontWeight: 600, margin: 0 }}>
-              {dateError}
-            </p>
-          )}
-          {!dateError && availabilityStatus === "checking" && (
-            <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, margin: 0 }}>
-              Beschikbaarheid controleren...
-            </p>
-          )}
-          {!dateError && availabilityStatus === "available" && datesValid && (
-            <p style={{ fontFamily: T.sans, fontSize: 12, color: "#2E7D32", fontWeight: 600, margin: 0 }}>
-              ✓ Deze periode is beschikbaar — {nights} nacht{nights !== 1 ? "en" : ""}
-            </p>
-          )}
-          {!dateError && availabilityStatus === "unavailable" && (
-            <p style={{ fontFamily: T.sans, fontSize: 12, color: "#C62828", fontWeight: 600, margin: 0 }}>
-              ✗ Deze periode is helaas al bezet — kies andere datums
-            </p>
-          )}
-          {!dateError && availabilityStatus === "idle" && (
-            <p style={{ fontFamily: T.sans, fontSize: 11, color: T.muted, margin: 0 }}>
-              Een verblijf duurt minimaal {MIN_NIGHTS} nachten.
-            </p>
-          )}
-        </div>
 
         {/* Personen + huisdieren */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-          <div>
-            <label style={labelStyle}>Aantal personen *</label>
-            <div style={{ display: "flex", alignItems: "center", border: `1px solid ${T.border}`, borderRadius: 10, background: "#fff", overflow: "hidden" }}>
-              <button type="button" onClick={() => setAantalPersonen(p => Math.max(1, p - 1))}
-                style={{ width: 40, height: 44, border: "none", background: "transparent", fontFamily: T.sans, fontSize: 18, color: T.text, cursor: "pointer", flexShrink: 0 }}>−</button>
-              <span style={{ flex: 1, textAlign: "center", fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 600 }}>{aantalPersonen}</span>
-              <button type="button" onClick={() => setAantalPersonen(p => Math.min(4, p + 1))}
-                style={{ width: 40, height: 44, border: "none", background: "transparent", fontFamily: T.sans, fontSize: 18, color: T.text, cursor: "pointer", flexShrink: 0 }}>+</button>
+        <div className="hth-form-block">
+          <div className="hth-form-row hth-form-row--pair">
+            <div className="hth-field">
+              <span className="hth-label" id="hth-personen-label">Aantal personen *</span>
+              <div className="hth-control hth-stepper" role="group" aria-labelledby="hth-personen-label">
+                <button type="button" className="hth-stepper-btn" aria-label="Minder personen"
+                  onClick={() => setAantalPersonen(p => Math.max(1, p - 1))}>&minus;</button>
+                <span className="hth-stepper-value" aria-live="polite">{aantalPersonen}</span>
+                <button type="button" className="hth-stepper-btn" aria-label="Meer personen"
+                  onClick={() => setAantalPersonen(p => Math.min(4, p + 1))}>+</button>
+              </div>
             </div>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-            <label style={{
-              display: "flex", alignItems: "center", gap: 10, cursor: "pointer",
-              border: `1px solid ${huisdieren ? T.green : T.border}`, borderRadius: 10,
-              padding: "11px 14px", background: huisdieren ? "rgba(47,79,62,.06)" : "#fff",
-              transition: "border-color .15s, background .15s",
-            }}>
-              <input type="checkbox" checked={huisdieren} onChange={e => setHuisdieren(e.target.checked)}
-                style={{ width: 16, height: 16, accentColor: T.green, cursor: "pointer", flexShrink: 0 }} />
-              <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text }}>Ik neem een huisdier mee</span>
-            </label>
+            <div className="hth-field">
+              <label className={`hth-control hth-check${huisdieren ? " hth-check--on" : ""}`}>
+                <input type="checkbox" checked={huisdieren} onChange={e => setHuisdieren(e.target.checked)} />
+                <span>Ik neem een huisdier mee</span>
+              </label>
+            </div>
           </div>
         </div>
 
         {/* Gegevens */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
-          <div>
-            <label style={labelStyle}>Naam *</label>
-            <input value={naam} onChange={e => setNaam(e.target.value)} placeholder="Jan de Vries" style={inputStyle} />
-          </div>
-          <div>
-            <label style={labelStyle}>E-mailadres *</label>
-            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="jan@voorbeeld.nl" type="email" style={inputStyle} />
+        <div className="hth-form-block">
+          <div className="hth-form-row hth-form-row--fields hth-form-row--stack">
+            <div className="hth-field">
+              <label className="hth-label" htmlFor="hth-naam">Naam *</label>
+              <input id="hth-naam" className="hth-control" value={naam} onChange={e => setNaam(e.target.value)} placeholder="Jan de Vries" />
+            </div>
+            <div className="hth-field">
+              <label className="hth-label" htmlFor="hth-email">E-mailadres *</label>
+              <input id="hth-email" className="hth-control" value={email} onChange={e => setEmail(e.target.value)} placeholder="jan@voorbeeld.nl" type="email" />
+            </div>
           </div>
         </div>
-        <div style={{ marginBottom: 22 }}>
-          <label style={labelStyle}>Bericht (optioneel)</label>
-          <textarea value={bericht} onChange={e => setBericht(e.target.value)} placeholder="Bijv. een speciale gelegenheid, flexibele data of een vraag..." rows={3}
-            style={{ ...inputStyle, resize: "vertical", fontFamily: T.sans }} />
+
+        <div className="hth-form-block">
+          <label className="hth-label" htmlFor="hth-bericht">Bericht (optioneel)</label>
+          <textarea id="hth-bericht" className="hth-control hth-control--area" value={bericht}
+            onChange={e => setBericht(e.target.value)}
+            placeholder="Bijv. een speciale gelegenheid, flexibele data of een vraag..." rows={3} />
         </div>
 
-        {error && (
-          <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 8, background: "rgba(198,40,40,.07)", border: "1px solid #FFCDD2", fontFamily: T.sans, fontSize: 13, color: "#C62828" }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="hth-form-error">{error}</div>}
 
-        <button onClick={handleSubmit} disabled={!canSubmit} style={{
-          width: "100%", padding: "15px", borderRadius: 12, border: "none",
-          background: canSubmit ? T.green : T.border,
-          color: "#fff", fontFamily: T.sans, fontSize: 15, fontWeight: 600,
-          cursor: canSubmit ? "pointer" : "not-allowed", transition: "background .15s",
-        }}>
-          {sending ? "Aanvraag verzenden..." : "Stuur mijn aanvraag →"}
-        </button>
-        <p style={{ fontFamily: T.sans, fontSize: 12, color: T.muted, textAlign: "center", margin: "12px 0 0", lineHeight: 1.6 }}>
-          Geen betaling nu. Je ontvangt binnen 24 uur een persoonlijk aanbod op maat.
-        </p>
+        <div className="hth-form-block">
+          <button type="button" className="hth-form-submit" onClick={handleSubmit} disabled={!canSubmit}>
+            {sending ? "Aanvraag verzenden..." : "Stuur mijn aanvraag \u2192"}
+          </button>
+          <p className="hth-form-note hth-form-note--center">
+            Geen betaling nu. Je ontvangt binnen 24 uur een persoonlijk aanbod op maat.
+          </p>
+        </div>
       </div>
     </div>
   );

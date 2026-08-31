@@ -44,6 +44,10 @@ export function DirectBookingUSP({
       style={{
         display: "flex",
         flexWrap: "wrap",
+        /* Als flex-item in een kolom krijgt de lijst zijn max-content
+         * breedte en breekt hij dus nooit af. Op een telefoon stak hij
+         * daardoor buiten het scherm. */
+        maxWidth: "100%",
         gap: "6px 16px",
         justifyContent: align === "center" ? "center" : "flex-start",
         listStyle: "none",

@@ -86,9 +86,9 @@ function BookingSection() {
   }, []);
 
   return (
-    <section id="reserveren" style={{
+    <section id="reserveren" className="hth-gutter" style={{
       background: T.card,
-      padding: "80px 40px",
+      paddingTop: 80, paddingBottom: 80,
       borderTop: `3px solid ${T.green}`,
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -211,7 +211,7 @@ export default function LandingPage() {
           background: "linear-gradient(to bottom, rgba(10,8,4,.12) 0%, rgba(10,8,4,.52) 100%)",
         }} />
 
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 640, padding: "60px 32px" }}>
+        <div className="hth-hero-pad" style={{ position: "relative", zIndex: 2, maxWidth: 640, paddingTop: 60, paddingBottom: 60 }}>
           <div style={{ marginBottom: 28 }}>
             <div style={{
               fontFamily: T.serif, fontSize: 13, fontWeight: 700,
@@ -247,9 +247,8 @@ export default function LandingPage() {
             geniet van de heide en keer terug naar uw privé-hottub.
           </p>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-            <a href="#reserveren" style={{
-              padding: "17px 52px",
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: "100%" }}>
+            <a href="#reserveren" className="hth-hero-cta" style={{
               background: T.gold,
               color: "#1A2E24",
               border: "none",
@@ -302,10 +301,10 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           STATS STRIP
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.green, padding: "28px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.green, paddingTop: 28, paddingBottom: 28 }}>
         <div style={{
           maxWidth: 1100, margin: "0 auto",
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(160px, 100%), 1fr))",
           gap: 0, textAlign: "center",
         }}>
           {[
@@ -338,7 +337,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           USPs
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.card, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.card, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Waarom Huis ter Huynen"
@@ -346,7 +345,7 @@ export default function LandingPage() {
             sub="Van privé-hottub tot laadfaciliteiten voor uw EV. Wij denken aan alles zodat u aan niets hoeft te denken."
           />
           <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
             gap: "40px 32px",
           }}>
             {[
@@ -386,7 +385,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           LODGES
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.bg, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Onze accommodaties"
@@ -395,7 +394,7 @@ export default function LandingPage() {
           />
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
             gap: 32,
           }}>
             {[
@@ -515,9 +514,9 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           STER CITAAT — direct na lodges
       ══════════════════════════════════════════ */}
-      <section style={{
+      <section className="hth-gutter" style={{
         background: `linear-gradient(180deg, ${T.green} 0%, ${T.green2} 100%)`,
-        padding: "72px 40px",
+        paddingTop: 72, paddingBottom: 72,
         position: "relative", overflow: "hidden",
       }}>
         <div style={{
@@ -543,7 +542,7 @@ export default function LandingPage() {
           }}>
             Huis ter Huynen · Zeijen, Drenthe
           </div>
-          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, maxWidth: "100%" }}>
             <a href="#reserveren" style={{
               fontFamily: T.sans, fontSize: 14, fontWeight: 700,
               color: "#1A2E24", background: T.gold,
@@ -566,7 +565,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           OMGEVING — natuur & wat te doen
       ══════════════════════════════════════════ */}
-      <section id="omgeving" style={{ background: T.bg, padding: "80px 40px" }}>
+      <section id="omgeving" className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Zeijen · Drenthe"
@@ -585,7 +584,7 @@ export default function LandingPage() {
             </div>
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))",
               gap: 20,
             }}>
               {[
@@ -664,7 +663,7 @@ export default function LandingPage() {
           {/* Natuur highlights — 2 kolommen */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))",
             gap: 20,
             marginBottom: 56,
           }}>
@@ -749,7 +748,7 @@ export default function LandingPage() {
             </div>
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(190px, 100%), 1fr))",
               gap: "20px 32px",
             }}>
               {[
@@ -803,7 +802,7 @@ export default function LandingPage() {
                 Weekenden in augustus en september zijn als eerste volgeboekt. Claim uw datum nu.
               </p>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, flexShrink: 0, maxWidth: "100%" }}>
               <a href="#reserveren" style={{
                 display: "inline-block",
                 fontFamily: T.sans, fontSize: 13, fontWeight: 700,
@@ -822,7 +821,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           WAT TE DOEN — 4 categorieën
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.card, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.card, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Activiteiten in de omgeving"
@@ -831,7 +830,7 @@ export default function LandingPage() {
           />
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))",
             gap: 24,
           }}>
             {[
@@ -937,7 +936,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           EERSTE GASTEN — populaire momenten
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.bg, padding: "80px 40px", borderTop: `1px solid ${T.border}` }}>
+      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80, borderTop: `1px solid ${T.border}` }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Openingsjaar 2027"
@@ -946,7 +945,7 @@ export default function LandingPage() {
           />
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(190px, 100%), 1fr))",
             gap: 20,
             marginBottom: 44,
           }}>
@@ -1048,7 +1047,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           REVIEWS
       ══════════════════════════════════════════ */}
-      <section style={{ background: T.bg, padding: "80px 40px" }}>
+      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Ervaringen van gasten"
@@ -1093,7 +1092,7 @@ export default function LandingPage() {
           )}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))",
             gap: 24,
           }}>
             {googleReviews.map((review, i) => (
@@ -1161,9 +1160,9 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           NIEUWSBRIEF
       ══════════════════════════════════════════ */}
-      <section id="nieuwsbrief" style={{
+      <section id="nieuwsbrief" className="hth-gutter" style={{
         background: T.green,
-        padding: "72px 40px",
+        paddingTop: 72, paddingBottom: 72,
         textAlign: "center",
       }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
@@ -1199,7 +1198,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════ */}
-      <footer style={{ background: "#1A1A1A", color: "rgba(255,255,255,.55)", padding: "60px 40px 36px" }}>
+      <footer className="hth-gutter" style={{ background: "#1A1A1A", color: "rgba(255,255,255,.55)", paddingTop: 60, paddingBottom: 36 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           {/* Vakanties & arrangementen — interne links naar de landingspagina's */}
           <div style={{ paddingBottom: 40, marginBottom: 40, borderBottom: "1px solid rgba(255,255,255,.08)" }}>
@@ -1211,7 +1210,7 @@ export default function LandingPage() {
             </div>
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(230px, 100%), 1fr))",
               gap: "12px 32px",
             }}>
               {LANDING_NAV.map((l) => (
@@ -1229,7 +1228,7 @@ export default function LandingPage() {
           {/* Top grid */}
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
             gap: "40px 48px",
             paddingBottom: 48,
             borderBottom: "1px solid rgba(255,255,255,.08)",
