@@ -20,9 +20,15 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
   const totaalUpsell = betaaldeBookings.reduce((s, b) => s + (b.prijs || 0), 0);
 
   /* Booking.com-omzet komt uit de geïmporteerde verblijven. Bruto is wat de
-   * gast betaalt, netto is wat er na commissie binnenkomt — het bedrag dat
-   * eerlijk te vergelijken is met een directe boeking, waar geen commissie op
-   * zit. Zie migrations/2026_08_31_booking_com_import.sql. */
+   * gast bij Booking.com betaalt, netto is wat er na commissie binnenkomt.
+   *
+   * Let op bij het vergelijken met de directe boekingen hierboven: die tellen
+   * met `totaal`, en daar zitten eindschoonmaak en toeristenbelasting al in
+   * (zie _booking-requests.ts). Booking.com rekent die niet af — bedlinnen,
+   * eindschoonmaak en toeristenbelasting factureren we zelf na afloop. Het
+   * Booking.com-bedrag is dus alleen logies en valt om die reden lager uit dan
+   * een directe boeking van dezelfde week. De labels zeggen dat er expliciet
+   * bij; ze optellen zonder dat onderscheid zou een verkeerd beeld geven. */
   const getal = (v: number | string | null | undefined): number => {
     const n = Number(v ?? 0);
     return Number.isFinite(n) ? n : 0;
@@ -107,8 +113,8 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 28 }}>
         {[
           { label: "Totale omzet", value: `€ ${totaalOmzet.toFixed(2)}`, color: C.green, sub: "direct + Booking.com netto + upsells" },
-          { label: "Direct geboekt", value: `€ ${totaalVerblijf.toFixed(2)}`, color: C.text, sub: `${verblijfsBoekingen.length} boekingen, geen commissie` },
-          { label: "Booking.com netto", value: `€ ${bookingNetto.toFixed(2)}`, color: "#2F4F6F", sub: `${bookingStays.length} boekingen na commissie` },
+          { label: "Direct geboekt", value: `€ ${totaalVerblijf.toFixed(2)}`, color: C.text, sub: `${verblijfsBoekingen.length} boekingen, incl. schoonmaak en toeristenbelasting` },
+          { label: "Booking.com logies", value: `€ ${bookingNetto.toFixed(2)}`, color: "#2F4F6F", sub: `${bookingStays.length} boekingen, na commissie, excl. eindfactuur` },
           { label: "Upsell omzet", value: `€ ${totaalUpsell.toFixed(2)}`, color: C.gold, sub: `${betaaldeBookings.length} betalingen` },
           { label: "Geboekte nachten", value: String(totaalNachten), color: "#1565C0", sub: `${geboekteStays.length} verblijven` },
         ].map((k, i) => (
@@ -157,7 +163,7 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
             <div style={{ width: 10, height: 10, borderRadius: 2, background: C.green }} /> Direct
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.muted }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: "#2F4F6F" }} /> Booking.com (netto)
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: "#2F4F6F" }} /> Booking.com (logies, netto)
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: C.muted }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: C.gold }} /> Upsells
@@ -197,11 +203,18 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
             Booking.com-cijfers komen uit de geïmporteerde reserveringsexport
           </div>
 
+          <div style={{ background: "#EEF2F7", borderRadius: 8, padding: "12px 16px", fontSize: 12, color: C.text, lineHeight: 1.6, marginBottom: 16 }}>
+            Booking.com rekent alleen het logies af. Bedlinnen, eindschoonmaak en
+            toeristenbelasting factureren we zelf na afloop en zitten <strong>niet</strong> in
+            onderstaande bedragen. Bij een directe boeking zitten die er wél in, dus
+            vergelijk deze twee kanalen niet één op één.
+          </div>
+
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
             {[
-              { label: "Bruto via Booking.com", value: `€ ${bookingBruto.toFixed(2)}`, sub: "wat de gast betaalt", color: C.text },
+              { label: "Bruto via Booking.com", value: `€ ${bookingBruto.toFixed(2)}`, sub: "logies, wat de gast daar betaalt", color: C.text },
               { label: "Commissie", value: `− € ${bookingCommissie.toFixed(2)}`, sub: `${commissiePct.toFixed(1)}% van bruto`, color: "#9B3B2E" },
-              { label: "Netto uitbetaald", value: `€ ${bookingNetto.toFixed(2)}`, sub: `${bookingStays.length} boekingen`, color: "#2F4F6F" },
+              { label: "Netto uitbetaald", value: `€ ${bookingNetto.toFixed(2)}`, sub: `${bookingStays.length} boekingen, excl. eindfactuur`, color: "#2F4F6F" },
               { label: "Gemiddeld per boeking", value: `€ ${(bookingStays.length > 0 ? bookingNetto / bookingStays.length : 0).toFixed(2)}`, sub: "netto", color: C.muted },
             ].map(k => (
               <div key={k.label} style={{ background: C.bg, borderRadius: 10, padding: "14px 16px" }}>
