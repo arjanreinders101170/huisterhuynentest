@@ -18,6 +18,10 @@ import {
   leesReserveringen, maakVoorstellen, telVoorstellen,
   type BestaandVerblijf, type BezettePeriode, type Voorstel,
 } from "@/lib/booking-import";
+import {
+  berekenEindfactuur, isGeldigeStatus, telNachten,
+  type FeeSjabloon,
+} from "@/lib/eindfactuur";
 
 /* Ruim boven een jaar aan reserveringen, ruim onder wat een JSON-body aankan.
  * De export van acht maanden in dit huis is zo'n 6 kB. */
@@ -104,6 +108,7 @@ export async function handleImportPost(
   action: string,
   body: Record<string, unknown>,
 ): Promise<NextResponse | null> {
+  if (action === "save_eindfactuur") return bewaarEindfactuur(body);
   if (action !== "booking_import_preview" && action !== "booking_import_apply") return null;
 
   const upload = decodeerUpload(body.bestand);
@@ -216,4 +221,55 @@ async function verwerk(voorstellen: Voorstel[]): Promise<NextResponse> {
     success: mislukt.length === 0,
     toegevoegd, bijgewerkt, geannuleerd, mislukt,
   });
+}
+
+/* ── Eindfactuur ──────────────────────────────────────────────────────── */
+
+/* Legt vast wat er na afloop nog gefactureerd moet worden.
+ *
+ * De bedragen worden hier opnieuw berekend uit de fee_templates; de browser
+ * stuurt alleen het aantal personen en welke posten meetellen. Anders zou een
+ * bewerkt verzoek een willekeurig bedrag als factuurregel kunnen vastleggen.
+ * Het resultaat gaat als bevroren regels de database in, zodat een latere
+ * tariefwijziging een al verstuurde factuur niet met terugwerkende kracht
+ * verandert. */
+async function bewaarEindfactuur(body: Record<string, unknown>): Promise<NextResponse> {
+  const stayId = typeof body.id === "string" ? body.id : "";
+  if (!stayId) return NextResponse.json({ error: "Verblijf-ID ontbreekt" }, { status: 400 });
+
+  const status = isGeldigeStatus(body.status) ? body.status : "open";
+
+  const personenRuw = Number(body.personen);
+  const personen = Number.isFinite(personenRuw) ? Math.trunc(personenRuw) : 0;
+  if (personen < 0 || personen > 20) {
+    return NextResponse.json({ error: "Aantal personen is onlogisch" }, { status: 400 });
+  }
+
+  const sb = getSupabase();
+  const { data: stay, error: stayErr } = await sb
+    .from("stays").select("id, check_in, check_out").eq("id", stayId).maybeSingle();
+  if (stayErr || !stay) return NextResponse.json({ error: "Verblijf niet gevonden" }, { status: 404 });
+
+  const { data: feesData } = await sb
+    .from("fee_templates").select("*").eq("actief", true).order("volgorde", { ascending: true });
+
+  const gekozen = Array.isArray(body.gekozen)
+    ? (body.gekozen as unknown[]).filter((v): v is string => typeof v === "string")
+    : undefined;
+
+  const nachten = telNachten(stay.check_in, stay.check_out);
+  const { regels, totaal, overgeslagen } = berekenEindfactuur(
+    (feesData || []) as FeeSjabloon[], nachten, personen, gekozen,
+  );
+
+  const { error } = await sb.from("stays").update({
+    personen: personen > 0 ? personen : null,
+    eindfactuur_regels: regels,
+    eindfactuur_totaal: totaal,
+    eindfactuur_status: status,
+    eindfactuur_bijgewerkt_op: new Date().toISOString(),
+  }).eq("id", stayId);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json({ success: true, regels, totaal, overgeslagen, nachten });
 }

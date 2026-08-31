@@ -14,6 +14,7 @@ import { BlogTab } from "./components/BlogTab";
 import { LandingTab } from "./components/LandingTab";
 import { AanvragenV2Tab } from "./components/AanvragenV2Tab";
 import { ImportTab } from "./components/ImportTab";
+import { EindfacturenTab } from "./components/EindfacturenTab";
 import { ToeslagenTab } from "./components/ToeslagenTab";
 import { MarketingTab } from "./components/MarketingTab";
 import { SearchConsoleTab } from "./components/SearchConsoleTab";
@@ -25,7 +26,7 @@ const C = {
   green: "#2F4F3E", gold: "#B49A5E",
 };
 
-type Tab = "dashboard" | "boekingen" | "importeren" | "gasten" | "reviews" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard" | "search_console" | "groei";
+type Tab = "dashboard" | "boekingen" | "importeren" | "eindfacturen" | "gasten" | "reviews" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard" | "search_console" | "groei";
 
 type NavItem = { id: Tab; label: string };
 type NavGroup = { groupLabel: string; sub: NavItem[] };
@@ -150,6 +151,7 @@ export default function AdminDashboard() {
       { id: "boekingen", label: "Boekingen" },
       { id: "aanvragen_v2", label: "Aanvragen" },
       { id: "importeren", label: "Booking.com importeren" },
+      { id: "eindfacturen", label: "Eindfacturen" },
     ]},
     { id: "checkinout", icon: "🔑", label: "Check in / uit", short: "Check in", items: [
       { id: "verblijven", label: "Verblijven" },
@@ -495,6 +497,10 @@ export default function AdminDashboard() {
 
             {tab === "importeren" && (
               <ImportTab onVerwerkt={herlaadVerblijven} />
+            )}
+
+            {tab === "eindfacturen" && (
+              <EindfacturenTab stays={stays} setStays={setStays} feeTemplates={feeTemplates} />
             )}
 
             {tab === "toeslagen" && (

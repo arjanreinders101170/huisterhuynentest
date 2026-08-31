@@ -1,3 +1,5 @@
+import type { FactuurRegel, EindfactuurStatus } from "@/lib/eindfactuur";
+
 export type Booking = { id: string; product: string; prijs: number; status: string; created_at: string; guest_id: string; metadata: Record<string, unknown> };
 export type Guest = { id: string; naam: string; email: string; profiel: string; laatste_bezoek: string };
 export type Review = { id: string; naam: string; sterren: number; tekst: string; zichtbaar: boolean; created_at: string };
@@ -17,6 +19,14 @@ export type Stay = {
   geboekt_op?: string | null;
   gast_naam?: string | null;
   geimporteerd_op?: string | null;
+  /* Eindfactuur — zie migrations/2026_08_31_eindfactuur_booking_com.sql.
+   * Booking.com rekent alleen logies af; bedlinnen, eindschoonmaak en
+   * toeristenbelasting factureren we zelf na afloop. */
+  personen?: number | null;
+  eindfactuur_regels?: FactuurRegel[];
+  eindfactuur_totaal?: number | string | null;
+  eindfactuur_status?: EindfactuurStatus;
+  eindfactuur_bijgewerkt_op?: string | null;
 };
 export type DiscountCode = { id: string; code: string; omschrijving: string | null; type: "percentage" | "fixed"; waarde: number; geldig_van: string | null; geldig_tot: string | null; max_gebruik: number | null; gebruik_count: number; min_nachten: number | null; actief: boolean; created_at: string };
 export type BlogPost = { id: string; slug: string; titel: string; intro: string; inhoud: string; categorie: string; leestijd: string; auteur: string; og_image: string | null; gepubliceerd: boolean; gepubliceerd_op: string | null; geplande_publicatie: string | null; created_at: string };
