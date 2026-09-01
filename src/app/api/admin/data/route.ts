@@ -11,6 +11,7 @@ import { handleDiscountCodesGet, handleDiscountCodesPost } from "./_discount-cod
 import { handleMarketingGet, handleMarketingPost } from "./_marketing";
 import { handleGscGet, handleGscPost, handleGscReeksGet } from "./_gsc";
 import { handleGroeiGet } from "./_groei";
+import { handleImportPost } from "./_import";
 
 export const runtime = "nodejs";
 
@@ -101,6 +102,7 @@ export async function POST(request: NextRequest) {
       (await handleDiscountCodesPost(action, body, request)) ??
       (await handleMarketingPost(action, body, request)) ??
       (await handleGscPost(action, body, request)) ??
+      (await handleImportPost(action, body)) ??
       (await handleMiscPost(action, body));
 
     return response ?? NextResponse.json({ error: "Onbekende actie" }, { status: 400 });

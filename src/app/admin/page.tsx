@@ -13,6 +13,8 @@ import { ActiesTab } from "./components/ActiesTab";
 import { BlogTab } from "./components/BlogTab";
 import { LandingTab } from "./components/LandingTab";
 import { AanvragenV2Tab } from "./components/AanvragenV2Tab";
+import { ImportTab } from "./components/ImportTab";
+import { EindfacturenTab } from "./components/EindfacturenTab";
 import { ToeslagenTab } from "./components/ToeslagenTab";
 import { MarketingTab } from "./components/MarketingTab";
 import { SearchConsoleTab } from "./components/SearchConsoleTab";
@@ -24,7 +26,7 @@ const C = {
   green: "#2F4F3E", gold: "#B49A5E",
 };
 
-type Tab = "dashboard" | "boekingen" | "gasten" | "reviews" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard" | "search_console" | "groei";
+type Tab = "dashboard" | "boekingen" | "importeren" | "eindfacturen" | "gasten" | "reviews" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard" | "search_console" | "groei";
 
 type NavItem = { id: Tab; label: string };
 type NavGroup = { groupLabel: string; sub: NavItem[] };
@@ -100,6 +102,16 @@ export default function AdminDashboard() {
       .catch(() => {});
   }, []);
 
+  /* Na een import staan er verblijven bij die de rest van het scherm nog niet
+   * kent — de tijdlijn en het financiële overzicht draaien op dezelfde lijst. */
+  const herlaadVerblijven = async () => {
+    try {
+      const res = await fetch("/api/admin/data?table=stays");
+      const data = await res.json();
+      setStays(data.data || []);
+    } catch (e) { console.error("Verblijven herladen mislukt:", e); }
+  };
+
   const toggleReview = async (id: string, visible: boolean) => {
     await fetch("/api/admin/data", {
       method: "POST",
@@ -138,6 +150,8 @@ export default function AdminDashboard() {
     { id: "reserveringen", icon: "📅", label: "Reserveringen", short: "Reserveer.", items: [
       { id: "boekingen", label: "Boekingen" },
       { id: "aanvragen_v2", label: "Aanvragen" },
+      { id: "importeren", label: "Booking.com importeren" },
+      { id: "eindfacturen", label: "Eindfacturen" },
     ]},
     { id: "checkinout", icon: "🔑", label: "Check in / uit", short: "Check in", items: [
       { id: "verblijven", label: "Verblijven" },
@@ -479,6 +493,14 @@ export default function AdminDashboard() {
 
             {tab === "aanvragen_v2" && (
               <AanvragenV2Tab requests={bookingRequests} setRequests={setBookingRequests} feeTemplates={feeTemplates} />
+            )}
+
+            {tab === "importeren" && (
+              <ImportTab onVerwerkt={herlaadVerblijven} />
+            )}
+
+            {tab === "eindfacturen" && (
+              <EindfacturenTab stays={stays} setStays={setStays} feeTemplates={feeTemplates} />
             )}
 
             {tab === "toeslagen" && (

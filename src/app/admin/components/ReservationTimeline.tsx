@@ -51,7 +51,8 @@ export function ReservationTimeline({ stays, guests, guestMap, bookingRequests =
       lodge: s.lodge,
       check_in: s.check_in,
       check_out: s.check_out,
-      name: s.guests?.naam || guestMap[s.guest_id] || "Gast",
+      // gast_naam vangt de geïmporteerde boekingen op: die hebben geen guests-record.
+      name: s.guests?.naam || (s.guest_id ? guestMap[s.guest_id] : "") || s.gast_naam || "Gast",
       status: s.status,
       source: "stay",
     }));
