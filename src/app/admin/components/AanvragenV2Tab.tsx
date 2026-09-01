@@ -8,6 +8,7 @@ import {
   OFFER_VALID_DAYS, OFFER_GRACE_DAYS,
 } from "@/lib/offer-expiry";
 import { KANAAL_LABEL, type Kanaal } from "@/lib/attributie";
+import { EXTERNE_PLATFORMS, externPlatform, externPlatformUitleg } from "@/lib/platform";
 
 const BRON_LABELS: Record<string, { icon: string; label: string }> = {
   homepage:   { icon: "🏠", label: "Homepage" },
@@ -16,7 +17,10 @@ const BRON_LABELS: Record<string, { icon: string; label: string }> = {
   handmatig:  { icon: "✏️", label: "Handmatig" },
 };
 
-const PLATFORMS = ["Booking.com", "Airbnb", "Direct", "Anders"];
+/* De platforms die het keuzemenu aanbiedt. De externe platforms staan bovenaan
+ * en komen uit één lijst, zodat het menu en de blokkade op offertes en
+ * betaallinks nooit uit elkaar lopen. */
+const PLATFORMS = [...EXTERNE_PLATFORMS, "Direct", "Anders"];
 
 /* Waar deze aanvraag vandaan kwam, kort genoeg voor de regel in de lijst.
  * De tooltip toont de campagne en de landingspagina — dat is wat je nodig
@@ -75,6 +79,10 @@ function faseVan(r: BookingRequest): Fase {
 
 /** Wat is hier de volgende handeling? Alleen tonen als die bij jou ligt. */
 function volgendeStap(r: BookingRequest): string | null {
+  /* Bij een reservering van Booking.com of Airbnb ligt er nooit een stap bij
+   * ons: dat platform heeft de gast al een prijs gegeven en int het geld ook.
+   * "aanbetaling versturen" hoort daar dus niet te staan — zie src/lib/platform.ts. */
+  if (externPlatform(r)) return null;
   switch (r.status) {
     case "nieuw":
     case "in_behandeling":
@@ -381,6 +389,11 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
   const sendOfferte = async (req: BookingRequest, tochVersturen = false) => {
     const f = forms[req.id];
     if (!f || !f.prijsVerblijf) return;
+    const extern = externPlatform(req);
+    if (extern) {
+      setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: externPlatformUitleg(extern) } }));
+      return;
+    }
     setSaving(req.id);
     setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "" } }));
     try {
@@ -477,6 +490,14 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
   };
 
   const sendPaymentLink = async (req: BookingRequest, fase: "aanbetaling" | "restbetaling") => {
+    /* Laatste hek voor de host: een reservering van een platform krijgt hier
+     * geen betaallink, ook niet als deze functie langs een andere weg wordt
+     * aangeroepen. De server weigert hetzelfde. */
+    const extern = externPlatform(req);
+    if (extern) {
+      setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: externPlatformUitleg(extern) } }));
+      return;
+    }
     if (!req.totaal || Number(req.totaal) <= 0) {
       setResult(prev => ({ ...prev, [req.id]: { ok: false, msg: "Stuur eerst een offerte" } }));
       return;
@@ -980,12 +1001,17 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
         const email = r.guest?.email || r.gast_email || "";
         const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
         const isExpanded = expandedId === r.id;
+        /* Booking.com en Airbnb doen prijs, offerte en betaling zelf. Zo'n regel
+         * staat hier alleen om de datums dicht te zetten, dus gaan de offerte-
+         * en betaalpanelen er niet open: dan is er ook niets om per ongeluk te
+         * versturen naar een gast die allang betaald heeft. */
+        const platform = externPlatform(r);
         // Verlopen aanvragen blijven bewerkbaar: een nieuwe offerte start de bedenktijd opnieuw.
-        const isEditable = r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd" || r.status === "verlopen";
+        const isEditable = !platform && (r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd" || r.status === "verlopen");
     const fase = faseVan(r);
     const toonAankomst = fase === "geboekt" || fase === "blokkering";
     const stap = volgendeStap(r);
-        const isPayable = r.status === "bevestigd" || r.status === "aanbetaling_verstuurd" || r.status === "aanbetaling_betaald" || r.status === "restbetaling_verstuurd" || r.status === "volledig_betaald";
+        const isPayable = !platform && (r.status === "bevestigd" || r.status === "aanbetaling_verstuurd" || r.status === "aanbetaling_betaald" || r.status === "restbetaling_verstuurd" || r.status === "volledig_betaald");
         const isExpandable = isEditable || isPayable;
         const res = result[r.id];
 
@@ -1037,9 +1063,13 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
                     ⚠ ook aangeboden aan {dubbelAanbod[r.id].join(", ")}
                   </div>
                 )}
-                {expiryNote(r)
-                  ? <div style={{ fontSize: 11, color: expiryNote(r)!.color, marginTop: 2 }}>{expiryNote(r)!.text}</div>
-                  : stap && <div style={{ fontSize: 11, color: C.gold, marginTop: 2 }}>{stap}</div>}
+                {platform
+                  ? <div title={externPlatformUitleg(platform)} style={{ fontSize: 11, color: C.muted, marginTop: 2 }}>
+                      betaling via {platform}
+                    </div>
+                  : expiryNote(r)
+                    ? <div style={{ fontSize: 11, color: expiryNote(r)!.color, marginTop: 2 }}>{expiryNote(r)!.text}</div>
+                    : stap && <div style={{ fontSize: 11, color: C.gold, marginTop: 2 }}>{stap}</div>}
                 {res?.ok && <div style={{ fontSize: 11, color: "#2E7D32", marginTop: 2 }}>✓ {res.msg}</div>}
               </div>
               {/* Laatste kolom volgt de fase: bij lopende aanvragen telt hoe
@@ -1143,6 +1173,12 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
               />
             </div>
           </div>
+          {EXTERNE_PLATFORMS.includes(manualForm.platform as (typeof EXTERNE_PLATFORMS)[number]) && (
+            <div style={{ fontSize: 12, color: C.muted, lineHeight: 1.5, marginBottom: 12, padding: "10px 12px", background: "#F9F4E8", borderRadius: 8 }}>
+              {manualForm.platform} regelt zelf de prijsafspraak en de betaling. Deze reservering zet alleen
+              de datums dicht — er gaat geen offerte en geen betaallink naar de gast.
+            </div>
+          )}
           {manualError && (
             <div style={{ fontSize: 12, color: "#C62828", marginBottom: 12 }}>{manualError}</div>
           )}
