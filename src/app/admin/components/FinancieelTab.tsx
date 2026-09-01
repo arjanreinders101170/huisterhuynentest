@@ -50,6 +50,32 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
     .filter(s => (s.eindfactuur_status ?? "open") === "open")
     .reduce((som, s) => som + getal(s.eindfactuur_totaal), 0);
 
+  /* Gerealiseerd versus nog te komen. De bedragen hierboven zijn alles wat er
+   * geboekt staat, ook verblijven die nog moeten plaatsvinden — Booking.com
+   * boekt ver vooruit, dus dat loopt flink uiteen. Gerealiseerd is wat er
+   * daadwerkelijk verbleven is: uitgecheckt op of vóór vandaag. Booking.com
+   * betaalt pas ná het verblijf uit, dus dit is ook het bedrag dat inmiddels
+   * op de rekening hoort te staan. */
+  const vandaag = new Date();
+  vandaag.setHours(0, 0, 0, 0);
+  const isGerealiseerd = (s: Stay) => {
+    if (!s.check_out) return false;
+    const uit = new Date(s.check_out);
+    uit.setHours(0, 0, 0, 0);
+    return uit.getTime() <= vandaag.getTime();
+  };
+  const gerealiseerdeStays = bookingStays.filter(isGerealiseerd);
+  const komendeStays = bookingStays.filter(s => !isGerealiseerd(s));
+  const gerealiseerdBruto = gerealiseerdeStays.reduce((som, s) => som + getal(s.extern_bedrag), 0);
+  const gerealiseerdCommissie = gerealiseerdeStays.reduce((som, s) => som + getal(s.extern_commissie), 0);
+  const gerealiseerdNetto = gerealiseerdBruto - gerealiseerdCommissie;
+  const gerealiseerdEindfactuur = gefactureerd
+    .filter(isGerealiseerd)
+    .reduce((som, s) => som + getal(s.eindfactuur_totaal), 0);
+  const gerealiseerdTotaal = gerealiseerdNetto + gerealiseerdEindfactuur;
+  const komendNetto = komendeStays.reduce(
+    (som, s) => som + getal(s.extern_bedrag) - getal(s.extern_commissie), 0);
+
   const totaalOmzet = totaalVerblijf + totaalUpsell + bookingNetto + bookingEindfactuur;
 
   // Geboekte nachten via stays
@@ -133,6 +159,7 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
           { label: "Totale omzet", value: `€ ${totaalOmzet.toFixed(2)}`, color: C.green, sub: "direct + Booking.com netto + upsells" },
           { label: "Direct geboekt", value: `€ ${totaalVerblijf.toFixed(2)}`, color: C.text, sub: `${verblijfsBoekingen.length} boekingen, incl. schoonmaak en toeristenbelasting` },
           { label: "Booking.com logies", value: `€ ${bookingNetto.toFixed(2)}`, color: "#2F4F6F", sub: `${bookingStays.length} boekingen, na commissie` },
+          { label: "Booking.com gerealiseerd", value: `€ ${gerealiseerdTotaal.toFixed(2)}`, color: "#2F4F6F", sub: `${gerealiseerdeStays.length} verbleven t/m vandaag, incl. eindfactuur` },
           { label: "Eindfacturen", value: `€ ${bookingEindfactuur.toFixed(2)}`, color: "#6B7F94", sub: nogTeFactureren > 0 ? `€ ${nogTeFactureren.toFixed(2)} nog te factureren` : `${gefactureerd.length} gefactureerd` },
           { label: "Upsell omzet", value: `€ ${totaalUpsell.toFixed(2)}`, color: C.gold, sub: `${betaaldeBookings.length} betalingen` },
           { label: "Geboekte nachten", value: String(totaalNachten), color: "#1565C0", sub: `${geboekteStays.length} verblijven` },
@@ -254,6 +281,33 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
               </div>
             ))}
           </div>
+
+          {/* Gerealiseerd — wat er verbleven is, tegenover wat er nog aankomt.
+              Booking.com boekt ver vooruit, dus zonder dit onderscheid lijkt de
+              omzet hoger dan wat er tot nu toe daadwerkelijk binnen is. */}
+          <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ background: "#EEF2F7", borderRadius: 10, padding: "14px 16px" }}>
+              <div style={{ fontSize: 11, color: C.light, marginBottom: 4 }}>Gerealiseerd t/m vandaag</div>
+              <div style={{ fontSize: 19, fontWeight: 600, color: "#2F4F6F" }}>€ {gerealiseerdTotaal.toFixed(2)}</div>
+              <div style={{ fontSize: 11, color: C.light, marginTop: 2 }}>
+                {gerealiseerdeStays.length} verbleven · € {gerealiseerdNetto.toFixed(2)} netto logies
+                {gerealiseerdEindfactuur > 0 ? ` + € ${gerealiseerdEindfactuur.toFixed(2)} eindfactuur` : ""}
+              </div>
+            </div>
+            <div style={{ background: C.bg, borderRadius: 10, padding: "14px 16px" }}>
+              <div style={{ fontSize: 11, color: C.light, marginBottom: 4 }}>Nog te komen</div>
+              <div style={{ fontSize: 19, fontWeight: 600, color: C.muted }}>€ {komendNetto.toFixed(2)}</div>
+              <div style={{ fontSize: 11, color: C.light, marginTop: 2 }}>
+                {komendeStays.length} geboekt · netto logies, nog niet uitbetaald
+              </div>
+            </div>
+          </div>
+          {gerealiseerdCommissie > 0 && (
+            <div style={{ fontSize: 11, color: C.light, marginTop: 8 }}>
+              Van het gerealiseerde deel ging € {gerealiseerdCommissie.toFixed(2)} commissie af
+              (bruto € {gerealiseerdBruto.toFixed(2)}).
+            </div>
+          )}
 
           {bookingCommissie > 0 && (
             <div style={{ marginTop: 16, padding: "12px 16px", background: "#FDF6F0", borderRadius: 8, fontSize: 12, color: C.text, lineHeight: 1.6 }}>
