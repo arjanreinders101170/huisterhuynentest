@@ -4,6 +4,7 @@ import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate
          isAankomstdag, vertrekdatumsVoor, vormLabel } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 import { getAttribution } from "@/lib/tracking/attribution";
+import { leesReserveerParams } from "@/lib/reserveer-params";
 
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
@@ -16,8 +17,20 @@ function diffDays(a: string, b: string): number {
   return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
 
+const LODGE_UIT_URL: Record<string, Lodge> = { heide: "lodge_1", eik: "lodge_2" };
+
+/** Lodge waarmee het formulier opent. Komt de bezoeker van een landingspagina
+ *  die één lodge verkoopt (wellness → De Heide, ruimte bij Assen → De Eik),
+ *  dan staat die al goed. Zonder ?lodge= blijft De Heide de standaard.
+ *  Het formulier laadt met ssr:false, dus window bestaat hier al bij de eerste
+ *  render en er valt niets te hydrateren dat afwijkt. */
+function beginLodge(): Lodge {
+  const { lodge } = leesReserveerParams();
+  return (lodge && LODGE_UIT_URL[lodge]) || "lodge_1";
+}
+
 export default function RequestForm() {
-  const [lodge, setLodge] = useState<Lodge>("lodge_1");
+  const [lodge, setLodge] = useState<Lodge>(beginLodge);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [naam, setNaam] = useState("");

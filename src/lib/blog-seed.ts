@@ -219,7 +219,7 @@ De Drentsche Aa is het hele jaar door de moeite waard, maar elk seizoen heeft zi
 
 ## Overnachten dichtbij de Drentsche Aa
 
-Vanuit Zeijen is de Drentsche Aa binnen een kwartier rijden of binnen een goede fietstocht te bereiken — dichtbij genoeg om er een hele dag aan te besteden, maar ver genoeg van de drukte om 's avonds in volledige rust terug te keren. Huis ter Huynen biedt in Zeijen twee privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub. Na een dag wandelen of fietsen langs de beek is er weinig fijner dan terugkomen op je eigen plek, zonder gedeelde ruimtes of receptie — gewoon de rust van het beekdal die nog even doorklinkt op je terras.`,
+Vanuit Zeijen is de Drentsche Aa binnen een kwartier rijden of binnen een goede fietstocht te bereiken — dichtbij genoeg om er een hele dag aan te besteden, maar ver genoeg van de drukte om 's avonds in volledige rust terug te keren. Huis ter Huynen biedt in Zeijen twee privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub. Na een dag [wandelen langs de Drentsche Aa](/wandelroutes-drenthe) of fietsen langs de beek is er weinig fijner dan terugkomen op je eigen plek, zonder gedeelde ruimtes of receptie — gewoon de rust van het beekdal die nog even doorklinkt op je terras.`,
     categorie: "Drenthe",
     leestijd: "6 minuten",
     auteur: "Arjan Reinders",
@@ -271,7 +271,7 @@ Een privé lodge is qua prijs per nacht vaak vergelijkbaar met of iets hoger dan
 
 ## Twee privé lodges in Drenthe: Huis ter Huynen
 
-Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. De lodges openen per 1 januari 2027, en nieuwsbrief-abonnees krijgen als eerste bericht over beschikbaarheid en eventuele vroegboekvoordelen. Wie nieuwsgierig is naar de exacte tarieven, kan zich gratis aanmelden voor de nieuwsbrief en wordt zodra de boekingen open gaan als eerste geïnformeerd.`,
+Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. De lodges openen per 1 januari 2027, en nieuwsbrief-abonnees krijgen als eerste bericht over beschikbaarheid en eventuele vroegboekvoordelen. Wie wil zien [wat een lodge met jacuzzi bij ons kost](/vakantiehuis-met-hottub-drenthe), vindt daar de opzet en de vanafprijs van beide lodges terug. Wie de exacte tarieven per datum wil weten, kan zich gratis aanmelden voor de nieuwsbrief en wordt zodra de boekingen open gaan als eerste geïnformeerd.`,
     categorie: "Reistips",
     leestijd: "7 minuten",
     auteur: "Arjan Reinders",
@@ -349,7 +349,7 @@ Een dag kanovaren combineert goed met de andere manieren om de Drentsche Aa te o
 
 ## Tot rust komen na een dag op het water
 
-Na een dag peddelen ben je vaak verrassend moe — een goede, ontspannen vermoeidheid die om niets anders vraagt dan een rustige avond. Vanuit Zeijen ben je binnen een kwartier bij de Drentsche Aa, en even snel weer terug op je eigen terras. Bij Huis ter Huynen hebben Lodge De Heide en Lodge De Eik allebei een eigen hottub buiten — perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats.`,
+Na een dag peddelen ben je vaak verrassend moe — een goede, ontspannen vermoeidheid die om niets anders vraagt dan een rustige avond. Vanuit Zeijen ben je binnen een kwartier bij de Drentsche Aa, en even snel weer terug op je eigen terras. Bij Huis ter Huynen hebben Lodge De Heide en Lodge De Eik allebei een eigen hottub buiten — perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats. Lodge De Heide heeft daarnaast een eigen sauna: [de sauna in na een dag op het water](/wellness-vakantie-drenthe) is precies waar een wellnessverblijf voor bedoeld is.`,
     categorie: "Drenthe",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",
@@ -387,7 +387,7 @@ De huurprijs van een e-bike in Nederland ligt doorgaans rond de 20 tot 30 euro p
 
 ## Fietsen vanaf je vakantieadres
 
-Wie in Zeijen verblijft, heeft het voordeel dat de natuur al bij de voordeur begint — het Zeijerveld en de Zeijerstrubben liggen op loop- en fietsafstand, en de Drentsche Aa, het Dwingelderveld en de hunebedden rond Borger zijn allemaal binnen een uur fietsen te bereiken. Bij Huis ter Huynen is er op het terrein een laadpaal aanwezig, wat het opladen van een (e-)fiets eenvoudig maakt. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.`,
+Wie in Zeijen verblijft, heeft het voordeel dat de natuur al bij de voordeur begint — het Zeijerveld en de Zeijerstrubben liggen op loop- en fietsafstand, en de Drentsche Aa, het Dwingelderveld en de hunebedden rond Borger zijn allemaal binnen een uur fietsen te bereiken. Bij Huis ter Huynen is er op het terrein een laadpaal aanwezig, wat het opladen van een (e-)fiets eenvoudig maakt. De mooiste [fietsroutes vanuit Zeijen](/fietsen-in-drenthe) staan bij elkaar op onze fietspagina. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.`,
     categorie: "Reistips",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",
@@ -423,7 +423,7 @@ Norg ligt centraal genoeg om eenvoudig te combineren met andere bestemmingen in 
 
 ## Overnachten dichtbij Norg
 
-Zeijen ligt op slechts een korte afstand van Norg en is daarmee een uitstekende uitvalsbasis om dit brinkdorp te combineren met de natuurgebieden rond Zeijen zelf — het Zeijerveld, de Zeijerstrubben en het Ballooërveld. Huis ter Huynen biedt hier twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub. Na een dag wandelen rond Norg en een terrasje op de brink is er niets fijners dan terugkeren naar je eigen plek, met uitzicht op de Drentse natuur in plaats van op andere gasten.`,
+Zeijen ligt op slechts een korte afstand van Norg en is daarmee een uitstekende uitvalsbasis om dit brinkdorp te combineren met de natuurgebieden rond Zeijen zelf — het Zeijerveld, de Zeijerstrubben en het Ballooërveld. Huis ter Huynen biedt hier twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub — [overnachten vlak bij Norg](/vakantiehuis-norg), zonder in het dorp zelf te zitten. Na een dag wandelen rond Norg en een terrasje op de brink is er niets fijners dan terugkeren naar je eigen plek, met uitzicht op de Drentse natuur in plaats van op andere gasten.`,
     categorie: "Drenthe",
     leestijd: "6 minuten",
     auteur: "Arjan Reinders",

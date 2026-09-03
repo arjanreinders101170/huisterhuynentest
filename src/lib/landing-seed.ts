@@ -242,7 +242,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "De jacuzzi 's avonds: het moment waar het weekend om draait",
         body: [
           "Overdag is Drenthe mooi. 's Avonds is het stil op een manier die in de Randstad niet bestaat. Als het donker wordt, gaat de jacuzzi aan — of beter: die staat al aan, 24/7 op 38 °C — en zit u in warm, bruisend water met damp boven het oppervlak en een glas binnen handbereik.",
-          "Boven u een sterrenhemel die hier werkelijk te zien is: Drenthe kent nauwelijks lichtvervuiling, dus op een heldere avond ziet u de Melkweg staan. Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-jacuzzi meer doet dan een wellnessabonnement.",
+          "Boven u een sterrenhemel die hier werkelijk te zien is: Drenthe kent nauwelijks lichtvervuiling, dus op een heldere avond ziet u de Melkweg staan. Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-jacuzzi meer doet dan een wellnessabonnement. Hoe [de jacuzzi op het terras](/vakantiehuis-met-hottub-drenthe) er per lodge bij staat, ziet u op de jacuzzipagina.",
         ],
       },
       {
@@ -317,7 +317,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Privé wellness: geen openingstijden, geen onbekenden",
         body: [
           "In vrijwel elk wellnessresort deelt u het water. U reserveert een tijdslot, u loopt langs een balie en u zit met vreemden in dezelfde sauna. Precies dat is de reden dat steeds meer stellen een wellness huisje huren in plaats van een hotel met wellnessafdeling: het water, het terras en de stilte zijn dan van u alleen.",
-          "Bij Huis ter Huynen staan twee vrijstaande lodges op ruime afstand van elkaar, elk met een eigen terras dat uitkijkt op natuur en niet op buren. Geen receptie, geen gedeelde faciliteiten en geen sleutel die u bij iemand moet ophalen. U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de jacuzzi liggen.",
+          "Bij Huis ter Huynen staan twee vrijstaande lodges op ruime afstand van elkaar, elk met een eigen terras dat uitkijkt op natuur en niet op buren. Geen receptie, geen gedeelde faciliteiten en geen sleutel die u bij iemand moet ophalen. U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de jacuzzi liggen. Gaat het u vooral om dat water, dan leest u op de pagina over ons [vakantiehuis met privé-jacuzzi](/vakantiehuis-met-hottub-drenthe) hoe het per lodge is opgesteld.",
         ],
       },
       {
@@ -608,7 +608,6 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Romantisch weekend weg Drenthe :: /romantisch-weekend-weg-drenthe",
       "Wellness vakantie Drenthe :: /wellness-vakantie-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
-      "Hunebedden in Drenthe :: /hunebedden-drenthe",
     ].join("\n"),
     cta_title: "Boek uw bijzonder verblijf in Drenthe",
     cta_body:
@@ -812,7 +811,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Slapen bij de hunebedden: twee lodges in Zeijen",
         body: [
           "In een hunebed slapen kan niet — het zijn rijksmonumenten. Ernaast wonen kan wel. Huis ter Huynen ligt in Zeijen, twee kilometer van hunebed D5, en telt twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras.",
-          "Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos; Lodge De Eik een buitenkeuken met BBQ onder de eiken. Beide hebben een volledig uitgeruste keuken, gratis wifi en een laadpaal op het terrein. Geen receptie, geen gedeelde wellness, geen buren.",
+          "Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos — in de praktijk [een wellness huisje op de heide](/wellness-vakantie-drenthe); Lodge De Eik een buitenkeuken met BBQ onder de eiken. Beide hebben een volledig uitgeruste keuken, gratis wifi en een laadpaal op het terrein. Geen receptie, geen gedeelde wellness, geen buren.",
           "U boekt rechtstreeks bij de eigenaar: geen tussenpartij, geen boekingskosten, en direct contact met de gastheer over de beste route langs de hunebedden.",
         ],
       },
@@ -844,10 +843,6 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
       "Bijzonder overnachten Drenthe :: /bijzonder-overnachten-drenthe",
       "Vakantiehuis bij Assen :: /vakantiehuis-assen",
-      "Fietsen in Drenthe :: /fietsen-in-drenthe",
-      "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
-      "Overnachten bij Veenhuizen :: /overnachten-veenhuizen",
-      "Omgeving & activiteiten :: /omgeving",
     ].join("\n"),
     cta_title: "Overnacht op vijf minuten van hunebed D5",
     cta_body:
@@ -1052,8 +1047,8 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         eyebrow: "Overnachten",
         heading: "Middenin het heideseizoen overnachten in Zeijen",
         body: [
-          "Na een dag tussen de paarse heide is er weinig dat zo goed voelt als terugkeren naar een eigen, rustige plek. Huis ter Huynen ligt in Zeijen, met de Zeijerstrubben praktisch om de hoek en het Ballooërveld en Dwingelderveld op korte rijafstand. Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken.",
-          "'s Avonds, met stoffige wandelschoenen bij de deur en een glas wijn in de hand, stapt u in het warme water van de hottub terwijl de laatste kleur uit de lucht trekt boven de heide. Dat contrast — een dag in de uitgestrekte natuur, een avond in volledige privacy — is precies waarom gasten hier graag terugkomen.",
+          "Na een dag tussen de paarse heide is er weinig dat zo goed voelt als terugkeren naar een eigen, rustige plek. Huis ter Huynen ligt in Zeijen, met de Zeijerstrubben praktisch om de hoek en het Ballooërveld en Dwingelderveld op korte rijafstand. Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken — een [vakantiehuis met privé-jacuzzi aan de heide](/vakantiehuis-met-hottub-drenthe) in de meest letterlijke zin.",
+          "'s Avonds, met stoffige wandelschoenen bij de deur en een glas wijn in de hand, stapt u in het warme water van de hottub terwijl de laatste kleur uit de lucht trekt boven de heide. Dat contrast — een dag in de uitgestrekte natuur, een avond in volledige privacy — is precies waarom gasten hier graag terugkomen. Komt u met z'n tweeën, dan is dit het seizoen voor [een romantisch weekend tijdens de heidebloei](/romantisch-weekend-weg-drenthe).",
         ],
       },
     ],
@@ -1067,7 +1062,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Bijzonder overnachten in Drenthe :: /bijzonder-overnachten-drenthe",
       "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
       "Hunebedden in Drenthe :: /hunebedden-drenthe",
-      "Omgeving & activiteiten :: /omgeving",
+      "Vakantiehuis in Drenthe met hond :: /vakantiehuis-drenthe-met-hond",
     ].join("\n"),
     cta_title: "Boek uw verblijf tijdens het heideseizoen",
     cta_body:
@@ -1171,13 +1166,10 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Hoe kan ik direct boeken? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp — zonder tussenpersoon en met persoonlijke bevestiging binnen 24 uur.",
     ].join("\n"),
     related: [
-      "De Drentsche Aa: het beekdallandschap :: /blog/drentsche-aa-beekdallandschap",
-      "Fietsen in Drenthe :: /fietsen-in-drenthe",
-      "Fochteloërveen :: /fochteloerveen-drenthe",
+      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Wellness huisje Drenthe :: /wellness-vakantie-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
-      "Hunebedden in Drenthe :: /hunebedden-drenthe",
-      "Vakantiehuis in Drenthe met hond :: /vakantiehuis-drenthe-met-hond",
-      "Omgeving & activiteiten :: /omgeving",
+      "Fietsen in Drenthe :: /fietsen-in-drenthe",
     ].join("\n"),
     cta_title: "Wandelen vanuit uw eigen lodge",
     cta_body:
@@ -1348,11 +1340,10 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Hoe kan ik direct boeken? :: U boekt rechtstreeks bij Huis ter Huynen via de website of WhatsApp — zonder tussenpersoon en met persoonlijke bevestiging binnen 24 uur.",
     ].join("\n"),
     related: [
+      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Vakantiehuis bij Assen :: /vakantiehuis-assen",
       "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
-      "Hunebedden in Drenthe :: /hunebedden-drenthe",
-      "Paarse heide Drenthe :: /heide-drenthe",
       "Fochteloërveen :: /fochteloerveen-drenthe",
-      "Omgeving & activiteiten :: /omgeving",
     ].join("\n"),
     cta_title: "Fiets Drenthe vanuit uw eigen lodge",
     cta_body:

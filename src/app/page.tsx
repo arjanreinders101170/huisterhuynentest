@@ -6,7 +6,8 @@ import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { BookingFaq } from "@/components/BookingFaq";
-import { LANDING_NAV } from "@/lib/site";
+import { footerLinks } from "@/lib/site";
+import { ReserveerContextRegel } from "@/components/ReserveerContextRegel";
 const RequestForm = dynamic(() => import("@/components/RequestForm"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Formulier laden...</div> });
 
 interface GoogleReview {
@@ -122,6 +123,7 @@ function BookingSection() {
             Geef uw gewenste data door, dan reserveren wij die persoonlijk voor u. U ontvangt binnen 24 uur een aanbod op maat. Geen verplichtingen.
           </p>
           <DirectBookingUSP tone="onLight" size={13} style={{ marginTop: 18 }} />
+          <ReserveerContextRegel tokens={{ sans: T.sans, green: T.green, gold: T.gold }} />
         </div>
         <RequestForm />
         <div style={{ textAlign: "center", marginTop: 32 }}>
@@ -1213,7 +1215,7 @@ export default function LandingPage() {
               gridTemplateColumns: "repeat(auto-fit, minmax(min(230px, 100%), 1fr))",
               gap: "12px 32px",
             }}>
-              {LANDING_NAV.map((l) => (
+              {footerLinks("home").map((l) => (
                 <a key={l.href} href={l.href} style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 300,
                   color: "rgba(255,255,255,.8)", textDecoration: "none",

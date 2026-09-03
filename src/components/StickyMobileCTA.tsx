@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
+import { reserveerHref } from "@/lib/site";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
  * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
@@ -23,6 +24,10 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   const pathname = usePathname();
   const taal = locale ?? (pathname === "/de" || pathname?.startsWith("/de/") ? "de" : "nl");
   const copy = COPY[taal];
+  // De balk hangt in de root-layout en krijgt van niemand een slug mee; het pad
+  // is hier dus de enige bron voor de context van de pagina waar hij op staat.
+  // Op een pagina zonder eigen context valt reserveerHref terug op /#reserveren.
+  const doel = bookingHref ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
 
   return (
     <>
@@ -39,7 +44,7 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
       >
         <DirectBookingUSP locale={taal} tone="onDark" size={10.5} style={{ gap: "4px 12px" }} />
         <Link
-          href={bookingHref ?? copy.href}
+          href={doel}
           style={{
             textAlign: "center", padding: "13px 0", borderRadius: 10,
             background: "#B49A5E", color: "#1A2E24", fontWeight: 700, fontSize: 15,

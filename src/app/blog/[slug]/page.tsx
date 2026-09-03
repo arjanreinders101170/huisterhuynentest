@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
+import { footerLinks } from "@/lib/site";
+import { renderTekstMetLinks } from "@/lib/tekst";
 import { SITE_URL, blogOgImageUrl, jsonLdScript } from "@/lib/site";
 
 export const revalidate = 60;
@@ -121,7 +123,7 @@ function renderInhoud(inhoud: string) {
         lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
       }}>
         {trimmed.split("\n").map((line, j, arr) => (
-          <span key={j}>{line}{j < arr.length - 1 && <br />}</span>
+          <span key={j}>{renderTekstMetLinks(line, `${i}-${j}`)}{j < arr.length - 1 && <br />}</span>
         ))}
       </p>
     );
@@ -293,6 +295,32 @@ export default async function ArtikelPagina(
           </div>
         </div>
       </article>
+
+      {/* Verblijven — de enige plek waar een blog tot nu toe niets doorgaf.
+          Blogs halen de hoogste CTR van de site en linkten alleen terug naar
+          het blogoverzicht en de nieuwsbrief; de commerciële pagina's kregen
+          er geen enkele interne link van. */}
+      <div style={{ background: T.card, borderTop: `1px solid ${T.border}`, padding: "48px 24px" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <div style={{
+            fontFamily: T.sans, fontSize: 11, fontWeight: 700, color: T.gold,
+            letterSpacing: 1.5, textTransform: "uppercase" as const, marginBottom: 16,
+          }}>
+            Overnachten in Drenthe
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            {footerLinks("blog").map((l) => (
+              <Link key={l.href} href={l.href} style={{
+                fontFamily: T.sans, fontSize: 14, fontWeight: 500, color: T.green,
+                background: T.bg, border: `1px solid ${T.border}`,
+                padding: "10px 18px", borderRadius: 10, textDecoration: "none",
+              }}>
+                {l.label} →
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Nieuwsbrief */}
       <div id="nieuwsbrief" style={{ background: T.green, padding: "64px 24px" }}>
