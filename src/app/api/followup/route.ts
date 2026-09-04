@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
 import { logSentEmail } from "@/lib/mail-log";
 import { esc } from "@/lib/email";
 import { verifyAdminSession } from "@/lib/admin-auth";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
+import { haalFollowupKandidaten } from "@/lib/followup";
 
 const BOOK_URL = "https://huisterhuynen.nl/#reserveren";
 
@@ -115,58 +115,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Resend niet geconfigureerd" }, { status: 500 });
     }
 
-    // Find guests who visited 14+ days ago and haven't received follow-up
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 14);
+    /* Gasten die veertien dagen geleden zijn vertrokken en de mail nog niet
+     * gehad hebben. Dezelfde selectie als de cron — zie lib/followup.ts. Dit
+     * liep hier ook over guests, waardoor aanvragers die hier nooit geweest
+     * zijn de vraag kregen hoe hun verblijf was. */
+    const kandidaten = await haalFollowupKandidaten(20);
 
-    const { data: guests } = await getSupabase()
-      .from("guests")
-      .select("id, naam, email, laatste_bezoek")
-      .lt("laatste_bezoek", cutoff.toISOString())
-      .order("laatste_bezoek", { ascending: false })
-      .limit(20);
-
-    if (!guests || guests.length === 0) {
+    if (kandidaten.length === 0) {
       return NextResponse.json({ sent: 0, message: "Geen gasten gevonden voor follow-up" });
     }
 
-    // Check which guests already got a follow-up (check bookings metadata)
     const { Resend } = await import("resend");
     const resend = new Resend(resendKey);
     let sent = 0;
     let logMislukt = 0;
 
-    for (const guest of guests) {
-      if (!guest.email) continue;
-
-      // Check if we already sent a follow-up (simple: check if there's a booking with product "follow-up")
-      const { data: existing } = await getSupabase()
-        .from("bookings")
-        .select("id")
-        .eq("guest_id", guest.id)
-        .eq("product", "follow-up-email")
-        .limit(1);
-
-      if (existing && existing.length > 0) continue; // Already sent
-
-      // Send follow-up
+    for (const kandidaat of kandidaten) {
       try {
         await resend.emails.send({
           from: `${LODGE_NAME} <lodge@huisterhuynen.nl>`,
-          to: [guest.email],
+          to: [kandidaat.email],
           subject: `Hoe was je verblijf? — ${LODGE_NAME}`,
-          html: followUpEmailHtml(esc(guest.naam || "")),
+          html: followUpEmailHtml(esc(kandidaat.naam || "")),
         });
 
         // Mark as sent
-        const gelogd = await logSentEmail("follow-up-email", guest.id, {
-          type: "follow-up", sent_at: new Date().toISOString(),
+        const gelogd = await logSentEmail("follow-up-email", kandidaat.guestId, {
+          type: "follow-up", sent_at: new Date().toISOString(), vertrokken_op: kandidaat.vertrokkenOp,
         });
         if (!gelogd) logMislukt++;
 
         sent++;
       } catch (e) {
-        console.error(`Follow-up failed for ${guest.id}:`, e);
+        console.error(`Follow-up failed for ${kandidaat.guestId}:`, e);
       }
     }
 
