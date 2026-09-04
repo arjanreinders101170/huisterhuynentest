@@ -1,0 +1,598 @@
+/* ══════════════════════════════════════════════════════════════════════
+   WAD & WEIDS — designsysteem
+   Eén stylesheet, geen framework. Alle pagina's en componenten van het
+   platform gebruiken uitsluitend de klassen hieronder, zodat een nieuwe
+   woning of bestemming toevoegen nooit nieuw ontwerpwerk kost.
+
+   Responsive werkt op container queries in plaats van media queries: de
+   shell (.ww) is de container. Daardoor gedraagt exact dezelfde markup
+   zich correct op een telefoon én in het telefoonframe op /wad-weids/mobiel,
+   zonder een tweede mobiele opmaak te onderhouden.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.ww {
+  /* ── Kleur ────────────────────────────────────────────────────────
+     Zand en gebroken wit dragen de pagina; diep groen is de merkkleur,
+     zeeblauw de tweede stem, oker het accent. Meer kleuren dan dit
+     heeft het merk niet nodig. */
+  --shell:        #FAF8F4;   /* gebroken wit — paginagrond            */
+  --paper:        #FFFFFF;   /* kaarten en modules                    */
+  --sand:         #EFE7D9;   /* zand — rustsecties                    */
+  --sand-deep:    #E2D6C2;   /* zand, dieper — randen en vlakken      */
+  --clay:         #C9B79C;   /* klei/hout — subtiele scheidingen      */
+  --forest:       #23392F;   /* diep groen — merkkleur, knoppen       */
+  --forest-soft:  #35513F;   /* diep groen, lichter — hover           */
+  --sea:          #1D3B4A;   /* donkerblauw — zee, footer, overlays   */
+  --gold:         #A8834C;   /* oker — accent, nooit als vlak         */
+  --ink:          #1A201E;   /* tekst                                 */
+  --ink-soft:     #5C6662;   /* bijschrift, labels                    */
+  --line:         rgba(26,32,30,.13);
+  --line-soft:    rgba(26,32,30,.07);
+
+  /* ── Typografie ───────────────────────────────────────────────────
+     Cormorant Garamond voor alles wat groot is, Jost voor alles wat
+     gelezen en aangeklikt wordt. */
+  --serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --sans:  "Jost", "DM Sans", system-ui, -apple-system, sans-serif;
+
+  /* ── Ritme ────────────────────────────────────────────────────────*/
+  --r-sm: 6px;  --r-md: 12px;  --r-lg: 20px;  --r-xl: 28px;  --r-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(26,32,30,.04), 0 4px 14px rgba(26,32,30,.05);
+  --shadow-md: 0 2px 6px rgba(26,32,30,.05), 0 14px 40px rgba(26,32,30,.09);
+  --shadow-lg: 0 6px 18px rgba(26,32,30,.07), 0 30px 70px rgba(26,32,30,.13);
+  --gutter: 40px;
+  --maxw: 1280px;
+
+  container-type: inline-size;
+  container-name: ww;
+  background: var(--shell);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  position: relative;
+}
+
+.ww *, .ww *::before, .ww *::after { box-sizing: border-box; }
+.ww img { display: block; max-width: 100%; }
+/* :where() houdt de reset op nul specificiteit, zodat .ww-btn--primary en
+   .ww-tile hun eigen kleur en achtergrond gewoon kunnen zetten. */
+.ww :where(a) { color: inherit; text-decoration: none; }
+.ww :where(button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.ww h1, .ww h2, .ww h3, .ww h4, .ww p, .ww figure, .ww ul, .ww ol { margin: 0; padding: 0; }
+.ww ul, .ww ol { list-style: none; }
+.ww ::selection { background: var(--sand-deep); }
+.ww :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
+
+/* ── Layout ──────────────────────────────────────────────────────── */
+.ww-wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
+.ww-wrap--wide { max-width: 1560px; }
+.ww-wrap--narrow { max-width: 880px; }
+.ww-section { padding: 112px 0; }
+.ww-section--tight { padding: 72px 0; }
+.ww-section--sand { background: var(--sand); }
+.ww-section--paper { background: var(--paper); }
+.ww-rule { height: 1px; background: var(--line-soft); border: 0; }
+
+/* ── Typografie ──────────────────────────────────────────────────── */
+.ww-display {
+  font-family: var(--serif);
+  font-weight: 300;
+  letter-spacing: -.015em;
+  line-height: 1.04;
+  font-size: clamp(2.9rem, 5.6cqw, 5.1rem);
+}
+.ww-h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+  font-size: clamp(2.1rem, 3.4cqw, 3.2rem);
+}
+.ww-h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.18;
+  font-size: clamp(1.45rem, 1.9cqw, 1.85rem);
+}
+.ww-h4 { font-family: var(--serif); font-weight: 500; font-size: 1.2rem; line-height: 1.3; }
+.ww-eyebrow {
+  font-size: .72rem;
+  font-weight: 400;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.ww-eyebrow--light { color: rgba(255,255,255,.72); }
+.ww-lead { font-size: 1.12rem; line-height: 1.75; color: var(--ink-soft); max-width: 62ch; }
+.ww-body { line-height: 1.8; color: var(--ink-soft); max-width: 68ch; }
+.ww-body + .ww-body { margin-top: 1.1em; }
+.ww-meta { font-size: .82rem; letter-spacing: .04em; color: var(--ink-soft); }
+.ww-price { font-family: var(--serif); font-size: 1.5rem; font-weight: 500; letter-spacing: -.01em; }
+.ww-price small { font-family: var(--sans); font-size: .78rem; font-weight: 300; color: var(--ink-soft); letter-spacing: .02em; }
+
+/* Sectiekop: kop links, ondertitel/actie rechts. */
+.ww-sectionhead { display: flex; align-items: flex-end; justify-content: space-between; gap: 48px; margin-bottom: 52px; }
+.ww-sectionhead .ww-eyebrow { display: block; margin-bottom: 18px; }
+.ww-sectionhead p { max-width: 46ch; color: var(--ink-soft); }
+
+/* ── Knoppen ─────────────────────────────────────────────────────── */
+.ww-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 15px 30px;
+  border-radius: var(--r-pill);
+  font-size: .84rem; font-weight: 400; letter-spacing: .14em; text-transform: uppercase;
+  transition: background .25s ease, color .25s ease, border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+  white-space: nowrap;
+}
+.ww-btn--primary { background: var(--forest); color: #fff; }
+.ww-btn--primary:hover { background: var(--forest-soft); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.ww-btn--ghost { border: 1px solid var(--line); color: var(--ink); }
+.ww-btn--ghost:hover { border-color: var(--forest); background: rgba(35,57,47,.04); }
+.ww-btn--light { background: rgba(255,255,255,.94); color: var(--ink); }
+.ww-btn--light:hover { background: #fff; transform: translateY(-1px); }
+.ww-btn--outline-light { border: 1px solid rgba(255,255,255,.6); color: #fff; }
+.ww-btn--outline-light:hover { background: rgba(255,255,255,.14); border-color: #fff; }
+.ww-btn--block { width: 100%; }
+.ww-btn--lg { padding: 19px 38px; }
+.ww-link {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-size: .82rem; letter-spacing: .14em; text-transform: uppercase;
+  border-bottom: 1px solid var(--line); padding-bottom: 5px;
+  transition: border-color .25s ease, gap .25s ease, color .25s ease;
+}
+.ww-link:hover { border-color: var(--gold); color: var(--gold); gap: 14px; }
+.ww-link--light { color: #fff; border-color: rgba(255,255,255,.4); }
+.ww-link--light:hover { color: #fff; border-color: #fff; }
+
+/* ── Header ──────────────────────────────────────────────────────────
+   Begint transparant over de hero en wordt bij het scrollen compact:
+   de klasse is-compact wordt door SiteHeader gezet. */
+.ww-header {
+  position: sticky; top: 0; z-index: 60;
+  transition: background .35s ease, box-shadow .35s ease, border-color .35s ease;
+  border-bottom: 1px solid transparent;
+}
+.ww-header--over { background: transparent; color: #fff; }
+.ww-header--solid { background: rgba(250,248,244,.92); backdrop-filter: blur(14px); border-bottom-color: var(--line-soft); }
+.ww-header.is-compact { background: rgba(250,248,244,.94); backdrop-filter: blur(14px); border-bottom-color: var(--line-soft); color: var(--ink); box-shadow: 0 1px 20px rgba(26,32,30,.06); }
+.ww-header__inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 32px;
+  height: 104px; transition: height .35s ease;
+}
+.ww-header.is-compact .ww-header__inner { height: 72px; }
+.ww-header__nav { display: flex; align-items: center; gap: 26px; }
+.ww-header__nav a {
+  white-space: nowrap;
+  font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 400;
+  padding: 6px 0; position: relative; opacity: .88;
+  transition: opacity .2s ease;
+}
+.ww-header__nav a::after {
+  content: ""; position: absolute; left: 0; right: 100%; bottom: 0; height: 1px;
+  background: currentColor; transition: right .3s ease; opacity: .6;
+}
+.ww-header__nav a:hover { opacity: 1; }
+.ww-header__nav a:hover::after, .ww-header__nav a[aria-current="page"]::after { right: 0; }
+.ww-header__tools { display: flex; align-items: center; gap: 20px; }
+/* In de balk staan de knoppen iets compacter dan in de pagina, anders
+   verdringt de CTA de navigatie op een 1440-scherm. */
+.ww-header .ww-btn { padding: 13px 22px; font-size: .76rem; letter-spacing: .12em; }
+.ww-header__icon { white-space: nowrap; display: inline-flex; align-items: center; gap: 9px; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; opacity: .88; }
+.ww-header__icon:hover { opacity: 1; }
+.ww-header__burger { display: none; width: 42px; height: 42px; align-items: center; justify-content: center; border: 1px solid currentColor; border-radius: var(--r-pill); opacity: .6; }
+
+/* Logo: woordmerk met horizonmerk. Kleur erft van de header. */
+.ww-logo { display: inline-flex; align-items: center; gap: 14px; }
+.ww-logo__mark { width: 38px; height: 38px; flex: none; }
+.ww-logo__type { display: flex; flex-direction: column; line-height: 1; }
+.ww-logo__word { font-family: var(--serif); font-size: 1.42rem; font-weight: 400; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
+.ww-logo__word em { font-style: normal; opacity: .55; padding: 0 .06em; }
+.ww-logo__tag { font-size: .56rem; letter-spacing: .26em; text-transform: uppercase; opacity: .62; margin-top: 6px; white-space: nowrap; }
+.ww-logo--lg .ww-logo__mark { width: 54px; height: 54px; }
+.ww-logo--lg .ww-logo__word { font-size: 2rem; }
+
+/* Mobiel menu (uitgeschoven paneel) */
+.ww-menu {
+  position: fixed; inset: 0; z-index: 90; background: var(--shell);
+  display: flex; flex-direction: column; padding: 28px var(--gutter) 40px;
+  animation: ww-fade .25s ease;
+}
+.ww-menu__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 44px; }
+.ww-menu nav { display: flex; flex-direction: column; gap: 4px; }
+.ww-menu nav a { font-family: var(--serif); font-size: 2rem; font-weight: 300; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+.ww-menu__foot { margin-top: auto; display: grid; gap: 12px; }
+
+/* ── Hero ────────────────────────────────────────────────────────── */
+.ww-hero { position: relative; margin-top: -104px; }
+.ww-hero__media { position: relative; height: clamp(620px, 92vh, 940px); overflow: hidden; background: var(--sea); }
+.ww-hero__media img { width: 100%; height: 100%; object-fit: cover; animation: ww-slowzoom 22s ease-out forwards; }
+.ww-hero__scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(20,30,26,.55) 0%, rgba(20,30,26,.12) 34%, rgba(20,30,26,.18) 62%, rgba(20,30,26,.72) 100%);
+}
+.ww-hero__content {
+  position: absolute; left: 0; right: 0; bottom: 0; padding-bottom: 132px;
+  color: #fff;
+}
+.ww-hero__content .ww-display { max-width: 15ch; text-shadow: 0 2px 40px rgba(0,0,0,.28); }
+.ww-hero__sub { margin-top: 26px; font-size: 1.16rem; font-weight: 300; letter-spacing: .01em; color: rgba(255,255,255,.9); max-width: 44ch; }
+.ww-hero__eyebrow { margin-bottom: 26px; display: block; }
+
+/* Zoekmodule — zweeft over de onderrand van de hero. */
+.ww-search {
+  position: relative; z-index: 20; margin-top: -58px;
+  background: var(--paper); border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr auto; align-items: stretch;
+  padding: 10px;
+}
+.ww-search--flat { margin-top: 0; box-shadow: var(--shadow-sm); border: 1px solid var(--line-soft); }
+.ww-field { position: relative; padding: 14px 22px; border-right: 1px solid var(--line-soft); display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.ww-field:last-of-type { border-right: 0; }
+.ww-field label { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft); }
+.ww-field input, .ww-field select {
+  font: inherit; font-size: .98rem; color: var(--ink); border: 0; background: transparent;
+  padding: 0; width: 100%; min-width: 0; appearance: none;
+}
+.ww-field input::placeholder { color: rgba(26,32,30,.42); }
+.ww-field select { cursor: pointer; padding-right: 24px; text-overflow: ellipsis; }
+.ww-field__caret { position: absolute; right: 20px; bottom: 18px; pointer-events: none; opacity: .45; }
+.ww-search__submit { display: flex; align-items: center; padding: 4px; }
+.ww-search__submit .ww-btn { height: 100%; padding-left: 34px; padding-right: 34px; }
+
+/* ── Accommodatiekaart ───────────────────────────────────────────────
+   Eén kaart voor het hele platform: homepage, zoekresultaten,
+   bestemmingspagina en "vergelijkbare verblijven". */
+.ww-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px 32px; }
+.ww-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.ww-grid--4 { grid-template-columns: repeat(4, 1fr); gap: 28px; }
+
+.ww-card { position: relative; display: flex; flex-direction: column; }
+.ww-card__media {
+  position: relative; overflow: hidden; border-radius: var(--r-lg);
+  aspect-ratio: 4 / 3; background: var(--sand-deep);
+}
+.ww-card__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s cubic-bezier(.2,.7,.2,1); }
+.ww-card:hover .ww-card__media img { transform: scale(1.045); }
+.ww-card__badge {
+  position: absolute; left: 16px; top: 16px; z-index: 2;
+  background: rgba(255,255,255,.93); backdrop-filter: blur(6px);
+  padding: 7px 14px; border-radius: var(--r-pill);
+  font-size: .66rem; letter-spacing: .16em; text-transform: uppercase;
+}
+.ww-card__badge--dark { background: rgba(35,57,47,.9); color: #fff; }
+.ww-card__fav {
+  position: absolute; right: 14px; top: 14px; z-index: 2;
+  width: 38px; height: 38px; border-radius: var(--r-pill);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.86); backdrop-filter: blur(6px); color: var(--ink);
+  transition: background .2s ease, transform .2s ease, color .2s ease;
+}
+.ww-card__fav:hover { background: #fff; transform: scale(1.06); }
+.ww-card__fav[aria-pressed="true"] { color: #A33F3F; }
+.ww-card__body { padding: 22px 4px 0; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.ww-card__loc { display: flex; align-items: center; gap: 7px; font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); }
+.ww-card__title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; line-height: 1.2; }
+.ww-card__facts { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .82rem; color: var(--ink-soft); }
+.ww-card__facts span { display: inline-flex; align-items: center; gap: 7px; }
+.ww-card__desc { font-size: .92rem; line-height: 1.65; color: var(--ink-soft); }
+.ww-card__foot {
+  margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line-soft);
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+}
+.ww-card__cta { font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); display: inline-flex; gap: 8px; align-items: center; transition: color .25s ease, gap .25s ease; }
+.ww-card:hover .ww-card__cta { color: var(--forest); gap: 12px; }
+.ww-card__stretch { position: absolute; inset: 0; z-index: 1; }
+
+/* Compacte variant voor de resultatenlijst op mobiel */
+.ww-card--row .ww-card__media { aspect-ratio: 16 / 10; }
+
+/* ── Bestemmingstegels ───────────────────────────────────────────── */
+.ww-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+.ww-tile {
+  position: relative; overflow: hidden; border-radius: var(--r-lg);
+  min-height: 320px; display: flex; align-items: flex-end; color: #fff;
+  grid-column: span 2;
+}
+.ww-tile--wide { grid-column: span 3; min-height: 380px; }
+.ww-tile--tall { grid-column: span 2; min-height: 420px; }
+.ww-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
+.ww-tile::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(18,28,24,0) 30%, rgba(18,28,24,.66) 100%);
+  transition: background .4s ease;
+}
+.ww-tile:hover img { transform: scale(1.05); }
+.ww-tile:hover::after { background: linear-gradient(180deg, rgba(18,28,24,.1) 20%, rgba(18,28,24,.74) 100%); }
+.ww-tile__body { position: relative; z-index: 2; padding: 30px; width: 100%; }
+.ww-tile__name { font-family: var(--serif); font-size: 1.75rem; font-weight: 400; }
+.ww-tile__count { font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; opacity: .82; margin-top: 8px; display: block; }
+
+/* ── Kernwaarden ─────────────────────────────────────────────────── */
+.ww-values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 56px 44px; }
+.ww-value__icon { color: var(--forest); margin-bottom: 24px; }
+.ww-value h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; margin-bottom: 12px; }
+.ww-value p { font-size: .94rem; line-height: 1.7; color: var(--ink-soft); }
+
+/* ── Sfeerband (fullscreen beeld met CTA) ────────────────────────── */
+.ww-band { position: relative; min-height: 78vh; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; overflow: hidden; }
+.ww-band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ww-band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16,26,22,.45), rgba(16,26,22,.55)); }
+.ww-band__body { position: relative; z-index: 2; padding: 80px 24px; }
+.ww-band__body .ww-display { text-shadow: 0 2px 40px rgba(0,0,0,.3); }
+.ww-band__body p { margin: 22px auto 40px; max-width: 46ch; color: rgba(255,255,255,.88); font-size: 1.08rem; }
+
+/* ── Footer ──────────────────────────────────────────────────────── */
+.ww-footer { background: var(--sea); color: rgba(255,255,255,.78); padding: 96px 0 40px; }
+.ww-footer a:hover { color: #fff; }
+.ww-footer__top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.4fr; gap: 56px; padding-bottom: 64px; border-bottom: 1px solid rgba(255,255,255,.14); }
+.ww-footer h4 { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 22px; font-family: var(--sans); font-weight: 400; }
+.ww-footer ul { display: grid; gap: 13px; font-size: .94rem; }
+.ww-footer__bottom { padding-top: 32px; display: flex; justify-content: space-between; gap: 24px; font-size: .8rem; color: rgba(255,255,255,.5); flex-wrap: wrap; }
+.ww-footer__intro { font-size: .96rem; line-height: 1.8; max-width: 34ch; margin-top: 24px; }
+.ww-newsletter { display: flex; gap: 10px; margin-top: 20px; }
+.ww-newsletter input {
+  flex: 1; min-width: 0; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--r-pill); padding: 13px 20px; color: #fff; font: inherit; font-size: .9rem;
+}
+.ww-newsletter input::placeholder { color: rgba(255,255,255,.45); }
+
+/* ── Zoekresultaten ──────────────────────────────────────────────── */
+.ww-results { display: grid; grid-template-columns: 300px 1fr; gap: 56px; align-items: start; }
+.ww-filters { position: sticky; top: 96px; display: grid; gap: 30px; }
+.ww-filters__group { display: grid; gap: 14px; padding-bottom: 26px; border-bottom: 1px solid var(--line-soft); }
+.ww-filters__group:last-child { border-bottom: 0; padding-bottom: 0; }
+.ww-filters__group > h4 { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft); font-family: var(--sans); font-weight: 400; }
+.ww-input {
+  width: 100%; font: inherit; font-size: .92rem; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 12px 14px; appearance: none;
+}
+.ww-input:focus { outline: none; border-color: var(--forest); }
+.ww-inputrow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ww-check { display: flex; align-items: center; gap: 11px; font-size: .92rem; cursor: pointer; color: var(--ink); }
+.ww-check input, .ww-checkbox { appearance: none; width: 19px; height: 19px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); display: grid; place-content: center; flex: none; transition: background .18s ease, border-color .18s ease; }
+.ww-check input::after, .ww-checkbox::after { content: ""; width: 9px; height: 5px; border-left: 1.6px solid #fff; border-bottom: 1.6px solid #fff; transform: rotate(-45deg) scale(0); transition: transform .18s ease; }
+.ww-check input:checked, .ww-checkbox:checked { background: var(--forest); border-color: var(--forest); }
+.ww-check input:checked::after, .ww-checkbox:checked::after { transform: rotate(-45deg) scale(1); }
+.ww-range { width: 100%; accent-color: var(--forest); }
+.ww-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+.ww-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  padding: 9px 16px; font-size: .82rem; background: var(--paper);
+  transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+.ww-chip:hover { border-color: var(--clay); }
+.ww-chip[aria-pressed="true"], .ww-chip--on { background: var(--forest); border-color: var(--forest); color: #fff; }
+.ww-chip--clear { background: transparent; border-style: dashed; color: var(--ink-soft); }
+.ww-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 26px; margin-bottom: 34px; border-bottom: 1px solid var(--line-soft); }
+.ww-toolbar__count { font-size: .88rem; color: var(--ink-soft); }
+.ww-toolbar__count strong { color: var(--ink); font-weight: 500; }
+.ww-sort { display: flex; align-items: center; gap: 10px; font-size: .84rem; color: var(--ink-soft); }
+.ww-sort select { font: inherit; font-size: .88rem; border: 1px solid var(--line); border-radius: var(--r-pill); padding: 9px 16px; background: var(--paper); appearance: none; cursor: pointer; }
+.ww-empty { text-align: center; padding: 90px 20px; border: 1px dashed var(--line); border-radius: var(--r-lg); }
+.ww-filterbtn { display: none; }
+.ww-loadmore { display: flex; justify-content: center; margin-top: 64px; }
+
+/* Filterpaneel als sheet op mobiel */
+.ww-sheet { position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column; justify-content: flex-end; }
+.ww-sheet__scrim { position: absolute; inset: 0; background: rgba(16,26,22,.42); animation: ww-fade .2s ease; }
+.ww-sheet__panel {
+  position: relative; background: var(--shell); border-radius: var(--r-xl) var(--r-xl) 0 0;
+  max-height: 88%; display: flex; flex-direction: column; animation: ww-rise .28s cubic-bezier(.2,.8,.2,1);
+}
+.ww-sheet__head { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; border-bottom: 1px solid var(--line-soft); }
+.ww-sheet__body { padding: 24px; overflow-y: auto; }
+.ww-sheet__foot { padding: 18px 24px 26px; border-top: 1px solid var(--line-soft); display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; }
+
+/* ── Detailpagina ────────────────────────────────────────────────── */
+.ww-gallery { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; height: 560px; }
+.ww-gallery figure { position: relative; overflow: hidden; background: var(--sand-deep); }
+.ww-gallery figure:first-child { grid-row: span 2; border-radius: var(--r-lg) 0 0 var(--r-lg); }
+.ww-gallery figure:nth-child(3) { border-radius: 0 var(--r-lg) 0 0; }
+.ww-gallery figure:nth-child(5) { border-radius: 0 0 var(--r-lg) 0; }
+.ww-gallery img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s cubic-bezier(.2,.7,.2,1); }
+.ww-gallery figure:hover img { transform: scale(1.04); }
+.ww-gallery__more {
+  position: absolute; right: 20px; bottom: 20px;
+  background: rgba(255,255,255,.94); backdrop-filter: blur(6px);
+  padding: 11px 20px; border-radius: var(--r-pill); font-size: .76rem; letter-spacing: .12em; text-transform: uppercase;
+}
+.ww-detail { display: grid; grid-template-columns: 1fr 396px; gap: 72px; align-items: start; }
+.ww-detail__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; }
+.ww-facts { display: flex; flex-wrap: wrap; gap: 26px; padding: 24px 0; margin: 34px 0; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+.ww-fact { display: flex; align-items: center; gap: 11px; font-size: .92rem; color: var(--ink-soft); }
+.ww-fact strong { color: var(--ink); font-weight: 500; }
+.ww-block { padding: 44px 0; border-bottom: 1px solid var(--line-soft); }
+.ww-block > h3 { margin-bottom: 22px; }
+.ww-highlights { display: grid; gap: 14px; }
+.ww-highlights li { display: grid; grid-template-columns: 20px 1fr; gap: 12px; align-items: start; color: var(--ink-soft); font-size: .98rem; line-height: 1.6; }
+.ww-highlights li svg { color: var(--forest); margin-top: 5px; }
+.ww-amenities { display: grid; grid-template-columns: repeat(2, 1fr); gap: 34px 44px; }
+.ww-amenities h4 { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); font-family: var(--sans); font-weight: 400; margin-bottom: 16px; }
+.ww-amenities ul { display: grid; gap: 11px; font-size: .94rem; color: var(--ink-soft); }
+.ww-amenities li { display: flex; align-items: center; gap: 11px; }
+.ww-amenities li svg { color: var(--forest); flex: none; }
+
+/* Boekingsmodule — de plek waar MyTourist prijs en beschikbaarheid levert. */
+.ww-booking {
+  position: sticky; top: 96px;
+  background: var(--paper); border: 1px solid var(--line-soft); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md); padding: 30px;
+}
+.ww-booking__price { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 22px; border-bottom: 1px solid var(--line-soft); }
+.ww-booking__dates { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; margin: 22px 0 12px; }
+.ww-booking__dates .ww-field { padding: 12px 16px; border-right: 1px solid var(--line); }
+.ww-booking__dates .ww-field:last-child { border-right: 0; }
+.ww-booking__guests { border: 1px solid var(--line); border-radius: var(--r-md); }
+.ww-booking__guests .ww-field { padding: 12px 16px; border: 0; }
+.ww-booking__lines { display: grid; gap: 13px; margin: 24px 0; font-size: .92rem; color: var(--ink-soft); }
+.ww-booking__line { display: flex; justify-content: space-between; gap: 16px; }
+.ww-booking__line span:first-child { display: flex; gap: 8px; align-items: center; }
+.ww-booking__line--extra { color: var(--ink); }
+.ww-booking__total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 20px; border-top: 1px solid var(--line); font-size: 1rem; color: var(--ink); }
+.ww-booking__total strong { font-family: var(--serif); font-size: 1.6rem; font-weight: 500; }
+.ww-booking__note { font-size: .78rem; color: var(--ink-soft); text-align: center; margin-top: 16px; line-height: 1.6; }
+.ww-booking__status { display: inline-flex; align-items: center; gap: 9px; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--forest); }
+.ww-dot { width: 7px; height: 7px; border-radius: 50%; background: #4E8B62; box-shadow: 0 0 0 3px rgba(78,139,98,.18); flex: none; }
+.ww-dot--busy { background: var(--gold); box-shadow: 0 0 0 3px rgba(168,131,76,.18); }
+.ww-extra { display: flex; align-items: flex-start; gap: 12px; padding: 13px 0; border-top: 1px solid var(--line-soft); font-size: .9rem; }
+.ww-extra:first-of-type { border-top: 0; }
+.ww-extra__price { margin-left: auto; color: var(--ink-soft); white-space: nowrap; }
+
+/* Beschikbaarheidskalender (mock van de MyTourist-kalender) */
+.ww-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.ww-cal__dow { font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); text-align: center; padding-bottom: 8px; }
+.ww-cal__day { aspect-ratio: 1; display: grid; place-content: center; font-size: .84rem; border-radius: var(--r-sm); background: var(--sand); color: var(--ink); }
+.ww-cal__day--out { background: transparent; color: transparent; }
+.ww-cal__day--busy { background: transparent; color: rgba(26,32,30,.25); text-decoration: line-through; }
+.ww-cal__day--sel { background: var(--forest); color: #fff; }
+.ww-cal__legend { display: flex; gap: 22px; font-size: .78rem; color: var(--ink-soft); margin-top: 18px; }
+.ww-cal__legend span { display: inline-flex; align-items: center; gap: 8px; }
+.ww-swatch { width: 13px; height: 13px; border-radius: 3px; background: var(--sand); }
+.ww-swatch--busy { background: transparent; border: 1px solid var(--line); }
+
+/* Sticky boekbalk op mobiel */
+.ww-mobilebar { display: none; }
+
+/* ── Merkpagina / styleguide ─────────────────────────────────────── */
+.ww-swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.ww-swatchcard { border: 1px solid var(--line-soft); border-radius: var(--r-md); overflow: hidden; background: var(--paper); }
+.ww-swatchcard__chip { height: 116px; }
+.ww-swatchcard__meta { padding: 14px 16px; font-size: .82rem; }
+.ww-swatchcard__meta strong { display: block; font-weight: 500; margin-bottom: 3px; }
+.ww-swatchcard__meta code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .76rem; color: var(--ink-soft); }
+.ww-specimen { border: 1px solid var(--line-soft); border-radius: var(--r-md); padding: 34px; background: var(--paper); }
+.ww-specimen + .ww-specimen { margin-top: 18px; }
+.ww-specimen__label { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 14px; }
+.ww-flow { display: grid; gap: 14px; }
+.ww-flowstep { display: grid; grid-template-columns: 42px 1fr; gap: 18px; align-items: start; padding: 20px 24px; background: var(--paper); border: 1px solid var(--line-soft); border-radius: var(--r-md); }
+.ww-flowstep__n { font-family: var(--serif); font-size: 1.5rem; color: var(--gold); line-height: 1; }
+.ww-flowstep p { font-size: .92rem; color: var(--ink-soft); margin-top: 5px; }
+.ww-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; line-height: 1.75;
+  background: var(--sea); color: rgba(255,255,255,.86); border-radius: var(--r-md);
+  padding: 26px 28px; overflow-x: auto; white-space: pre;
+}
+.ww-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.ww-table th, .ww-table td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.ww-table th { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); font-weight: 400; }
+.ww-table code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8rem; color: var(--forest); }
+
+/* Telefoonframes op /wad-weids/mobiel */
+.ww-devices { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 56px; justify-items: center; }
+/* 390 px scherm + 12 px randen aan weerszijden = 414 px frame. */
+.ww-device { width: 414px; max-width: 100%; }
+.ww-device__shell {
+  border-radius: 46px; padding: 12px; background: #17201C;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0,0,0,.2) inset;
+}
+.ww-device__screen { position: relative; border-radius: 34px; overflow: hidden; background: var(--shell); height: 780px; }
+/* Genest container-element: alles erbinnen reageert op 390 px, niet op het
+   venster. Daardoor draait de echte site in het frame. */
+.ww-device__viewport { height: 100%; overflow-y: auto; overflow-x: hidden; min-height: 0; scrollbar-width: none; }
+.ww-device__viewport::-webkit-scrollbar { display: none; }
+.ww-device__viewport .ww-header { position: sticky; }
+.ww-device__viewport .ww-hero__media { height: 480px; min-height: 0; }
+.ww-device__notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 116px; height: 26px; border-radius: var(--r-pill); background: #17201C; z-index: 5; }
+.ww-device__caption { text-align: center; margin-top: 22px; }
+.ww-device__caption strong { display: block; font-family: var(--serif); font-size: 1.25rem; font-weight: 400; }
+.ww-device__caption span { font-size: .82rem; color: var(--ink-soft); }
+
+/* ── Hulpklassen ─────────────────────────────────────────────────── */
+.ww-stack { display: grid; gap: 18px; }
+.ww-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.ww-center { text-align: center; }
+.ww-center .ww-lead, .ww-center .ww-body { margin-left: auto; margin-right: auto; }
+.ww-mt-s { margin-top: 16px; } .ww-mt-m { margin-top: 32px; } .ww-mt-l { margin-top: 56px; }
+.ww-hide-desktop { display: none; }
+.ww-crumbs { display: flex; align-items: center; gap: 10px; font-size: .78rem; color: var(--ink-soft); letter-spacing: .04em; }
+.ww-crumbs a:hover { color: var(--ink); }
+.ww-pagehead { padding: 56px 0 44px; }
+.ww-pagehead--onsand { background: var(--sand); }
+.ww-scrollrow { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.ww-scrollrow::-webkit-scrollbar { display: none; }
+.ww-scrollrow > * { scroll-snap-align: start; flex: 0 0 78%; }
+
+@keyframes ww-fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes ww-rise { from { transform: translateY(30px); opacity: .4 } to { transform: translateY(0); opacity: 1 } }
+@keyframes ww-slowzoom { from { transform: scale(1.06) } to { transform: scale(1) } }
+@media (prefers-reduced-motion: reduce) {
+  .ww *, .ww *::before, .ww *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ══ Responsive ═══════════════════════════════════════════════════
+   Container queries: dezelfde regels gelden op een telefoon én in het
+   telefoonframe op /wad-weids/mobiel. */
+@container ww (max-width: 1120px) {
+  .ww { --gutter: 32px; }
+  .ww-grid { grid-template-columns: repeat(2, 1fr); }
+  .ww-grid--4 { grid-template-columns: repeat(2, 1fr); }
+  .ww-detail { grid-template-columns: 1fr 350px; gap: 44px; }
+  .ww-results { grid-template-columns: 264px 1fr; gap: 36px; }
+  .ww-header__nav { gap: 24px; }
+}
+@container ww (max-width: 900px) {
+  .ww { --gutter: 24px; }
+  .ww-section { padding: 76px 0; }
+  .ww-header__nav, .ww-header__tools .ww-header__icon--label { display: none; }
+  .ww-header__burger { display: inline-flex; }
+  .ww-header__inner { height: 76px; }
+  .ww-hero { margin-top: -76px; }
+  .ww-hero__media { height: 78vh; min-height: 520px; }
+  .ww-hero__content { padding-bottom: 92px; }
+  .ww-search { grid-template-columns: 1fr 1fr; margin-top: -32px; gap: 2px; }
+  .ww-field { border-right: 0; border-bottom: 1px solid var(--line-soft); }
+  .ww-field:nth-of-type(1) { grid-column: span 2; }
+  .ww-search__submit { grid-column: span 2; padding: 10px 4px 4px; }
+  .ww-search__submit .ww-btn { width: 100%; padding-top: 17px; padding-bottom: 17px; }
+  .ww-sectionhead { flex-direction: column; align-items: flex-start; gap: 22px; margin-bottom: 36px; }
+  .ww-tiles { grid-template-columns: repeat(2, 1fr); }
+  .ww-tile, .ww-tile--wide, .ww-tile--tall { grid-column: span 1; min-height: 260px; }
+  .ww-values { grid-template-columns: repeat(2, 1fr); gap: 42px 32px; }
+  .ww-gallery { grid-template-columns: 1fr; grid-template-rows: none; height: auto; gap: 8px; }
+  .ww-gallery figure { aspect-ratio: 4/3; border-radius: var(--r-md) !important; }
+  .ww-gallery figure:nth-child(n+3) { display: none; }
+  .ww-detail { grid-template-columns: 1fr; gap: 0; }
+  .ww-booking { position: static; box-shadow: none; padding: 26px 0 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+  .ww-results { grid-template-columns: 1fr; }
+  .ww-results > aside { display: none; }
+  .ww-sheet .ww-filters { display: grid; position: static; }
+  .ww-filterbtn { display: inline-flex; }
+  .ww-footer__top { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .ww-amenities { grid-template-columns: 1fr; gap: 28px; }
+  .ww-swatches { grid-template-columns: repeat(2, 1fr); }
+  .ww-hide-desktop { display: revert; }
+  .ww-hide-mobile { display: none; }
+  .ww-mobilebar {
+    position: sticky; bottom: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: rgba(250,248,244,.96); backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+    padding: 14px var(--gutter) calc(14px + env(safe-area-inset-bottom));
+  }
+  .ww-mobilebar .ww-price { white-space: nowrap; font-size: 1.25rem; }
+  .ww-mobilebar .ww-btn { padding: 13px 18px; font-size: .72rem; letter-spacing: .1em; }
+  .ww-band { min-height: 62vh; }
+}
+@container ww (max-width: 620px) {
+  .ww { --gutter: 20px; }
+  .ww-section { padding: 60px 0; }
+  .ww-grid, .ww-grid--2, .ww-grid--4 { grid-template-columns: 1fr; gap: 36px; }
+  .ww-tiles { grid-template-columns: 1fr; }
+  .ww-values { grid-template-columns: 1fr; gap: 34px; }
+  .ww-footer__top { grid-template-columns: 1fr; }
+  .ww-swatches { grid-template-columns: 1fr; }
+  .ww-toolbar { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .ww-detail__head { flex-direction: column; gap: 16px; }
+  .ww-logo__tag { display: none; }
+  .ww-logo__word { font-size: 1.24rem; letter-spacing: .1em; }
+  .ww-logo__mark { width: 32px; height: 32px; }
+  .ww-hero__media { height: 74vh; min-height: 470px; }
+  .ww-facts { gap: 14px 22px; }
+  .ww-menu nav a { font-size: 1.6rem; }
+}

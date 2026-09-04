@@ -1,4 +1,5 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   readConsent,
@@ -61,7 +62,13 @@ export function ConsentBanner() {
   const [state, setState] = useState<ConsentState>(DEFAULT_CONSENT);
   const [lang, setLang] = useState<Lang>("nl");
 
+  const pathname = usePathname();
+  /* De Wad & Weids-mock-up is een merkpresentatie zonder tracking; de
+     cookiebanner van Huis ter Huynen hoort daar niet overheen. */
+  const mockup = pathname?.startsWith("/wad-weids") ?? false;
+
   useEffect(() => {
+    if (mockup) return;
     const current = readConsent();
     setState(current.state);
     setOpen(!current.decided);
@@ -80,9 +87,9 @@ export function ConsentBanner() {
     };
     window.addEventListener("hth:open-consent", reopen);
     return () => window.removeEventListener("hth:open-consent", reopen);
-  }, []);
+  }, [mockup]);
 
-  if (!open) return null;
+  if (mockup || !open) return null;
   const t = COPY[lang];
 
   const acceptAll = () => {

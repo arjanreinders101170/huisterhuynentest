@@ -21,6 +21,11 @@ const COPY = {
 
 export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string; locale?: "nl" | "de" }) {
   const pathname = usePathname();
+
+  /* De mock-up van Wad & Weids is een eigen merk met een eigen boekflow;
+     de Huis ter Huynen-balk hoort daar niet overheen te vallen. */
+  if (pathname?.startsWith("/wad-weids")) return null;
+
   const taal = locale ?? (pathname === "/de" || pathname?.startsWith("/de/") ? "de" : "nl");
   const copy = COPY[taal];
 
