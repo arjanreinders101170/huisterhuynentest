@@ -33,11 +33,36 @@ comment on column stays.bedankt_verstuurd_op is
 -- de export bevat geen e-mailadres — en de import zette ze alleen op
 -- 'vertrokken' omdat het bezoek voorbij was. Ze op verstuurd zetten zou dat
 -- in het overzicht als "bedankt" laten zien terwijl er niets verstuurd is.
-update stays
-   set bedankt_verstuurd_op = now()
- where status = 'vertrokken'
-   and bedankt_verstuurd_op is null
-   and coalesce(bron, 'direct') <> 'booking_com';
+--
+-- De uitzondering hangt af van stays.bron, en die kolom komt uit
+-- 2026_08_31_booking_com_import.sql. Draait die migratie op deze database nog
+-- niet, dan brak dit script hier af met `column "bron" does not exist` — en
+-- omdat de SQL-editor het geheel in één transactie draait, werd ook de nieuwe
+-- kolom hierboven weer teruggedraaid. Vandaar de controle: bestaat bron niet,
+-- dan zijn er ook geen geïmporteerde verblijven en valt er niets uit te
+-- sluiten. Zo maakt de volgorde van de twee migraties niet meer uit.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+     where table_schema = 'public'
+       and table_name = 'stays'
+       and column_name = 'bron'
+  ) then
+    execute $backfill$
+      update stays
+         set bedankt_verstuurd_op = now()
+       where status = 'vertrokken'
+         and bedankt_verstuurd_op is null
+         and coalesce(bron, 'direct') <> 'booking_com'
+    $backfill$;
+  else
+    update stays
+       set bedankt_verstuurd_op = now()
+     where status = 'vertrokken'
+       and bedankt_verstuurd_op is null;
+  end if;
+end $$;
 
 -- De cron zoekt op openstaande bedankmails binnen een datumvenster.
 create index if not exists stays_bedankmail_open_idx
