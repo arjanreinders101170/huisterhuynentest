@@ -5,6 +5,28 @@ import { REDIRECTED_BLOG_SLUGS } from "@/lib/redirects";
 
 const SITE_URL = "https://www.huisterhuynen.nl";
 
+/** De echte laatste wijziging van een artikel: de nieuwste van updated_at en
+ *  gepubliceerd_op.
+ *
+ *  Tot nu toe telde alleen gepubliceerd_op. Een herschreven artikel hield
+ *  daardoor de lastmod van zijn oorspronkelijke publicatie, en Google zag aan
+ *  de sitemap niet dat er iets veranderd was — precies het geval bij het
+ *  prijsartikel van september. De landingspagina's gebruiken updated_at al;
+ *  dit trekt de blogs daarmee gelijk.
+ *
+ *  Waarom de nieuwste van de twee en niet updated_at alleen: updated_at wordt
+ *  ook gezet door een import of een technische aanpassing, terwijl
+ *  gepubliceerd_op de datum is die de bezoeker op de pagina ziet. De nieuwste
+ *  van beide is het eerste moment waarop deze URL anders was dan daarvoor. */
+function nieuwsteDatum(...waarden: (string | null | undefined)[]): Date | null {
+  const datums = waarden
+    .filter((v): v is string => typeof v === "string" && v.length > 0)
+    .map((v) => new Date(v))
+    .filter((d) => !Number.isNaN(d.getTime()));
+  if (datums.length === 0) return null;
+  return datums.reduce((a, b) => (a > b ? a : b));
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
 
@@ -61,28 +83,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamically include all published blog posts
   let blogPosts: MetadataRoute.Sitemap = [];
+  // Nieuwste wijzigingsdatum over alle artikelen, voor de lastmod van /blog.
+  let blogLaatstGewijzigd: Date | null = null;
   try {
     const { data } = await getSupabase()
       .from("blog_posts")
-      .select("slug, gepubliceerd_op")
+      .select("slug, gepubliceerd_op, updated_at")
       .eq("gepubliceerd", true)
       .order("gepubliceerd_op", { ascending: false });
 
     if (data) {
       // 301'd blogs horen niet meer in de sitemap: anders blijft Google ze
       // crawlen en blijft de kannibalisatie in de index staan.
-      blogPosts = data
+      const artikelen = data
         .filter((post) => !REDIRECTED_BLOG_SLUGS.has(post.slug))
         .map((post) => ({
-          url: `${SITE_URL}/blog/${post.slug}`,
-          lastModified: post.gepubliceerd_op ? new Date(post.gepubliceerd_op) : lastModified,
-          changeFrequency: "monthly" as const,
-          priority: 0.7,
+          slug: post.slug,
+          gewijzigd: nieuwsteDatum(post.updated_at, post.gepubliceerd_op),
         }));
+
+      blogPosts = artikelen.map(({ slug, gewijzigd }) => ({
+        url: `${SITE_URL}/blog/${slug}`,
+        lastModified: gewijzigd ?? lastModified,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }));
+
+      blogLaatstGewijzigd = nieuwsteDatum(
+        ...artikelen.map(({ gewijzigd }) => gewijzigd?.toISOString()),
+      );
     }
   } catch {
     // Static pages still served if Supabase is unavailable during build
   }
+
+  // /blog verandert alleen wanneer een artikel verandert. Stond hier "nu", dan
+  // meldde de overzichtspagina elke crawl een wijziging die er niet was — en
+  // een lastmod die altijd vers is, telt op den duur nergens meer mee.
+  const blogIndex = staticPages.find((p) => p.url === `${SITE_URL}/blog`);
+  if (blogLaatstGewijzigd && blogIndex) blogIndex.lastModified = blogLaatstGewijzigd;
 
   // Landing pages: published DB rows + bundled seed pages (falls back to seed)
   // Pair NL↔DE landing pages so each entry carries hreflang alternates.
