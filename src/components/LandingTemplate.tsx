@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SITE_URL, LANDING_NAV } from "@/lib/site";
+import { SITE_URL, footerLinks, paginaTypeVoorSlug, reserveerHref, lodgekeuzeVoorSlug } from "@/lib/site";
+import { renderTekstMetLinks } from "@/lib/tekst";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 
 /* ═══ Reusable SEO landing page ═══
@@ -209,6 +210,80 @@ const I18N = {
   },
 };
 
+/* ═══ Het lodgekeuzeblok ═══
+ *
+ * Staat bewust ná de FAQ en vóór de slot-CTA. De FAQ neemt de laatste bezwaren
+ * weg; pas daarna is kiezen aan de orde, en de CTA erna vraagt om de datums.
+ *
+ * De volgorde is dus: overtuigen → bezwaren wegnemen → kiezen → aanvragen. In
+ * de oude opbouw ontbrak die derde stap volledig: de bezoeker sprong van een
+ * themapagina rechtstreeks naar een leeg formulier waarin de lodgekeuze de
+ * eerste vraag was — de zwaarste plek om hem te stellen, want daar staat geen
+ * foto en geen uitleg bij.
+ *
+ * Elke kaart heeft twee uitgangen: de lodgepagina voor wie nog twijfelt, en de
+ * boekingssectie met deze lodge al voorgeselecteerd voor wie eruit is.
+ */
+function Lodgekeuze({ slug }: { slug: string }) {
+  const lodges = lodgekeuzeVoorSlug(slug);
+  if (lodges.length === 0) return null;
+  const opLodgePagina = lodges.length === 1;
+
+  return (
+    <section className="lp-pad" style={{ background: T.bg, paddingTop: 64, paddingBottom: 64 }}>
+      <div style={{ maxWidth: 980, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 34 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldInk, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>
+            {opLodgePagina ? "De andere lodge" : "Twee lodges, één keuze"}
+          </div>
+          <h2 style={{ fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 30px)", color: T.text, margin: 0, fontWeight: 700, lineHeight: 1.25 }}>
+            {opLodgePagina ? `Of vergelijk met ${lodges[0].naam}` : "Welke lodge wordt het?"}
+          </h2>
+          <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.7, margin: "12px auto 0", maxWidth: 560 }}>
+            {opLodgePagina
+              ? "Dezelfde rust, hetzelfde terrein en dezelfde hottub op het terras — maar een ander huis."
+              : "Beide staan vrij op het terrein, allebei met een eigen hottub op het terras. Het verschil zit in wat eromheen zit."}
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(300px, 100%), 1fr))`, gap: 22 }}>
+          {lodges.map((lodge) => (
+            <div key={lodge.slug} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+              <div style={{ position: "relative", height: 190 }}>
+                <Image src={lodge.afbeelding} alt={lodge.alt} fill quality={60} sizes="(max-width: 800px) 100vw, 480px" style={{ objectFit: "cover", objectPosition: "center 45%" }} />
+              </div>
+              <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1 }}>
+                <h3 style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 700, color: T.green, margin: "0 0 8px" }}>
+                  {lodge.naam}
+                </h3>
+                <p style={{ fontFamily: T.sans, fontSize: 14.5, color: T.muted, fontWeight: 300, lineHeight: 1.7, margin: "0 0 16px" }}>
+                  {lodge.onderscheid}
+                </p>
+                <ul style={{ margin: "0 0 22px", padding: 0, listStyle: "none" }}>
+                  {lodge.kenmerken.map((k) => (
+                    <li key={k} style={{ fontFamily: T.sans, fontSize: 14, color: T.text, fontWeight: 300, lineHeight: 1.6, padding: "5px 0", display: "flex", gap: 9, alignItems: "baseline" }}>
+                      <span style={{ color: T.goldInk, flexShrink: 0 }} aria-hidden>✓</span>
+                      {k}
+                    </li>
+                  ))}
+                </ul>
+                <div style={{ marginTop: "auto", display: "grid", gap: 10 }}>
+                  <Link href={`/${lodge.slug}`} style={{ fontFamily: T.sans, fontSize: 14.5, fontWeight: 600, color: "white", background: T.green, padding: "12px 18px", borderRadius: 10, textDecoration: "none", textAlign: "center" }}>
+                    Bekijk {lodge.naam} →
+                  </Link>
+                  <Link href={reserveerHref(lodge.slug)} style={{ fontFamily: T.sans, fontSize: 13.5, fontWeight: 500, color: T.green, textDecoration: "underline", textUnderlineOffset: 3, textAlign: "center" }}>
+                    Of direct beschikbaarheid voor {lodge.naam.replace("Lodge ", "")}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function LandingTemplate({ config }: { config: LandingConfig }) {
   const t = I18N[config.locale ?? "nl"];
   const anchors = config.sections.map((s, i) => sectionAnchor(s, i));
@@ -252,7 +327,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
             {config.heroSub}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/#reserveren" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "15px 32px", borderRadius: 10, textDecoration: "none", boxShadow: "0 6px 24px rgba(180,154,94,.45)" }}>
+            <Link href={reserveerHref(config.slug)} style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "15px 32px", borderRadius: 10, textDecoration: "none", boxShadow: "0 6px 24px rgba(180,154,94,.45)" }}>
               {t.heroCta}
             </Link>
             <Link href="/#nieuwsbrief" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: "white", border: "1px solid rgba(255,255,255,.4)", padding: "15px 28px", borderRadius: 10, textDecoration: "none" }}>
@@ -292,7 +367,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       <section className="lp-pad" style={{ background: T.card, paddingTop: 56, paddingBottom: 8 }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
           <p style={{ fontFamily: T.sans, fontSize: 18, color: T.text, lineHeight: 1.8, margin: 0, fontWeight: 400, borderLeft: `3px solid ${T.gold}`, paddingLeft: 20 }}>
-            {config.intro}
+            {renderTekstMetLinks(config.intro, "intro")}
           </p>
 
           {/* Inhoudsopgave: alleen bij lange pagina's. Echte ankerlinks, zodat
@@ -338,15 +413,21 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               </h2>
               {s.body.map((p, j) => (
                 <p key={j} style={{ fontFamily: T.sans, fontSize: 16, color: T.muted, lineHeight: 1.85, margin: "0 0 16px", fontWeight: 300 }}>
-                  {p}
+                  {renderTekstMetLinks(p, `${i}-${j}`)}
                 </p>
               ))}
+              {/* Bullets zijn lopende tekst en dragen dus ook links: op de
+                  hottubpagina staan de twee lodges als opsomming, en juist daar
+                  hoort de verwijzing naar hun eigen pagina. De FAQ blijft
+                  bewust zonder linksyntaxis — die antwoorden gaan letterlijk
+                  mee als acceptedAnswer in de structured data, waar [tekst](/pad)
+                  zichtbaar zou worden in de zoekresultaten. */}
               {s.bullets && (
                 <ul style={{ margin: "4px 0 0", padding: 0, listStyle: "none" }}>
                   {s.bullets.map((b, k) => (
                     <li key={k} style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.6, padding: "8px 0", borderBottom: k < s.bullets!.length - 1 ? `1px solid ${T.border}` : "none", display: "flex", gap: 10, alignItems: "baseline" }}>
                       <span style={{ color: T.goldInk, flexShrink: 0 }} aria-hidden>✓</span>
-                      {b}
+                      {renderTekstMetLinks(b, `b${i}-${k}`)}
                     </li>
                   ))}
                 </ul>
@@ -432,6 +513,9 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         </section>
       )}
 
+      {/* Lodgekeuze — de stap tussen "overtuigd" en "aanvragen" */}
+      <Lodgekeuze slug={config.slug} />
+
       {/* Final CTA */}
       <section className="lp-pad" style={{ background: T.green, paddingTop: 72, paddingBottom: 72, textAlign: "center" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
@@ -445,7 +529,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
             {config.ctaBody}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/#reserveren" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "14px 30px", borderRadius: 10, textDecoration: "none" }}>
+            <Link href={reserveerHref(config.slug)} style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "14px 30px", borderRadius: 10, textDecoration: "none" }}>
               {t.ctaAvail}
             </Link>
             <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: "white", border: "1px solid rgba(255,255,255,.35)", padding: "14px 28px", borderRadius: 10, textDecoration: "none" }}>
@@ -456,7 +540,10 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         </div>
       </section>
 
-      {/* Related internal links */}
+      {/* Related internal links — bewust afgetopt op vier. Dit blok stond op
+          sommige pagina's op acht links; samen met het oude footerblok van
+          dertien kreeg elke pagina meer dan twintig generieke interne links.
+          Vier gerichte verwijzingen wegen zwaarder dan acht willekeurige. */}
       {config.related.length > 0 && (
         <section className="lp-pad" style={{ background: T.bg, paddingTop: 56, paddingBottom: 56 }}>
           <div style={{ maxWidth: 980, margin: "0 auto" }}>
@@ -464,7 +551,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               {t.relatedLabel}
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              {config.related.map((r, i) => (
+              {config.related.slice(0, 4).map((r, i) => (
                 <Link key={i} href={r.href} style={{ fontFamily: T.sans, fontSize: 14, fontWeight: 500, color: T.green, background: T.card, border: `1px solid ${T.border}`, padding: "12px 20px", borderRadius: 10, textDecoration: "none" }}>
                   {r.label} →
                 </Link>
@@ -490,7 +577,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
               gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
               gap: "10px 28px",
             }}>
-              {LANDING_NAV.filter((l) => l.href !== `/${config.slug}`).map((l) => (
+              {footerLinks(paginaTypeVoorSlug(config.slug), config.slug).map((l) => (
                 <Link key={l.href} href={l.href} style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 300,
                   color: "rgba(255,255,255,.8)", textDecoration: "none",
@@ -513,7 +600,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                 { label: "Omgeving", href: "/omgeving" },
                 { label: "Blog", href: "/blog" },
                 { label: "FAQ", href: "/faq" },
-                { label: "Reserveren", href: "/#reserveren" },
+                { label: "Reserveren", href: reserveerHref(config.slug) },
               ].map((l, i) => (
                 <Link key={i} href={l.href} style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.75)", textDecoration: "none" }}>
                   {l.label}

@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
+import { reserveerHref } from "@/lib/site";
+import { stickyBlogCta } from "@/lib/blog-cta";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
  * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
@@ -23,6 +25,18 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   const pathname = usePathname();
   const taal = locale ?? (pathname === "/de" || pathname?.startsWith("/de/") ? "de" : "nl");
   const copy = COPY[taal];
+  // De balk hangt in de root-layout en krijgt van niemand een slug mee; het pad
+  // is hier dus de enige bron voor de context van de pagina waar hij op staat.
+  // Op een pagina zonder eigen context valt reserveerHref terug op /#reserveren.
+  //
+  // Blogs zijn het best presterende kanaal van de site (CTR 3,31% tegen 0,25%)
+  // en linkten nauwelijks door. Heeft een artikel een eigen commerciële CTA,
+  // dan volgt de balk die: bij het wellnessweekend-artikel is de wellnesspagina
+  // een betere volgende stap dan een leeg boekingsformulier.
+  const blogSlug = taal === "nl" && pathname?.startsWith("/blog/") ? pathname.slice("/blog/".length) : null;
+  const blog = blogSlug ? stickyBlogCta(blogSlug) : null;
+  const doel = bookingHref ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
+  const label = blog?.knop ?? copy.cta;
 
   return (
     <>
@@ -39,14 +53,14 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
       >
         <DirectBookingUSP locale={taal} tone="onDark" size={10.5} style={{ gap: "4px 12px" }} />
         <Link
-          href={bookingHref ?? copy.href}
+          href={doel}
           style={{
             textAlign: "center", padding: "13px 0", borderRadius: 10,
             background: "#B49A5E", color: "#1A2E24", fontWeight: 700, fontSize: 15,
             textDecoration: "none", fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
           }}
         >
-          {copy.cta}
+          {label}
         </Link>
       </div>
     </>

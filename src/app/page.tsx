@@ -6,7 +6,9 @@ import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { BookingFaq } from "@/components/BookingFaq";
-import { LANDING_NAV } from "@/lib/site";
+import { footerLinks, LODGE_OP_SLUG } from "@/lib/site";
+import { ReserveerContextRegel } from "@/components/ReserveerContextRegel";
+import { kiesLodge } from "@/lib/reserveer-params";
 const RequestForm = dynamic(() => import("@/components/RequestForm"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Formulier laden...</div> });
 
 interface GoogleReview {
@@ -122,6 +124,7 @@ function BookingSection() {
             Geef uw gewenste data door, dan reserveren wij die persoonlijk voor u. U ontvangt binnen 24 uur een aanbod op maat. Geen verplichtingen.
           </p>
           <DirectBookingUSP tone="onLight" size={13} style={{ marginTop: 18 }} />
+          <ReserveerContextRegel tokens={{ sans: T.sans, green: T.green, gold: T.gold }} />
         </div>
         <RequestForm />
         <div style={{ textAlign: "center", marginTop: 32 }}>
@@ -401,6 +404,7 @@ export default function LandingPage() {
               {
                 id: "lodge_1",
                 name: "De Heide",
+                slug: "lodge-de-heide",
                 tag: "4 personen",
                 desc: "Een luxe lodge op de Drentse heide, ingericht voor vier. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
                 features: ["4 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
@@ -410,6 +414,7 @@ export default function LandingPage() {
               {
                 id: "lodge_2",
                 name: "De Eik",
+                slug: "lodge-de-eik",
                 tag: "4 personen",
                 desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
                 features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
@@ -493,7 +498,10 @@ export default function LandingPage() {
                   }}>
                     Beschikbaar vanaf 1 januari 2027 · Openingsseizoen
                   </div>
-                  <a href="#reserveren" style={{
+                  <a
+                    href="#reserveren"
+                    onClick={() => kiesLodge(LODGE_OP_SLUG[lodge.slug].param)}
+                    style={{
                     display: "block", textAlign: "center",
                     width: "100%", padding: "13px 0",
                     background: T.green, color: "white",
@@ -502,6 +510,15 @@ export default function LandingPage() {
                     letterSpacing: "0.3px",
                   }}>
                     Bekijk beschikbaarheid voor {lodge.name}
+                  </a>
+                  {/* Wie nog twijfelt hoort niet naar het formulier gestuurd te
+                      worden maar naar de lodge zelf. */}
+                  <a href={`/${lodge.slug}`} style={{
+                    display: "block", textAlign: "center", marginTop: 10,
+                    fontFamily: T.sans, fontSize: 13, fontWeight: 500,
+                    color: T.green, textDecoration: "underline", textUnderlineOffset: 3,
+                  }}>
+                    Alles over Lodge {lodge.name}
                   </a>
                   <DirectBookingUSP tone="onLight" size={11.5} style={{ marginTop: 12 }} />
                 </div>
@@ -1213,7 +1230,7 @@ export default function LandingPage() {
               gridTemplateColumns: "repeat(auto-fit, minmax(min(230px, 100%), 1fr))",
               gap: "12px 32px",
             }}>
-              {LANDING_NAV.map((l) => (
+              {footerLinks("home").map((l) => (
                 <a key={l.href} href={l.href} style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 300,
                   color: "rgba(255,255,255,.8)", textDecoration: "none",
