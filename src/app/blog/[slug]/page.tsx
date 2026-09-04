@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
 import { SITE_URL, PRICE_FROM_EUR, blogOgImageUrl, jsonLdScript } from "@/lib/site";
+import { ontleedInhoud, splitsVet, type KopNiveau } from "@/lib/blog-inhoud";
 
 export const revalidate = 60;
 
@@ -128,53 +129,34 @@ const T = {
 
 /** Zet **tekst** binnen een regel om in vet. De artikelen gebruiken deze
  *  markering al sinds de eerste seed voor de aanhef van een opsomming
- *  ("**Locatie.** Lodges in populaire natuurgebieden…"), maar de renderer kende
- *  hem niet — daardoor stonden de sterretjes letterlijk op de pagina. */
+ *  ("**Locatie.** Lodges in populaire natuurgebieden…"). */
 function renderInline(tekst: string, sleutel: string) {
-  return tekst.split(/(\*\*[^*]+\*\*)/g).map((deel, i) =>
-    deel.startsWith("**") && deel.endsWith("**") && deel.length > 4 ? (
-      <strong key={`${sleutel}-${i}`} style={{ fontWeight: 600 }}>{deel.slice(2, -2)}</strong>
+  return splitsVet(tekst).map((deel, i) =>
+    deel.vet ? (
+      <strong key={`${sleutel}-${i}`} style={{ fontWeight: 600 }}>{deel.tekst}</strong>
     ) : (
-      deel
+      deel.tekst
     ),
   );
 }
 
-/** Parses plain-text blog content into React elements.
- *  #   → <h1>, ## → <h2>, ### → <h3>, **vet**, blank line → paragraph break */
+const KOP_STIJL: Record<KopNiveau, React.CSSProperties> = {
+  1: { fontSize: "clamp(24px, 3vw, 32px)", margin: "56px 0 20px", fontWeight: 700, lineHeight: 1.2 },
+  2: { fontSize: "clamp(20px, 2.5vw, 24px)", margin: "48px 0 16px", fontWeight: 700, lineHeight: 1.3 },
+  3: { fontSize: "clamp(16px, 2vw, 18px)", margin: "32px 0 10px", fontWeight: 600, lineHeight: 1.4 },
+};
+
+/** Artikeltekst als React-elementen. De ontleding zelf staat in
+ *  @/lib/blog-inhoud, zodat de admin-preview dezelfde structuur laat zien als
+ *  de bezoeker krijgt. Hier bepalen we alleen hoe het eruitziet. */
 function renderInhoud(inhoud: string) {
-  const blocks = inhoud.split(/\n\n+/);
-  return blocks.map((block, i) => {
-    const trimmed = block.trim();
-    if (!trimmed) return null;
-    if (trimmed.startsWith("### ")) {
+  return ontleedInhoud(inhoud).map((deel, i) => {
+    if (deel.soort === "kop") {
+      const Kop = `h${deel.niveau}` as "h1" | "h2" | "h3";
       return (
-        <h3 key={i} style={{
-          fontFamily: T.serif, fontSize: "clamp(16px, 2vw, 18px)",
-          color: T.text, margin: "32px 0 10px", fontWeight: 600, lineHeight: 1.4,
-        }}>
-          {trimmed.slice(4)}
-        </h3>
-      );
-    }
-    if (trimmed.startsWith("## ")) {
-      return (
-        <h2 key={i} style={{
-          fontFamily: T.serif, fontSize: "clamp(20px, 2.5vw, 24px)",
-          color: T.text, margin: "48px 0 16px", fontWeight: 700, lineHeight: 1.3,
-        }}>
-          {trimmed.slice(3)}
-        </h2>
-      );
-    }
-    if (trimmed.startsWith("# ")) {
-      return (
-        <h1 key={i} style={{
-          fontFamily: T.serif, fontSize: "clamp(24px, 3vw, 32px)",
-          color: T.text, margin: "56px 0 20px", fontWeight: 700, lineHeight: 1.2,
-        }}>
-          {trimmed.slice(2)}
-        </h1>
+        <Kop key={i} style={{ fontFamily: T.serif, color: T.text, ...KOP_STIJL[deel.niveau] }}>
+          {deel.tekst}
+        </Kop>
       );
     }
     return (
@@ -182,7 +164,7 @@ function renderInhoud(inhoud: string) {
         fontFamily: T.sans, fontSize: 16, color: T.text,
         lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
       }}>
-        {trimmed.split("\n").map((line, j, arr) => (
+        {deel.regels.map((line, j, arr) => (
           <span key={j}>{renderInline(line, `${i}-${j}`)}{j < arr.length - 1 && <br />}</span>
         ))}
       </p>
