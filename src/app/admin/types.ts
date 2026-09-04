@@ -7,6 +7,9 @@ export type Product = { id: string; naam: string; omschrijving: string | null; p
 export type Stay = {
   id: string; guest_id: string | null; lodge: string; check_in: string; check_out: string;
   token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean;
+  /* Bedankmail na afloop — zie migrations/2026_09_04_bedankmail_bijhouden.sql.
+   * Leeg betekent: nog niet verstuurd. */
+  bedankt_verstuurd_op?: string | null;
   guests?: { naam: string; email: string };
   /* Herkomst — zie migrations/2026_08_31_booking_com_import.sql. Een verblijf
    * uit de Booking.com-export heeft geen guests-record (die export bevat geen

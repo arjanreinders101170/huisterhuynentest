@@ -18,11 +18,18 @@
 -- Twee donorlinks uit de matrix zitten hier bewust niet in: beide wijzen naar
 -- /lodge-de-heide en /lodge-de-eik, en die pagina's bestaan nog niet (taken
 -- o26-5 en o26-6). Ze horen bij de release waarin die pagina's live gaan.
+--
+-- Bijgewerkt op 4 september: alle ankerteksten spreken van "hottub", omdat dat
+-- sinds 2026_09_04_hottub_als_enige_term.sql het enige woord voor het bad op de
+-- hele site is. Twee updates grepen bovendien aan op zinnen die die migratie en
+-- 2026_09_04_blog_prive_lodge_kosten_uitbreiden.sql inmiddels hebben herschreven;
+-- ze staan nu op de huidige tekst. Zonder die correctie deden ze stilzwijgend
+-- niets, wat het vervelendste soort migratie is: eentje die slaagt zonder effect.
 
 -- ═══ Landingspagina's: donorlinks en links tussen commerciële pagina's ═══
 
 update landing_pages
-   set sections = replace(sections::text, 'Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken.', 'Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken — een [vakantiehuis met privé-jacuzzi aan de heide](/vakantiehuis-met-hottub-drenthe) in de meest letterlijke zin.')::jsonb,
+   set sections = replace(sections::text, 'Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken.', 'Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken — een [vakantiehuis met privé-hottub aan de heide](/vakantiehuis-met-hottub-drenthe) in de meest letterlijke zin.')::jsonb,
        updated_at = now()
  where slug = 'heide-drenthe'
    and position('Twee volledig privé lodges, elk met een eigen hottub op het terras, vormen de perfecte basis voor een paar dagen heide kijken.' in sections::text) > 0;
@@ -40,41 +47,47 @@ update landing_pages
    and position('Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos; Lodge De Eik een buitenkeuken met BBQ onder de eiken.' in sections::text) > 0;
 
 update landing_pages
-   set sections = replace(sections::text, 'U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de jacuzzi liggen.', 'U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de jacuzzi liggen. Gaat het u vooral om dat water, dan leest u op de pagina over ons [vakantiehuis met privé-jacuzzi](/vakantiehuis-met-hottub-drenthe) hoe het per lodge is opgesteld.')::jsonb,
+   set sections = replace(sections::text, 'U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de hottub liggen.', 'U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de hottub liggen. Gaat het u vooral om dat water, dan leest u op de pagina over ons [vakantiehuis met privé-hottub](/vakantiehuis-met-hottub-drenthe) hoe het per lodge is opgesteld.')::jsonb,
        updated_at = now()
  where slug = 'wellness-vakantie-drenthe'
-   and position('U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de jacuzzi liggen.' in sections::text) > 0;
+   and position('U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de hottub liggen.' in sections::text) > 0;
 
 update landing_pages
-   set sections = replace(sections::text, 'Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-jacuzzi meer doet dan een wellnessabonnement.', 'Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-jacuzzi meer doet dan een wellnessabonnement. Hoe [de jacuzzi op het terras](/vakantiehuis-met-hottub-drenthe) er per lodge bij staat, ziet u op de jacuzzipagina.')::jsonb,
+   set sections = replace(sections::text, 'Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-hottub meer doet dan een wellnessabonnement.', 'Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-hottub meer doet dan een wellnessabonnement. Hoe [de hottub op het terras](/vakantiehuis-met-hottub-drenthe) er per lodge bij staat, leest u op de hottubpagina.')::jsonb,
        updated_at = now()
  where slug = 'romantisch-weekend-weg-drenthe'
-   and position('Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-jacuzzi meer doet dan een wellnessabonnement.' in sections::text) > 0;
+   and position('Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-hottub meer doet dan een wellnessabonnement.' in sections::text) > 0;
 
 -- ═══ Blogs: de best rankende artikelen geven door aan de commerciële pagina's ═══
 
 update blog_posts
-   set inhoud = replace(inhoud, 'perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats.', 'perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats. Lodge De Heide heeft daarnaast een eigen sauna: [de sauna in na een dag op het water](/wellness-vakantie-drenthe) is precies waar een wellnessverblijf voor bedoeld is.')
+   set inhoud = replace(inhoud, 'perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats.', 'perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats. Lodge De Heide heeft daarnaast een eigen sauna: [de sauna in na een dag op het water](/wellness-vakantie-drenthe) is precies waar een wellnessverblijf voor bedoeld is.'),
+       updated_at = now()
  where slug = 'kanovaren-drentsche-aa'
    and position('perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats.' in inhoud) > 0;
 
 update blog_posts
-   set inhoud = replace(inhoud, 'Huis ter Huynen biedt hier twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub. Na een dag wandelen rond Norg', 'Huis ter Huynen biedt hier twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub — [overnachten vlak bij Norg](/vakantiehuis-norg), zonder in het dorp zelf te zitten. Na een dag wandelen rond Norg')
+   set inhoud = replace(inhoud, 'Huis ter Huynen biedt hier twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub. Na een dag wandelen rond Norg', 'Huis ter Huynen biedt hier twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub — [overnachten vlak bij Norg](/vakantiehuis-norg), zonder in het dorp zelf te zitten. Na een dag wandelen rond Norg'),
+       updated_at = now()
  where slug = 'een-dag-in-norg'
    and position('Huis ter Huynen biedt hier twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub. Na een dag wandelen rond Norg' in inhoud) > 0;
 
 update blog_posts
-   set inhoud = replace(inhoud, 'Wie nieuwsgierig is naar de exacte tarieven, kan zich gratis aanmelden voor de nieuwsbrief', 'Wie wil zien [wat een lodge met jacuzzi bij ons kost](/vakantiehuis-met-hottub-drenthe), vindt daar de opzet en de vanafprijs van beide lodges terug. Wie de exacte tarieven per datum wil weten, kan zich gratis aanmelden voor de nieuwsbrief')
+   set inhoud = replace(inhoud, 'Beide lodges zijn geschikt voor maximaal vier personen.', 'Beide lodges zijn geschikt voor maximaal vier personen. Hoe ze erbij staan en wat er bij die vanafprijs inbegrepen zit, leest u op de pagina over ons [vakantiehuis met hottub in Drenthe](/vakantiehuis-met-hottub-drenthe).'),
+       updated_at = now()
  where slug = 'prive-lodge-boeken-nederland-kosten'
-   and position('Wie nieuwsgierig is naar de exacte tarieven, kan zich gratis aanmelden voor de nieuwsbrief' in inhoud) > 0;
+   and position('Beide lodges zijn geschikt voor maximaal vier personen.' in inhoud) > 0
+   and position('](/vakantiehuis-met-hottub-drenthe)' in inhoud) = 0;
 
 update blog_posts
-   set inhoud = replace(inhoud, 'Na een dag wandelen of fietsen langs de beek is er weinig fijner dan terugkomen op je eigen plek', 'Na een dag [wandelen langs de Drentsche Aa](/wandelroutes-drenthe) of fietsen langs de beek is er weinig fijner dan terugkomen op je eigen plek')
+   set inhoud = replace(inhoud, 'Na een dag wandelen of fietsen langs de beek is er weinig fijner dan terugkomen op je eigen plek', 'Na een dag [wandelen langs de Drentsche Aa](/wandelroutes-drenthe) of fietsen langs de beek is er weinig fijner dan terugkomen op je eigen plek'),
+       updated_at = now()
  where slug = 'drentsche-aa-beekdallandschap'
    and position('Na een dag wandelen of fietsen langs de beek is er weinig fijner dan terugkomen op je eigen plek' in inhoud) > 0;
 
 update blog_posts
-   set inhoud = replace(inhoud, 'Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.', 'De mooiste [fietsroutes vanuit Zeijen](/fietsen-in-drenthe) staan bij elkaar op onze fietspagina. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.')
+   set inhoud = replace(inhoud, 'Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.', 'De mooiste [fietsroutes vanuit Zeijen](/fietsen-in-drenthe) staan bij elkaar op onze fietspagina. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.'),
+       updated_at = now()
  where slug = 'e-bike-huren-in-drenthe'
    and position('Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.' in inhoud) > 0;
 
@@ -85,14 +98,16 @@ update blog_posts
 update blog_posts
    set inhoud = inhoud || chr(10) || chr(10) || '## Wild spotten dichter bij huis
 
-Voor reeën, buizerds en met wat geluk een vos hoef je niet per se naar het Drents-Friese Wold. Rond Zeijen liggen [wandelroutes waar je ze ziet](/wandelroutes-drenthe): het Zeijerveld in de vroege ochtend, de Zeijerstrubben aan het eind van de middag. Huis ter Huynen ligt er middenin, met twee volledig privé lodges en een terras dat uitkijkt op bos in plaats van op andere gasten.'
+Voor reeën, buizerds en met wat geluk een vos hoef je niet per se naar het Drents-Friese Wold. Rond Zeijen liggen [wandelroutes waar je ze ziet](/wandelroutes-drenthe): het Zeijerveld in de vroege ochtend, de Zeijerstrubben aan het eind van de middag. Huis ter Huynen ligt er middenin, met twee volledig privé lodges en een terras dat uitkijkt op bos in plaats van op andere gasten.',
+       updated_at = now()
  where slug = 'wilde-dieren-spotten-in-het-drents-friese-wold'
    and position('](/wandelroutes-drenthe)' in inhoud) = 0;
 
 update blog_posts
    set inhoud = inhoud || chr(10) || chr(10) || '## Een uitvalsbasis midden in het fietsgebied
 
-Wie deze routes vanaf de deur wil rijden, zit goed in [een vakantiehuis bij Assen als uitvalsbasis](/vakantiehuis-assen): Zeijen ligt op twintig minuten van de stad en midden in het knooppuntennetwerk. Bij Huis ter Huynen staan twee privé lodges met een laadpaal op het terrein, zodat een e-bike ''s nachts weer vol staat.'
+Wie deze routes vanaf de deur wil rijden, zit goed in [een vakantiehuis bij Assen als uitvalsbasis](/vakantiehuis-assen): Zeijen ligt op twintig minuten van de stad en midden in het knooppuntennetwerk. Bij Huis ter Huynen staan twee privé lodges met een laadpaal op het terrein, zodat een e-bike ''s nachts weer vol staat.',
+       updated_at = now()
  where slug = 'mooie-fietsroutes-rondom-zeijen-ontdek-het-mooiste-van-drenthe-op-de-fiets'
    and position('](/vakantiehuis-assen)' in inhoud) = 0;
 
@@ -114,13 +129,13 @@ Wie deze routes vanaf de deur wil rijden, zit goed in [een vakantiehuis bij Asse
 
 update landing_pages
    set related = 'Luxe lodge in Drenthe :: /luxe-lodge-drenthe
-Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe
+Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe
 Bijzonder overnachten Drenthe :: /bijzonder-overnachten-drenthe
 Vakantiehuis bij Assen :: /vakantiehuis-assen',
        updated_at = now()
  where slug = 'hunebedden-drenthe'
    and related = 'Luxe lodge in Drenthe :: /luxe-lodge-drenthe
-Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe
+Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe
 Bijzonder overnachten Drenthe :: /bijzonder-overnachten-drenthe
 Vakantiehuis bij Assen :: /vakantiehuis-assen
 Fietsen in Drenthe :: /fietsen-in-drenthe
@@ -129,7 +144,7 @@ Overnachten bij Veenhuizen :: /overnachten-veenhuizen
 Omgeving & activiteiten :: /omgeving';
 
 update landing_pages
-   set related = 'Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe
+   set related = 'Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe
 Wellness huisje Drenthe :: /wellness-vakantie-drenthe
 Paarse heide Drenthe :: /heide-drenthe
 Fietsen in Drenthe :: /fietsen-in-drenthe',
@@ -144,7 +159,7 @@ Vakantiehuis in Drenthe met hond :: /vakantiehuis-drenthe-met-hond
 Omgeving & activiteiten :: /omgeving';
 
 update landing_pages
-   set related = 'Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe
+   set related = 'Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe
 Vakantiehuis bij Assen :: /vakantiehuis-assen
 Wandelroutes in Drenthe :: /wandelroutes-drenthe
 Fochteloërveen :: /fochteloerveen-drenthe',

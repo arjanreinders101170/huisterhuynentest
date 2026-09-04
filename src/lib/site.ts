@@ -120,7 +120,7 @@ function nav(slug: string): { label: string; href: string } {
   return { label: NAV_LABEL[slug] ?? slug, href: `/${slug}` };
 }
 
-/** Zes footerlinks per paginatype. De drie P0-pagina's (jacuzzi, wellness,
+/** Zes footerlinks per paginatype. De drie P0-pagina's (hottub, wellness,
  *  romantisch) staan overal waar het past: dat zijn de pagina's die het
  *  omzetdoel dragen. */
 const FOOTER_SETS: Record<Exclude<PaginaType, "de">, string[]> = {
@@ -221,13 +221,13 @@ export interface ReserveerContext {
 
 export const RESERVEER_CONTEXT: Record<string, ReserveerContext> = {
   "vakantiehuis-met-hottub-drenthe": {
-    van: "jacuzzi",
-    regel: "U bekijkt beschikbaarheid voor een lodge met een eigen jacuzzi op het terras.",
+    van: "hottub",
+    regel: "U bekijkt beschikbaarheid voor een lodge met een eigen hottub op het terras.",
   },
   "wellness-vakantie-drenthe": {
     van: "wellness",
     lodge: "heide",
-    regel: "U bekijkt beschikbaarheid voor een wellnessverblijf in Lodge De Heide, met eigen sauna en jacuzzi.",
+    regel: "U bekijkt beschikbaarheid voor een wellnessverblijf in Lodge De Heide, met eigen sauna en hottub.",
   },
   "romantisch-weekend-weg-drenthe": {
     van: "romantisch",

@@ -140,6 +140,8 @@ export async function handleContentPost(action: string, body: Record<string, unk
       if (slugFout) return NextResponse.json({ error: slugFout }, { status: 400 });
       const planned = parsePlannedDate(geplande_publicatie);
       if (planned === "invalid") return NextResponse.json({ error: "Ongeldige plan-datum" }, { status: 400 });
+      const { data: voorBlog } = await getSupabase()
+        .from("blog_posts").select("gepubliceerd").eq("id", id).single();
       const { error } = await getSupabase().from("blog_posts").update({
         slug: gewijzigdeSlug,
         titel, intro, inhoud, categorie, leestijd, auteur,
@@ -148,6 +150,12 @@ export async function handleContentPost(action: string, body: Record<string, unk
         updated_at: new Date().toISOString(),
       }).eq("id", id);
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      // Een herschreven artikel is voor een zoekmachine net zo goed nieuws als
+      // een nieuw artikel. Tot nu toe meldde alleen het publiceren zich aan,
+      // waardoor een inhoudelijke herziening tot de volgende spontane crawl
+      // bleef liggen — dezelfde regel als bij de landingspagina's hierboven.
+      // Alleen melden als het artikel ook echt live staat.
+      if (voorBlog?.gepubliceerd) await meldAan(["/blog", `/blog/${gewijzigdeSlug}`]);
       return NextResponse.json({ success: true });
     }
     case "publish_blog_post": {
