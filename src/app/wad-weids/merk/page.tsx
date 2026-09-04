@@ -172,6 +172,7 @@ MyTourist PMS
       <section className="ww-section ww-section--tight ww-section--sand">
         <div className="ww-wrap">
           <SectionHead eyebrow="Schaalbaarheid" title="Van acht naar vijftig woningen" text="Elke pagina rendert wat er in de collectie zit. Groeien betekent records toevoegen, geen pagina's ontwerpen." />
+          <div style={{ overflowX: "auto" }}>
           <table className="ww-table">
             <thead>
               <tr><th>Onderdeel</th><th>Vandaag</th><th>Bij 50 woningen</th></tr>
@@ -186,6 +187,7 @@ MyTourist PMS
               <tr><td>Favorieten</td><td>In de browser bewaard</td><td>Aan het gastaccount, zichtbaar in e-mail en app</td></tr>
             </tbody>
           </table>
+          </div>
 
           <div className="ww-row ww-mt-l">
             <Link href="/wad-weids" className="ww-btn ww-btn--primary">Naar de homepage <IconArrow size={14} /></Link>

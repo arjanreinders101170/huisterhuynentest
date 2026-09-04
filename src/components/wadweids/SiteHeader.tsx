@@ -34,7 +34,7 @@ export function SiteHeader({ variant = "solid" }: { variant?: "over" | "solid" }
   return (
     <>
       <header className={`ww-header ww-header--${variant}${compact ? " is-compact" : ""}`}>
-        <div className="ww-wrap ww-header__inner">
+        <div className="ww-wrap ww-wrap--wide ww-header__inner">
           <Logo />
           <nav className="ww-header__nav">
             {NAV.map((item) => (

@@ -7,6 +7,11 @@ van de MyTourist-koppeling.
 
 **Bekijken:** `npm run dev` → <http://localhost:3000/wad-weids>
 
+**Delen zonder server:** `node scripts/prototype/build.mjs <map>` maakt één
+html-bestand met het stylesheet en alle beelden erin — handig om rond te
+sturen. Dat bestand is een momentopname om te tonen; de site zelf blijft
+`src/app/wad-weids`.
+
 | Scherm | Route |
 | --- | --- |
 | Homepage | `/wad-weids` |
@@ -65,6 +70,7 @@ src/lib/wadweids/types.ts     het datamodel — het contract met het PMS
 src/lib/wadweids/content.ts   collectie, bestemmingen, voorzieningen
 src/lib/wadweids/mytourist.ts de PMS-adapter (mock + echte client)
 scripts/wadweids-images.mjs   generator voor de sfeerbeelden
+scripts/prototype/            bouwt de deelbare één-bestandsversie
 public/wad-weids/             de gegenereerde beelden
 ```
 

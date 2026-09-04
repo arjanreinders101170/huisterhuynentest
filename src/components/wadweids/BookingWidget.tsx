@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import type { BookingConfirmation, Property } from "@/lib/wadweids/types";
-import { calendarMonth, quoteFor } from "@/lib/wadweids/mytourist";
+import { calendarMonth, firstBookableStay, quoteFor } from "@/lib/wadweids/mytourist";
 import { addDays, dayMonth, euro, iso, longDate } from "@/lib/wadweids/format";
 import { IconArrow, IconCheck, IconChevron } from "./Icons";
 
@@ -28,12 +28,12 @@ export function BookingWidget({ property }: { property: Property }) {
   /* Data pas na mount zetten: de server weet niet welke dag het bij de
      bezoeker is, en een verschil zou de hydratie breken. */
   useEffect(() => {
-    const start = addDays(iso(new Date()), 21);
-    setArrival(start);
-    setDeparture(addDays(start, 3));
-    const d = new Date(start + "T12:00:00");
+    const stay = firstBookableStay(property, addDays(iso(new Date()), 14), Math.max(3, property.minNights));
+    setArrival(stay.arrival);
+    setDeparture(stay.departure);
+    const d = new Date(stay.arrival + "T12:00:00");
     setMaand({ y: d.getFullYear(), m: d.getMonth() });
-  }, []);
+  }, [property]);
 
   const quote = useMemo(
     () => (arrival && departure ? quoteFor(property, { propertyId: property.id, arrival, departure, guests, extras }) : null),

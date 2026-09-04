@@ -165,10 +165,10 @@
   height: 104px; transition: height .35s ease;
 }
 .ww-header.is-compact .ww-header__inner { height: 72px; }
-.ww-header__nav { display: flex; align-items: center; gap: 26px; }
+.ww-header__nav { display: flex; align-items: center; gap: 18px; min-width: 0; overflow: hidden; }
 .ww-header__nav a {
   white-space: nowrap;
-  font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 400;
+  font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 400;
   padding: 6px 0; position: relative; opacity: .88;
   transition: opacity .2s ease;
 }
@@ -178,7 +178,7 @@
 }
 .ww-header__nav a:hover { opacity: 1; }
 .ww-header__nav a:hover::after, .ww-header__nav a[aria-current="page"]::after { right: 0; }
-.ww-header__tools { display: flex; align-items: center; gap: 20px; }
+.ww-header__tools { display: flex; align-items: center; gap: 16px; }
 /* In de balk staan de knoppen iets compacter dan in de pagina, anders
    verdringt de CTA de navigatie op een 1440-scherm. */
 .ww-header .ww-btn { padding: 13px 22px; font-size: .76rem; letter-spacing: .12em; }
@@ -190,7 +190,7 @@
 .ww-logo { display: inline-flex; align-items: center; gap: 14px; }
 .ww-logo__mark { width: 38px; height: 38px; flex: none; }
 .ww-logo__type { display: flex; flex-direction: column; line-height: 1; }
-.ww-logo__word { font-family: var(--serif); font-size: 1.42rem; font-weight: 400; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
+.ww-logo__word { font-family: var(--serif); font-size: 1.32rem; font-weight: 400; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
 .ww-logo__word em { font-style: normal; opacity: .55; padding: 0 .06em; }
 .ww-logo__tag { font-size: .56rem; letter-spacing: .26em; text-transform: uppercase; opacity: .62; margin-top: 6px; white-space: nowrap; }
 .ww-logo--lg .ww-logo__mark { width: 54px; height: 54px; }
@@ -530,6 +530,16 @@
 /* ══ Responsive ═══════════════════════════════════════════════════
    Container queries: dezelfde regels gelden op een telefoon én in het
    telefoonframe op /wad-weids/mobiel. */
+/* De balk krijgt minder ruimte naarmate het scherm smaller wordt en geeft
+   die in deze volgorde op: eerst de labels naast de iconen, dan de
+   letterafstand in de navigatie, dan de CTA — die verderop toch terugkomt. */
+@container ww (max-width: 1400px) { .ww-header__icon--label { display: none; } }
+@container ww (max-width: 1240px) {
+  .ww-header__nav { gap: 14px; }
+  .ww-header__nav a { font-size: .7rem; letter-spacing: .08em; }
+}
+@container ww (max-width: 1120px) { .ww-header .ww-btn--primary { display: none; } }
+
 @container ww (max-width: 1120px) {
   .ww { --gutter: 32px; }
   .ww-grid { grid-template-columns: repeat(2, 1fr); }
@@ -538,7 +548,7 @@
   .ww-results { grid-template-columns: 264px 1fr; gap: 36px; }
   .ww-header__nav { gap: 24px; }
 }
-@container ww (max-width: 900px) {
+@container ww (max-width: 980px) {
   .ww { --gutter: 24px; }
   .ww-section { padding: 76px 0; }
   .ww-header__nav, .ww-header__tools .ww-header__icon--label { display: none; }

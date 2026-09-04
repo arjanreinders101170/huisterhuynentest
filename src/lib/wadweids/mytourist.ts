@@ -244,6 +244,20 @@ export function quoteFor(property: Property, input: QuoteInput): Quote {
   return buildQuote(property, input);
 }
 
+/** Eerstvolgende periode die echt boekbaar is: vrije nachten, een
+ *  toegestane aankomstdag en genoeg nachten. De boekingsmodule opent
+ *  hiermee, zodat de gast meteen een prijs ziet in plaats van "bezet". */
+export function firstBookableStay(property: Property, from: string, nights: number): { arrival: string; departure: string } {
+  for (let offset = 0; offset < 180; offset++) {
+    const arrival = addDays(from, offset);
+    const days = Array.from({ length: nights }, (_, i) => dayFor(property, addDays(arrival, i)));
+    if (days.every((d) => d.available) && days[0].arrivalAllowed && nights >= days[0].minNights) {
+      return { arrival, departure: addDays(arrival, nights) };
+    }
+  }
+  return { arrival: from, departure: addDays(from, nights) };
+}
+
 export function availabilityFor(property: Property, from: string, nights: number): AvailabilityDay[] {
   return Array.from({ length: nights }, (_, i) => dayFor(property, addDays(from, i)));
 }

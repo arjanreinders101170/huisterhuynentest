@@ -1,0 +1,726 @@
+<title>Wad &amp; Weids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap">
+<style>
+/*__CSS__*/
+
+/* ── Prototypeschil ──────────────────────────────────────────────────
+   De balk hieronder hoort niet bij de website: het is het frame waarin
+   de mock-up wordt getoond. */
+:root { color-scheme: light; }
+body { background: #E8E4DC; }
+.proto { min-height: 100vh; display: flex; flex-direction: column; }
+.proto__bar {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 12px 20px; background: #1A201E; color: rgba(255,255,255,.72);
+  font-family: "Jost", system-ui, sans-serif; font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
+}
+.proto__brand { color: #fff; font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.05rem; letter-spacing: .18em; text-transform: uppercase; }
+.proto__tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.proto__tab { padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); color: inherit; background: none; cursor: pointer; font: inherit; }
+.proto__tab:hover { border-color: rgba(255,255,255,.5); color: #fff; }
+.proto__tab[aria-current="true"] { background: #fff; color: #1A201E; border-color: #fff; }
+.proto__right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.proto__stage { flex: 1; display: flex; justify-content: center; padding: 0; }
+.proto__stage--mobile { padding: 34px 16px 60px; }
+#app { width: 100%; }
+.proto__stage--mobile #app {
+  width: 390px; max-width: 100%; height: 780px; overflow-y: auto; overflow-x: hidden;
+  border-radius: 34px; box-shadow: 0 0 0 12px #17201C, 0 30px 70px rgba(26,32,30,.35);
+  min-height: 0; scrollbar-width: none;
+}
+.proto__stage--mobile #app::-webkit-scrollbar { display: none; }
+.proto__note { font-size: .7rem; letter-spacing: .08em; text-transform: none; opacity: .55; }
+@media (max-width: 700px) { .proto__note { display: none; } }
+</style>
+
+<div class="proto">
+  <div class="proto__bar">
+    <span class="proto__brand">Wad &amp; Weids</span>
+    <div class="proto__tabs" id="tabs"></div>
+    <div class="proto__right">
+      <span class="proto__note">Klikbare mock-up — prijzen en beschikbaarheid komen straks uit MyTourist</span>
+      <button class="proto__tab" id="device">Mobiel</button>
+    </div>
+  </div>
+  <div class="proto__stage" id="stage">
+    <div class="ww" id="app"></div>
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/;
+const IMG = /*__IMAGES__*/;
+const { PROPERTIES, DESTINATIONS, AMENITIES, AMENITY_GROUPS } = DATA;
+const AMENITY_LABEL = Object.fromEntries(AMENITIES.map(a => [a.key, a.label]));
+const FILTER_AMENITIES = AMENITIES.filter(a => a.filter);
+const img = (src) => IMG[src] || src;
+
+/* ── Opmaak ─────────────────────────────────────────────────────── */
+const euro = (n, cents) => new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR", minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 }).format(n);
+const iso = (d) => d.toISOString().slice(0, 10);
+const addDays = (isoDate, days) => { const d = new Date(isoDate + "T12:00:00"); d.setDate(d.getDate() + days); return iso(d); };
+const nights = (a, b) => Math.max(0, Math.round((+new Date(b) - +new Date(a)) / 86400000));
+const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ── MyTourist-mock ──────────────────────────────────────────────────
+   Exact dezelfde berekening als in src/lib/wadweids/mytourist.ts: dezelfde
+   seizoensfactoren, minimumverblijf en aankomstdagen. */
+function hash(seed) { let h = 2166136261; for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 1000) / 1000; }
+function seasonFactor(d) { const m = d.getMonth(); if (m === 6 || m === 7) return 1.32; if (m === 4 || m === 5 || m === 8) return 1.14; if (m === 3 || m === 9) return 1.0; return 0.86; }
+function weekendFactor(d) { const k = d.getDay(); return k === 5 || k === 6 ? 1.18 : 1; }
+function dayFor(p, date) {
+  const d = new Date(date + "T12:00:00"), h = hash(p.id + date);
+  const rate = Math.round((p.priceFrom * seasonFactor(d) * weekendFactor(d)) / 5) * 5;
+  return { date, rate, available: h > (seasonFactor(d) > 1.2 ? 0.42 : 0.2), arrivalAllowed: seasonFactor(d) > 1.2 ? [5, 1].includes(d.getDay()) : true, minNights: seasonFactor(d) > 1.2 ? Math.max(p.minNights, 3) : p.minNights };
+}
+function quoteFor(p, { arrival, departure, guests, extras = [] }) {
+  const n = nights(arrival, departure), g = Math.min(Math.max(1, guests), p.guests), lines = [];
+  const days = Array.from({ length: n }, (_, i) => dayFor(p, addDays(arrival, i)));
+  const stay = days.reduce((s, d) => s + d.rate, 0);
+  const averageRate = n ? Math.round(stay / n) : p.priceFrom;
+  let available = n > 0 && days.every(d => d.available), reason;
+  if (n === 0) { available = false; reason = "Kies een aankomst- en vertrekdatum."; }
+  else if (!days.every(d => d.available)) reason = "Deze periode is deels bezet. Bekijk de kalender voor vrije data.";
+  else if (n < (days[0] ? days[0].minNights : p.minNights)) { available = false; reason = "In deze periode geldt een minimum van " + (days[0] ? days[0].minNights : p.minNights) + " nachten."; }
+  else if (days[0] && !days[0].arrivalAllowed) { available = false; reason = "In het hoogseizoen kun je aankomen op maandag of vrijdag."; }
+  if (n > 0) lines.push({ label: euro(averageRate) + " × " + plural(n, "nacht", "nachten"), detail: "Dynamisch tarief per nacht", amount: stay });
+  if (n >= 7) lines.push({ label: "Weekkorting", detail: "10% vanaf zeven nachten", amount: -Math.round(stay * 0.1) });
+  lines.push({ label: "Eindschoonmaak", amount: p.cleaningFee });
+  lines.push({ label: "Toeristenbelasting", detail: g + " × " + n + " × " + euro(p.touristTaxPerPersonPerNight, true), amount: Math.round(p.touristTaxPerPersonPerNight * g * n * 100) / 100, cents: true });
+  for (const key of extras) {
+    const e = p.extras.find(x => x.key === key); if (!e) continue;
+    lines.push({ label: e.label, detail: e.unit === "night" ? "per nacht" : e.unit === "person" ? "per persoon" : "eenmalig", amount: e.unit === "night" ? e.price * n : e.unit === "person" ? e.price * g : e.price });
+  }
+  const total = Math.round(lines.reduce((s, l) => s + l.amount, 0) * 100) / 100;
+  return { nights: n, guests: g, averageRate, lines, total, deposit: Math.round(total * 0.3), available, reason };
+}
+/* Eerstvolgende echt boekbare periode — zie firstBookableStay() in de app. */
+function firstBookableStay(p, from, n) {
+  for (let o = 0; o < 180; o++) {
+    const arrival = addDays(from, o);
+    const days = Array.from({ length: n }, (_, i) => dayFor(p, addDays(arrival, i)));
+    if (days.every(d => d.available) && days[0].arrivalAllowed && n >= days[0].minNights) return { arrival, departure: addDays(arrival, n) };
+  }
+  return { arrival: from, departure: addDays(from, n) };
+}
+function calendarMonth(p, y, m) {
+  const days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  return Array.from({ length: days }, (_, i) => dayFor(p, iso(new Date(Date.UTC(y, m, i + 1)))));
+}
+function searchProperties(filters) {
+  let list = PROPERTIES.filter(p => {
+    if (filters.destination && p.destination !== filters.destination) return false;
+    if (filters.guests && p.guests < filters.guests) return false;
+    if (filters.bedrooms && p.bedrooms < filters.bedrooms) return false;
+    if (filters.maxPrice && p.priceFrom > filters.maxPrice) return false;
+    if (filters.amenities && filters.amenities.length && !filters.amenities.every(a => p.amenities.includes(a))) return false;
+    return true;
+  });
+  if (filters.arrival && filters.departure) {
+    const n = nights(filters.arrival, filters.departure);
+    list = list.filter(p => Array.from({ length: n }, (_, i) => dayFor(p, addDays(filters.arrival, i))).every(d => d.available));
+  }
+  const s = [...list];
+  if (filters.sort === "prijs-op") s.sort((a, b) => a.priceFrom - b.priceFrom);
+  if (filters.sort === "prijs-af") s.sort((a, b) => b.priceFrom - a.priceFrom);
+  if (filters.sort === "personen") s.sort((a, b) => b.guests - a.guests);
+  return s;
+}
+const countFilters = (f) => (f.destination ? 1 : 0) + (f.guests ? 1 : 0) + (f.bedrooms ? 1 : 0) + (f.maxPrice ? 1 : 0) + (f.arrival && f.departure ? 1 : 0) + ((f.amenities || []).length);
+
+/* ── Iconen ─────────────────────────────────────────────────────── */
+const svg = (d, size) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
+const ICON = {
+  search: (s = 18) => svg('<circle cx="11" cy="11" r="6.5"/><path d="m20 20-3.6-3.6"/>', s),
+  user: (s = 18) => svg('<circle cx="12" cy="8" r="3.6"/><path d="M5 20c.7-3.6 3.6-5.6 7-5.6s6.3 2 7 5.6"/>', s),
+  guests: (s = 16) => svg('<circle cx="9" cy="8.5" r="3.2"/><path d="M3 19c.6-3.1 3-4.8 6-4.8s5.4 1.7 6 4.8"/><path d="M16 6.2a3.2 3.2 0 0 1 0 6.1M18 14.6c2.1.6 3.4 2.2 3.8 4.4"/>', s),
+  bed: (s = 16) => svg('<path d="M3 18v-8m0 4h18v4M3 12V8a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v4M21 14v-2a2 2 0 0 0-2-2h-7"/>', s),
+  bath: (s = 16) => svg('<path d="M3 12h18v2a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-2ZM6 12V6.5A2.5 2.5 0 0 1 8.5 4c1 0 1.8.6 2.2 1.4M6 18l-1 2M18 18l1 2"/>', s),
+  area: (s = 16) => svg('<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M8 3.5v3M3.5 8h3M16 20.5v-3M20.5 16h-3"/>', s),
+  pin: (s = 14) => svg('<path d="M12 21s6.5-6.1 6.5-10.5a6.5 6.5 0 1 0-13 0C5.5 14.9 12 21 12 21Z"/><circle cx="12" cy="10.5" r="2.3"/>', s),
+  heart: (s = 17, filled) => '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="' + (filled ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-9.4A4.1 4.1 0 0 1 12 7.8a4.1 4.1 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20Z"/></svg>',
+  arrow: (s = 15) => svg('<path d="M4 12h15m-5.5-5.5L19 12l-5.5 5.5"/>', s),
+  check: (s = 15) => svg('<path d="m4.5 12.5 4.5 4.5L19.5 6.5"/>', s),
+  chevron: (s = 14) => svg('<path d="m6 9.5 6 6 6-6"/>', s),
+  sliders: (s = 17) => svg('<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/>', s),
+  menu: (s = 18) => svg('<path d="M4 8h16M4 16h16"/>', s),
+  close: (s = 18) => svg('<path d="M6 6l12 12M18 6 6 18"/>', s),
+  space: (s = 30) => svg('<path d="M2 15h20M2 19h20M6 11h12M9 7h6"/>', s),
+  nature: (s = 30) => svg('<path d="M12 21V9M12 9c0-3 2-5 5-5 0 3-2 5-5 5ZM12 12c0-3-2-5-5-5 0 3 2 5 5 5ZM4 21h16"/>', s),
+  comfort: (s = 30) => svg('<path d="M4 18v-6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v6M4 15h16M7 9V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M6 18v2M18 18v2"/>', s),
+  personal: (s = 30) => svg('<path d="M12 20.5s-7-4.2-7-9.2A3.9 3.9 0 0 1 12 8.6a3.9 3.9 0 0 1 7 2.7c0 5-7 9.2-7 9.2ZM12 3v2.5"/>', s),
+  tide: (s = 30) => svg('<path d="M2 9c2.5-2 5-2 7.5 0S15 11 17.5 9 22 7 22 7M2 15c2.5-2 5-2 7.5 0s5 2 7.5 0 4.5-2 4.5-2"/>', s),
+};
+const LOGO_MARK = (size) => '<svg width="' + size + '" height="' + size + '" viewBox="0 0 40 40" fill="none" aria-hidden="true">' +
+  '<rect x="1.6" y="1.6" width="36.8" height="36.8" rx="9" stroke="currentColor" stroke-opacity=".3" stroke-width="1.1"/>' +
+  '<path d="M8 18.4h24" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>' +
+  '<path d="M8 23.6c3.6 0 4.6-3 8.2-3s4.4 3 7.9 3c2.4 0 3.6-1.4 7.9-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-opacity=".75"/>' +
+  '<path d="M8 29.2h24" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-opacity=".4"/>' +
+  '<path d="M25.6 13.6v9.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+
+/* ── Componenten ─────────────────────────────────────────────────────
+   Dezelfde markup en dezelfde klassen als de React-componenten in
+   src/components/wadweids — dit is dezelfde site, zonder framework. */
+const logo = (opts = {}) => '<a href="#/" class="ww-logo' + (opts.lg ? " ww-logo--lg" : "") + '">' +
+  '<span class="ww-logo__mark">' + LOGO_MARK(opts.lg ? 54 : 38) + '</span>' +
+  '<span class="ww-logo__type"><span class="ww-logo__word">Wad <em>&amp;</em> Weids</span>' +
+  (opts.tagline ? '<span class="ww-logo__tag">Luxe verblijven in de mooiste natuur van Nederland</span>' : "") +
+  '</span></a>';
+
+const NAV = [
+  ["Verblijven", "#/verblijven"], ["Bestemmingen", "#/bestemmingen"],
+  ["Over Wad & Weids", "#/#waarom"], ["Inspiratie", "#/#inspiratie"], ["Contact", "#/#contact"],
+];
+
+const header = (variant) => '<header class="ww-header ww-header--' + (variant || "solid") + '" id="hdr"><div class="ww-wrap ww-wrap--wide ww-header__inner">' +
+  logo() +
+  '<nav class="ww-header__nav">' + NAV.map(([l, h]) => '<a href="' + h + '">' + esc(l) + '</a>').join("") + '</nav>' +
+  '<div class="ww-header__tools">' +
+    '<a href="#/verblijven" class="ww-header__icon">' + ICON.search() + '<span class="ww-header__icon--label">Zoek</span></a>' +
+    '<a href="#/#contact" class="ww-header__icon ww-hide-mobile">' + ICON.user() + '<span class="ww-header__icon--label">Mijn boeking</span></a>' +
+    '<a href="#/verblijven" class="ww-btn ww-btn--primary ww-hide-mobile">Bekijk verblijven</a>' +
+    '<button class="ww-header__burger" data-menu="open" aria-label="Menu openen">' + ICON.menu() + '</button>' +
+  '</div></div></header>';
+
+const footer = () => '<footer class="ww-footer" id="contact"><div class="ww-wrap">' +
+  '<div class="ww-footer__top">' +
+    '<div>' + logo({ tagline: true }) +
+      '<p class="ww-footer__intro">Een kleine collectie vakantiehuizen op plekken waar de horizon nog vrij is. Persoonlijk verhuurd, zorgvuldig onderhouden, direct te boeken.</p>' +
+      '<form class="ww-newsletter" onsubmit="return false"><input type="email" placeholder="Je e-mailadres" aria-label="E-mailadres"><button type="button" class="ww-btn ww-btn--light">Aanmelden</button></form>' +
+    '</div>' +
+    '<div><h4>Bestemmingen</h4><ul>' + DESTINATIONS.map(d => '<li><a href="#/bestemming/' + d.slug + '">' + esc(d.name) + '</a></li>').join("") + '</ul></div>' +
+    '<div><h4>Platform</h4><ul>' +
+      '<li><a href="#/verblijven">Alle verblijven</a></li><li><a href="#/#waarom">Over Wad &amp; Weids</a></li>' +
+      '<li><a href="#/merk">Merk &amp; designsysteem</a></li><li><a href="#/#inspiratie">Inspiratie</a></li></ul></div>' +
+    '<div><h4>Contact</h4><ul><li>Reserveringen: 058 — 000 00 00</li><li>hallo@wadenweids.nl</li><li>Ma t/m vr 09.00 – 17.30 uur</li><li>Zaterdag 10.00 – 14.00 uur</li></ul>' +
+      '<p style="margin-top:22px;font-size:.88rem;line-height:1.7">Je boekt rechtstreeks bij de eigenaar. Geen tussenpartij, geen servicekosten.</p></div>' +
+  '</div>' +
+  '<div class="ww-footer__bottom"><span>© 2026 Wad &amp; Weids — visuele mock-up</span><span>Beschikbaarheid, tarieven en reserveringen via MyTourist</span><span>Algemene voorwaarden · Privacy · Cookies</span></div>' +
+  '</div></footer>';
+
+const searchbar = (state = {}, flat) =>
+  '<form class="ww-search' + (flat ? " ww-search--flat" : "") + '" id="searchform">' +
+  '<div class="ww-field"><label for="s-dest">Waar wil je naartoe?</label><select id="s-dest"><option value="">Alle bestemmingen</option>' +
+    DESTINATIONS.map(d => '<option value="' + d.slug + '"' + (state.destination === d.slug ? " selected" : "") + '>' + esc(d.name) + '</option>').join("") +
+  '</select><span class="ww-field__caret">' + ICON.chevron() + '</span></div>' +
+  '<div class="ww-field"><label for="s-arr">Aankomst</label><input id="s-arr" type="date" value="' + (state.arrival || "") + '"></div>' +
+  '<div class="ww-field"><label for="s-dep">Vertrek</label><input id="s-dep" type="date" value="' + (state.departure || "") + '"></div>' +
+  '<div class="ww-field"><label for="s-guests">Aantal gasten</label><select id="s-guests"><option value="">Maakt niet uit</option>' +
+    [1, 2, 3, 4, 5, 6, 8, 10].map(n => '<option value="' + n + '"' + (String(state.guests) === String(n) ? " selected" : "") + '>' + plural(n, "gast", "gasten") + '</option>').join("") +
+  '</select><span class="ww-field__caret">' + ICON.chevron() + '</span></div>' +
+  '<div class="ww-search__submit"><button type="submit" class="ww-btn ww-btn--primary">' + ICON.search(16) + ' Zoeken</button></div></form>';
+
+const favs = () => { try { return JSON.parse(localStorage.getItem("ww-favorieten") || "[]"); } catch (e) { return []; } };
+
+const card = (p) => '<article class="ww-card">' +
+  '<div class="ww-card__media">' +
+    (p.badge ? '<span class="ww-card__badge">' + esc(p.badge) + '</span>' : "") +
+    '<button class="ww-card__fav" data-fav="' + p.id + '" aria-pressed="' + (favs().includes(p.id) ? "true" : "false") + '" aria-label="' + esc(p.name) + ' bewaren">' + ICON.heart(17, favs().includes(p.id)) + '</button>' +
+    '<img src="' + img(p.images[0].src) + '" alt="' + esc(p.images[0].alt) + '">' +
+  '</div>' +
+  '<div class="ww-card__body">' +
+    '<span class="ww-card__loc">' + ICON.pin() + " " + esc(p.place) + '</span>' +
+    '<h3 class="ww-card__title">' + esc(p.name) + '</h3>' +
+    '<div class="ww-card__facts"><span>' + ICON.guests() + " " + plural(p.guests, "gast", "gasten") + '</span><span>' + ICON.bed() + " " + plural(p.bedrooms, "slaapkamer", "slaapkamers") + '</span><span>' + p.size + ' m²</span></div>' +
+    '<p class="ww-card__desc">' + esc(p.tagline) + '</p>' +
+    '<div class="ww-card__foot"><span class="ww-price">' + euro(p.priceFrom) + ' <small>per nacht</small></span><span class="ww-card__cta">Bekijken ' + ICON.arrow(14) + '</span></div>' +
+  '</div>' +
+  '<a href="#/verblijf/' + p.slug + '" class="ww-card__stretch" aria-label="' + esc(p.name) + ' bekijken"></a></article>';
+
+const tile = (d) => {
+  const n = PROPERTIES.filter(p => p.destination === d.slug).length;
+  const mod = d.tile === "wide" ? " ww-tile--wide" : d.tile === "tall" ? " ww-tile--tall" : "";
+  return '<a href="#/bestemming/' + d.slug + '" class="ww-tile' + mod + '"><img src="' + img(d.image) + '" alt="' + esc(d.name) + '">' +
+    '<div class="ww-tile__body"><h3 class="ww-tile__name">' + esc(d.name) + '</h3>' +
+    '<span class="ww-tile__count">' + (n ? plural(n, "verblijf", "verblijven") : "Binnenkort") + ' · ' + esc(d.region) + '</span></div></a>';
+};
+
+const sectionHead = (eyebrow, title, text, action) => '<header class="ww-sectionhead"><div>' +
+  (eyebrow ? '<span class="ww-eyebrow">' + esc(eyebrow) + '</span>' : "") + '<h2 class="ww-h2">' + title + '</h2></div><div>' +
+  (text ? '<p>' + esc(text) + '</p>' : "") +
+  (action ? '<a href="' + action[1] + '" class="ww-link ww-mt-s">' + esc(action[0]) + " " + ICON.arrow(13) + '</a>' : "") + '</div></header>';
+
+/* ── Schermen ───────────────────────────────────────────────────── */
+const VALUES = [
+  ["space", "Ruimte", "Ruimte om echt even weg te zijn. Vrijstaand, met de horizon als buur."],
+  ["nature", "Natuur", "Midden in bijzondere landschappen: wad, duin, heide en kwelder."],
+  ["comfort", "Comfort", "Vakantiehuizen waar comfort en kwaliteit vanzelfsprekend zijn."],
+  ["personal", "Persoonlijk", "Geen massaal vakantiepark, maar een zorgvuldig geselecteerde collectie."],
+];
+const INSPIRATIE = [
+  ["/wad-weids/wad-3.svg", "Wandelen", "Het wad op met de gids", "Waarom je een wadlooptocht het beste in mei of september plant."],
+  ["/wad-weids/kwelder-2.svg", "Seizoen", "November aan de kust", "Laag licht, lege stranden en huizen waar de kachel al aan staat."],
+  ["/wad-weids/mist-1.svg", "Onderweg", "Zes dorpen, één dag", "Een route langs de terpdorpen die je op de kaart nooit zou vinden."],
+];
+
+const band = (image, eyebrow, title, text, cta) => '<section class="ww-band"><img src="' + img(image) + '" alt="">' +
+  '<div class="ww-band__body">' + (eyebrow ? '<span class="ww-eyebrow ww-eyebrow--light">' + esc(eyebrow) + '</span>' : "") +
+  '<h2 class="ww-display ww-mt-s">' + esc(title) + '</h2>' + (text ? '<p>' + esc(text) + '</p>' : "") +
+  '<a href="' + cta[1] + '" class="ww-btn ww-btn--light ww-btn--lg">' + esc(cta[0]) + " " + ICON.arrow(14) + '</a></div></section>';
+
+function screenHome() {
+  return header("over") +
+  '<section class="ww-hero"><div class="ww-hero__media">' +
+    '<img src="' + img("/lodge-heide.jpg") + '" alt="Vakantiehuis in het avondlicht aan de rand van de heide">' +
+    '<div class="ww-hero__scrim"></div>' +
+    '<div class="ww-hero__content"><div class="ww-wrap">' +
+      '<span class="ww-eyebrow ww-eyebrow--light ww-hero__eyebrow">Wad &amp; Weids</span>' +
+      '<h1 class="ww-display">Ruimte om te ademen.</h1>' +
+      '<p class="ww-hero__sub">Bijzondere vakantiehuizen op bijzondere plekken.</p>' +
+    '</div></div></div>' +
+    '<div class="ww-wrap">' + searchbar({}) + '</div></section>' +
+
+  '<section class="ww-section" id="verblijven"><div class="ww-wrap">' +
+    sectionHead("Onze verblijven", "Met zorg gekozen, één voor één",
+      "Vakantiehuizen op plekken waar natuur en comfort samenkomen. Allemaal vrijstaand, allemaal met eigen buitenruimte, allemaal direct bij ons te boeken.",
+      ["Alle verblijven", "#/verblijven"]) +
+    '<div class="ww-grid">' + PROPERTIES.slice(0, 6).map(card).join("") + '</div>' +
+    '<div class="ww-loadmore"><a href="#/verblijven" class="ww-btn ww-btn--ghost ww-btn--lg">Bekijk alle ' + PROPERTIES.length + ' verblijven ' + ICON.arrow(14) + '</a></div>' +
+  '</div></section>' +
+
+  '<section class="ww-section ww-section--sand" id="bestemmingen"><div class="ww-wrap">' +
+    sectionHead("Bestemmingen", "Ontdek onze bestemmingen",
+      "Van de Waddenkust tot de Drentse heide. Elke regio heeft zijn eigen licht, zijn eigen stilte en zijn eigen seizoen.",
+      ["Alle bestemmingen", "#/bestemmingen"]) +
+    '<div class="ww-tiles">' + DESTINATIONS.map(tile).join("") + '</div>' +
+  '</div></section>' +
+
+  '<section class="ww-section" id="waarom"><div class="ww-wrap">' +
+    sectionHead("Waarom Wad &amp; Weids", "Vier dingen die we niet inleveren") +
+    '<div class="ww-values">' + VALUES.map(([ic, t, x]) =>
+      '<div class="ww-value"><div class="ww-value__icon">' + ICON[ic]() + '</div><h3>' + t + '</h3><p>' + x + '</p></div>').join("") +
+    '</div></div></section>' +
+
+  band("/wad-weids/band-avond.svg", "De laatste uren van de dag", "Even helemaal weg.",
+    "Geen receptie, geen slagboom, geen buren op twee meter. Alleen jij, het huis en het landschap eromheen.",
+    ["Ontdek onze verblijven", "#/verblijven"]) +
+
+  '<section class="ww-section" id="inspiratie"><div class="ww-wrap">' +
+    sectionHead("Inspiratie", "Verhalen van de kust", "Wat je hier doet als het regent, waar de beste koffie staat en wanneer het wad op zijn mooist is.") +
+    '<div class="ww-grid">' + INSPIRATIE.map(([src, tag, title, text]) =>
+      '<article class="ww-card"><div class="ww-card__media"><img src="' + img(src) + '" alt=""></div>' +
+      '<div class="ww-card__body"><span class="ww-card__loc">' + tag + '</span><h3 class="ww-card__title">' + title + '</h3>' +
+      '<p class="ww-card__desc">' + text + '</p><div class="ww-card__foot"><span class="ww-card__cta">Lezen ' + ICON.arrow(14) + '</span></div></div></article>').join("") +
+    '</div></div></section>' + footer();
+}
+
+/* Zoekresultaten — filters, sorteren en de sheet op mobiel. */
+let filters = { sort: "aanbevolen", amenities: [] };
+let zichtbaar = 9;
+
+function filterPanel() {
+  const actief = countFilters(filters);
+  return '<div class="ww-filters">' +
+    '<div class="ww-filters__group"><h4>Bestemming</h4><select class="ww-input" data-f="destination"><option value="">Alle bestemmingen</option>' +
+      DESTINATIONS.map(d => '<option value="' + d.slug + '"' + (filters.destination === d.slug ? " selected" : "") + '>' + esc(d.name) + '</option>').join("") + '</select></div>' +
+    '<div class="ww-filters__group"><h4>Periode</h4><div class="ww-inputrow">' +
+      '<input class="ww-input" type="date" aria-label="Aankomst" data-f="arrival" value="' + (filters.arrival || "") + '">' +
+      '<input class="ww-input" type="date" aria-label="Vertrek" data-f="departure" value="' + (filters.departure || "") + '"></div>' +
+      '<p class="ww-meta">Beschikbaarheid komt live uit MyTourist.</p></div>' +
+    '<div class="ww-filters__group"><h4>Gezelschap</h4><div class="ww-inputrow">' +
+      '<select class="ww-input" aria-label="Aantal gasten" data-f="guests"><option value="">Gasten</option>' +
+        [2, 4, 5, 6, 8, 10].map(n => '<option value="' + n + '"' + (String(filters.guests) === String(n) ? " selected" : "") + '>' + n + '+ gasten</option>').join("") + '</select>' +
+      '<select class="ww-input" aria-label="Aantal slaapkamers" data-f="bedrooms"><option value="">Slaapkamers</option>' +
+        [1, 2, 3, 4, 5].map(n => '<option value="' + n + '"' + (String(filters.bedrooms) === String(n) ? " selected" : "") + '>' + n + '+ slaapkamers</option>').join("") + '</select></div></div>' +
+    '<div class="ww-filters__group"><h4>Prijs per nacht</h4>' +
+      '<input class="ww-range" type="range" min="200" max="600" step="5" data-f="maxPrice" value="' + (filters.maxPrice || 600) + '" aria-label="Maximumprijs per nacht">' +
+      '<div class="ww-row" style="justify-content:space-between"><span class="ww-meta">Tot ' + euro(filters.maxPrice || 600) + '</span>' +
+      '<span class="ww-meta">' + (filters.maxPrice ? "" : "geen maximum") + '</span></div></div>' +
+    '<div class="ww-filters__group"><h4>Voorzieningen</h4><div class="ww-chips">' +
+      FILTER_AMENITIES.map(a => '<button type="button" class="ww-chip" data-am="' + a.key + '" aria-pressed="' + (filters.amenities.includes(a.key) ? "true" : "false") + '">' + esc(a.label) + '</button>').join("") +
+    '</div></div>' +
+    (actief ? '<button type="button" class="ww-chip ww-chip--clear" data-clear="1">' + ICON.close(13) + ' Wis alle filters (' + actief + ')</button>' : "") +
+  '</div>';
+}
+
+function screenResults() {
+  const res = searchProperties(filters), actief = countFilters(filters);
+  return header() +
+  '<div class="ww-pagehead ww-pagehead--onsand"><div class="ww-wrap">' +
+    '<span class="ww-eyebrow">Zoeken</span><h1 class="ww-h2 ww-mt-s">Vind jouw ideale verblijf</h1>' +
+    '<p class="ww-lead ww-mt-s">Acht huizen vandaag, meer elk seizoen. Filter op periode, gezelschap en wat je buiten wilt hebben.</p>' +
+    '<div class="ww-mt-m">' + searchbar(filters, true) + '</div></div></div>' +
+  '<section class="ww-section ww-section--tight"><div class="ww-wrap"><div class="ww-results">' +
+    '<aside>' + filterPanel() + '</aside><div>' +
+      '<div class="ww-toolbar"><p class="ww-toolbar__count"><strong>' + res.length + '</strong> van ' + PROPERTIES.length + ' verblijven' +
+        (filters.arrival && filters.departure ? " beschikbaar in deze periode" : "") + '</p>' +
+        '<div class="ww-row"><button type="button" class="ww-btn ww-btn--ghost ww-filterbtn" data-sheet="open">' + ICON.sliders(15) + ' Filters' + (actief ? " (" + actief + ")" : "") + '</button>' +
+        '<div class="ww-sort"><label for="sortsel">Sorteer</label><select id="sortsel" data-f="sort">' +
+          [["aanbevolen", "Aanbevolen"], ["prijs-op", "Prijs — laag naar hoog"], ["prijs-af", "Prijs — hoog naar laag"], ["personen", "Aantal personen"]]
+            .map(([v, l]) => '<option value="' + v + '"' + (filters.sort === v ? " selected" : "") + '>' + l + '</option>').join("") +
+        '</select>' + ICON.chevron(12) + '</div></div></div>' +
+      (res.length === 0
+        ? '<div class="ww-empty"><h3 class="ww-h3">Niets gevonden in deze periode</h3>' +
+          '<p class="ww-body ww-mt-s" style="margin:12px auto 0">Probeer een andere week of laat een filter los. Onze collectie groeit; wat er vandaag niet is, staat er volgend seizoen misschien wel.</p>' +
+          '<button type="button" class="ww-btn ww-btn--ghost ww-mt-m" data-clear="1">Wis alle filters</button></div>'
+        : '<div class="ww-grid ww-grid--2">' + res.slice(0, zichtbaar).map(card).join("") + '</div>' +
+          (res.length > zichtbaar ? '<div class="ww-loadmore"><button class="ww-btn ww-btn--ghost ww-btn--lg" data-more="1">Meer verblijven laden</button></div>' : "")) +
+    '</div></div></div></section>' + footer();
+}
+
+/* Accommodatiepagina met de boekingsmodule. */
+let booking = null; // { slug, arrival, departure, guests, extras, maand, bevestiging }
+
+function bookingWidget(p) {
+  const b = booking, q = quoteFor(p, b);
+  if (b.bevestiging) {
+    return '<div class="ww-booking"><span class="ww-booking__status"><span class="ww-dot"></span> Optie vastgelegd</span>' +
+      '<h3 class="ww-h3 ww-mt-s">Bedankt — we houden ' + esc(p.name) + ' voor je vast.</h3>' +
+      '<p class="ww-body ww-mt-s" style="font-size:.92rem">Reserveringsnummer <strong>' + b.bevestiging + '</strong>. Je ontvangt binnen enkele minuten een bevestiging met een betaallink voor de aanbetaling van ' + euro(q.deposit) + '.</p>' +
+      '<div class="ww-booking__lines ww-mt-m"><div class="ww-booking__line"><span>Aankomst</span><span>' + b.arrival + '</span></div>' +
+      '<div class="ww-booking__line"><span>Vertrek</span><span>' + b.departure + '</span></div>' +
+      '<div class="ww-booking__line"><span>Gasten</span><span>' + q.guests + '</span></div></div>' +
+      '<div class="ww-booking__total"><span>Totaal</span><strong>' + euro(q.total, true) + '</strong></div>' +
+      '<button class="ww-btn ww-btn--ghost ww-btn--block ww-mt-m" data-bk="terug">Terug naar de kalender</button>' +
+      '<p class="ww-booking__note">In de echte site legt MyTourist deze optie vast en verstuurt hij de bevestiging.</p></div>';
+  }
+  const dagen = calendarMonth(p, b.maand.y, b.maand.m);
+  const offset = (new Date(dagen[0].date + "T12:00:00").getDay() + 6) % 7;
+  return '<div class="ww-booking">' +
+    '<div class="ww-booking__price"><span class="ww-price">' + euro(q.averageRate) + ' <small>gemiddeld per nacht</small></span>' +
+    '<span class="ww-booking__status"><span class="ww-dot' + (q.available ? "" : " ww-dot--busy") + '"></span>' + (q.available ? "Beschikbaar" : "Bezet") + '</span></div>' +
+    '<div class="ww-booking__dates">' +
+      '<div class="ww-field"><label for="bk-arr">Aankomst</label><input id="bk-arr" type="date" data-bk="arrival" value="' + b.arrival + '"></div>' +
+      '<div class="ww-field"><label for="bk-dep">Vertrek</label><input id="bk-dep" type="date" data-bk="departure" value="' + b.departure + '"></div></div>' +
+    '<div class="ww-booking__guests"><div class="ww-field"><label for="bk-guests">Gasten</label><select id="bk-guests" data-bk="guests">' +
+      Array.from({ length: p.guests }, (_, i) => i + 1).map(n => '<option value="' + n + '"' + (b.guests === n ? " selected" : "") + '>' + plural(n, "gast", "gasten") + '</option>').join("") +
+    '</select><span class="ww-field__caret">' + ICON.chevron() + '</span></div></div>' +
+    (p.extras.length ? '<div class="ww-mt-m"><h4 style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px">Extra\'s</h4>' +
+      p.extras.map(e => '<label class="ww-extra"><input type="checkbox" class="ww-checkbox" style="margin-top:3px" data-extra="' + e.key + '"' + (b.extras.includes(e.key) ? " checked" : "") + '>' +
+        '<span>' + esc(e.label) + '<span style="display:block;color:var(--ink-soft);font-size:.82rem">' + esc(e.description) + '</span></span>' +
+        '<span class="ww-extra__price">' + (e.price === 0 ? "gratis" : euro(e.price) + (e.unit === "night" ? " p.n." : e.unit === "person" ? " p.p." : "")) + '</span></label>').join("") + '</div>' : "") +
+    '<div class="ww-booking__lines">' + q.lines.map(l =>
+      '<div class="ww-booking__line"><span>' + esc(l.label) + (l.detail ? '<em style="font-style:normal;opacity:.6;font-size:.8rem"> · ' + esc(l.detail) + '</em>' : "") + '</span>' +
+      '<span>' + euro(l.amount, !!l.cents) + '</span></div>').join("") + '</div>' +
+    '<div class="ww-booking__total"><span>Totaal' + (q.nights ? " · " + plural(q.nights, "nacht", "nachten") : "") + '</span><strong>' + euro(q.total, true) + '</strong></div>' +
+    '<button class="ww-btn ww-btn--primary ww-btn--block ww-btn--lg ww-mt-m" data-bk="boek"' + (q.available ? "" : ' style="opacity:.45;cursor:not-allowed" disabled') + '>Boek nu ' + ICON.arrow(14) + '</button>' +
+    '<p class="ww-booking__note">' + (q.available ? "Aanbetaling " + euro(q.deposit) + " · rest 30 dagen voor aankomst · gratis annuleren tot 60 dagen vooraf" : esc(q.reason || "")) + '</p>' +
+    '<div class="ww-mt-l"><div class="ww-row" style="justify-content:space-between;margin-bottom:14px">' +
+      '<button data-bk="vorige" aria-label="Vorige maand" style="transform:rotate(90deg)">' + ICON.chevron() + '</button>' +
+      '<strong style="font-family:var(--serif);font-size:1.15rem;font-weight:500">' + new Date(b.maand.y, b.maand.m, 1).toLocaleDateString("nl-NL", { month: "long", year: "numeric" }) + '</strong>' +
+      '<button data-bk="volgende" aria-label="Volgende maand" style="transform:rotate(-90deg)">' + ICON.chevron() + '</button></div>' +
+      '<div class="ww-cal">' + ["ma", "di", "wo", "do", "vr", "za", "zo"].map(d => '<span class="ww-cal__dow">' + d + '</span>').join("") +
+      Array.from({ length: offset }, () => '<span class="ww-cal__day ww-cal__day--out"></span>').join("") +
+      dagen.map(d => {
+        const sel = d.date >= b.arrival && d.date < b.departure;
+        const cls = sel ? "ww-cal__day ww-cal__day--sel" : d.available ? "ww-cal__day" : "ww-cal__day ww-cal__day--busy";
+        return '<button class="' + cls + '" data-day="' + d.date + '"' + (d.available ? "" : " disabled") + ' title="' + d.date + (d.available ? " · " + euro(d.rate) : " · bezet") + '">' + Number(d.date.slice(-2)) + '</button>';
+      }).join("") + '</div>' +
+      '<div class="ww-cal__legend"><span><i class="ww-swatch"></i> beschikbaar</span><span><i class="ww-swatch ww-swatch--busy"></i> bezet</span><span>' + ICON.check(13) + ' live uit MyTourist</span></div>' +
+    '</div></div>';
+}
+
+function screenDetail(slug) {
+  const p = PROPERTIES.find(x => x.slug === slug) || PROPERTIES[0];
+  if (!booking || booking.slug !== p.slug) {
+    const stay = firstBookableStay(p, addDays(iso(new Date()), 14), Math.max(3, p.minNights));
+    const d = new Date(stay.arrival + "T12:00:00");
+    booking = { slug: p.slug, arrival: stay.arrival, departure: stay.departure, guests: Math.min(2, p.guests), extras: [], maand: { y: d.getFullYear(), m: d.getMonth() }, bevestiging: null };
+  }
+  const dest = DESTINATIONS.find(d => d.slug === p.destination);
+  const groepen = AMENITY_GROUPS.map(g => ({ ...g, items: AMENITIES.filter(a => a.group === g.key && p.amenities.includes(a.key)) })).filter(g => g.items.length);
+  const vergelijkbaar = PROPERTIES.filter(x => x.id !== p.id && (x.destination === p.destination || x.guests >= p.guests)).slice(0, 3);
+
+  return header() +
+  '<div class="ww-pagehead"><div class="ww-wrap">' +
+    '<nav class="ww-crumbs"><a href="#/">Home</a> · <a href="#/verblijven">Verblijven</a> · ' +
+    (dest ? '<a href="#/bestemming/' + dest.slug + '">' + esc(dest.name) + '</a> · ' : "") + '<span>' + esc(p.name) + '</span></nav>' +
+    '<div class="ww-detail__head ww-mt-m"><div><h1 class="ww-h2">' + esc(p.name) + '</h1>' +
+    '<p class="ww-card__loc ww-mt-s">' + ICON.pin() + " " + esc(p.place) + (dest ? " · " + esc(dest.region) : "") + '</p></div>' +
+    '<div class="ww-row"><span class="ww-price">' + euro(p.priceFrom) + ' <small>vanaf per nacht</small></span></div></div>' +
+  '</div></div>' +
+  '<div class="ww-wrap"><div class="ww-gallery">' + p.images.slice(0, 5).map((im, i) =>
+    '<figure><img src="' + img(im.src) + '" alt="' + esc(im.alt) + '">' + (i === 4 ? '<span class="ww-gallery__more">Alle ' + p.images.length + ' foto\'s</span>' : "") + '</figure>').join("") + '</div></div>' +
+  '<section class="ww-section ww-section--tight"><div class="ww-wrap"><div class="ww-detail"><div>' +
+    '<div class="ww-facts">' +
+      '<span class="ww-fact">' + ICON.guests() + ' <strong>' + p.guests + '</strong> gasten</span>' +
+      '<span class="ww-fact">' + ICON.bed() + ' <strong>' + p.bedrooms + '</strong> slaapkamers</span>' +
+      '<span class="ww-fact">' + ICON.bath() + ' <strong>' + p.bathrooms + '</strong> badkamers</span>' +
+      '<span class="ww-fact">' + ICON.area() + ' <strong>' + p.size + '</strong> m²</span>' +
+      '<span class="ww-fact">Minimaal <strong>' + p.minNights + '</strong> nachten</span></div>' +
+    '<div class="ww-block" style="padding-top:0"><h2 class="ww-h3">' + esc(p.tagline) + '</h2><div class="ww-mt-m">' +
+      p.description.map(t => '<p class="ww-body">' + esc(t) + '</p>').join("") + '</div></div>' +
+    '<div class="ww-block"><h3 class="ww-h3">Wat dit huis bijzonder maakt</h3><ul class="ww-highlights">' +
+      p.highlights.map(h => '<li>' + ICON.check(16) + '<span>' + esc(h) + '</span></li>').join("") + '</ul></div>' +
+    '<div class="ww-block"><h3 class="ww-h3">Faciliteiten</h3><div class="ww-amenities">' +
+      groepen.map(g => '<div><h4>' + esc(g.label) + '</h4><ul>' + g.items.map(i => '<li>' + ICON.check(15) + " " + esc(i.label) + '</li>').join("") + '</ul></div>').join("") +
+    '</div></div>' +
+    (dest ? '<div class="ww-block"><h3 class="ww-h3">De omgeving</h3><p class="ww-body ww-mt-s">' + esc(dest.description) + '</p>' +
+      '<a href="#/bestemming/' + dest.slug + '" class="ww-link ww-mt-m">Meer over ' + esc(dest.name) + '</a></div>' : "") +
+    '<div class="ww-block" style="border-bottom:0"><h3 class="ww-h3">Beschikbaarheid &amp; boeken</h3>' +
+      '<p class="ww-body ww-mt-s">Kalender en tarieven van ' + esc(p.name) + ' komen rechtstreeks uit ons reserveringssysteem MyTourist en zijn dus altijd actueel. Je boekt direct bij ons — geen tussenpartij, geen servicekosten. Een optie vervalt automatisch als de aanbetaling van 30% uitblijft.</p>' +
+      '<ul class="ww-mt-m ww-highlights">' +
+        '<li>' + ICON.check(15) + '<span>Aanbetaling 30%, restant 30 dagen voor aankomst</span></li>' +
+        '<li>' + ICON.check(15) + '<span>Gratis annuleren tot 60 dagen voor aankomst</span></li>' +
+        '<li>' + ICON.check(15) + '<span>Eindschoonmaak ' + euro(p.cleaningFee) + ' · toeristenbelasting ' + euro(p.touristTaxPerPersonPerNight, true) + ' p.p.p.n.</span></li></ul></div>' +
+  '</div><aside>' + bookingWidget(p) + '</aside></div></div></section>' +
+  '<div class="ww-mobilebar"><span class="ww-price">' + euro(p.priceFrom) + ' <small>per nacht</small></span>' +
+  '<a href="#bk-arr" class="ww-btn ww-btn--primary">Bekijk beschikbaarheid</a></div>' +
+  '<section class="ww-section ww-section--sand"><div class="ww-wrap">' +
+    sectionHead("Ook mooi", "Vergelijkbare verblijven", "", ["Alle verblijven", "#/verblijven"]) +
+    '<div class="ww-grid">' + vergelijkbaar.map(card).join("") + '</div></div></section>' + footer();
+}
+
+function screenDestinations() {
+  return header() +
+  '<div class="ww-pagehead ww-pagehead--onsand"><div class="ww-wrap"><span class="ww-eyebrow">Bestemmingen</span>' +
+    '<h1 class="ww-h2 ww-mt-s">Waar wil je naartoe?</h1>' +
+    '<p class="ww-lead ww-mt-s">Wij kiezen plekken op wat je er ziet als je naar buiten stapt. Dat levert een kaart op met veel kust, veel horizon en weinig drukte.</p></div></div>' +
+  '<section class="ww-section ww-section--tight"><div class="ww-wrap"><div class="ww-tiles">' + DESTINATIONS.map(tile).join("") + '</div></div></section>' +
+  band("/wad-weids/band-ochtend.svg", "Nieuw in de collectie", "De kaart groeit.",
+    "We kopen elk jaar een aantal huizen bij, altijd op plekken waar het landschap het werk doet. Meld je aan en je hoort het als eerste.",
+    ["Bekijk onze verblijven", "#/verblijven"]) + footer();
+}
+
+function screenDestination(slug) {
+  const d = DESTINATIONS.find(x => x.slug === slug) || DESTINATIONS[0];
+  const list = PROPERTIES.filter(p => p.destination === d.slug);
+  const andere = DESTINATIONS.filter(x => x.slug !== d.slug).slice(0, 3);
+  return header("over") +
+  '<section class="ww-hero"><div class="ww-hero__media" style="height:62vh;min-height:420px">' +
+    '<img src="' + img(d.image) + '" alt="' + esc(d.name) + '"><div class="ww-hero__scrim"></div>' +
+    '<div class="ww-hero__content" style="padding-bottom:96px"><div class="ww-wrap">' +
+      '<span class="ww-eyebrow ww-eyebrow--light ww-hero__eyebrow">' + esc(d.region) + '</span>' +
+      '<h1 class="ww-display" style="font-size:clamp(2.4rem,4.4cqw,4rem)">' + esc(d.name) + '</h1>' +
+      '<p class="ww-hero__sub">' + esc(d.intro) + '</p></div></div></div>' +
+    '<div class="ww-wrap">' + searchbar({ destination: d.slug }) + '</div></section>' +
+  '<section class="ww-section"><div class="ww-wrap">' +
+    '<div class="ww-wrap ww-wrap--narrow" style="padding:0;margin-bottom:56px"><p class="ww-lead">' + esc(d.description) + '</p></div>' +
+    sectionHead("De collectie", plural(list.length, "verblijf", "verblijven") + " in " + esc(d.name), "", ["Alle verblijven", "#/verblijven"]) +
+    (list.length ? '<div class="ww-grid">' + list.map(card).join("") + '</div>'
+      : '<div class="ww-empty"><h3 class="ww-h3">Hier openen we binnenkort</h3><p class="ww-body ww-mt-s" style="margin:12px auto 0">We zijn in deze regio in gesprek over twee huizen. Laat je e-mailadres achter en je hoort het als eerste.</p></div>') +
+  '</div></section>' +
+  '<section class="ww-section ww-section--sand"><div class="ww-wrap">' + sectionHead("Verder kijken", "Andere bestemmingen") +
+  '<div class="ww-tiles">' + andere.map(tile).join("") + '</div></div></section>' + footer();
+}
+
+/* Merkpagina: kleur, typografie, componenten en de architectuur. */
+const KLEUREN = [
+  ["Gebroken wit", "#FAF8F4", "Paginagrond"], ["Zand", "#EFE7D9", "Rustsecties"],
+  ["Zand diep", "#E2D6C2", "Vlakken, randen"], ["Klei", "#C9B79C", "Scheidingen"],
+  ["Diep groen", "#23392F", "Merkkleur, knoppen"], ["Zeeblauw", "#1D3B4A", "Footer, overlays"],
+  ["Oker", "#A8834C", "Accent, nooit als vlak"], ["Inkt", "#1A201E", "Tekst"],
+];
+const ARCHITECTUUR = `Wad & Weids (Next.js)
+   │
+   │  MyTouristClient  ── src/lib/wadweids/mytourist.ts
+   │      listProperties()   getProperty()
+   │      getAvailability()  quote()
+   │      search()           createBooking()
+   ▼
+MyTourist PMS
+   beschikbaarheid · dynamische tarieven · reserveringen · gasten`;
+
+function screenMerk() {
+  return header() +
+  '<div class="ww-pagehead ww-pagehead--onsand"><div class="ww-wrap"><span class="ww-eyebrow">Merk &amp; designsysteem</span>' +
+    '<h1 class="ww-h2 ww-mt-s">De onderdelen waaruit Wad &amp; Weids bestaat</h1>' +
+    '<p class="ww-lead ww-mt-s">Deze pagina hoort niet bij de bezoekerssite. Het is de overdracht: het palet, de typografie, de componenten en de technische opzet — zodat een nieuwe woning toevoegen straks een kwestie van invullen is, niet van ontwerpen.</p></div></div>' +
+
+  '<section class="ww-section ww-section--tight"><div class="ww-wrap">' +
+    sectionHead("Logo", "Woordmerk en beeldmerk", "Het woordmerk staat centraal. Het beeldmerk is een horizon: een strakke waterlijn, een zachte duinrand en één wadpaal die de lijn doorbreekt. Geen huisje, geen zon.") +
+    '<div class="ww-grid">' +
+      '<div class="ww-specimen ww-center"><div class="ww-specimen__label">Beeldmerk</div><div style="display:flex;justify-content:center;color:var(--forest)">' + LOGO_MARK(120) + '</div></div>' +
+      '<div class="ww-specimen ww-center" style="display:grid;place-content:center;background:var(--forest);color:#fff"><div class="ww-specimen__label" style="color:rgba(255,255,255,.6)">Op donker</div><span class="ww-logo__word" style="font-size:1.8rem">Wad <em>&amp;</em> Weids</span></div>' +
+      '<div class="ww-specimen" style="display:grid;place-content:center"><div class="ww-specimen__label">Woordmerk</div><span class="ww-logo__word" style="font-size:1.8rem">Wad <em>&amp;</em> Weids</span><span class="ww-logo__tag" style="margin-top:10px">Luxe verblijven in de mooiste natuur van Nederland</span></div>' +
+    '</div></div></section>' +
+
+  '<section class="ww-section ww-section--tight ww-section--sand"><div class="ww-wrap">' +
+    sectionHead("Kleur", "Acht kleuren, meer niet", "Zand en gebroken wit dragen de pagina, diep groen is de merkkleur, zeeblauw de tweede stem en oker het accent. Fel bestaat niet in dit palet.") +
+    '<div class="ww-swatches">' + KLEUREN.map(([n, hex, g]) =>
+      '<div class="ww-swatchcard"><div class="ww-swatchcard__chip" style="background:' + hex + '"></div>' +
+      '<div class="ww-swatchcard__meta"><strong>' + n + '</strong><code>' + hex + '</code> · ' + g + '</div></div>').join("") +
+    '</div></div></section>' +
+
+  '<section class="ww-section ww-section--tight"><div class="ww-wrap">' +
+    sectionHead("Typografie", "Cormorant Garamond en Jost", "Een hoog-contrast serif voor alles wat groot is, een geometrische sans voor alles wat gelezen en aangeklikt wordt. Kapitalen krijgen altijd ruime letterafstand.") +
+    '<div class="ww-specimen"><div class="ww-specimen__label">Display · Cormorant Garamond 300</div><p class="ww-display">Ruimte om te ademen.</p></div>' +
+    '<div class="ww-specimen"><div class="ww-specimen__label">Sectiekop · Cormorant Garamond 300</div><p class="ww-h2">Met zorg gekozen, één voor één</p></div>' +
+    '<div class="ww-specimen"><div class="ww-specimen__label">Eyebrow &amp; navigatie · Jost 400, 0.2em</div><span class="ww-eyebrow">Onze verblijven</span></div>' +
+    '<div class="ww-specimen"><div class="ww-specimen__label">Lopende tekst · Jost 300</div><p class="ww-body">Wadzicht staat waar Nederland ophoudt. Achter het huis loopt de zeedijk, daarachter de kwelder, en daarachter niets dan wad tot aan de eilanden.</p></div>' +
+  '</div></section>' +
+
+  '<section class="ww-section ww-section--tight ww-section--sand"><div class="ww-wrap">' +
+    sectionHead("Componenten", "Knoppen, iconen en kaarten", "Alles wat op de site staat komt uit deze set. Nieuwe pagina’s worden ermee samengesteld, niet opnieuw getekend.") +
+    '<div class="ww-specimen"><div class="ww-specimen__label">Knoppen</div><div class="ww-row">' +
+      '<span class="ww-btn ww-btn--primary">Boek nu</span><span class="ww-btn ww-btn--ghost">Bekijk beschikbaarheid</span>' +
+      '<span class="ww-link">Alle verblijven ' + ICON.arrow(13) + '</span><span class="ww-chip">Sauna</span><span class="ww-chip ww-chip--on">Aan het water</span></div></div>' +
+    '<div class="ww-specimen"><div class="ww-specimen__label">Iconen · 1,3 px lijn, altijd currentColor</div>' +
+      '<div class="ww-row" style="gap:34px;color:var(--forest)">' + ["space", "nature", "comfort", "personal", "tide"].map(k => ICON[k]()).join("") + '</div></div>' +
+    '<div class="ww-mt-l"><div class="ww-specimen__label">Accommodatiekaart · dezelfde component op elke pagina</div>' +
+      '<div class="ww-grid ww-mt-s">' + PROPERTIES.slice(0, 3).map(card).join("") + '</div></div>' +
+  '</div></section>' +
+
+  '<section class="ww-section ww-section--tight"><div class="ww-wrap">' +
+    sectionHead("Techniek", "Wad &amp; Weids voorop, MyTourist als motor", "De website is het merk richting de gast. MyTourist is het systeem erachter: beschikbaarheid, tarieven en reserveringen. Eén adapter verbindt de twee.") +
+    '<div class="ww-code">' + esc(ARCHITECTUUR) + '</div>' +
+    '<div class="ww-flow ww-mt-l">' + [
+      ["Woninggegevens", "Naam, capaciteit, vaste kosten en minimumverblijf komen uit MyTourist en worden 's nachts gesynchroniseerd."],
+      ["Beschikbaarheid en prijs", "Per verzoek live opgehaald, nooit gecachet langer dan een minuut. De kalender in de boekingsmodule tekent wat het PMS zegt."],
+      ["Content en fotografie", "Teksten, beelden en bestemmingen blijven bij Wad & Weids: dat is het merk, en dat hoort niet in een PMS."],
+      ["Reserveringen", "createBooking() schrijft de optie weg in MyTourist en geeft het reserveringsnummer terug; de betaallink volgt uit dezelfde flow."],
+    ].map(([t, x], i) => '<div class="ww-flowstep"><span class="ww-flowstep__n">' + String(i + 1).padStart(2, "0") + '</span>' +
+      '<div><strong style="font-family:var(--serif);font-size:1.2rem;font-weight:500">' + esc(t) + '</strong><p>' + esc(x) + '</p></div></div>').join("") +
+    '</div></div></section>' +
+
+  '<section class="ww-section ww-section--tight ww-section--sand"><div class="ww-wrap">' +
+    sectionHead("Schaalbaarheid", "Van acht naar vijftig woningen", "Elke pagina rendert wat er in de collectie zit. Groeien betekent records toevoegen, geen pagina’s ontwerpen.") +
+    '<div style="overflow-x:auto"><table class="ww-table"><thead><tr><th>Onderdeel</th><th>Vandaag</th><th>Bij 50 woningen</th></tr></thead><tbody>' + [
+      ["Woning toevoegen", "<code>PROPERTIES</code> uitbreiden", "Record uit het PMS; detailpagina ontstaat vanzelf"],
+      ["Detailpagina", "Eén sjabloon", "Hetzelfde sjabloon, statisch gegenereerd per slug"],
+      ["Zoeken", "Filteren in de browser", "Filterset gaat naar MyTourist; resultaten gepagineerd"],
+      ["Bestemmingen", "Zes regio's", "Regio toevoegen = één record, tegelgrid vult zich"],
+      ["Filters", "Vaste sleutels per voorziening", "Nieuwe voorziening = één regel in <code>AMENITIES</code>"],
+      ["Prijzen", "Dynamisch per seizoen en weekend", "Volledig uit MyTourist, inclusief staffels en kortingen"],
+      ["Favorieten", "In de browser bewaard", "Aan het gastaccount, zichtbaar in e-mail en app"],
+    ].map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join("") + '</tr>').join("") + '</tbody></table></div>' +
+  '</div></section>' + footer();
+}
+
+/* ── Router en interactie ───────────────────────────────────────── */
+const app = document.getElementById("app");
+const stage = document.getElementById("stage");
+const TABS = [["Homepage", "#/"], ["Zoekresultaten", "#/verblijven"], ["Accommodatie", "#/verblijf/de-weidsheid"], ["Bestemmingen", "#/bestemmingen"], ["Merk & systeem", "#/merk"]];
+
+function route() {
+  const h = (location.hash || "#/").replace(/^#/, "");
+  const [, one, two] = h.split("/");
+  if (one === "verblijven") return screenResults();
+  if (one === "verblijf") return screenDetail(two);
+  if (one === "bestemmingen") return screenDestinations();
+  if (one === "bestemming") return screenDestination(two);
+  if (one === "merk") return screenMerk();
+  return screenHome();
+}
+
+function paintTabs() {
+  const h = location.hash || "#/";
+  document.getElementById("tabs").innerHTML = TABS.map(([l, href]) =>
+    '<a class="proto__tab" href="' + href + '" aria-current="' + (h === href || (href !== "#/" && h.startsWith(href.slice(0, 12))) ? "true" : "false") + '">' + l + '</a>').join("");
+}
+
+function render(keepScroll) {
+  const y = keepScroll ? app.scrollTop || window.scrollY : 0;
+  app.innerHTML = route();
+  paintTabs();
+  if (keepScroll) { if (app.scrollHeight > app.clientHeight + 20 && stage.classList.contains("proto__stage--mobile")) app.scrollTop = y; else window.scrollTo(0, y); }
+  else { app.scrollTop = 0; window.scrollTo(0, 0); }
+}
+
+window.addEventListener("hashchange", () => render(false));
+
+/* Compacte header bij scrollen — op de pagina én in het telefoonframe. */
+const onScroll = (y) => { const h = document.getElementById("hdr"); if (h) h.classList.toggle("is-compact", y > 40); };
+window.addEventListener("scroll", () => onScroll(window.scrollY), { passive: true });
+app.addEventListener("scroll", () => onScroll(app.scrollTop), { passive: true });
+
+/* Desktop / mobiel */
+document.getElementById("device").addEventListener("click", (e) => {
+  const mobile = stage.classList.toggle("proto__stage--mobile");
+  e.target.textContent = mobile ? "Desktop" : "Mobiel";
+  e.target.setAttribute("aria-current", mobile ? "true" : "false");
+  app.scrollTop = 0;
+});
+
+/* Eén klikafhandelaar voor de hele mock-up. */
+document.addEventListener("click", (e) => {
+  const fav = e.target.closest("[data-fav]");
+  if (fav) {
+    e.preventDefault();
+    const id = fav.dataset.fav, list = favs();
+    const next = list.includes(id) ? list.filter(x => x !== id) : list.concat(id);
+    try { localStorage.setItem("ww-favorieten", JSON.stringify(next)); } catch (err) {}
+    document.querySelectorAll('[data-fav="' + id + '"]').forEach(b => {
+      const on = next.includes(id);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.innerHTML = ICON.heart(17, on);
+    });
+    return;
+  }
+  const am = e.target.closest("[data-am]");
+  if (am) { const k = am.dataset.am; filters.amenities = filters.amenities.includes(k) ? filters.amenities.filter(x => x !== k) : filters.amenities.concat(k); zichtbaar = 9; return render(true); }
+  if (e.target.closest("[data-clear]")) { filters = { sort: filters.sort, amenities: [] }; zichtbaar = 9; return render(true); }
+  if (e.target.closest("[data-more]")) { zichtbaar += 9; return render(true); }
+  if (e.target.closest('[data-sheet="open"]')) return openSheet();
+  if (e.target.closest('[data-menu="open"]')) return openMenu();
+
+  const bk = e.target.closest("[data-bk]");
+  if (bk && booking) {
+    const p = PROPERTIES.find(x => x.slug === booking.slug);
+    const act = bk.dataset.bk;
+    if (act === "boek") { booking.bevestiging = "WW-2026-" + p.id.slice(-4); return render(true); }
+    if (act === "terug") { booking.bevestiging = null; return render(true); }
+    if (act === "vorige") { booking.maand = booking.maand.m === 0 ? { y: booking.maand.y - 1, m: 11 } : { y: booking.maand.y, m: booking.maand.m - 1 }; return render(true); }
+    if (act === "volgende") { booking.maand = booking.maand.m === 11 ? { y: booking.maand.y + 1, m: 0 } : { y: booking.maand.y, m: booking.maand.m + 1 }; return render(true); }
+  }
+  const day = e.target.closest("[data-day]");
+  if (day && booking) {
+    const d = day.dataset.day;
+    if (!booking.pendingArrival && d > booking.arrival) { booking.departure = d; }
+    else { booking.arrival = d; booking.departure = addDays(d, 3); }
+    return render(true);
+  }
+});
+
+document.addEventListener("change", (e) => {
+  const f = e.target.dataset.f;
+  if (f) {
+    const v = e.target.value;
+    if (f === "guests" || f === "bedrooms") filters[f] = v ? Number(v) : undefined;
+    else if (f === "maxPrice") filters.maxPrice = Number(v) >= 600 ? undefined : Number(v);
+    else filters[f] = v || undefined;
+    zichtbaar = 9;
+    return render(true);
+  }
+  const bk = e.target.dataset.bk;
+  if (bk && booking) {
+    if (bk === "arrival") { booking.arrival = e.target.value; if (booking.departure <= booking.arrival) booking.departure = addDays(booking.arrival, 3); const d = new Date(booking.arrival + "T12:00:00"); booking.maand = { y: d.getFullYear(), m: d.getMonth() }; }
+    if (bk === "departure") booking.departure = e.target.value;
+    if (bk === "guests") booking.guests = Number(e.target.value);
+    return render(true);
+  }
+  const ex = e.target.dataset.extra;
+  if (ex && booking) {
+    booking.extras = booking.extras.includes(ex) ? booking.extras.filter(x => x !== ex) : booking.extras.concat(ex);
+    return render(true);
+  }
+});
+
+document.addEventListener("submit", (e) => {
+  if (e.target.id !== "searchform") return;
+  e.preventDefault();
+  const g = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
+  filters = { ...filters, destination: g("s-dest") || undefined, arrival: g("s-arr") || undefined, departure: g("s-dep") || undefined, guests: g("s-guests") ? Number(g("s-guests")) : undefined };
+  zichtbaar = 9;
+  if (location.hash === "#/verblijven") render(false); else location.hash = "#/verblijven";
+});
+
+/* Filtersheet en menu op mobiel */
+function openSheet() {
+  const el = document.createElement("div");
+  el.className = "ww-sheet";
+  el.innerHTML = '<div class="ww-sheet__scrim" data-dismiss="1"></div><div class="ww-sheet__panel">' +
+    '<div class="ww-sheet__head"><h3 class="ww-h4">Filters</h3><button data-dismiss="1" aria-label="Filters sluiten">' + ICON.close() + '</button></div>' +
+    '<div class="ww-sheet__body">' + filterPanel() + '</div>' +
+    '<div class="ww-sheet__foot"><button class="ww-btn ww-btn--ghost" data-clear="1">Wissen</button>' +
+    '<button class="ww-btn ww-btn--primary" data-dismiss="1">Toon ' + searchProperties(filters).length + ' verblijven</button></div></div>';
+  el.addEventListener("click", (ev) => { if (ev.target.closest("[data-dismiss]")) el.remove(); });
+  app.appendChild(el);
+}
+function openMenu() {
+  const el = document.createElement("div");
+  el.className = "ww-menu";
+  el.innerHTML = '<div class="ww-menu__top">' + logo() + '<button data-dismiss="1" aria-label="Menu sluiten">' + ICON.close(22) + '</button></div>' +
+    '<nav>' + NAV.map(([l, h]) => '<a href="' + h + '" data-dismiss="1">' + esc(l) + '</a>').join("") + '</nav>' +
+    '<div class="ww-menu__foot"><a href="#/verblijven" class="ww-btn ww-btn--primary ww-btn--block" data-dismiss="1">Bekijk verblijven</a>' +
+    '<a href="#/#contact" class="ww-btn ww-btn--ghost ww-btn--block" data-dismiss="1">Mijn boeking</a></div>';
+  el.addEventListener("click", (ev) => { if (ev.target.closest("[data-dismiss]")) el.remove(); });
+  app.appendChild(el);
+}
+
+render(false);
+</script>
