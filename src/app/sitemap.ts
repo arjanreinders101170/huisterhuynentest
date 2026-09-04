@@ -51,43 +51,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    {
-      url: `${SITE_URL}/privacy`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/terms`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/datenschutz`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/impressum`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/agb`,
-      lastModified,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/welkom`,
-      lastModified,
-      changeFrequency: "monthly",
-      priority: 0.4,
-    },
   ];
+
+  // Bewust niet in de sitemap: /privacy, /terms, /datenschutz, /impressum, /agb
+  // en /welkom. De rechtspagina's staan op noindex (zie hun layout.tsx) en
+  // /welkom hangt aan een persoonlijke gastlink. Een pagina die je zelf
+  // aanmeldt en vervolgens op noindex zet, geeft een tegenstrijdig signaal —
+  // en Google blijft hem crawlen zolang hij in de sitemap staat.
 
   // Dynamically include all published blog posts
   let blogPosts: MetadataRoute.Sitemap = [];
