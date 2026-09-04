@@ -9,6 +9,7 @@ import {
 import { APP_URL_FALLBACK } from "@/data/lodge";
 import { checkStayDates } from "@/lib/stay-dates";
 import { attributieKolommen } from "@/lib/attributie";
+import { normaliseerEmail } from "@/lib/gast-email";
 
 export const runtime = "nodejs";
 
@@ -81,7 +82,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
   }
 
-  const { naam, email, lodge, checkIn, checkOut, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode, locale, _meta, _attr } = parsed.data;
+  const { naam, lodge, checkIn, checkOut, totalPrice, priceLabel, bericht, aantalPersonen, huisdieren, promoCode, locale, _meta, _attr } = parsed.data;
+  // Altijd in dezelfde vorm de database in, anders wordt dezelfde gast twee gasten.
+  const email = normaliseerEmail(parsed.data.email);
 
   /* Datumcontrole hoort hier thuis: het `min`-attribuut op de datumvelden in
    * het formulier beperkt alleen de datumkiezer, niet wat er verstuurd wordt. */

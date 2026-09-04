@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 import { getProduct, calcFietsTotal } from "@/lib/products";
 import { checkoutSchema, fietsMetadataSchema } from "@/lib/schemas";
 import { esc } from "@/lib/email";
+import { normaliseerEmail } from "@/lib/gast-email";
 
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "arjan@vvrvastgoedbv.nl";
 const LODGE_NAME = "Huis ter Huynen";
@@ -47,7 +48,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
 
-    const { productId, gastNaam, gastEmail, metadata, _meta } = parsed.data;
+    const { productId, gastNaam, metadata, _meta } = parsed.data;
+    // Altijd in dezelfde vorm de database in, anders wordt dezelfde gast twee gasten.
+    const gastEmail = normaliseerEmail(parsed.data.gastEmail);
 
     /* Meta CAPI signals — stored in bookings.metadata so the Mollie webhook
      * can later fire a deduplicated Purchase event with the same event_id. */
