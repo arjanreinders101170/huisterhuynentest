@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase, getPublicSupabase } from "@/lib/supabase";
 import { reviewSchema } from "@/lib/schemas";
+import { normaliseerEmail } from "@/lib/gast-email";
 
 export const runtime = "nodejs";
 
@@ -42,7 +43,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige invoer" }, { status: 400 });
     }
 
-    const { naam, sterren, tekst, email } = parsed.data;
+    const { naam, sterren, tekst } = parsed.data;
+    // Altijd in dezelfde vorm de database in, anders wordt dezelfde gast twee gasten.
+    const email = normaliseerEmail(parsed.data.email);
 
     // Link to guest if email provided
     let guestId = null;

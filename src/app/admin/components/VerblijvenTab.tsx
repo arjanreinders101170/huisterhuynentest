@@ -229,6 +229,8 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
             const lodge = s.lodge === "lodge_1" ? "De Heide" : "De Eik";
             const cin = new Date(s.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
             const cout = new Date(s.check_out).toLocaleDateString("nl-NL", { day: "numeric", month: "short" });
+            const bedanktOp = s.bedankt_verstuurd_op || null;
+            const afgelopen = new Date(s.check_out).getTime() < Date.now();
 
             return (
               <div key={s.id} style={{
@@ -247,10 +249,34 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
                   <div style={{ fontSize: 12, color: C.muted }}>
                     {cin} – {cout} · Deurcode: <strong>{s.door_code}</strong> · Wi-Fi: <strong>HuynenGast</strong> (statisch)
                   </div>
+                  {/* Of de bedankmail eruit is, is nergens te zien zolang je hem
+                      niet mist. Daarom bij elk afgelopen verblijf expliciet. */}
+                  {afgelopen && (
+                    <div style={{ fontSize: 12, color: bedanktOp ? "#2E7D32" : "#8A6D1B", marginTop: 2 }}>
+                      {bedanktOp
+                        ? `Bedankt-mail verstuurd op ${new Date(bedanktOp).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}`
+                        : kanMailen
+                          ? "Bedankt-mail nog niet verstuurd"
+                          : "Bedankt-mail niet mogelijk — geen e-mailadres"}
+                    </div>
+                  )}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
                   {s.status === "vertrokken" ? (
-                    <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ Afgerond</span>
+                    <>
+                      <span style={{ fontSize: 12, color: "#2E7D32", fontWeight: 500 }}>✓ Afgerond</span>
+                      {/* Afgerond wil niet zeggen bedankt: verblijven uit de
+                          import staan meteen op vertrokken. Is de mail nog niet
+                          weg en is er wél een adres, dan moet je hem alsnog
+                          kunnen sturen. */}
+                      {kanMailen && !bedanktOp && (
+                        <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
+                          padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
+                          background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,
+                          cursor: sendingId === s.id ? "not-allowed" : "pointer",
+                        }}>{sendingId === s.id ? "Versturen..." : "Bedankt-mail"}</button>
+                      )}
+                    </>
                   ) : (
                     <>
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -277,7 +303,10 @@ export function VerblijvenTab({ stays, setStays }: { stays: Stay[]; setStays: (s
                             cursor: sendingId === s.id || lcSentIds.has(s.id) ? "not-allowed" : "pointer",
                           }}>{sendingId === s.id ? "Versturen..." : lcSentIds.has(s.id) ? "✓ Verstuurd" : "Late check-out"}</button>
                         )}
-                        {kanMailen && s.welcome_sent && (
+                        {/* Hing aan welcome_sent, waardoor je een verblijf zonder
+                            welkomstmail niet handmatig kon bedanken. Wat telt is
+                            of het verblijf voorbij is en de mail nog niet weg. */}
+                        {kanMailen && (s.welcome_sent || afgelopen) && !bedanktOp && (
                           <button onClick={() => sendThankyou(s.id)} disabled={sendingId === s.id} style={{
                             padding: "6px 14px", borderRadius: 6, border: `1px solid ${C.border}`,
                             background: C.card, color: C.muted, fontSize: 12, fontWeight: 500,

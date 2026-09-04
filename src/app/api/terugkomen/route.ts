@@ -7,6 +7,7 @@ import { getSupabase } from "@/lib/supabase";
 import { safeInsertBookingRequest, computeStayPrice } from "@/lib/pricing";
 import { APP_URL_FALLBACK } from "@/data/lodge";
 import { checkStayDates } from "@/lib/stay-dates";
+import { normaliseerEmail } from "@/lib/gast-email";
 
 export const runtime = "nodejs";
 
@@ -20,7 +21,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Ongeldige request" }, { status: 400 });
     }
 
-    const { from, to, fromIso, toIso, email, name, persons, message, voorkeursLodge, voorkeursLodgeNaam, wasFallback, bron: requestBron } = body;
+    const { from, to, fromIso, toIso, name, persons, message, voorkeursLodge, voorkeursLodgeNaam, wasFallback, bron: requestBron } = body;
+    // Altijd in dezelfde vorm de database in, anders wordt dezelfde gast twee gasten.
+    const email = normaliseerEmail(body.email);
     const bron: "terugkomer" | "app" = requestBron === "app" ? "app" : "terugkomer";
 
     const parsed = terugkomenSchema.safeParse(body);

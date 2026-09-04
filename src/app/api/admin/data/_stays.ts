@@ -4,6 +4,7 @@ import { logSentEmail } from "@/lib/mail-log";
 import { esc, lodgePhoto, welcomeEmail, thankYouEmail, lateCheckoutEmail } from "@/lib/email";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
+import { normaliseerEmail } from "@/lib/gast-email";
 
 export async function handleStaysGet(table: string): Promise<NextResponse | null> {
   if (table !== "stays") return null;
@@ -29,7 +30,8 @@ export async function handleStaysGet(table: string): Promise<NextResponse | null
 export async function handleStaysPost(action: string, body: Record<string, unknown>, _request: NextRequest): Promise<NextResponse | null> {
   switch (action) {
     case "create_stay": {
-      const { naam, email, lodge, check_in, check_out } = body;
+      const { naam, lodge, check_in, check_out } = body;
+      const email = normaliseerEmail(body.email);
       if (!naam || !email || !lodge || !check_in || !check_out) {
         return NextResponse.json({ error: "Alle velden zijn verplicht" }, { status: 400 });
       }
@@ -217,7 +219,12 @@ export async function handleStaysPost(action: string, body: Record<string, unkno
         html: thankYouEmail({ firstName, photoUrl: photoUrlTy, reviewLink: GOOGLE_REVIEW_URL }),
       });
 
-      await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stayId);
+      /* Dezelfde markering als de cron zet, anders stuurt die de mail morgen
+       * nog een keer: hij ontdubbelt op bedankt_verstuurd_op, niet op status. */
+      await getSupabase().from("stays").update({
+        status: "vertrokken",
+        bedankt_verstuurd_op: new Date().toISOString(),
+      }).eq("id", stayId);
 
       return NextResponse.json({ success: true });
     }

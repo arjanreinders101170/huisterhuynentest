@@ -41,20 +41,34 @@ export async function GET(request: NextRequest) {
 
   try {
     if (type === "morning") {
-      // ── 1. Welcome emails — 3 days before check-in ──
+      /* ── 1. Welkomstmails — vanaf drie dagen voor aankomst ──
+       *
+       * Dit stond op één exacte dag (`check_in = vandaag + 3`). Viel de cronrun
+       * uit, of werd het verblijf pas twee dagen voor aankomst ingevoerd, dan
+       * kreeg de gast nooit meer een welkomstmail — en dus ook nooit zijn
+       * deurcode. Nu kijken we naar het hele venster tot aankomst; `welcome_sent`
+       * blijft de markering, zodat niemand hem twee keer krijgt.
+       *
+       * `.eq("welcome_sent", false)` liet bovendien rijen zonder waarde weg:
+       * in SQL is NULL = false niet waar maar onbekend. Vandaar de or-vorm. */
       const inThreeDays = new Date();
       inThreeDays.setDate(inThreeDays.getDate() + 3);
 
-      const { data: welcomeStays } = await getSupabase()
+      const { data: welcomeStays, error: welcomeFout } = await getSupabase()
         .from("stays")
         .select("*")
-        .eq("check_in", localDate(inThreeDays))
-        .eq("welcome_sent", false);
+        .gte("check_in", localDate(new Date()))
+        .lte("check_in", localDate(inThreeDays))
+        .or("welcome_sent.is.null,welcome_sent.eq.false");
+      if (welcomeFout) console.error("Welkomstmail: verblijven ophalen mislukt:", welcomeFout.message);
 
       let welcomeSent = 0;
       for (const stay of welcomeStays ?? []) {
-        const { data: guest } = await getSupabase()
-          .from("guests").select("naam, email").eq("id", stay.guest_id).single();
+        if (stay.status === "geannuleerd") continue;
+        const { data: guest } = stay.guest_id
+          ? await getSupabase()
+              .from("guests").select("naam, email").eq("id", stay.guest_id).maybeSingle()
+          : { data: null };
         if (!guest?.email) continue;
 
         const lodgeNaam = lodgeName(stay.lodge);
@@ -88,21 +102,54 @@ export async function GET(request: NextRequest) {
       }
       results.welcome = welcomeSent;
 
-      // ── 2. Thankyou emails — check_out was yesterday, not yet vertrokken ──
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      /* ── 2. Bedankmails — verblijven die net zijn afgelopen ──
+       *
+       * Hier ging het mis: dit zocht op één exacte dag (`check_out = gisteren`)
+       * en gebruikte de status als markering ("vertrokken" = mail verstuurd).
+       * Drie manieren waarop een gast daardoor stilletjes overgeslagen werd:
+       *
+       *   1. Eén gemiste of half mislukte cronrun en het venster was voorbij —
+       *      er kwam geen tweede kans, ook niet de dag erna.
+       *   2. `neq("status", "vertrokken")` laat rijen zonder status weg: in SQL
+       *      is NULL <> 'vertrokken' niet waar maar onbekend.
+       *   3. Wie geen e-mailadres had (Booking.com-import: wel een naam, geen
+       *      adres) werd geteld noch gemeld, dus bleef onzichtbaar.
+       *
+       * Nu bepaalt `bedankt_verstuurd_op` of de mail al weg is en kijken we een
+       * week terug, zodat een gemiste dag vanzelf wordt ingehaald. Daarna neemt
+       * de follow-upmail (14 dagen) het over — een bedankje van drie weken oud
+       * heeft geen zin meer. */
+      const BEDANK_INHAALVENSTER_DAGEN = 7;
+      const gisteren = new Date();
+      gisteren.setDate(gisteren.getDate() - 1);
+      const oudsteBedankdag = new Date();
+      oudsteBedankdag.setDate(oudsteBedankdag.getDate() - BEDANK_INHAALVENSTER_DAGEN);
 
-      const { data: thankyouStays } = await getSupabase()
+      const { data: thankyouStays, error: bedankFout } = await getSupabase()
         .from("stays")
         .select("*")
-        .eq("check_out", localDate(yesterday))
-        .neq("status", "vertrokken");
+        .gte("check_out", localDate(oudsteBedankdag))
+        .lte("check_out", localDate(gisteren))
+        .is("bedankt_verstuurd_op", null);
+      if (bedankFout) console.error("Bedankmail: verblijven ophalen mislukt:", bedankFout.message);
 
       let thankYouSent = 0;
+      let bedankZonderEmail = 0;
       for (const stay of thankyouStays ?? []) {
-        const { data: guest } = await getSupabase()
-          .from("guests").select("naam, email").eq("id", stay.guest_id).single();
-        if (!guest?.email) continue;
+        if (stay.status === "geannuleerd") continue;
+
+        const { data: guest } = stay.guest_id
+          ? await getSupabase()
+              .from("guests").select("naam, email, laatste_bezoek").eq("id", stay.guest_id).maybeSingle()
+          : { data: null };
+        if (!guest?.email) {
+          /* Vrijwel altijd een Booking.com-boeking: die export bevat geen
+           * e-mailadres, dus deze gast kan alleen via het extranet bedankt
+           * worden. Tellen in plaats van stil overslaan — zo is in het
+           * cronresultaat te zien dat er gasten onbedankt blijven. */
+          bedankZonderEmail++;
+          continue;
+        }
 
         const firstName = esc((guest.naam || "").split(" ")[0] || guest.naam || "");
         const { url: thankPhoto } = lodgePhoto(baseUrl, stay.lodge);
@@ -114,13 +161,42 @@ export async function GET(request: NextRequest) {
             subject: "Bedankt voor je bezoek — Huis ter Huynen",
             html: thankYouEmail({ firstName, photoUrl: thankPhoto, reviewLink: GOOGLE_REVIEW_URL }),
           });
-          await getSupabase().from("stays").update({ status: "vertrokken" }).eq("id", stay.id);
+          const { error: markeerFout } = await getSupabase().from("stays").update({
+            status: "vertrokken",
+            bedankt_verstuurd_op: new Date().toISOString(),
+          }).eq("id", stay.id);
+          if (markeerFout) {
+            console.error(
+              `BEDANKMAIL NIET GEMARKEERD: verblijf ${stay.id} kreeg de mail, maar ` +
+              `bedankt_verstuurd_op kon niet worden opgeslagen — morgen gaat hij opnieuw de deur uit. ` +
+              `Oorzaak: ${markeerFout.message}`,
+            );
+          }
+          /* Het laatste bezoek staat op de datum waarop de gast in beeld kwam,
+           * niet op die van zijn vertrek. Daardoor telt de follow-upmail zijn
+           * veertien dagen vanaf de aanvraag — soms nog tijdens het verblijf.
+           * Bij vertrek weten we de echte datum, dus zetten we hem recht. */
+          const vertrokkenOp = new Date(stay.check_out);
+          if (!Number.isNaN(vertrokkenOp.getTime())
+              && (!guest.laatste_bezoek || new Date(guest.laatste_bezoek).getTime() < vertrokkenOp.getTime())) {
+            await getSupabase().from("guests")
+              .update({ laatste_bezoek: vertrokkenOp.toISOString() })
+              .eq("id", stay.guest_id);
+          }
           thankYouSent++;
         } catch (e) {
           console.error("Thankyou cron failed for stay", stay.id, e);
         }
       }
       results.thankyou = thankYouSent;
+      results.bedank_zonder_email = bedankZonderEmail;
+      if (bedankZonderEmail > 0) {
+        console.warn(
+          `BEDANKMAIL OVERGESLAGEN: ${bedankZonderEmail} afgelopen verblijf(en) hebben geen ` +
+          `e-mailadres in de database. Dat zijn vrijwel altijd Booking.com-boekingen; ` +
+          `die gasten kun je alleen via het extranet bedanken.`,
+        );
+      }
 
       // ── 3. Follow-up emails — 14+ days since visit, not yet ontvangen ──
       const cutoff = new Date();
