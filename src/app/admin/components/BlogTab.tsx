@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BlogPost } from "../types";
 import { PUBLIC_IMAGES } from "@/lib/site";
 import { MAX_SLUG_LENGTH, kortSlugIn, slugify, slugLengteFout } from "@/lib/slug";
+import { ontleedInhoud, splitsVet } from "@/lib/blog-inhoud";
 
 const C = {
   bg: "#F7F8FA", card: "#fff", border: "#E5E7EB",
@@ -139,12 +140,39 @@ export function BlogTab({ posts, setPosts }: { posts: BlogPost[]; setPosts: (p: 
   };
 
   // ── Preview renderer ──
+  // Zelfde ontleding als de artikelpagina (@/lib/blog-inhoud). Deze preview
+  // kende eerder alleen ##, waardoor # en ### met hekjes en al in beeld stonden
+  // en vet als sterretjes — terwijl de bezoeker iets anders te zien kreeg. Een
+  // preview die anders toont dan de pagina is erger dan geen preview.
+  const KOP_GROOTTE = { 1: 22, 2: 18, 3: 15 } as const;
+
   function renderPreview(inhoud: string) {
-    return inhoud.split(/\n\n+/).map((block, i) => {
-      const t = block.trim();
-      if (!t) return null;
-      if (t.startsWith("## ")) return <h2 key={i} style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: "24px 0 8px" }}>{t.slice(3)}</h2>;
-      return <p key={i} style={{ fontSize: 14, color: C.text, lineHeight: 1.7, margin: "0 0 12px", fontWeight: 300 }}>{t}</p>;
+    return ontleedInhoud(inhoud).map((deel, i) => {
+      if (deel.soort === "kop") {
+        const Kop = `h${deel.niveau}` as "h1" | "h2" | "h3";
+        return (
+          <Kop key={i} style={{
+            fontSize: KOP_GROOTTE[deel.niveau], fontWeight: deel.niveau === 3 ? 600 : 700,
+            color: C.text, margin: deel.niveau === 3 ? "18px 0 6px" : "24px 0 8px",
+          }}>
+            {deel.tekst}
+          </Kop>
+        );
+      }
+      return (
+        <p key={i} style={{ fontSize: 14, color: C.text, lineHeight: 1.7, margin: "0 0 12px", fontWeight: 300 }}>
+          {deel.regels.map((regel, j, arr) => (
+            <span key={j}>
+              {splitsVet(regel).map((stuk, k) =>
+                stuk.vet
+                  ? <strong key={k} style={{ fontWeight: 600 }}>{stuk.tekst}</strong>
+                  : stuk.tekst,
+              )}
+              {j < arr.length - 1 && <br />}
+            </span>
+          ))}
+        </p>
+      );
     });
   }
 
