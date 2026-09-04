@@ -8,6 +8,7 @@ import {
   expiredOffersSummaryEmail, type ExpiredSummaryRow,
 } from "@/lib/email";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
+import { haalFollowupKandidaten } from "@/lib/followup";
 import {
   todayISO, addDaysISO, daysBetweenISO, formatDateNl, graceEndDate,
   OFFER_REMINDER_DAYS_BEFORE, OFFER_GRACE_DAYS,
@@ -198,47 +199,35 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // ── 3. Follow-up emails — 14+ days since visit, not yet ontvangen ──
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 14);
-
-      const { data: followupGuests } = await getSupabase()
-        .from("guests")
-        .select("id, naam, email, laatste_bezoek")
-        .lt("laatste_bezoek", cutoff.toISOString())
-        .order("laatste_bezoek", { ascending: false })
-        .limit(20);
+      /* ── 3. Follow-upmails — veertien dagen na vertrek ──
+       *
+       * De selectie zat in guests: iedereen wiens `laatste_bezoek` langer dan
+       * veertien dagen geleden was. Maar in guests staat elke aanvrager, ook
+       * wie hier nooit geslapen heeft, en er werd nergens gecontroleerd of er
+       * een verblijf tegenover stond. Zie lib/followup.ts — daar is een
+       * afgerond verblijf nu het uitgangspunt. */
+      const followupKandidaten = await haalFollowupKandidaten(20);
 
       let followupSent = 0;
       let followupLogFailed = 0;
-      for (const fg of followupGuests ?? []) {
-        if (!fg.email) continue;
-        const { data: existing } = await getSupabase()
-          .from("bookings").select("id")
-          .eq("guest_id", fg.id).eq("product", "follow-up-email").limit(1);
-        if (existing && existing.length > 0) continue;
-
-        // Look up de laatste lodge zodat de foto klopt; fallback naar lodge_1
-        const { data: lastStay } = await getSupabase()
-          .from("stays").select("lodge").eq("guest_id", fg.id)
-          .order("check_out", { ascending: false }).limit(1).maybeSingle();
-        const { url: followPhoto } = lodgePhoto(baseUrl, lastStay?.lodge || "lodge_1");
-        const followFirstName = esc((fg.naam || "").split(" ")[0] || fg.naam || "");
+      for (const kandidaat of followupKandidaten) {
+        const { url: followPhoto } = lodgePhoto(baseUrl, kandidaat.lodge);
+        const followFirstName = esc((kandidaat.naam || "").split(" ")[0] || kandidaat.naam || "");
 
         try {
           await resend.emails.send({
             from: "Huis ter Huynen <lodge@huisterhuynen.nl>",
-            to: [fg.email],
+            to: [kandidaat.email],
             subject: "Hoe was je verblijf? — Huis ter Huynen",
             html: followUpEmail({ firstName: followFirstName, photoUrl: followPhoto, reviewLink: GOOGLE_REVIEW_URL, bookLink: `${baseUrl}/#reserveren` }),
           });
-          const gelogd = await logSentEmail("follow-up-email", fg.id, {
-            type: "follow-up", sent_at: new Date().toISOString(),
+          const gelogd = await logSentEmail("follow-up-email", kandidaat.guestId, {
+            type: "follow-up", sent_at: new Date().toISOString(), vertrokken_op: kandidaat.vertrokkenOp,
           });
           if (!gelogd) followupLogFailed++;
           followupSent++;
         } catch (e) {
-          console.error("Follow-up cron failed for guest", fg.id, e);
+          console.error("Follow-up cron failed for guest", kandidaat.guestId, e);
         }
       }
       results.followup = followupSent;
