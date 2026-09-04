@@ -230,7 +230,7 @@ Vanuit Zeijen is de Drentsche Aa binnen een kwartier rijden of binnen een goede 
     slug: "prive-lodge-boeken-nederland-kosten",
     titel: "Privé lodge boeken in Nederland: wat kost het?",
     intro:
-      "Privé lodges met een eigen hottub zijn een van de snelst groeiende vakantievormen in Nederland. Maar wat betaal je daarvoor eigenlijk, en waar zit het verschil met een hotel of een gewoon vakantiehuis? Een eerlijk overzicht van prijzen en prijsfactoren.",
+      "Privé lodges met een eigen hottub zijn een van de snelst groeiende vakantievormen in Nederland. Maar wat betaal je daarvoor eigenlijk, en waar zit het verschil met een hotel of een gewoon vakantiehuis? Een eerlijk overzicht van de prijsfactoren, met onze eigen tarieven erbij: vanaf €165 per nacht, met een rekenvoorbeeld voor een weekend van twee nachten.",
     inhoud: `Een paar jaar geleden was een privé lodge met eigen hottub nog een buitenbeentje op de Nederlandse vakantiemarkt. Inmiddels is het een van de snelst groeiende segmenten: steeds meer mensen kiezen voor een volledig privé verblijf met eigen buitenruimte, in plaats van een hotelkamer of een vakantiepark met gedeelde voorzieningen. Maar wat kost zo'n privé lodge eigenlijk, en waar zitten de verschillen? In dit artikel zetten we de belangrijkste prijsfactoren op een rij.
 
 ## Wat is een privé lodge precies?
@@ -259,6 +259,28 @@ Een vakantiepark zit er qua prijs vaak tussenin, maar ook hier geldt: gedeelde v
 
 Een privé lodge is qua prijs per nacht vaak vergelijkbaar met of iets hoger dan een goed hotel, maar je betaalt voor de hele ervaring: geen gedeelde ruimtes, geen wachttijden, en voorzieningen als een hottub die je de hele dag en avond tot je beschikking hebt — niet alleen tijdens openingstijden van een spa.
 
+## Wat kost een privé lodge bij Huis ter Huynen?
+
+De meeste aanbieders laten een prijs pas zien nadat je een formulier hebt ingevuld. Wij zetten hem hier gewoon neer, zodat je kunt rekenen voordat je iets aanvraagt.
+
+**Vanaf €165 per nacht.** Dat is de vanafprijs voor een van beide lodges, Lodge De Heide of Lodge De Eik, voor maximaal vier personen. In het hoogseizoen, in de schoolvakanties en rond feestdagen ligt de nachtprijs hoger; doordeweeks buiten het seizoen zit je op de vanafprijs.
+
+**Minimaal twee nachten.** Eén nacht boeken kan niet. De dag van aankomst gaat grotendeels op aan aankomen, en een weekend van vrijdag tot zondag is precies het ritme waar deze plek voor gemaakt is.
+
+**Inbegrepen zonder toeslag:** de privé hottub op je eigen terras, 24 uur per dag op 38 °C, de sauna in Lodge De Heide, gratis wifi, parkeren op eigen terrein en het gebruik van de laadpaal voor een elektrische auto. Bij veel accommodaties staat minstens één van deze punten als losse post op de rekening.
+
+**Bovenop de nachtprijs komen:** schoonmaakkosten en toeristenbelasting van de gemeente Tynaarlo. Optioneel zijn een hond (€25), een late check-out tot 13:00 uur (€25) en het wijzigen van een boeking (€25).
+
+**Geen boekingskosten.** Je boekt rechtstreeks bij de eigenaar. Wat een groot platform als servicekosten bovenop de nachtprijs zet — vaak enkele procenten tot ruim tien procent van het totaal — betaal je hier niet.
+
+## Rekenvoorbeeld: een weekend van twee nachten
+
+Een weekend voor twee personen, vrijdag tot zondag, buiten het hoogseizoen: twee nachten vanaf €165 is €330 aan verblijfskosten. Daar komen schoonmaakkosten en toeristenbelasting bij; die staan als aparte regels in het voorstel dat je krijgt, zodat je ziet waar het bedrag vandaan komt.
+
+Voor dat bedrag heb je een heel huis met een eigen terras en een hottub die van niemand anders is, in plaats van een hotelkamer met een dagkaart voor een gedeelde spa. Wie dezelfde twee nachten in een wellnesshotel boekt, betaalt per persoon en per faciliteit — en deelt het water.
+
+Bij een boeking betaal je 30% aanbetaling; het restant is uiterlijk 30 dagen vóór aankomst aan de beurt. Inchecken kan tussen 15:00 en 21:00 uur, uitchecken uiterlijk om 11:00 uur.
+
 ## Waar moet je op letten bij het boeken van een privé lodge?
 
 **Check wat er werkelijk privé is.** Sommige aanbieders noemen een verblijf "privé lodge" terwijl het op een park staat met zicht op andere chalets. Vraag of zoek naar foto's van de directe omgeving, niet alleen van het interieur.
@@ -271,9 +293,142 @@ Een privé lodge is qua prijs per nacht vaak vergelijkbaar met of iets hoger dan
 
 ## Twee privé lodges in Drenthe: Huis ter Huynen
 
-Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. De lodges openen per 1 januari 2027, en nieuwsbrief-abonnees krijgen als eerste bericht over beschikbaarheid en eventuele vroegboekvoordelen. Wie nieuwsgierig is naar de exacte tarieven, kan zich gratis aanmelden voor de nieuwsbrief en wordt zodra de boekingen open gaan als eerste geïnformeerd.`,
+Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. Lodge De Heide heeft daarnaast een eigen sauna, Lodge De Eik een buitenkeuken met BBQ onder de eiken. Beide lodges zijn geschikt voor maximaal vier personen.
+
+Je boekt rechtstreeks bij de eigenaar: je geeft je data door en krijgt binnen 24 uur een persoonlijk voorstel met de volledige prijsopbouw erin — nachtprijs, schoonmaakkosten en toeristenbelasting als aparte regels, zodat er onderaan geen verrassing staat.
+
+## Veelgestelde vragen over de prijs van een privé lodge
+
+### Wat kost een privé lodge met hottub per nacht?
+
+Bij Huis ter Huynen begint de nachtprijs bij €165 voor de hele lodge, voor maximaal vier personen, bij een verblijf van minimaal twee nachten. In het hoogseizoen, in de schoolvakanties en rond feestdagen ligt die prijs hoger. Bij andere aanbieders hangt de prijs sterk af van locatie, voorzieningen en de mate van privacy — een lodge die volledig op zichzelf staat, is doorgaans duurder dan een vergelijkbaar huisje op een park.
+
+### Is een privé lodge duurder dan een hotel?
+
+Per nacht vaak vergelijkbaar of iets hoger, maar de vergelijking gaat pas op als je alles meerekent. In een hotel betaal je per persoon, deel je de sauna en het zwembad, en komen ontbijt, parkeren en toegang tot de spa er vaak apart bij. Bij een lodge huur je het hele huis, inclusief de hottub, voor het aantal nachten dat je blijft.
+
+### Welke kosten komen er bovenop de nachtprijs?
+
+Bij ons: schoonmaakkosten en toeristenbelasting van de gemeente Tynaarlo. Optioneel een hond (€25), een late check-out tot 13:00 uur (€25) of het wijzigen van een boeking (€25). Boekingskosten rekenen wij niet, omdat je rechtstreeks boekt. Let bij andere aanbieders vooral op energietoeslagen, linnenpakketten en servicekosten van het platform.
+
+### Hoeveel nachten moet ik minimaal boeken?
+
+Twee. Een weekend van vrijdag tot zondag is de meest geboekte vorm; voor een midweek reken je op drie of vier nachten.
+
+### Kan ik direct boeken of moet ik een aanvraag doen?
+
+Je doet een aanvraag met je data en het aantal gasten, en krijgt binnen 24 uur een persoonlijk voorstel met de totaalprijs. Na akkoord betaal je 30% aanbetaling; het restant is uiterlijk 30 dagen vóór aankomst aan de beurt.`,
     categorie: "Reistips",
-    leestijd: "7 minuten",
+    leestijd: "10 minuten",
+    auteur: "Arjan Reinders",
+    og_image: "",
+    publish: true,
+  },
+  {
+    // Zoekterm "wellness weekend drenthe": informatieve variant naast
+    // /wellness-vakantie-drenthe, die op "wellness huisje drenthe" mikt. Bewust
+    // een andere vraag ("hoe ziet zo'n weekend eruit") dan de landingspagina
+    // ("waar boek ik er een"), zodat de twee elkaar niet opnieuw beconcurreren —
+    // dat is precies het probleem dat de 301's van deze maand hebben opgeruimd.
+    // Het CTA-blok onder dit artikel wijst naar die landingspagina, zie
+    // CTA_PER_ARTIKEL in src/app/blog/[slug]/page.tsx.
+    slug: "wellnessweekend-drenthe",
+    titel: "Wellnessweekend in Drenthe: hoe ziet zo'n weekend eruit?",
+    intro:
+      "Een wellnessweekend hoeft geen resort met dagkaarten en tijdsloten te zijn. Steeds meer stellen huren een huis met een eigen sauna en hottub. Hoe zo'n weekend er van vrijdagmiddag tot zondagochtend uitziet: het ritme dat werkt, wat je meeneemt en wanneer je het beste gaat.",
+    inhoud: `Een wellnessweekend klinkt als iets wat je boekt in een groot resort: een dagkaart, een badjas, een schema. Zo hoeft het niet te gaan. Steeds meer stellen kiezen voor een weekend waarin de sauna en het warme water van hen alleen zijn, en waarin het programma bestaat uit precies niets moeten. Hoe ziet zo'n weekend er van vrijdagmiddag tot zondagochtend uit? Hieronder het eerlijke antwoord, inclusief de dingen die mensen achteraf anders zouden doen.
+
+## Twee soorten wellnessweekend
+
+Grofweg zijn er twee vormen, en ze lijken alleen in de brochure op elkaar.
+
+De eerste is het resortweekend: een hotel met een wellnessafdeling, een dagkaart voor de sauna, behandelingen die je vooraf inplant. Dat werkt, en qua faciliteiten is het vaak indrukwekkend. Maar je deelt het water, je reserveert een tijdslot, en aan het eind van de middag loop je door dezelfde gang als tweehonderd anderen.
+
+De tweede is het privé weekend: je huurt een huis met een eigen sauna of hottub en verder niets erbij. Geen openingstijden, geen medegasten, geen personeel in de buurt. Wat je inlevert aan stoombaden en behandelmenu's, win je terug in stilte en in de vrijheid om om elf uur 's avonds nog het water in te gaan omdat het toevallig helder is.
+
+Drenthe leent zich vooral voor die tweede vorm. De provincie heeft weinig grote wellnessresorts, maar wel ruimte, donkere nachten en natuur die bij de deur begint — precies de omstandigheden waarin een privé weekend beter werkt dan een resort.
+
+## Vrijdag: aankomen en niets meer regelen
+
+Een goed wellnessweekend begint met een lege vrijdagavond. Kom aan het eind van de middag aan, zodat er nog licht is om de omgeving te zien, en plan die avond niets buiten de deur.
+
+**Doe de boodschappen onderweg.** Het verschil tussen een ontspannen en een rommelige vrijdagavond is meestal een supermarkt. Wie de boodschappen onderweg doet, hoeft na aankomst de auto niet meer in.
+
+**Eerst een korte wandeling, dan pas het water.** Een half uur benen strekken na de rit maakt de eerste sessie in de hottub een stuk aangenamer dan er meteen instappen met een stijve rug.
+
+**De avond hoort bij het water.** In de winter is het hier om vijf uur donker en ligt er vaak rijp op de heide. Achtendertig graden water, koude lucht en een sterrenhemel zonder lichtvervuiling: dat is het beeld waar zo'n weekend om begonnen is.
+
+## Zaterdag: bewegen, opwarmen, afkoelen, niets
+
+De klassieke fout op zaterdag is te veel willen. Een dag met drie uitstapjes voelt aan het eind als een werkdag. Het ritme dat wél werkt is simpel: één ding in de ochtend, één ding in de middag, de rest open laten.
+
+### Ochtend: de wandeling waar het weekend om draait
+
+Ga vroeg. Tussen zonsopkomst en een uur daarna is de heide op zijn mooist en kom je werkelijk niemand tegen. Rond Zeijen liggen het Zeijerveld en de Zeijerstrubben direct om de hoek, het Ballooërveld met de schaapskudde op twaalf minuten en het beekdal van de Drentsche Aa op een kwartier. Anderhalf uur is genoeg — het is geen prestatie, het is een aanleiding om daarna te ontdooien.
+
+### Middag: eten, lezen, en verder weinig
+
+Een lange lunch op het terras, een boek, een dutje. Wie toch iets wil ondernemen, rijdt in twintig minuten naar Assen voor het Drents Museum of de stad zelf. Maar de middag mag ook gewoon leeg zijn; dat is precies waar het weekend voor bedoeld is.
+
+### Einde van de middag: de sauna aan
+
+Reken op drie kwartier tot een uur opwarmtijd voor een saunacabine. Zet hem dus aan voordat je aan het eten begint, niet erna. Wissel warmte af met buitenlucht: twee of drie korte sessies met een frisse pauze ertussen doen meer dan één lange.
+
+### Avond: eten zonder reservering, en daarna het water in
+
+Zelf koken heeft in dit soort weekenden een groot voordeel: er is geen tijdstip waarop je ergens moet zijn. Eet rustig, en ga daarna nog een keer de hottub in. De tweede sessie van de dag, in het donker, is bij vrijwel iedereen de sessie die achteraf het langst blijft hangen.
+
+## Zondag: kort, en niet gehaast
+
+Een laatste ochtendwandeling, een langzaam ontbijt en dan pas inpakken. Uitchecken is doorgaans rond elf uur, dus de ochtend is korter dan hij voelt. Wie de zondag echt wil gebruiken, boekt een derde nacht: het verschil tussen twee en drie nachten is bij dit soort weekenden groter dan het verschil tussen één en twee.
+
+## Wat neem je mee (en wat kun je laten staan)
+
+**Badjas en slippers.** Bij een privé verblijf liggen die niet altijd standaard klaar — vraag het na, en neem ze anders zelf mee.
+
+**Een tweede handdoek per persoon.** Hottub en douche vragen samen meer handdoeken dan je thuis in een weekend gebruikt.
+
+**Waterdichte wandelschoenen.** Heidepaden blijven na regen lang nat en de laagtes tussen de vennen zijn drassig.
+
+**Water om te drinken.** Sauna en hottub ontspannen, maar drogen ook uit. Een fles bij het bad scheelt de hele avond heen en weer lopen.
+
+**Laat de agenda thuis.** Letterlijk: leg je telefoon in een lade. Een paar uur zonder meldingen doet meer voor de ontspanning dan een extra behandeling.
+
+## Wanneer is het beste moment voor een wellnessweekend in Drenthe?
+
+Warm water werkt het best als het buiten koud is. Januari en februari zijn daarom de sterkste maanden: vroeg donker, vaak rijp op de heide en de rustigste periode van het jaar in Drenthe. November en december komen daar vlak achteraan.
+
+Wil je het combineren met de bloeiende heide, dan kies je half augustus tot begin september — mooier landschap, maar drukkere natuurgebieden en hogere tarieven. Oktober is het compromis: herfstkleuren, mistige ochtenden, lege paden en nog volop wandelweer.
+
+## Zo'n weekend bij Huis ter Huynen
+
+Bij Huis ter Huynen in Zeijen staan twee vrijstaande lodges op de heide, allebei met een privé hottub op het eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos; Lodge De Eik heeft een buitenkeuken met BBQ onder de eiken. Er staan maar twee huisjes op het terrein, er is geen receptie en er is geen gedeelde wellnessruimte.
+
+Een verblijf duurt minimaal twee nachten en begint bij €165 per nacht voor de hele lodge, voor maximaal vier personen. Je boekt rechtstreeks bij de eigenaar, zonder boekingskosten, en krijgt binnen 24 uur een persoonlijk voorstel.
+
+## Veelgestelde vragen over een wellnessweekend in Drenthe
+
+### Hoeveel nachten duurt een wellnessweekend?
+
+Twee nachten is het minimum en de meest geboekte vorm: vrijdag tot zondag. Drie nachten is merkbaar rustiger, omdat de zaterdag dan niet de enige volle dag is.
+
+### Is een privé wellnesshuisje duurder dan een wellnesshotel?
+
+Per nacht vaak vergelijkbaar. Het verschil zit in wat erbij zit: in een hotel betaal je per persoon en komen dagkaarten, behandelingen en soms parkeren er apart bij, terwijl je bij een huisje het hele huis huurt inclusief sauna en hottub.
+
+### Kun je in Drenthe ook naar een dagspa?
+
+Ja, in en rond Assen liggen verschillende sauna- en spacomplexen. Als uitstapje op een regenachtige middag is dat een prima aanvulling — maar het blijft een uitstapje met reistijd en openingstijden, terwijl de hottub op je eigen terras er altijd is.
+
+### Wat is de beste maand voor een wellnessweekend?
+
+Januari en februari: koud buiten, vroeg donker en de rustigste weken van het jaar. Wie de heide in bloei wil zien, komt eind augustus, maar dat is drukker en duurder.
+
+### Is een wellnessweekend ook iets voor twee stellen?
+
+Ja. Beide lodges zijn geschikt voor maximaal vier personen, dus twee stellen passen in één lodge. Wil je met een grotere groep komen: samen zijn de lodges goed voor acht personen — vraag dat wel gelijktijdig aan.`,
+    categorie: "Reistips",
+    leestijd: "9 minuten",
     auteur: "Arjan Reinders",
     og_image: "",
     publish: true,

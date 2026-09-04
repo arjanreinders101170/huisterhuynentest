@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
-import { SITE_URL, blogOgImageUrl, jsonLdScript } from "@/lib/site";
+import { SITE_URL, PRICE_FROM_EUR, blogOgImageUrl, jsonLdScript } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -70,6 +70,54 @@ export async function generateMetadata(
   };
 }
 
+/** CTA onder het artikel. Standaard is dat de nieuwsbriefwerving: bij een
+ *  artikel over wandelroutes is inschrijven de enige stap die past.
+ *
+ *  Bij een paar artikelen past die stap juist niet. Wie zoekt op wat een privé
+ *  lodge kost, staat aan het eind van de funnel en is de sterkste bezoeker die
+ *  de site organisch binnenkrijgt (dat artikel staat op positie 6,4 op een
+ *  prijszoekopdracht). Die bezoeker een nieuwsbrief aanbieden is een stap terug
+ *  vragen. Daarom kan een artikel hier zijn eigen CTA zetten: de vanafprijs
+ *  erbij, en een knop naar de plek waar je data kunt kiezen.
+ *
+ *  Losstaande links in de artikeltekst kunnen niet — de renderer kent alleen
+ *  koppen, alinea's en vet — dus dit blok is meteen de enige interne link die
+ *  een artikel naar een commerciële pagina kan leggen. */
+interface BlogCta {
+  eyebrow: string;
+  tekst: string;
+  knop: string;
+  href: string;
+}
+
+const STANDAARD_CTA: BlogCta = {
+  eyebrow: "Opening 1 januari 2027",
+  tekst:
+    "De lodges zijn beschikbaar vanaf 1 januari 2027. Schrijf je in voor de nieuwsbrief en ontvang als eerste de vroegboekkorting.",
+  knop: "Schrijf me in →",
+  href: "/#nieuwsbrief",
+};
+
+const CTA_PER_ARTIKEL: Record<string, BlogCta> = {
+  "prive-lodge-boeken-nederland-kosten": {
+    eyebrow: `Vanaf €${PRICE_FROM_EUR} per nacht`,
+    tekst:
+      `Twee volledig privé lodges met eigen hottub, vanaf €${PRICE_FROM_EUR} per nacht bij minimaal twee ` +
+      "nachten, rechtstreeks geboekt en dus zonder boekingskosten. Geef je data door en je krijgt binnen " +
+      "24 uur een persoonlijk voorstel met de volledige prijsopbouw.",
+    knop: "Bekijk beschikbaarheid →",
+    href: "/#reserveren",
+  },
+  "wellnessweekend-drenthe": {
+    eyebrow: `Vanaf €${PRICE_FROM_EUR} per nacht`,
+    tekst:
+      "Zo'n weekend begint bij een huis waar de sauna en de hottub van jou alleen zijn. Beide lodges staan " +
+      "vrij op de heide bij Zeijen, met een hottub op het eigen terras die het hele jaar op 38 °C staat.",
+    knop: "Bekijk de wellness huisjes →",
+    href: "/wellness-vakantie-drenthe",
+  },
+};
+
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
   text: "#2A2418", muted: "#5A534C", gold: "#B49A5E",
@@ -78,8 +126,22 @@ const T = {
   sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
+/** Zet **tekst** binnen een regel om in vet. De artikelen gebruiken deze
+ *  markering al sinds de eerste seed voor de aanhef van een opsomming
+ *  ("**Locatie.** Lodges in populaire natuurgebieden…"), maar de renderer kende
+ *  hem niet — daardoor stonden de sterretjes letterlijk op de pagina. */
+function renderInline(tekst: string, sleutel: string) {
+  return tekst.split(/(\*\*[^*]+\*\*)/g).map((deel, i) =>
+    deel.startsWith("**") && deel.endsWith("**") && deel.length > 4 ? (
+      <strong key={`${sleutel}-${i}`} style={{ fontWeight: 600 }}>{deel.slice(2, -2)}</strong>
+    ) : (
+      deel
+    ),
+  );
+}
+
 /** Parses plain-text blog content into React elements.
- *  #   → <h1>, ## → <h2>, ### → <h3>, blank line → paragraph break */
+ *  #   → <h1>, ## → <h2>, ### → <h3>, **vet**, blank line → paragraph break */
 function renderInhoud(inhoud: string) {
   const blocks = inhoud.split(/\n\n+/);
   return blocks.map((block, i) => {
@@ -121,7 +183,7 @@ function renderInhoud(inhoud: string) {
         lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
       }}>
         {trimmed.split("\n").map((line, j, arr) => (
-          <span key={j}>{line}{j < arr.length - 1 && <br />}</span>
+          <span key={j}>{renderInline(line, `${i}-${j}`)}{j < arr.length - 1 && <br />}</span>
         ))}
       </p>
     );
@@ -140,6 +202,7 @@ export default async function ArtikelPagina(
   const postOrNull = await getPost(slug);
   if (!postOrNull) notFound();
   const post = postOrNull as BlogPost;
+  const cta = CTA_PER_ARTIKEL[post.slug] ?? STANDAARD_CTA;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -256,18 +319,17 @@ export default async function ArtikelPagina(
             fontFamily: T.sans, fontSize: 11, fontWeight: 700,
             color: T.gold, letterSpacing: 1.5, textTransform: "uppercase" as const, marginBottom: 6,
           }}>
-            Opening 1 januari 2027
+            {cta.eyebrow}
           </div>
           <p style={{ fontFamily: T.sans, fontSize: 14, color: T.text, margin: "0 0 14px", lineHeight: 1.6 }}>
-            De lodges zijn beschikbaar vanaf 1 januari 2027. Schrijf je in voor de
-            nieuwsbrief en ontvang als eerste de vroegboekkorting.
+            {cta.tekst}
           </p>
-          <Link href="/#nieuwsbrief" style={{
+          <Link href={cta.href} style={{
             display: "inline-block", fontFamily: T.sans, fontSize: 13, fontWeight: 700,
             color: T.green, textDecoration: "none",
             border: `1px solid ${T.green}`, padding: "8px 18px", borderRadius: 8,
           }}>
-            Schrijf me in →
+            {cta.knop}
           </Link>
         </div>
 
