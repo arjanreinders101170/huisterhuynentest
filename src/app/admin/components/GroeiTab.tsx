@@ -285,7 +285,7 @@ export function GroeiTab() {
             Een augustusnacht levert {euro(WINTERSTRAF.augustusTarief)} op en kost er
             {" "}{euro(WINTERSTRAF.augustusEnergie)} — netto {euro(WINTERSTRAF.augustusNetto)}. De maanden
             die het moeilijkst te verkopen zijn, zijn ook het duurst om te leveren. Reken daarom in de
-            winter met een minimumverblijf van drie nachten: de jacuzzi opwarmen kost hetzelfde bij twee
+            winter met een minimumverblijf van drie nachten: de hottub opwarmen kost hetzelfde bij twee
             of bij vier nachten.
           </div>
           <div style={{

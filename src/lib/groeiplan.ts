@@ -143,7 +143,7 @@ export const VASTE_LASTEN_PER_MAAND = Math.round(VASTE_LASTEN_PER_JAAR / 12);
 /**
  * Stroom en water worden op de meter afgerekend en zijn dus een variabele
  * kostenpost per verhuurde nacht, geen vaste last. Sterk seizoensgebonden: een
- * jacuzzi op temperatuur houden kost in januari een veelvoud van juli, en de
+ * hottub op temperatuur houden kost in januari een veelvoud van juli, en de
  * lodge moet er in de winter bovendien warm bij.  [AANNAME]
  */
 export const ENERGIE_PER_NACHT: Record<number, number> = {
@@ -271,7 +271,7 @@ export const MIJLPALEN: Mijlpaal[] = [
     waarom:
       "De site staat nog vrijwel volledig op pagina 4 en verder, en er is nog niets te verhuren. Deze fase gaat niet over verkeer en niet over bezetting, maar over posities en over meten. Interieurbeeld ontbreekt nog — de lodges zijn niet opgeleverd — dus draait het beeldwerk op natuur en buitenaanzicht.",
     hefbomen: [
-      "Drie P0-landingspagina's herbouwd (wellness, romantiek, jacuzzi)",
+      "Drie P0-landingspagina's herbouwd (wellness, romantiek, hottub)",
       "24 artikelen erbij — 6 per maand",
       "Google Bedrijfsprofiel geverifieerd, wekelijkse posts",
       "Gratis vermeldingen: VVV Drenthe, Visit Drenthe, ANWB, Tripadvisor",
@@ -452,7 +452,7 @@ export const KANAALMIX: KanaalDoel[] = [
   { id: "organisch-informatief", label: "Organisch — natuur & regio", aandeel: 0.37, kostenPerMaand: 0,
     toelichting: "Heide, hunebedden, fietsen, wandelen. Boekt zelf nauwelijks, maar levert het volume en de autoriteit waar de commerciële pagina's op meeliften. /heide-drenthe bewijst dat dit werkt." },
   { id: "organisch-commercieel", label: "Organisch — commercieel", aandeel: 0.16, kostenPerMaand: 0,
-    toelichting: "Jacuzzi, wellness, romantiek, luxe, locatie. Dít is het verkeer dat boekt — en het converteert twee tot drie keer beter dan de natuurpagina's." },
+    toelichting: "Hottub, wellness, romantiek, luxe, locatie. Dít is het verkeer dat boekt — en het converteert twee tot drie keer beter dan de natuurpagina's." },
   { id: "betaald-google", label: "Google Ads", aandeel: 0.11, kostenPerMaand: 100,
     toelichting: "Bij het scenario Bezetting staat dit budget alleen op november t/m maart en op doordeweekse gaten. In augustus adverteren voor een lodge die toch vol zit, is weggegooid geld." },
   { id: "google-bedrijfsprofiel", label: "Google Bedrijfsprofiel", aandeel: 0.09, kostenPerMaand: 0,

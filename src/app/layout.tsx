@@ -35,14 +35,16 @@ export const metadata: Metadata = {
   // Merknaam voorop: de merkcluster staat gemiddeld op positie 15,3 — Google heeft
   // "Huis ter Huynen" nog niet als entiteit vastgelegd, en de homepage is de plek
   // om dat te repareren. "Lodge Drenthe" stond er eerst voorop, goed voor 27
-  // vertoningen in de hele dataset; "jacuzzi" (754) verving "hottub" (249) en
-  // "twee lodges" is de differentiator die geen enkele concurrent kan claimen.
+  // vertoningen in de hele dataset, en "twee lodges" is de differentiator die
+  // geen enkele concurrent kan claimen. Het bad heet overal op de site "hottub"
+  // — één term, ook waar "jacuzzi" meer zoekvolume heeft (754 tegen 249). Zie
+  // migrations/2026_09_04_hottub_als_enige_term.sql.
   title: {
-    default: "Huis ter Huynen | Twee Lodges met Privé Jacuzzi op de Drentse Heide",
+    default: "Huis ter Huynen | Twee Lodges met Privé Hottub op de Drentse Heide",
     template: "%s – Huis ter Huynen",
   },
   description:
-    "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé jacuzzi en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
+    "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé hottub en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
   keywords: [
     "lodge Drenthe",
     "vakantiewoning Drenthe",
@@ -84,9 +86,9 @@ export const metadata: Metadata = {
     locale: "nl_NL",
     url: SITE_URL,
     siteName: "Huis ter Huynen",
-    title: "Huis ter Huynen | Twee Lodges met Privé Jacuzzi op de Drentse Heide",
+    title: "Huis ter Huynen | Twee Lodges met Privé Hottub op de Drentse Heide",
     description:
-      "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé jacuzzi en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
+      "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé hottub en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
     images: [
       {
         url: OG_IMAGE,
@@ -98,9 +100,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Huis ter Huynen | Twee Lodges met Privé Jacuzzi op de Drentse Heide",
+    title: "Huis ter Huynen | Twee Lodges met Privé Hottub op de Drentse Heide",
     description:
-      "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé jacuzzi en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
+      "Twee vrijstaande lodges op de Drentse heide bij Zeijen, elk met privé hottub en terras. Geen receptie, geen buren, geen gedeelde wellness. Vanaf €165 per nacht.",
     images: [OG_IMAGE],
   },
   alternates: {
@@ -159,7 +161,7 @@ const jsonLd = {
   // UnitPriceSpecification voor de eenheid (één nacht, minimaal twee nachten).
   makesOffer: {
     "@type": "Offer",
-    name: "Overnachting in een privé lodge met jacuzzi",
+    name: "Overnachting in een privé lodge met hottub",
     description:
       "Vanafprijs per nacht voor een van beide lodges, bij een verblijf van minimaal twee nachten.",
     price: PRICE_FROM_EUR,
