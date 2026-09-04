@@ -4,7 +4,7 @@ import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate
          isAankomstdag, vertrekdatumsVoor, vormLabel } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 import { getAttribution } from "@/lib/tracking/attribution";
-import { leesReserveerParams } from "@/lib/reserveer-params";
+import { leesReserveerParams, KIES_LODGE_EVENT } from "@/lib/reserveer-params";
 
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
@@ -43,6 +43,18 @@ export default function RequestForm() {
   const [error, setError] = useState("");
   const [availabilityStatus, setAvailabilityStatus] = useState<"idle" | "checking" | "available" | "unavailable">("idle");
   const availCheckRef = useRef<string>("");
+
+  // De lodgekaarten op de homepage staan boven dit formulier en kiezen mee:
+  // hun knop scrollt hierheen en zet meteen de juiste lodge klaar.
+  useEffect(() => {
+    const opKeuze = (e: Event) => {
+      const keuze = (e as CustomEvent<"heide" | "eik">).detail;
+      const doel = keuze && LODGE_UIT_URL[keuze];
+      if (doel) setLodge(doel);
+    };
+    window.addEventListener(KIES_LODGE_EVENT, opKeuze);
+    return () => window.removeEventListener(KIES_LODGE_EVENT, opKeuze);
+  }, []);
 
   const minDate = earliestStayDate();
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;

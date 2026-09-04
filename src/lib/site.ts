@@ -279,6 +279,18 @@ export const RESERVEER_CONTEXT: Record<string, ReserveerContext> = {
     van: "fochteloerveen",
     regel: "U bekijkt beschikbaarheid voor een verblijf op twintig minuten van het Fochteloërveen.",
   },
+  // De lodgepagina's zijn de enige plek waar de bezoeker écht één lodge kiest.
+  // Daar is voorselecteren geen aanname maar zijn eigen keuze doorgeven.
+  "lodge-de-heide": {
+    van: "de-heide",
+    lodge: "heide",
+    regel: "U bekijkt beschikbaarheid voor Lodge De Heide, met eigen sauna en uitzicht over de heide.",
+  },
+  "lodge-de-eik": {
+    van: "de-eik",
+    lodge: "eik",
+    regel: "U bekijkt beschikbaarheid voor Lodge De Eik, met buitenkeuken en BBQ onder de eiken.",
+  },
 };
 
 const CONTEXT_OP_VAN: Record<string, ReserveerContext> = Object.fromEntries(
@@ -300,4 +312,74 @@ export function reserveerHref(slug?: string): string {
   const q = new URLSearchParams({ van: ctx.van });
   if (ctx.lodge) q.set("lodge", ctx.lodge);
   return `/?${q.toString()}#reserveren`;
+}
+
+/* ═══ De twee lodges ═══
+ *
+ * Tot nu toe was er geen enkele stap waarin de bezoeker een lódge koos. Hij
+ * sprong van een themapagina ("wellness", "romantisch") rechtstreeks naar een
+ * aanvraagformulier — terwijl kiezen precies de stap is die twijfel omzet in
+ * commitment. Deze twee records voeden zowel het keuzeblok op de commerciële
+ * pagina's als de verwijzingen tussen de lodgepagina's onderling.
+ *
+ * Het onderscheid is bewust hard: De Heide heeft de sauna en het uitzicht, De
+ * Eik de buitenkeuken en de BBQ. Twee lodges die hetzelfde beloven zijn geen
+ * keuze maar ruis — en op paginaniveau precies het kannibalisatieprobleem dat
+ * de site al heeft.
+ */
+export interface LodgePagina {
+  /** Waarde van ?lodge= in de boekingsflow. */
+  param: LodgeParam;
+  naam: string;
+  slug: string;
+  /** De ene zin die deze lodge van de andere onderscheidt. */
+  onderscheid: string;
+  kenmerken: string[];
+  afbeelding: string;
+  alt: string;
+}
+
+export const LODGE_PAGINAS: LodgePagina[] = [
+  {
+    param: "heide",
+    naam: "Lodge De Heide",
+    slug: "lodge-de-heide",
+    onderscheid: "De enige met een eigen sauna, en met panoramisch uitzicht over heide en bos.",
+    kenmerken: ["Eigen sauna", "Panoramisch uitzicht", "Privé-hottub op het terras"],
+    afbeelding: "/lodge-heide.jpg",
+    alt: "Lodge De Heide met privé-hottub op het terras en uitzicht over de Drentse heide",
+  },
+  {
+    param: "eik",
+    naam: "Lodge De Eik",
+    slug: "lodge-de-eik",
+    onderscheid: "De ruimste van de twee, met een buitenkeuken en BBQ onder de eiken.",
+    kenmerken: ["Buitenkeuken & BBQ", "Hoge plafonds", "Privé-hottub op het terras"],
+    afbeelding: "/lodge-eik.jpg",
+    alt: "Lodge De Eik onder de eiken met buitenkeuken, BBQ en eigen terras",
+  },
+];
+
+export const LODGE_OP_SLUG: Record<string, LodgePagina> = Object.fromEntries(
+  LODGE_PAGINAS.map((l) => [l.slug, l]),
+);
+
+/** Pagina's die het lodgekeuzeblok tonen: de drie P0-pagina's plus de twee
+ *  lodgepagina's zelf, waar het blok de vergelijking met de andere lodge is.
+ *  Bewust niet overal — op een pagina over hunebedden of fietsroutes is de
+ *  bezoeker nog niet aan kiezen toe. */
+const LODGEKEUZE_SLUGS = new Set([
+  "vakantiehuis-met-hottub-drenthe",
+  "wellness-vakantie-drenthe",
+  "romantisch-weekend-weg-drenthe",
+  "lodge-de-heide",
+  "lodge-de-eik",
+]);
+
+/** De lodges die op deze pagina te kiezen zijn, of een lege lijst. Op een
+ *  lodgepagina staat alleen de ándere lodge in het blok: die pagina gaat al
+ *  over de ene, en "vergelijk met De Eik" is daar de zinvolle stap. */
+export function lodgekeuzeVoorSlug(slug: string): LodgePagina[] {
+  if (!LODGEKEUZE_SLUGS.has(slug)) return [];
+  return LODGE_PAGINAS.filter((l) => l.slug !== slug);
 }

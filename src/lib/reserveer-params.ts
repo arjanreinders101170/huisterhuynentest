@@ -17,3 +17,15 @@ export function leesReserveerParams(): { van: string | null; lodge: LodgeParam |
     lodge: lodge === "heide" || lodge === "eik" ? lodge : null,
   };
 }
+
+/* Op de homepage staat het formulier al op de pagina: daar is ?lodge= geen
+ * bruikbare weg, want de query lezen kan alleen bij het laden en een link naar
+ * /?lodge=heide#reserveren zou de eigen pagina opnieuw laten laden om één
+ * keuzeknop te verzetten. De lodgekaarten zeggen het daarom rechtstreeks tegen
+ * het formulier, en de anker-link blijft een anker-link. */
+export const KIES_LODGE_EVENT = "hth:kies-lodge";
+
+export function kiesLodge(lodge: LodgeParam): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent<LodgeParam>(KIES_LODGE_EVENT, { detail: lodge }));
+}

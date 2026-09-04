@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { reserveerHref } from "@/lib/site";
+import { stickyBlogCta } from "@/lib/blog-cta";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
  * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
@@ -27,7 +28,15 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   // De balk hangt in de root-layout en krijgt van niemand een slug mee; het pad
   // is hier dus de enige bron voor de context van de pagina waar hij op staat.
   // Op een pagina zonder eigen context valt reserveerHref terug op /#reserveren.
-  const doel = bookingHref ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
+  //
+  // Blogs zijn het best presterende kanaal van de site (CTR 3,31% tegen 0,25%)
+  // en linkten nauwelijks door. Heeft een artikel een eigen commerciële CTA,
+  // dan volgt de balk die: bij het wellnessweekend-artikel is de wellnesspagina
+  // een betere volgende stap dan een leeg boekingsformulier.
+  const blogSlug = taal === "nl" && pathname?.startsWith("/blog/") ? pathname.slice("/blog/".length) : null;
+  const blog = blogSlug ? stickyBlogCta(blogSlug) : null;
+  const doel = bookingHref ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
+  const label = blog?.knop ?? copy.cta;
 
   return (
     <>
@@ -51,7 +60,7 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
             textDecoration: "none", fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
           }}
         >
-          {copy.cta}
+          {label}
         </Link>
       </div>
     </>

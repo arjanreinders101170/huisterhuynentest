@@ -3,8 +3,9 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
-import { SITE_URL, PRICE_FROM_EUR, blogOgImageUrl, jsonLdScript, footerLinks } from "@/lib/site";
-import { ontleedInhoud, splitsVet, type KopNiveau } from "@/lib/blog-inhoud";
+import { SITE_URL, blogOgImageUrl, jsonLdScript, footerLinks } from "@/lib/site";
+import { blogCta, blogCtaHalverwege, ctaPositieHalverwege } from "@/lib/blog-cta";
+import { ontleedInhoud, splitsVet, type KopNiveau, type InhoudDeel } from "@/lib/blog-inhoud";
 import { renderTekstMetLinks } from "@/lib/tekst";
 
 export const revalidate = 60;
@@ -72,54 +73,6 @@ export async function generateMetadata(
   };
 }
 
-/** CTA onder het artikel. Standaard is dat de nieuwsbriefwerving: bij een
- *  artikel over wandelroutes is inschrijven de enige stap die past.
- *
- *  Bij een paar artikelen past die stap juist niet. Wie zoekt op wat een privé
- *  lodge kost, staat aan het eind van de funnel en is de sterkste bezoeker die
- *  de site organisch binnenkrijgt (dat artikel staat op positie 6,4 op een
- *  prijszoekopdracht). Die bezoeker een nieuwsbrief aanbieden is een stap terug
- *  vragen. Daarom kan een artikel hier zijn eigen CTA zetten: de vanafprijs
- *  erbij, en een knop naar de plek waar je data kunt kiezen.
- *
- *  Losstaande links in de artikeltekst kunnen niet — de renderer kent alleen
- *  koppen, alinea's en vet — dus dit blok is meteen de enige interne link die
- *  een artikel naar een commerciële pagina kan leggen. */
-interface BlogCta {
-  eyebrow: string;
-  tekst: string;
-  knop: string;
-  href: string;
-}
-
-const STANDAARD_CTA: BlogCta = {
-  eyebrow: "Opening 1 januari 2027",
-  tekst:
-    "De lodges zijn beschikbaar vanaf 1 januari 2027. Schrijf je in voor de nieuwsbrief en ontvang als eerste de vroegboekkorting.",
-  knop: "Schrijf me in →",
-  href: "/#nieuwsbrief",
-};
-
-const CTA_PER_ARTIKEL: Record<string, BlogCta> = {
-  "prive-lodge-boeken-nederland-kosten": {
-    eyebrow: `Vanaf €${PRICE_FROM_EUR} per nacht`,
-    tekst:
-      `Twee volledig privé lodges met eigen hottub, vanaf €${PRICE_FROM_EUR} per nacht bij minimaal twee ` +
-      "nachten, rechtstreeks geboekt en dus zonder boekingskosten. Geef je data door en je krijgt binnen " +
-      "24 uur een persoonlijk voorstel met de volledige prijsopbouw.",
-    knop: "Bekijk beschikbaarheid →",
-    href: "/#reserveren",
-  },
-  "wellnessweekend-drenthe": {
-    eyebrow: `Vanaf €${PRICE_FROM_EUR} per nacht`,
-    tekst:
-      "Zo'n weekend begint bij een huis waar de sauna en de hottub van jou alleen zijn. Beide lodges staan " +
-      "vrij op de heide bij Zeijen, met een hottub op het eigen terras die het hele jaar op 38 °C staat.",
-    knop: "Bekijk de wellness huisjes →",
-    href: "/wellness-vakantie-drenthe",
-  },
-};
-
 const T = {
   bg: "#EAE3D2", card: "#FDFBF6", green: "#2F4F3E",
   text: "#2A2418", muted: "#5A534C", gold: "#B49A5E",
@@ -152,30 +105,68 @@ const KOP_STIJL: Record<KopNiveau, React.CSSProperties> = {
   3: { fontSize: "clamp(16px, 2vw, 18px)", margin: "32px 0 10px", fontWeight: 600, lineHeight: 1.4 },
 };
 
+/** Het smalle CTA-blok halverwege de tekst. Bewust anders van vorm dan het
+ *  blok onder het artikel: één zin en een link, geen kader met een eyebrow.
+ *  Twee identieke blokken in één artikel lezen als een advertentie die zichzelf
+ *  herhaalt; dit leest als een terzijde. */
+function InlineCta({ slug }: { slug: string }) {
+  const cta = blogCtaHalverwege(slug);
+  return (
+    <aside style={{
+      borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}`,
+      padding: "18px 0", margin: "36px 0",
+    }}>
+      <p style={{ fontFamily: T.sans, fontSize: 15, color: T.text, fontWeight: 300, lineHeight: 1.7, margin: "0 0 10px" }}>
+        {cta.tekst}
+      </p>
+      <Link href={cta.href} style={{
+        fontFamily: T.sans, fontSize: 14, fontWeight: 600, color: T.green,
+        textDecoration: "underline", textUnderlineOffset: 3,
+      }}>
+        {cta.knop}
+      </Link>
+    </aside>
+  );
+}
+
 /** Artikeltekst als React-elementen. De ontleding zelf staat in
  *  @/lib/blog-inhoud, zodat de admin-preview dezelfde structuur laat zien als
  *  de bezoeker krijgt. Hier bepalen we alleen hoe het eruitziet. */
-function renderInhoud(inhoud: string) {
-  return ontleedInhoud(inhoud).map((deel, i) => {
-    if (deel.soort === "kop") {
-      const Kop = `h${deel.niveau}` as "h1" | "h2" | "h3";
-      return (
-        <Kop key={i} style={{ fontFamily: T.serif, color: T.text, ...KOP_STIJL[deel.niveau] }}>
-          {deel.tekst}
-        </Kop>
-      );
-    }
+function renderInhoud(inhoud: string, slug: string) {
+  const delen = ontleedInhoud(inhoud);
+  const ctaBij = ctaPositieHalverwege(delen);
+  return delen.map((deel, i) =>
+    i === ctaBij ? (
+      <div key={`blok-${i}`}>
+        <InlineCta slug={slug} />
+        {renderDeel(deel, i)}
+      </div>
+    ) : (
+      renderDeel(deel, i)
+    ),
+  );
+}
+
+/** Eén kop of alinea. */
+function renderDeel(deel: InhoudDeel, i: number) {
+  if (deel.soort === "kop") {
+    const Kop = `h${deel.niveau}` as "h1" | "h2" | "h3";
     return (
-      <p key={i} style={{
-        fontFamily: T.sans, fontSize: 16, color: T.text,
-        lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
-      }}>
-        {deel.regels.map((line, j, arr) => (
-          <span key={j}>{renderInline(line, `${i}-${j}`)}{j < arr.length - 1 && <br />}</span>
-        ))}
-      </p>
+      <Kop key={i} style={{ fontFamily: T.serif, color: T.text, ...KOP_STIJL[deel.niveau] }}>
+        {deel.tekst}
+      </Kop>
     );
-  });
+  }
+  return (
+    <p key={i} style={{
+      fontFamily: T.sans, fontSize: 16, color: T.text,
+      lineHeight: 1.85, margin: "0 0 20px", fontWeight: 300,
+    }}>
+      {deel.regels.map((line, j, arr) => (
+        <span key={j}>{renderInline(line, `${i}-${j}`)}{j < arr.length - 1 && <br />}</span>
+      ))}
+    </p>
+  );
 }
 
 function fmtDate(iso: string | null): string {
@@ -190,7 +181,7 @@ export default async function ArtikelPagina(
   const postOrNull = await getPost(slug);
   if (!postOrNull) notFound();
   const post = postOrNull as BlogPost;
-  const cta = CTA_PER_ARTIKEL[post.slug] ?? STANDAARD_CTA;
+  const cta = blogCta(post.slug);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -294,7 +285,7 @@ export default async function ArtikelPagina(
         }}>
           {post.intro}
         </p>
-        {renderInhoud(post.inhoud)}
+        {renderInhoud(post.inhoud, post.slug)}
 
         {/* CTA blok */}
         <div style={{
