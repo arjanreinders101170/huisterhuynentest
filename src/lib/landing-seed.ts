@@ -54,25 +54,30 @@ const PRICE_DE = "Ab €165 pro Nacht";
 
 export const SEED_LANDING_PAGES: LandingPageRecord[] = [
   {
-    // De URL blijft bewust /vakantiehuis-met-hottub-drenthe: die 914 vertoningen
-    // aan history zijn meer waard dan het zoekwoord in het pad. De winst zit in
-    // de zichtbare tekst — title, H1, intro en FAQ zeggen daarom "jacuzzi"
-    // (754 vertoningen) waar de pagina eerst alleen "hottub" (249) zei.
+    // De URL blijft /vakantiehuis-met-hottub-drenthe: die 914 vertoningen aan
+    // history zijn meer waard dan het zoekwoord in het pad.
+    //
+    // De site voert bewust één woord voor het bad: hottub. In augustus stond
+    // hier "jacuzzi" omdat die zoekterm meer vertoningen trekt (754 tegen 249),
+    // maar dat is een merkkeuze en die is aan de eigenaar — zie
+    // migrations/2026_09_04_hottub_als_enige_term.sql. Wie dit ooit terugdraait:
+    // doe het dan overal tegelijk, want twee woorden door elkaar leest als twee
+    // verschillende voorzieningen.
     slug: "vakantiehuis-met-hottub-drenthe",
-    // Zie migrations/2026_08_18_lp3_jacuzzi.sql — datum van de laatste
-    // inhoudelijke herziening, voedt de lastmod in de sitemap.
-    updated_at: "2026-08-18",
-    breadcrumb: "Vakantiehuis met jacuzzi Drenthe",
-    eyebrow: "Privé jacuzzi · Zeijen · Drenthe",
-    h1: "Vakantiehuis met privé-jacuzzi in Drenthe",
+    // Datum van de laatste inhoudelijke herziening, voedt de lastmod in de
+    // sitemap.
+    updated_at: "2026-09-04",
+    breadcrumb: "Vakantiehuis met hottub Drenthe",
+    eyebrow: "Privé hottub · Zeijen · Drenthe",
+    h1: "Vakantiehuis met privé-hottub in Drenthe",
     hero_sub:
-      "Twee luxe lodges op de Drentse heide bij Zeijen, elk met een eigen jacuzzi op het terras. Wandel vanuit de deur de natuur in en keer terug naar warm, bruisend water onder de sterren.",
+      "Twee luxe lodges op de Drentse heide bij Zeijen, elk met een eigen hottub op het terras. Wandel vanuit de deur de natuur in en keer terug naar warm, bruisend water onder de sterren.",
     hero_image: "/lodge-heide.jpg",
     hero_image_alt:
-      "Vakantiehuis met privé-jacuzzi op het terras van Lodge De Heide, omgeven door de Drentse heide in Zeijen",
+      "Vakantiehuis met privé-hottub op het terras van Lodge De Heide, omgeven door de Drentse heide in Zeijen",
     price_from: PRICE,
     intro:
-      "Een vakantiehuis met jacuzzi in Drenthe is meer dan een extraatje — het is het moment waarop een weekend echt tot rust komt. Bij Huis ter Huynen heeft elke lodge een eigen jacuzzi op het terras: volledig afgeschermd, het hele jaar door op 38 °C en van niemand anders. Of u het nu een jacuzzi of een hottub noemt — het is dezelfde privébadkuip in de buitenlucht. Geen gedeelde wellness, geen buren: alleen u, het bruisende water en het uitzicht over heide en bos.",
+      "Een vakantiehuis met hottub in Drenthe is meer dan een extraatje — het is het moment waarop een weekend echt tot rust komt. Bij Huis ter Huynen heeft elke lodge een eigen hottub op het terras: volledig afgeschermd, het hele jaar door op 38 °C en van niemand anders. Geen gedeelde wellness, geen buren: alleen u, het bruisende water en het uitzicht over heide en bos.",
     sections: [
       {
         eyebrow: "De ervaring",
@@ -112,10 +117,10 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       },
     ],
     faq: [
-      "Is de jacuzzi privé? :: Ja. Zowel Lodge De Heide als Lodge De Eik heeft een eigen, afgeschermde jacuzzi op het terras. U deelt hem met niemand buiten uw eigen gezelschap — er is geen gedeelde wellnessruimte op het terrein.",
-      "Wat is het verschil tussen een jacuzzi en een hottub? :: In de praktijk niets: beide woorden worden gebruikt voor een bad met warm, bruisend water in de buitenlucht. Bij Huis ter Huynen staat bij elke lodge zo'n bad op het eigen terras, met massagestralen en verwarmd water.",
-      "Is de jacuzzi het hele jaar warm? :: Ja, de jacuzzi is 24/7 beschikbaar en staat standaard ingesteld op 38 °C — ook in de winter, wanneer een jacuzzi in de besneeuwde natuur op zijn allermooist is.",
-      "Zit er ook een sauna bij? :: Lodge De Heide heeft naast de privé-jacuzzi een eigen sauna en panoramisch uitzicht over het bos. Lodge De Eik heeft geen sauna, maar wel een buitenkeuken met BBQ onder de eiken.",
+      "Is de hottub privé? :: Ja. Zowel Lodge De Heide als Lodge De Eik heeft een eigen, afgeschermde hottub op het terras. U deelt hem met niemand buiten uw eigen gezelschap — er is geen gedeelde wellnessruimte op het terrein.",
+      "Wat voor bad is de hottub precies? :: Een buitenbad met warm, bruisend water en massagestralen, ingebouwd op uw eigen terras. Het water staat het hele jaar op 38 °C, dus u hoeft niets op te warmen of aan te zetten — u stapt erin wanneer u wilt.",
+      "Is de hottub het hele jaar warm? :: Ja, de hottub is 24/7 beschikbaar en staat standaard ingesteld op 38 °C — ook in de winter, wanneer een hottub in de besneeuwde natuur op zijn allermooist is.",
+      "Zit er ook een sauna bij? :: Lodge De Heide heeft naast de privé-hottub een eigen sauna en panoramisch uitzicht over het bos. Lodge De Eik heeft geen sauna, maar wel een buitenkeuken met BBQ onder de eiken.",
       "Voor hoeveel personen is het vakantiehuis geschikt? :: Elke lodge is geschikt voor maximaal vier personen. Ideaal voor koppels, een klein gezin of twee stellen die samen weg willen.",
       "Hoe ver ligt het vakantiehuis van Assen? :: Huis ter Huynen ligt in Zeijen, op ongeveer 20 minuten rijden van Assen en op een kwartier van het Nationaal Park Drentsche Aa.",
       "Boek ik rechtstreeks bij de eigenaar? :: Ja. Huis ter Huynen wordt particulier verhuurd en u boekt rechtstreeks bij ons — geen tussenpartij, geen boekingskosten. Wij reageren binnen 24 uur persoonlijk op uw aanvraag.",
@@ -126,12 +131,12 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Fietsen & wandelen in de omgeving :: /omgeving",
       "Paarse heide Drenthe :: /heide-drenthe",
     ].join("\n"),
-    cta_title: "Boek uw vakantiehuis met jacuzzi in Drenthe",
+    cta_title: "Boek uw vakantiehuis met hottub in Drenthe",
     cta_body:
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbare data of stel uw vraag rechtstreeks — wij reageren binnen 24 uur persoonlijk.",
-    meta_title: "Vakantiehuis met Jacuzzi Drenthe | Privé Hottub bij Elke Lodge",
+    meta_title: "Vakantiehuis met Hottub in Drenthe | Privé Lodge bij Zeijen",
     meta_description:
-      "Twee vrijstaande vakantiehuisjes in Drenthe, elk met een eigen jacuzzi op het terras. Geen gedeelde wellness, 24/7 op 38 °C. Op de heide bij Zeijen. Vanaf €165.",
+      "Twee vrijstaande vakantiehuisjes in Drenthe, elk met een eigen hottub op het terras. Geen gedeelde wellness, 24/7 op 38 °C. Op de heide bij Zeijen. Vanaf €165.",
     og_image: "",
     sort_order: 1,
   },
@@ -215,19 +220,20 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     // brede, irrelevante termen werd getoond; de tekst mikt nu op stellen,
     // met het verkleinwoord "weekendje" en "voor twee" in title en H1.
     slug: "romantisch-weekend-weg-drenthe",
-    // Zie migrations/2026_08_19_lp1_lp2_herbouw.sql.
-    updated_at: "2026-08-19",
+    // Zie migrations/2026_08_19_lp1_lp2_herbouw.sql; de tekst zegt sinds
+    // migrations/2026_09_04_hottub_als_enige_term.sql overal "hottub".
+    updated_at: "2026-09-04",
     breadcrumb: "Romantisch weekendje weg Drenthe",
     eyebrow: "Voor twee · Zeijen · Drenthe",
-    h1: "Romantisch weekendje weg in Drenthe — met z'n tweeën, privé jacuzzi",
+    h1: "Romantisch weekendje weg in Drenthe — met z'n tweeën, privé hottub",
     hero_sub:
-      "Een vrijstaande lodge op de heide bij Zeijen, met een eigen jacuzzi op het terras. Geen receptie, geen buren, geen ontbijtzaal met vreemden. Alleen u tweeën en de stilte van Drenthe.",
+      "Een vrijstaande lodge op de heide bij Zeijen, met een eigen hottub op het terras. Geen receptie, geen buren, geen ontbijtzaal met vreemden. Alleen u tweeën en de stilte van Drenthe.",
     hero_image: "/heide1.jpg",
     hero_image_alt:
       "Paarse bloeiende heide bij zonsondergang in Drenthe, decor voor een romantisch weekendje weg met z'n tweeën",
     price_from: PRICE,
     intro:
-      "Een romantisch weekendje weg mislukt zelden door de bestemming en meestal door de drukte eromheen: een hotel met een volle ontbijtzaal, een wellnessafdeling vol onbekenden, dunne wanden. Bij Huis ter Huynen huurt u een vrijstaand huisje voor twee op de Drentse heide, met een jacuzzi op uw eigen terras die het hele jaar op 38 °C staat. Er staan maar twee lodges op het terrein, u boekt rechtstreeks bij de eigenaar en vanaf het moment dat u de auto parkeert hoeft u niemand meer te spreken.",
+      "Een romantisch weekendje weg mislukt zelden door de bestemming en meestal door de drukte eromheen: een hotel met een volle ontbijtzaal, een wellnessafdeling vol onbekenden, dunne wanden. Bij Huis ter Huynen huurt u een vrijstaand huisje voor twee op de Drentse heide, met een hottub op uw eigen terras die het hele jaar op 38 °C staat. Er staan maar twee lodges op het terrein, u boekt rechtstreeks bij de eigenaar en vanaf het moment dat u de auto parkeert hoeft u niemand meer te spreken.",
     sections: [
       {
         eyebrow: "Privacy",
@@ -239,17 +245,17 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       },
       {
         eyebrow: "Het moment",
-        heading: "De jacuzzi 's avonds: het moment waar het weekend om draait",
+        heading: "De hottub 's avonds: het moment waar het weekend om draait",
         body: [
-          "Overdag is Drenthe mooi. 's Avonds is het stil op een manier die in de Randstad niet bestaat. Als het donker wordt, gaat de jacuzzi aan — of beter: die staat al aan, 24/7 op 38 °C — en zit u in warm, bruisend water met damp boven het oppervlak en een glas binnen handbereik.",
-          "Boven u een sterrenhemel die hier werkelijk te zien is: Drenthe kent nauwelijks lichtvervuiling, dus op een heldere avond ziet u de Melkweg staan. Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-jacuzzi meer doet dan een wellnessabonnement.",
+          "Overdag is Drenthe mooi. 's Avonds is het stil op een manier die in de Randstad niet bestaat. Als het donker wordt, gaat de hottub aan — of beter: die staat al aan, 24/7 op 38 °C — en zit u in warm, bruisend water met damp boven het oppervlak en een glas binnen handbereik.",
+          "Boven u een sterrenhemel die hier werkelijk te zien is: Drenthe kent nauwelijks lichtvervuiling, dus op een heldere avond ziet u de Melkweg staan. Dat is het beeld dat mensen zich van dit weekend herinneren, en het is precies waarom een privé-hottub meer doet dan een wellnessabonnement.",
         ],
       },
       {
         eyebrow: "Het programma",
         heading: "Twee dagen Drenthe voor stellen: een voorstel",
         body: [
-          "Vrijdagavond aankomen, niets meer plannen. Boodschappen doet u onderweg of laat u klaarzetten; koken kan in de volledig uitgeruste keuken, en Lodge De Eik heeft een buitenkeuken met BBQ. De avond eindigt in de jacuzzi.",
+          "Vrijdagavond aankomen, niets meer plannen. Boodschappen doet u onderweg of laat u klaarzetten; koken kan in de volledig uitgeruste keuken, en Lodge De Eik heeft een buitenkeuken met BBQ. De avond eindigt in de hottub.",
           "Zaterdagochtend een wandeling door de Zeijerstrubben, het strubbenbos direct naast het dorp, of iets verder over het Ballooërveld waar de schaapskudde loopt. 's Middags met de fiets richting Norg of langs de Drentsche Aa, het mooiste beekdal van Nederland. Eten doet u in Norg of aan de rand van de Norgerberg, op een kwartier rijden.",
           "Zondag uitslapen, ontbijt op het terras, nog één keer het water in. Check-out is om elf uur; wilt u later weg, dan is late check-out tegen een meerprijs mogelijk.",
         ],
@@ -258,7 +264,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         eyebrow: "Ook geschikt",
         heading: "Ook voor een vriendinnenweekend of met twee stellen",
         body: [
-          "Niet elk weekend met z'n tweeën is romantisch bedoeld, en dat hoeft ook niet. Elke lodge slaapt maximaal vier personen, dus een vriendinnenweekend of een weekend met twee stellen past prima — met dezelfde privé-jacuzzi en dezelfde stilte eromheen.",
+          "Niet elk weekend met z'n tweeën is romantisch bedoeld, en dat hoeft ook niet. Elke lodge slaapt maximaal vier personen, dus een vriendinnenweekend of een weekend met twee stellen past prima — met dezelfde privé-hottub en dezelfde stilte eromheen.",
           "Komt u met een grotere groep: beide lodges samen zijn goed voor acht personen. Vraag ze dan wel in één keer aan, dan houden we de data bij elkaar.",
         ],
       },
@@ -272,7 +278,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       },
     ],
     faq: [
-      "Is de jacuzzi echt privé? :: Ja. Elke lodge heeft een eigen, afgeschermde jacuzzi op het eigen terras. U deelt hem met niemand buiten uw gezelschap; er is op het terrein geen gedeelde wellnessruimte en er staan maar twee lodges.",
+      "Is de hottub echt privé? :: Ja. Elke lodge heeft een eigen, afgeschermde hottub op het eigen terras. U deelt hem met niemand buiten uw gezelschap; er is op het terrein geen gedeelde wellnessruimte en er staan maar twee lodges.",
       "Kunnen we laat inchecken? :: Ja. Check-in is vanaf 15:00 uur en er is geen receptie waar u zich hoeft te melden — u krijgt uw eigen toegang, dus ook een aankomst laat op de vrijdagavond is geen probleem. Laat het even weten, dan houden we er rekening mee.",
       "Is er een romantisch arrangement? :: Wij werken niet met vaste arrangementen; u boekt de lodge en kiest zelf wat u erbij wilt. Een welkomstpakket met lokaal bier, kaas en worst kan vooraf worden klaargezet, net als een boodschappenpakket of e-bikes voor een dag.",
       "Kunnen we bloemen of champagne laten klaarzetten? :: Vermeld het bij uw aanvraag. Een welkomstpakket met streekproducten regelen we standaard; voor bloemen of een fles bubbels kijken we per aanvraag wat mogelijk is — wij zijn een kleinschalig adres, geen hotel met roomservice.",
@@ -280,7 +286,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Hoeveel nachten moeten we minimaal boeken? :: Een verblijf duurt minimaal twee nachten. Een weekend van vrijdag tot zondag is de meest geboekte vorm en past precies bij het ritme van deze plek.",
     ].join("\n"),
     related: [
-      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
       "Wellness huisje Drenthe :: /wellness-vakantie-drenthe",
       "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
       "Wat te doen in de omgeving :: /omgeving",
@@ -288,9 +294,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     cta_title: "Plan uw romantische weekendje weg in Drenthe",
     cta_body:
       "De lodges zijn al boekbaar voor 2027. Bekijk de vrije weekenden of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
-    meta_title: "Romantisch Weekendje Weg Drenthe | Privé Jacuzzi voor Twee",
+    meta_title: "Romantisch Weekendje Weg Drenthe | Privé Hottub voor Twee",
     meta_description:
-      "Met z'n tweeën weg in Drenthe: een vrijstaande lodge met eigen jacuzzi op het terras, geen buren, geen receptie. Op de heide bij Zeijen. Vanaf €165 per nacht.",
+      "Met z'n tweeën weg in Drenthe: een vrijstaande lodge met eigen hottub op het terras, geen buren, geen receptie. Op de heide bij Zeijen. Vanaf €165 per nacht.",
     og_image: "",
     sort_order: 3,
   },
@@ -301,33 +307,33 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     // keyword in het pad. "Huisje" en "huis" staan nu in H1, title, intro en FAQ.
     slug: "wellness-vakantie-drenthe",
     breadcrumb: "Wellness huisje Drenthe",
-    eyebrow: "Privé sauna & jacuzzi · Zeijen · Drenthe",
-    h1: "Wellness huisje in Drenthe met privé-sauna en jacuzzi",
+    eyebrow: "Privé sauna & hottub · Zeijen · Drenthe",
+    h1: "Wellness huisje in Drenthe met privé-sauna en hottub",
     hero_sub:
-      "Geen gedeelde spa, geen openingstijden, geen onbekenden in bad. Twee vrijstaande wellness huisjes op de heide bij Zeijen, met een eigen jacuzzi op het terras en een sauna die alleen van u is.",
+      "Geen gedeelde spa, geen openingstijden, geen onbekenden in bad. Twee vrijstaande wellness huisjes op de heide bij Zeijen, met een eigen hottub op het terras en een sauna die alleen van u is.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
-      "Wellness huisje in Drenthe: Lodge De Eik met privé-jacuzzi op het terras, omringd door bos bij Zeijen",
+      "Wellness huisje in Drenthe: Lodge De Eik met privé-hottub op het terras, omringd door bos bij Zeijen",
     price_from: PRICE,
     intro:
-      "Een wellness huisje in Drenthe is iets anders dan een wellnesshotel met een dagkaart. Hier is er geen balie, geen tijdslot en geen gedeelde sauna: u huurt een vrijstaand huis op de heide bij Zeijen, met een jacuzzi op uw eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna. Er staan maar twee huisjes op het terrein, dus wie u tegenkomt bepaalt u zelf.",
+      "Een wellness huisje in Drenthe is iets anders dan een wellnesshotel met een dagkaart. Hier is er geen balie, geen tijdslot en geen gedeelde sauna: u huurt een vrijstaand huis op de heide bij Zeijen, met een hottub op uw eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna. Er staan maar twee huisjes op het terrein, dus wie u tegenkomt bepaalt u zelf.",
     sections: [
       {
         eyebrow: "Het verschil",
         heading: "Privé wellness: geen openingstijden, geen onbekenden",
         body: [
           "In vrijwel elk wellnessresort deelt u het water. U reserveert een tijdslot, u loopt langs een balie en u zit met vreemden in dezelfde sauna. Precies dat is de reden dat steeds meer stellen een wellness huisje huren in plaats van een hotel met wellnessafdeling: het water, het terras en de stilte zijn dan van u alleen.",
-          "Bij Huis ter Huynen staan twee vrijstaande lodges op ruime afstand van elkaar, elk met een eigen terras dat uitkijkt op natuur en niet op buren. Geen receptie, geen gedeelde faciliteiten en geen sleutel die u bij iemand moet ophalen. U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de jacuzzi liggen.",
+          "Bij Huis ter Huynen staan twee vrijstaande lodges op ruime afstand van elkaar, elk met een eigen terras dat uitkijkt op natuur en niet op buren. Geen receptie, geen gedeelde faciliteiten en geen sleutel die u bij iemand moet ophalen. U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de hottub liggen.",
         ],
       },
       {
         eyebrow: "In het huisje",
-        heading: "Wat er in het huisje zit: sauna, jacuzzi en een terras dat niemand inkijkt",
+        heading: "Wat er in het huisje zit: sauna, hottub en een terras dat niemand inkijkt",
         body: [
           "Beide huisjes zijn ingericht voor maximaal vier personen, met een volledig uitgeruste keuken, fijne bedden en een eigen buitenruimte. Het verschil tussen de twee zit in de wellness, en daar zijn we eerlijk over: de sauna zit in Lodge De Heide.",
         ],
         bullets: [
-          "Privé-jacuzzi op het terras bij beide lodges — 24/7 beschikbaar, standaard op 38 °C.",
+          "Privé-hottub op het terras bij beide lodges — 24/7 beschikbaar, standaard op 38 °C.",
           "Eigen sauna in Lodge De Heide, plus panoramisch uitzicht over het bos.",
           "Lodge De Eik heeft geen sauna, maar wel een buitenkeuken met BBQ onder de eiken.",
           "Volledige privacy: uw terras kijkt uit op heide en bos, niet op een ander huisje.",
@@ -339,7 +345,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Een wellnessweekend in Drenthe: hoe zo'n dag eruitziet",
         body: [
           "Acht uur 's ochtends: een wandeling over het Zeijerveld, als de dauw er nog ligt en u werkelijk niemand tegenkomt. Terug bij het huisje ontbijt op het terras, met de deur open. De middag is voor niets — een boek, een fietstocht door de esdorpen richting Norg, of een uitstapje naar Assen.",
-          "Vijf uur: de sauna aan. Zeven uur: eten, rustig, zonder reservering. Negen uur: de jacuzzi in, met damp boven het water en een sterrenhemel erboven die u in de stad niet krijgt — Drenthe heeft nauwelijks lichtvervuiling. Dat ritme van bewegen, opwarmen, afkoelen en niets moeten is precies waar een wellnessweekend voor bedoeld is.",
+          "Vijf uur: de sauna aan. Zeven uur: eten, rustig, zonder reservering. Negen uur: de hottub in, met damp boven het water en een sterrenhemel erboven die u in de stad niet krijgt — Drenthe heeft nauwelijks lichtvervuiling. Dat ritme van bewegen, opwarmen, afkoelen en niets moeten is precies waar een wellnessweekend voor bedoeld is.",
         ],
       },
       {
@@ -356,7 +362,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Dagspa's en sauna's in de buurt, als aanvulling",
         body: [
           "In en rond Drenthe vindt u verschillende dagspa's en saunacomplexen, vaak met binnen- én buitensauna's, stoomcabines, verwarmde baden en relaxruimtes. Veel ervan zijn ingericht met hout, natuursteen en uitzicht op groen. Als aanvulling op uw verblijf is dat een fijne uitstap: op een regenachtige middag, of als rustpunt tussen twee actieve dagen door.",
-          "Het blijft een uitstapje, geen vervanging. De jacuzzi op uw eigen terras vraagt geen reistijd en geen openingstijd — juist 's avonds, na een dag wandelen of fietsen, is dat het verschil tussen wél en niet meer het water in gaan.",
+          "Het blijft een uitstapje, geen vervanging. De hottub op uw eigen terras vraagt geen reistijd en geen openingstijd — juist 's avonds, na een dag wandelen of fietsen, is dat het verschil tussen wél en niet meer het water in gaan.",
         ],
       },
       {
@@ -368,7 +374,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
         bullets: [
           "Plan minder dan u denkt: één activiteit per dagdeel, de rest laat u open.",
-          "Drink voldoende water — sauna en jacuzzi ontspannen, maar drogen ook uit.",
+          "Drink voldoende water — sauna en hottub ontspannen, maar drogen ook uit.",
           "Wissel warmte af met buitenlucht: een korte wandeling tussen twee sessies versterkt het effect.",
           "Laat de telefoon liggen. Een paar uur zonder meldingen doet meer dan een extra behandeling.",
         ],
@@ -385,14 +391,14 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     faq: [
       "Is de sauna privé of gedeeld? :: Privé. De sauna zit in Lodge De Heide en is uitsluitend voor de gasten van die lodge — geen reservering, geen tijdslot, geen mede-gasten. Er is op het terrein geen gedeelde wellnessruimte.",
       "Kan ik een wellness huisje boeken voor één nacht? :: Nee, een verblijf duurt minimaal twee nachten. Eén nacht is voor een wellnessweekend ook aan de korte kant: de dag van aankomst gaat grotendeels op aan aankomen.",
-      "Is de jacuzzi ook in de winter in gebruik? :: Ja, het hele jaar door. De jacuzzi staat 24/7 op 38 °C, en juist in de winter is hij op zijn mooist: warm water, koude lucht en een heldere sterrenhemel.",
-      "Wat is het verschil tussen De Heide en De Eik qua wellness? :: Lodge De Heide heeft naast de privé-jacuzzi een eigen sauna en panoramisch uitzicht over het bos. Lodge De Eik heeft dezelfde jacuzzi op het terras, geen sauna, maar wel een buitenkeuken met BBQ.",
+      "Is de hottub ook in de winter in gebruik? :: Ja, het hele jaar door. De hottub staat 24/7 op 38 °C, en juist in de winter is hij op zijn mooist: warm water, koude lucht en een heldere sterrenhemel.",
+      "Wat is het verschil tussen De Heide en De Eik qua wellness? :: Lodge De Heide heeft naast de privé-hottub een eigen sauna en panoramisch uitzicht over het bos. Lodge De Eik heeft dezelfde hottub op het terras, geen sauna, maar wel een buitenkeuken met BBQ.",
       "Kan ik hier met twee stellen terecht? :: Ja. Elk huisje is geschikt voor maximaal vier personen, dus twee stellen passen in één lodge. Wilt u met een grotere groep komen: beide lodges samen zijn goed voor acht personen — vraagt u dat wel gelijktijdig aan.",
       "Boek ik rechtstreeks bij de eigenaar? :: Ja. Huis ter Huynen wordt particulier verhuurd; u boekt rechtstreeks bij ons, zonder tussenpartij en zonder boekingskosten. Wij reageren binnen 24 uur persoonlijk.",
-      "Zijn er ook dagspa's in de omgeving? :: Ja, in Assen (20 min) en de wijdere regio, zoals Spa Hof van Saksen. Het verschil met de jacuzzi op uw eigen terras is de drempel: bij een dagspa hoort reistijd en een openingstijd, thuis stapt u zo van de bank het water in.",
+      "Zijn er ook dagspa's in de omgeving? :: Ja, in Assen (20 min) en de wijdere regio, zoals Spa Hof van Saksen. Het verschil met de hottub op uw eigen terras is de drempel: bij een dagspa hoort reistijd en een openingstijd, thuis stapt u zo van de bank het water in.",
     ].join("\n"),
     related: [
-      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
       "Romantisch weekendje weg Drenthe :: /romantisch-weekend-weg-drenthe",
       "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
@@ -400,9 +406,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     cta_title: "Boek uw wellness huisje in Drenthe",
     cta_body:
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
-    meta_title: "Wellness Huisje Drenthe | Privé Sauna & Jacuzzi, Geen Gedeelde Spa",
+    meta_title: "Wellness Huisje Drenthe | Privé Sauna & Hottub, Geen Gedeelde Spa",
     meta_description:
-      "Een wellness huisje in Drenthe waar de sauna en jacuzzi alleen van u zijn. Twee vrijstaande lodges op de heide bij Zeijen, 24/7 op temperatuur. Vanaf €165 p.n.",
+      "Een wellness huisje in Drenthe waar de sauna en hottub alleen van u zijn. Twee vrijstaande lodges op de heide bij Zeijen, 24/7 op temperatuur. Vanaf €165 p.n.",
     og_image: "",
     sort_order: 4,
   },
@@ -841,7 +847,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     ].join("\n"),
     related: [
       "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
-      "Vakantiehuis met jacuzzi Drenthe :: /vakantiehuis-met-hottub-drenthe",
+      "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
       "Bijzonder overnachten Drenthe :: /bijzonder-overnachten-drenthe",
       "Vakantiehuis bij Assen :: /vakantiehuis-assen",
       "Fietsen in Drenthe :: /fietsen-in-drenthe",
