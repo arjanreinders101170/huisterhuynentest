@@ -305,30 +305,64 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     // de grootste term in de cluster; kwam in de oude title niet voor). De URL
     // blijft staan: 1.526 vertoningen aan history wegen zwaarder dan een
     // keyword in het pad. "Huisje" en "huis" staan nu in H1, title, intro en FAQ.
+    //
+    // 5 september: "wellness huis drenthe" (82 vertoningen) is 7,8 posities
+    // gestegen en staat net buiten de top 20 — de enige term in deze cluster
+    // die in beweging is. Het losse woord "huis" stond alleen in een bijzin;
+    // de hele pagina praat over een "huisje". Daarom staat "wellness huis" nu
+    // in de feitenstrip, de hero, de intro, twee koppen en twee FAQ-vragen,
+    // zonder dat "huisje" uit de title of H1 verdwijnt — die term is groter.
+    // Nieuw is ook de vergelijkingstabel: wie "wellness huis" zoekt, weegt het
+    // af tegen een hotel of een dagspa, en dat antwoord stond nergens.
     slug: "wellness-vakantie-drenthe",
     breadcrumb: "Wellness huisje Drenthe",
     eyebrow: "Privé sauna & hottub · Zeijen · Drenthe",
     h1: "Wellness huisje in Drenthe met privé-sauna en hottub",
     hero_sub:
-      "Geen gedeelde spa, geen openingstijden, geen onbekenden in bad. Twee vrijstaande wellness huisjes op de heide bij Zeijen, met een eigen hottub op het terras en een sauna die alleen van u is.",
+      "Geen gedeelde spa, geen openingstijden, geen onbekenden in bad. U huurt een heel wellness huis voor uzelf op de heide bij Zeijen, met een eigen hottub op het terras en een sauna die alleen van u is.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
-      "Wellness huisje in Drenthe: Lodge De Eik met privé-hottub op het terras, omringd door bos bij Zeijen",
+      "Wellness huis in Drenthe: Lodge De Eik met privé-hottub op het terras, omringd door bos bij Zeijen",
     price_from: PRICE,
+    key_facts: [
+      "Wat u huurt :: Een heel wellness huis, privé",
+      "Wellness :: Eigen sauna (De Heide) en hottub",
+      "Tijdslot :: Geen — 24/7 op 38 °C",
+      "Waar :: Op de heide bij Zeijen, 20 min van Assen",
+    ].join("\n"),
+    updated_at: "2026-09-05",
     intro:
-      "Een wellness huisje in Drenthe is iets anders dan een wellnesshotel met een dagkaart. Hier is er geen balie, geen tijdslot en geen gedeelde sauna: u huurt een vrijstaand huis op de heide bij Zeijen, met een hottub op uw eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna. Er staan maar twee huisjes op het terrein, dus wie u tegenkomt bepaalt u zelf.",
+      "Een wellness huisje in Drenthe is iets anders dan een wellnesshotel met een dagkaart. Hier is er geen balie, geen tijdslot en geen gedeelde sauna: u huurt een heel wellness huis op de heide bij Zeijen, met een hottub op uw eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna. Er staan maar twee huizen op het terrein, dus wie u tegenkomt bepaalt u zelf.",
     sections: [
       {
         eyebrow: "Het verschil",
-        heading: "Privé wellness: geen openingstijden, geen onbekenden",
+        heading: "Een heel wellness huis voor uzelf: geen openingstijden, geen onbekenden",
         body: [
           "In vrijwel elk wellnessresort deelt u het water. U reserveert een tijdslot, u loopt langs een balie en u zit met vreemden in dezelfde sauna. Precies dat is de reden dat steeds meer stellen een wellness huisje huren in plaats van een hotel met wellnessafdeling: het water, het terras en de stilte zijn dan van u alleen.",
           "Bij Huis ter Huynen staan twee vrijstaande lodges op ruime afstand van elkaar, elk met een eigen terras dat uitkijkt op natuur en niet op buren. Geen receptie, geen gedeelde faciliteiten en geen sleutel die u bij iemand moet ophalen. U komt aan, u zet uw tas neer en u kunt binnen tien minuten in de hottub liggen. Gaat het u vooral om dat water, dan leest u op de pagina over ons [vakantiehuis met privé-hottub](/vakantiehuis-met-hottub-drenthe) hoe het per lodge is opgesteld.",
         ],
       },
       {
-        eyebrow: "In het huisje",
-        heading: "Wat er in het huisje zit: sauna, hottub en een terras dat niemand inkijkt",
+        eyebrow: "De vergelijking",
+        heading: "Wellness huis, wellnesshotel of dagspa: wat u waar krijgt",
+        body: [
+          "Wie in Drenthe naar wellness zoekt, kiest in de praktijk uit drie dingen: een dagkaart bij een spa, een kamer in een wellnesshotel, of een eigen wellness huis waarin de sauna en de hottub bij het verblijf horen. Per persoon per dag schelen die drie minder dan u zou denken. Het verschil zit in wat u ervoor terugkrijgt.",
+        ],
+        table: {
+          head: ["Waarop u let", "Eigen wellness huis", "Wellnesshotel", "Dagspa"],
+          rows: [
+            ["Wie deelt het water", "Niemand, alleen uw gezelschap", "Alle hotelgasten", "Alle bezoekers van die dag"],
+            ["Openingstijden", "Geen, 24/7 op 38 °C", "Meestal tot 21 of 22 uur", "Dagdeel of dagkaart"],
+            ["Reserveren per sessie", "Nee", "Vaak wel voor de privésauna", "Ja"],
+            ["Badkleding", "Uw eigen keuze", "Huisregels van het hotel", "Huisregels van het complex"],
+            ["'s Avonds laat nog het water in", "Ja, zonder aankleden of rijden", "Als de afdeling nog open is", "Nee, dan bent u al thuis"],
+          ],
+          note: "Zo staat het bij Huis ter Huynen. Bij andere aanbieders kan het per huis of hotel verschillen — vraag vooral na of de sauna daar privé is of gedeeld.",
+        },
+      },
+      {
+        eyebrow: "In het huis",
+        heading: "Wat er in het wellness huis zit: sauna, hottub en een terras dat niemand inkijkt",
         body: [
           "Beide huisjes zijn ingericht voor maximaal vier personen, met een volledig uitgeruste keuken, fijne bedden en een eigen buitenruimte. Het verschil tussen de twee zit in de wellness, en daar zijn we eerlijk over: de sauna zit in [Lodge De Heide, met eigen sauna](/lodge-de-heide).",
         ],
@@ -389,6 +423,8 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       },
     ],
     faq: [
+      "Wat is een wellness huis precies? :: Een vrijstaand vakantiehuis waarin de wellness zelf zit: bij ons een hottub op het eigen terras en, in Lodge De Heide, een eigen sauna. U huurt het hele huis, dus er is geen gedeelde ruimte, geen balie en geen tijdslot — het water is van u zolang u er bent.",
+      "Wat kost een wellness huis in Drenthe? :: Bij ons vanaf €165 per nacht voor de hele lodge, niet per persoon, bij minimaal twee nachten. Schoonmaakkosten en toeristenbelasting komen daarbij; boekingskosten niet, omdat u rechtstreeks bij de eigenaar boekt.",
       "Is de sauna privé of gedeeld? :: Privé. De sauna zit in Lodge De Heide en is uitsluitend voor de gasten van die lodge — geen reservering, geen tijdslot, geen mede-gasten. Er is op het terrein geen gedeelde wellnessruimte.",
       "Kan ik een wellness huisje boeken voor één nacht? :: Nee, een verblijf duurt minimaal twee nachten. Eén nacht is voor een wellnessweekend ook aan de korte kant: de dag van aankomst gaat grotendeels op aan aankomen.",
       "Is de hottub ook in de winter in gebruik? :: Ja, het hele jaar door. De hottub staat 24/7 op 38 °C, en juist in de winter is hij op zijn mooist: warm water, koude lucht en een heldere sterrenhemel.",
@@ -403,12 +439,12 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Wandelroutes in Drenthe :: /wandelroutes-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
     ].join("\n"),
-    cta_title: "Boek uw wellness huisje in Drenthe",
+    cta_title: "Boek uw eigen wellness huis in Drenthe",
     cta_body:
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
     meta_title: "Wellness Huisje Drenthe | Privé Sauna & Hottub, Geen Gedeelde Spa",
     meta_description:
-      "Een wellness huisje in Drenthe waar de sauna en hottub alleen van u zijn. Twee vrijstaande lodges op de heide bij Zeijen, 24/7 op temperatuur. Vanaf €165 p.n.",
+      "Een heel wellness huis in Drenthe voor u alleen: sauna en hottub zonder tijdslot of mede-gasten. Twee vrijstaande huisjes op de heide bij Zeijen. Vanaf €165 p.n.",
     og_image: "",
     sort_order: 4,
   },
@@ -612,7 +648,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     related: [
       "Luxe lodge in Drenthe :: /luxe-lodge-drenthe",
       "Romantisch weekend weg Drenthe :: /romantisch-weekend-weg-drenthe",
-      "Wellness vakantie Drenthe :: /wellness-vakantie-drenthe",
+      "Wellness huis met sauna :: /wellness-vakantie-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
     ].join("\n"),
     cta_title: "Boek uw bijzonder verblijf in Drenthe",
@@ -817,7 +853,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Slapen bij de hunebedden: twee lodges in Zeijen",
         body: [
           "In een hunebed slapen kan niet — het zijn rijksmonumenten. Ernaast wonen kan wel. Huis ter Huynen ligt in Zeijen, twee kilometer van hunebed D5, en telt twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras.",
-          "Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos — in de praktijk [een wellness huisje op de heide](/wellness-vakantie-drenthe); Lodge De Eik een buitenkeuken met BBQ onder de eiken. Beide hebben een volledig uitgeruste keuken, gratis wifi en een laadpaal op het terrein. Geen receptie, geen gedeelde wellness, geen buren — en met [Lodge De Heide, op vijf minuten](/lodge-de-heide) van hunebed D5 slaapt u dichter bij de stenen dan waar ook.",
+          "Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos — in de praktijk [een wellness huis op de heide](/wellness-vakantie-drenthe); Lodge De Eik een buitenkeuken met BBQ onder de eiken. Beide hebben een volledig uitgeruste keuken, gratis wifi en een laadpaal op het terrein. Geen receptie, geen gedeelde wellness, geen buren — en met [Lodge De Heide, op vijf minuten](/lodge-de-heide) van hunebed D5 slaapt u dichter bij de stenen dan waar ook.",
           "U boekt rechtstreeks bij de eigenaar: geen tussenpartij, geen boekingskosten, en direct contact met de gastheer over de beste route langs de hunebedden.",
         ],
       },
@@ -1173,7 +1209,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     ].join("\n"),
     related: [
       "Vakantiehuis met hottub Drenthe :: /vakantiehuis-met-hottub-drenthe",
-      "Wellness huisje Drenthe :: /wellness-vakantie-drenthe",
+      "Wellness huis in Drenthe :: /wellness-vakantie-drenthe",
       "Paarse heide Drenthe :: /heide-drenthe",
       "Fietsen in Drenthe :: /fietsen-in-drenthe",
     ].join("\n"),

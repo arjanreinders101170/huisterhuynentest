@@ -57,7 +57,7 @@ export const LANDING_NAV: { label: string; href: string }[] = [
   { label: "Vakantiehuis met hottub", href: "/vakantiehuis-met-hottub-drenthe" },
   { label: "Luxe lodge Drenthe", href: "/luxe-lodge-drenthe" },
   { label: "Romantisch weekend weg", href: "/romantisch-weekend-weg-drenthe" },
-  { label: "Wellness vakantie", href: "/wellness-vakantie-drenthe" },
+  { label: "Wellness huis Drenthe", href: "/wellness-vakantie-drenthe" },
   { label: "Vakantiehuis bij Assen", href: "/vakantiehuis-assen" },
   { label: "Vakantiehuis bij Norg", href: "/vakantiehuis-norg" },
   { label: "Overnachten bij Veenhuizen", href: "/overnachten-veenhuizen" },
