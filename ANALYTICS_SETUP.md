@@ -22,6 +22,7 @@ drie lopen door dezelfde `pushEvent()` in de code.
 | CSP-uitzonderingen voor GA4 | `next.config.ts` | Toegevoegd in PR #178 |
 | Google Ads-basistag (`AW-18397549973`) | `src/components/tracking/GoogleAds.tsx` | Klaar — laadt `gtag.js`, consent-gated via Consent Mode v2 |
 | Google Ads-conversies | `src/lib/tracking/googleAds.ts` | Klaar — wacht op een conversielabel, zie `GOOGLE_ADS_SETUP.md` |
+| Verbeterde conversies (gehasht e-mailadres) | `src/lib/tracking/googleAds.ts` | Code klaar — aan met `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`, pas ná de instelling in Ads |
 | Sitemap | `src/app/sitemap.ts` → `/sitemap.xml` | Klaar, inclusief hreflang nl/de |
 | `robots.txt` | `public/robots.txt` | Klaar, verwijst naar de sitemap |
 
@@ -192,12 +193,52 @@ De cookiebanner staat op default-deny (`analytics_storage: denied`). **Zonder
 - **Google Ads staat sinds augustus 2026 live.** De basistag
   (`AW-18397549973`) zit in `src/components/tracking/GoogleAds.tsx` en de CSP
   in `next.config.ts` laat nu `*.doubleclick.net`, `googleadservices.com` en
-  de Google-landdomeinen door. Wat er nog niet is: een **conversielabel**.
-  Maak in Google Ads → Doelen → Conversies een conversieactie aan, kopieer het
-  `send_to`-label (`AW-18397549973/xxxxxxxx`) en vuur dat af op het
-  boekingsmoment — bijvoorbeeld naast de bestaande `Purchase`-event in
-  `src/lib/tracking/dataLayer.ts`. Zolang dat label ontbreekt meet Google Ads
-  alleen pageviews en remarketing, geen conversies.
+  de Google-landdomeinen door. De conversiekant loopt via
+  `src/lib/tracking/googleAds.ts`: elk event uit `pushEvent()` wordt naar een
+  conversielabel gekeken, en zonder label gebeurt er niets. Wat er dus nog
+  moet: **de conversieacties aanmaken in Google Ads** (Doelen → Conversies →
+  "tag zelf installeren"), het stuk ná de schuine streep uit `send_to`
+  kopiëren en in Vercel zetten:
+
+  | Env-variabele | Vuurt bij | Waarde |
+  |---|---|---|
+  | `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | aanvraag verzonden (`Lead`) | verblijfsprijs |
+  | `NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_LABEL` | betaling afgerond (`Purchase`) | betaald bedrag |
+  | `NEXT_PUBLIC_GOOGLE_ADS_SUBSCRIBE_LABEL` | nieuwsbriefinschrijving (`Subscribe`) | — |
+  | `NEXT_PUBLIC_GOOGLE_ADS_CHECKOUT_LABEL` | formulier gestart (`InitiateCheckout`) | verblijfsprijs |
+  | `NEXT_PUBLIC_GOOGLE_ADS_CONTACT_LABEL` | telefoon/WhatsApp/e-mail (`Contact`) | — |
+
+  Zet alleen `Lead` (en later `Purchase`) op **primair**; `InitiateCheckout`,
+  `Contact` en `Subscribe` horen op *secundair*, anders telt Google dezelfde
+  aanvraag dubbel en gaat de biedstrategie op de verkeerde stap sturen. Het
+  volledige recept per conversieactie staat in `GOOGLE_ADS_SETUP.md`.
+  `transaction_id` gaat als `event_id` mee, dus een herlaadde bedanktpagina
+  telt niet twee keer.
+  Zolang er geen label staat meet Google Ads alleen pageviews en remarketing —
+  en heeft een biedstrategie als *Conversiewaarde maximaliseren* niets om op
+  te sturen.
+- **Waarde 0 wordt bewust niet meegestuurd.** `RequestForm` en `RequestFormDE`
+  vuren `Lead` met `value: 0` ("op aanvraag"); alleen de kalender op de
+  homepage kent de verblijfsprijs. Een conversie van € 0 vertelt
+  *Conversiewaarde maximaliseren* dat die aanvraag niets waard is, dus
+  `googleAds.ts` laat het waardeveld dan weg en Ads gebruikt de
+  **standaardwaarde van de conversieactie**. Zet die in Ads op een realistische
+  gemiddelde boekingswaarde, anders telt zo'n aanvraag alsnog als nul.
+- **Verbeterde conversies** zitten in dezelfde module, achter
+  `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`. Staat die aan, dan gaat bij elke
+  conversie waarvan het e-mailadres bekend is (in de praktijk `Lead` en
+  `Purchase`) dat adres als SHA-256-hash mee (`sha256_email_address`),
+  gehasht in de browser met Web Crypto — nooit in platte tekst. Dat koppelt
+  aanvragen die anders wegvallen omdat Safari/iOS het conversiecookie blokkeert.
+  Twee voorwaarden vóór je hem aanzet:
+  1. Google Ads → Doelen → Instellingen → **Verbeterde conversies** aan,
+     methode *Google-tag*, voorwaarden accepteren.
+  2. De privacytekst moet het delen van een gehasht e-mailadres met Google
+     noemen — die alinea staat sinds deze wijziging in `/privacy` (§4) en
+     `/datenschutz` (§4.4).
+
+  Zonder `crypto.subtle` (geen secure context) vuurt de conversie gewoon
+  zónder e-mailadres: liever een conversie zonder match dan platte PII.
 - **Conversiedata blijft voorlopig leeg.** `purchase` en `begin_checkout`
   vullen zich pas als de boekingsstroom draait. Bouw het Looker-dashboard
   daarom eerst op verkeer + Search Console.

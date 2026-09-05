@@ -21,18 +21,50 @@ Voor GA4 en Search Console: zie `ANALYTICS_SETUP.md`. Voor Meta: `META_TRACKING.
 | Conversie-aanroep (`gtag('event','conversion',…)`) | `src/lib/tracking/googleAds.ts` | Klaar — wacht alleen op een label |
 | Koppeling aan de events | `pushEvent()` in `src/lib/tracking/dataLayer.ts` | Klaar |
 
-De schakelaars zijn drie environment variables. Zolang ze leeg zijn, gebeurt er
-niets: de basistag blijft remarketing meten, er wordt alleen geen conversie
-geteld.
+De schakelaars zijn environment variables met een conversielabel. Zolang ze leeg
+zijn, gebeurt er niets: de basistag blijft remarketing meten, er wordt alleen
+geen conversie geteld.
 
 | Variabele | Vuurt bij | Waar in de code |
 |---|---|---|
 | `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Aanvraagformulier verstuurd (`Lead`) | `src/components/RequestForm.tsx:99`, `RequestFormDE.tsx:69`, `BookingCalendar.tsx:460` |
 | `NEXT_PUBLIC_GOOGLE_ADS_PURCHASE_LABEL` | Betaling gelukt, gast landt op `/betaald` (`Purchase`) | `src/app/betaald/page.tsx:22` |
 | `NEXT_PUBLIC_GOOGLE_ADS_SUBSCRIBE_LABEL` | Nieuwsbriefinschrijving (`Subscribe`) | `src/components/NewsletterForm.tsx:36` |
+| `NEXT_PUBLIC_GOOGLE_ADS_CHECKOUT_LABEL` | Boeking gestart in de kalender (`InitiateCheckout`) | `src/components/BookingCalendar.tsx:411` |
+| `NEXT_PUBLIC_GOOGLE_ADS_CONTACT_LABEL` | Klik op telefoon / WhatsApp / e-mail (`Contact`) | `src/components/tracking/TrackingListeners.tsx:26` |
 
-> Begin met de eerste. De aanvraag is nu het hoofddoel; de andere twee kun je er
-> later bij zetten zonder codewijziging.
+> Begin met de eerste. De aanvraag is nu het hoofddoel; de rest kun je er later
+> bij zetten zonder codewijziging. Zet in Google Ads alleen `Lead` (en later
+> `Purchase`) op **primair**. `InitiateCheckout`, `Contact` en `Subscribe` horen
+> op *secundair*: het zijn stappen náár dezelfde aanvraag toe, en als primaire
+> conversie laten ze de biedstrategie op de verkeerde stap sturen.
+
+### Waarde 0 gaat bewust niet mee
+
+`RequestForm` en `RequestFormDE` vuren `Lead` met `value: 0` ("op aanvraag") —
+alleen de kalender op de homepage kent de verblijfsprijs. Een conversie van € 0
+vertelt *Conversiewaarde maximaliseren* dat die aanvraag niets waard is, dus
+`googleAds.ts` laat het waardeveld dan weg en Google Ads gebruikt de
+**standaardwaarde van de conversieactie**. Zet die in Ads (stap 2) op een
+realistische gemiddelde boekingswaarde, anders telt zo'n aanvraag alsnog als nul.
+
+### Verbeterde conversies (optioneel, `NEXT_PUBLIC_GOOGLE_ADS_ENHANCED=1`)
+
+Staat deze variabele op `1`, dan stuurt de conversie het e-mailadres van de gast
+mee als SHA-256-hash (`sha256_email_address`), gehasht in de browser met Web
+Crypto. Dat koppelt aanvragen die anders wegvallen doordat Safari/iOS of een
+adblocker het conversiecookie blokkeert. Het adres verlaat de browser nooit in
+leesbare vorm, en gaat alleen mee bij toestemming voor marketing.
+
+Zet hem pas aan als beide dingen geregeld zijn:
+
+1. Google Ads → Doelen → Instellingen → **Verbeterde conversies** aan, methode
+   *Google-tag*, voorwaarden geaccepteerd.
+2. De privacytekst noemt het delen van een gehasht e-mailadres met Google — die
+   alinea staat in `/privacy` (§4) en `/datenschutz` (§4.4).
+
+Zonder `crypto.subtle` (geen secure context) vuurt de conversie gewoon zónder
+e-mailadres: liever een conversie zonder match dan platte PII.
 
 ---
 
@@ -137,6 +169,9 @@ Vercel → project → **Settings → Environment Variables**:
 | Variabele | Waarde | Environments |
 |---|---|---|
 | `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | het label uit stap 3 | **Alleen Production** |
+
+Voor elke volgende conversieactie herhaal je stap 2 en 3 en zet je het label in
+de bijbehorende variabele uit de tabel bovenaan.
 
 Alleen Production, zodat preview-deploys en lokaal testwerk je conversiecijfers
 niet vervuilen.
