@@ -1,3 +1,5 @@
+import { LODGE_LAT, LODGE_LON } from "@/data/lodge";
+
 export type GoogleReview = {
   author_name: string;
   rating: number;
@@ -25,6 +27,13 @@ export const GOOGLE_REVIEW_URL = `https://search.google.com/local/writereview?pl
  * JSON-LD. Een place_id-URL laat Google de site en de vermelding aan elkaar
  * knopen; een zoek-URL op plaatsnaam doet dat niet. */
 export const GOOGLE_MAPS_PLACE_URL = `https://www.google.com/maps/place/?q=place_id:${PLACE_ID}`;
+
+/* Routebeschrijving voor aankomende gasten. Coördinaten én place_id: de
+ * coördinaten wijzen de auto naar de oprit, de place_id laat Maps de vermelding
+ * herkennen en "Huis ter Huynen" tonen in plaats van een naamloze speld. */
+export const GOOGLE_MAPS_DIRECTIONS_URL =
+  `https://www.google.com/maps/dir/?api=1&destination=${LODGE_LAT},${LODGE_LON}` +
+  `&destination_place_id=${PLACE_ID}&travelmode=driving`;
 
 export async function fetchGoogleReviews(): Promise<GoogleReviewsData> {
   const fallback: GoogleReviewsData = { reviews: [], rating: 0, total: 0, reviewUrl: GOOGLE_REVIEW_URL };
