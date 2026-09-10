@@ -105,10 +105,14 @@ export function FinancieelTab({ bookings, bookingRequests, stays }: { bookings: 
     return s + Math.max(0, Math.round((new Date(st.check_out).getTime() - new Date(st.check_in).getTime()) / 86400000));
   }, 0);
 
-  // Conversie
-  const totaalAanvragen = bookingRequests.length;
-  const offertesVerstuurd = bookingRequests.filter(r => r.status !== "nieuw").length;
-  const geboekt = bookingRequests.filter(r => r.status === "bevestigd").length;
+  /* Conversie telt alleen echte aanvragen. Handmatige blokkeringen zijn geen
+   * aanvraag maar een dichtgezette periode — Booking.com-boekingen komen er
+   * sinds de import zelfs automatisch bij, en die zouden het percentage
+   * verdunnen met verkeer dat nooit langs een offerte is gegaan. */
+  const echteAanvragen = bookingRequests.filter(r => r.bron !== "handmatig");
+  const totaalAanvragen = echteAanvragen.length;
+  const offertesVerstuurd = echteAanvragen.filter(r => r.status !== "nieuw").length;
+  const geboekt = echteAanvragen.filter(r => r.status === "bevestigd").length;
   const convPct = totaalAanvragen > 0 ? Math.round((geboekt / totaalAanvragen) * 100) : 0;
 
   const cs: React.CSSProperties = { background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "20px 24px" };

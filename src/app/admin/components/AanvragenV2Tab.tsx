@@ -17,6 +17,12 @@ const BRON_LABELS: Record<string, { icon: string; label: string }> = {
   handmatig:  { icon: "✏️", label: "Handmatig" },
 };
 
+/* Een blokkering met een reserveringsnummer komt uit de Booking.com-import en
+ * wordt daar ook bijgehouden: datums die daar veranderen komen bij de volgende
+ * import mee, en een annulering ruimt de regel op. Dat is iets anders dan een
+ * regel die jij zelf hebt ingetypt, dus zegt de bronkolom het ook. */
+const IMPORT_BRON = { icon: "⤓", label: "Import" };
+
 /* De platforms die het keuzemenu aanbiedt. De externe platforms staan bovenaan
  * en komen uit één lijst, zodat het menu en de blokkade op offertes en
  * betaallinks nooit uit elkaar lopen. */
@@ -996,7 +1002,9 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
   /* Eén regel in de lijst. Zat vroeger inline in de map; nu een functie,
    * zodat elke fasegroep dezelfde rij kan tekenen. */
   const renderRij = (r: BookingRequest) => {
-        const bron = BRON_LABELS[r.bron] || { icon: "·", label: r.bron };
+        const bron = r.extern_id
+          ? IMPORT_BRON
+          : BRON_LABELS[r.bron] || { icon: "·", label: r.bron };
         const name = r.guest?.naam || r.gast_naam || "—";
         const email = r.guest?.email || r.gast_email || "";
         const lodge = r.lodge ? (LODGE_SHORT_NAMES[r.lodge] || r.lodge) : "—";
@@ -1044,6 +1052,11 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
                   {r.bron === "handmatig" && r.bericht && (
                     <span style={{ color: C.gold, fontWeight: 600 }}>{r.bericht}</span>
                   )}
+                  {r.extern_id && (
+                    <span title="Reserveringsnummer bij Booking.com — hierop herkent de import deze blokkering" style={{ marginLeft: 6, color: C.light }}>
+                      {r.extern_id}
+                    </span>
+                  )}
                   {r.bron !== "handmatig" && (r.personen ?? 0) > 0 && `${r.personen}p`}
                   {r.bron !== "handmatig" && r.huisdieren && <span style={{ marginLeft: 6 }}>🐾</span>}
                   {r.bron !== "handmatig" && r.promo_code && <span style={{ marginLeft: 6, color: C.gold }}>{r.promo_code}</span>}
@@ -1087,7 +1100,9 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
                 {r.bron === "handmatig" && (
                   <button
                     onClick={e => { e.stopPropagation(); deleteManualBooking(r.id); }}
-                    title="Verwijder blokkering"
+                    title={r.extern_id
+                      ? "Verwijder blokkering — hij komt bij de volgende import terug zolang de reservering bij Booking.com actief is"
+                      : "Verwijder blokkering"}
                     style={{ background: "none", border: "none", color: "#C62828", fontSize: 16, cursor: "pointer", padding: "0 0 0 8px" }}
                   >×</button>
                 )}

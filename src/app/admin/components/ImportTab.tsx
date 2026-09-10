@@ -31,6 +31,31 @@ function euro(n: number | null): string {
   return n === null ? "—" : `€ ${n.toFixed(2)}`;
 }
 
+type Regelfout = { reservering: string; reden: string };
+
+type Uitslag = {
+  toegevoegd: number;
+  bijgewerkt: number;
+  geannuleerd: number;
+  mislukt: Regelfout[];
+  /* De agendakant: de handmatige blokkeringen die deze import heeft
+   * bijgehouden. Oudere versies van de server sturen dit niet mee. */
+  blokkering?: { aangemaakt: number; gekoppeld: number; bijgewerkt: number; verwijderd: number };
+  blokkeringMislukt?: Regelfout[];
+};
+
+/** "2 aangemaakt, 1 gekoppeld" — alleen wat er echt gebeurd is. */
+function blokkeringZin(b: Uitslag["blokkering"]): string | null {
+  if (!b) return null;
+  const delen = [
+    b.aangemaakt > 0 ? `${b.aangemaakt} aangemaakt` : null,
+    b.gekoppeld > 0 ? `${b.gekoppeld} gekoppeld aan een handmatige regel` : null,
+    b.bijgewerkt > 0 ? `${b.bijgewerkt} bijgewerkt` : null,
+    b.verwijderd > 0 ? `${b.verwijderd} verwijderd` : null,
+  ].filter(Boolean);
+  return delen.length > 0 ? delen.join(", ") : null;
+}
+
 export function ImportTab({ onVerwerkt }: { onVerwerkt: () => void }) {
   const [bestandsnaam, setBestandsnaam] = useState("");
   const [base64, setBase64] = useState("");
@@ -39,7 +64,7 @@ export function ImportTab({ onVerwerkt }: { onVerwerkt: () => void }) {
   const [voorstellen, setVoorstellen] = useState<Voorstel[] | null>(null);
   const [telling, setTelling] = useState<Telling | null>(null);
   const [gekozen, setGekozen] = useState<Set<string>>(new Set());
-  const [uitslag, setUitslag] = useState<{ toegevoegd: number; bijgewerkt: number; geannuleerd: number; mislukt: { reservering: string; reden: string }[] } | null>(null);
+  const [uitslag, setUitslag] = useState<Uitslag | null>(null);
 
   const kiesBestand = async (file: File | null) => {
     setFout(""); setVoorstellen(null); setTelling(null); setUitslag(null);
@@ -133,7 +158,8 @@ export function ImportTab({ onVerwerkt }: { onVerwerkt: () => void }) {
         <div style={{ fontSize: 12, color: C.light, marginTop: 10, lineHeight: 1.6 }}>
           Extranet → Reserveringen → Downloaden. Zowel het .xls-bestand als een CSV werkt.
           Dezelfde export twee keer inlezen kan geen kwaad: reserveringen worden herkend
-          aan hun reserveringsnummer.
+          aan hun reserveringsnummer. Elke boeking komt ook als blokkering in de agenda —
+          een blokkering die je zelf maakte wordt daaraan gekoppeld, niet gedubbeld.
         </div>
         {bestandsnaam && (
           <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
@@ -161,6 +187,23 @@ export function ImportTab({ onVerwerkt }: { onVerwerkt: () => void }) {
       {uitslag && (
         <div style={{ background: "#F1F6F2", border: `1px solid ${C.green}33`, borderRadius: 10, padding: "14px 16px", fontSize: 13, color: C.text, marginBottom: 16 }}>
           <strong>Verwerkt.</strong> {uitslag.toegevoegd} toegevoegd, {uitslag.bijgewerkt} bijgewerkt, {uitslag.geannuleerd} geannuleerd.
+          {blokkeringZin(uitslag.blokkering) && (
+            <div style={{ marginTop: 6, color: C.muted }}>
+              Agenda: {blokkeringZin(uitslag.blokkering)}.
+            </div>
+          )}
+          {(uitslag.blokkeringMislukt?.length ?? 0) > 0 && (
+            <div style={{ marginTop: 8, color: C.rood }}>
+              De verblijven zijn opgeslagen, maar de agenda niet bijgewerkt:
+              <ul style={{ margin: "6px 0 0 18px", padding: 0 }}>
+                {uitslag.blokkeringMislukt!.map(m => <li key={m.reservering}>{m.reservering} — {m.reden}</li>)}
+              </ul>
+              <div style={{ marginTop: 6 }}>
+                Gaat het over de kolom <code>extern_id</code>? Dan moet de migratie
+                <code> 2026_09_10_blokkering_uit_import.sql</code> nog gedraaid worden.
+              </div>
+            </div>
+          )}
           {uitslag.mislukt.length > 0 && (
             <div style={{ marginTop: 8, color: C.rood }}>
               {uitslag.mislukt.length} regel(s) mislukt:
