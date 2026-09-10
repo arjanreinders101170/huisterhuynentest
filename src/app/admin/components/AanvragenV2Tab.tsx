@@ -64,7 +64,7 @@ const FASE_INFO: Record<Fase, { label: string; uitleg: string; kleur: string; be
 
 const FASE_VOLGORDE: Fase[] = ["actie", "wachten", "geboekt", "gesloten", "blokkering"];
 
-function faseVan(r: BookingRequest): Fase {
+export function faseVan(r: BookingRequest): Fase {
   if (r.bron === "handmatig") return "blokkering";
   switch (r.status) {
     case "nieuw":
@@ -235,14 +235,27 @@ function templateBedrag(t: FeeTemplate, nachten: number, personen: number): numb
   }
 }
 
-export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
+/* Twee schermen uit één component.
+ *
+ * 'aanvragen' is de werkvoorraad: wat er nog moet gebeuren en wat er loopt.
+ * 'archief' is wat afgehandeld is — afgewezen en definitief verlopen. Dat
+ * archief liep uit tot elf regels en langer, en dat kost precies bovenaan de
+ * aandacht die de openstaande aanvragen nodig hebben. Het staat nu op zijn
+ * eigen scherm, met in het overzicht alleen nog de teller die ernaartoe wijst. */
+export type AanvragenModus = "aanvragen" | "archief";
+
+export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [], modus = "aanvragen", onOpenArchief }: {
   requests: BookingRequest[];
   setRequests: (r: BookingRequest[]) => void;
   /* De templates uit de Toeslagen-tab. De offerte-editor stelt ze niet alleen
    * voor, je kunt ze er ook zelf bijkiezen — ook een template dat je net hebt
    * aangemaakt, of een die de prefill oversloeg (huisdier zonder huisdier). */
   feeTemplates?: FeeTemplate[];
+  modus?: AanvragenModus;
+  /** Brengt de gebruiker vanuit het overzicht naar het archief. */
+  onOpenArchief?: () => void;
 }) {
+  const isArchief = modus === "archief";
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E" };
   const [filterBron, setFilterBron] = useState<"all" | "homepage" | "app" | "terugkomer">("all");
   const [filterFase, setFilterFase] = useState<"all" | Fase>("all");
@@ -651,8 +664,14 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
     };
   });
 
-  const zichtbareGroepen = groepen.filter(g =>
-    g.rijen.length > 0 && (filterFase === "all" || g.fase === filterFase));
+  /* Het archief toont alleen gesloten dossiers; het overzicht laat ze juist
+   * weg. Zo staat elke aanvraag op precies één plek. */
+  const zichtbareGroepen = groepen.filter(g => {
+    if (g.rijen.length === 0) return false;
+    if (isArchief) return g.fase === "gesloten";
+    if (g.fase === "gesloten") return false;
+    return filterFase === "all" || g.fase === filterFase;
+  });
   const totaalZichtbaar = zichtbareGroepen.reduce((n, g) => n + g.rijen.length, 0);
 
   const fmtDate = (iso: string | null) =>
@@ -1117,7 +1136,8 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-        <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>Aanvragen</div>
+        <div style={{ fontSize: 20, fontWeight: 500, color: C.text }}>{isArchief ? "Archief" : "Aanvragen"}</div>
+        {!isArchief && (
         <button
           onClick={() => { setManualOpen(o => !o); setManualError(""); }}
           style={{
@@ -1128,9 +1148,12 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
         >
           {manualOpen ? "Annuleren" : "+ Handmatige boeking"}
         </button>
+        )}
       </div>
       <div style={{ fontSize: 13, color: C.light, marginBottom: manualOpen ? 12 : 20 }}>
-        Alle aanvragen uit alle bronnen — homepage, concierge-app en terugkomers — in één overzicht. Klik op een aanvraag om een offerte op te bouwen.
+        {isArchief
+          ? "Afgewezen en definitief verlopen aanvragen. Hier staat wat niet is doorgegaan — en wat het aan omzet heeft gescheeld."
+          : "Aanvragen uit alle bronnen — homepage, concierge-app en terugkomers — in één overzicht. Klik op een aanvraag om een offerte op te bouwen. Afgehandelde dossiers staan in het archief."}
       </div>
 
       {manualOpen && (
@@ -1219,17 +1242,23 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
       </div>
 
       {/* Samenvatting per fase — meteen ook het filter. Vervangt de rij met
-          ruwe statusnamen: die vertelde wel hoe het heet, niet wat het betekent. */}
+          ruwe statusnamen: die vertelde wel hoe het heet, niet wat het betekent.
+          Gesloten filtert niet maar opent het archief: die regels staan hier
+          niet meer tussen. */}
+      {!isArchief && (
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginBottom: 20 }}>
         {FASE_VOLGORDE.map(f => {
           const g = groepen.find(x => x.fase === f)!;
           const info = FASE_INFO[f];
-          const actief = filterFase === f;
+          const naarArchief = f === "gesloten";
+          const actief = !naarArchief && filterFase === f;
           return (
             <button
               key={f}
-              onClick={() => setFilterFase(actief ? "all" : f)}
-              title={`${info.uitleg}${actief ? " — klik om het filter op te heffen" : ""}`}
+              onClick={() => naarArchief ? onOpenArchief?.() : setFilterFase(actief ? "all" : f)}
+              title={naarArchief
+                ? `${info.uitleg} — klik om het archief te openen`
+                : `${info.uitleg}${actief ? " — klik om het filter op te heffen" : ""}`}
               style={{
                 textAlign: "left", cursor: "pointer", padding: "12px 14px", borderRadius: 12,
                 border: `1px solid ${actief ? info.kleur : C.border}`,
@@ -1247,14 +1276,18 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
               <div style={{ fontSize: 11, color: C.light }}>
                 {info.bedragLabel && g.bedrag > 0 ? `${euro(g.bedrag)} ${info.bedragLabel}` : info.uitleg}
               </div>
+              {naarArchief && g.rijen.length > 0 && (
+                <div style={{ fontSize: 11, color: C.gold, marginTop: 2, fontWeight: 600 }}>Open archief →</div>
+              )}
             </button>
           );
         })}
       </div>
+      )}
 
       {totaalZichtbaar === 0 && (
         <div style={{ fontSize: 13, color: C.light, padding: 40, textAlign: "center", background: C.card, border: `1px solid ${C.border}`, borderRadius: 12 }}>
-          Geen aanvragen in deze selectie
+          {isArchief ? "Nog niets in het archief" : "Geen aanvragen in deze selectie"}
         </div>
       )}
 
@@ -1262,7 +1295,10 @@ export function AanvragenV2Tab({ requests, setRequests, feeTemplates = [] }: {
         const info = FASE_INFO[g.fase];
         /* Het archief hoort niet het scherm te vullen: gesloten dossiers staan
          * ingeklapt tot je ze opvraagt. */
-        const inklapbaar = g.fase === "gesloten" && filterFase === "all" && g.rijen.length > 5;
+        /* In het archief staat alles; in het overzicht komt 'gesloten' niet
+         * eens voor. Deze inklap blijft voor het geval een fase ooit alsnog
+         * lang wordt. */
+        const inklapbaar = !isArchief && g.fase === "gesloten" && filterFase === "all" && g.rijen.length > 5;
         const rijen = inklapbaar && !toonAlleGesloten ? g.rijen.slice(0, 5) : g.rijen;
 
         return (
