@@ -67,6 +67,10 @@ export type BookingRequest = {
   status: "nieuw" | "in_behandeling" | "offerte_verstuurd" | "bevestigd" | "afgewezen" | "verlopen"
     | "aanbetaling_verstuurd" | "aanbetaling_betaald" | "restbetaling_verstuurd" | "volledig_betaald";
   legacy_terugkeer_id: string | null;
+  /* Reserveringsnummer bij Booking.com, als deze blokkering uit de import komt
+   * — zie migrations/2026_09_10_blokkering_uit_import.sql. Leeg bij een
+   * blokkering die je zelf maakte en bij gewone aanvragen. */
+  extern_id?: string | null;
   /* Herkomst — zie migrations/2026_08_19_aanvraag_attributie.sql */
   kanaal?: string | null;
   eerste_kanaal?: string | null;

@@ -7,6 +7,7 @@
  */
 
 import { leesXls, isXlsBestand, XlsLeesFout } from "./xls";
+import { externPlatform } from "./platform";
 import type { LodgeId } from "@/data/lodge";
 
 /* ── Bestandsformaten ─────────────────────────────────────────────────── */
@@ -369,7 +370,43 @@ export type BestaandVerblijf = {
 };
 
 /** Bezette periode die niet van deze import komt — voor conflictdetectie. */
-export type BezettePeriode = { lodge: string; check_in: string; check_out: string; wie: string; externId: string | null };
+export type BezettePeriode = {
+  lodge: string; check_in: string; check_out: string; wie: string;
+  externId: string | null;
+  /** Gezet wanneer deze periode uit een handmatige blokkering komt. */
+  blokkeringId?: string | null;
+};
+
+/* ── De agendakant: handmatige blokkeringen ───────────────────────────────
+ *
+ * Een verblijf in `stays` is het overzicht — omzet, commissie, eindfactuur.
+ * Wat de datums dichtzet is een andere rij: een handmatige blokkering in
+ * booking_requests, dezelfde die de knop 'Handmatige boeking' maakt. Die werd
+ * tot nu toe met de hand bijgehouden, en dat is precies het overtypen dat deze
+ * import moest wegnemen. De import houdt hem daarom zelf bij.
+ *
+ * Sleutel is het reserveringsnummer in `extern_id`. Blokkeringen die je eerder
+ * met de hand maakte hebben dat nummer niet; die worden herkend aan lodge en
+ * exacte datums en bij de eerste import gekoppeld in plaats van gedubbeld. */
+export type BestaandeBlokkering = {
+  id: string;
+  extern_id: string | null;
+  lodge: string | null;
+  check_in: string | null;
+  check_out: string | null;
+  gast_naam: string | null;
+  bericht: string | null;
+  status: string;
+};
+
+export type BlokkeringActie =
+  | "geen"          // niets te doen
+  | "aanmaken"      // nieuwe blokkering
+  | "overnemen"     // bestaande handmatige regel koppelen aan dit reserveringsnummer
+  | "bijwerken"     // gekoppelde regel klopt niet meer met de export
+  | "verwijderen";  // geannuleerd bij Booking.com — datums weer vrij
+
+export type BlokkeringPlan = { actie: BlokkeringActie; id: string | null };
 
 export type Soort = "nieuw" | "ongewijzigd" | "gewijzigd" | "geannuleerd" | "overgeslagen" | "fout";
 
@@ -380,7 +417,11 @@ export type Voorstel = {
   wijzigingen: { veld: string; van: string; naar: string }[];
   conflicten: string[];
   toelichting: string;
+  /** Wat er met de handmatige blokkering (de agenda) moet gebeuren. */
+  blokkering: BlokkeringPlan;
 };
+
+const GEEN_BLOKKERING: BlokkeringPlan = { actie: "geen", id: null };
 
 const DATUM_VELDEN: Record<string, string> = {
   check_in: "Aankomst", check_out: "Vertrek", lodge: "Lodge",
@@ -406,10 +447,73 @@ function overlapt(aIn: string, aUit: string, bIn: string, bUit: string): boolean
   return aIn < bUit && bIn < aUit;
 }
 
+/* Dezelfde lijst als BLOCKING_STATUSES in src/lib/availability.ts. Bewust hier
+ * herhaald: die module trekt de databaseclient mee, en dit bestand doet alleen
+ * het denkwerk — het moet zonder database te draaien zijn. */
+const BLOKKERENDE_STATUS = [
+  "bevestigd", "aanbetaling_verstuurd", "aanbetaling_betaald",
+  "restbetaling_verstuurd", "volledig_betaald",
+];
+
+const dag = (v: string | null) => (v ? v.slice(0, 10) : null);
+
+/* Zoekt de blokkering die bij deze reservering hoort en bepaalt wat ermee moet
+ * gebeuren. `gebruikt` houdt bij welke regels al vergeven zijn, zodat twee
+ * reserveringen nooit dezelfde blokkering claimen. */
+function planBlokkering(
+  regel: ImportRegel,
+  blokkeringen: BestaandeBlokkering[],
+  gebruikt: Set<string>,
+): BlokkeringPlan {
+  const gekoppeld = blokkeringen.find(b => b.extern_id === regel.externId && !gebruikt.has(b.id));
+
+  /* Een blokkering van vóór de import: die heeft geen reserveringsnummer, maar
+   * wel dezelfde lodge en exact dezelfde nachten. Een regel die uitdrukkelijk
+   * een ander platform noemt blijft met rust — 'Airbnb' of 'Direct' hoort niet
+   * bij deze export. Staat er geen platform bij, dan gaan we ervan uit dat het
+   * de regel is die je voor deze boeking met de hand maakte. */
+  const overTeNemen = gekoppeld ? undefined : blokkeringen.find(b => {
+    if (b.extern_id || gebruikt.has(b.id)) return false;
+    if (b.lodge !== regel.lodge) return false;
+    if (dag(b.check_in) !== regel.checkIn || dag(b.check_out) !== regel.checkOut) return false;
+    const platform = externPlatform({ bron: "handmatig", bericht: b.bericht });
+    return platform === "Booking.com" || (b.bericht || "").trim() === "";
+  });
+
+  const rij = gekoppeld ?? overTeNemen;
+  if (rij) gebruikt.add(rij.id);
+
+  if (regel.status !== "actief") {
+    // Geannuleerd of no-show: de nachten horen weer vrij te komen.
+    return rij ? { actie: "verwijderen", id: rij.id } : GEEN_BLOKKERING;
+  }
+  if (!rij) return { actie: "aanmaken", id: null };
+  if (rij === overTeNemen) return { actie: "overnemen", id: rij.id };
+
+  const klopt =
+    rij.lodge === regel.lodge &&
+    dag(rij.check_in) === regel.checkIn &&
+    dag(rij.check_out) === regel.checkOut &&
+    BLOKKERENDE_STATUS.includes(rij.status);
+  return klopt ? { actie: "geen", id: rij.id } : { actie: "bijwerken", id: rij.id };
+}
+
+/* Hoe een blokkeringsactie in het voorstel komt te staan. 'aanmaken' bij een
+ * nieuwe boeking staat er niet bij: dat is wat de import altijd doet en het
+ * zou op elke regel hetzelfde zinnetje opleveren. */
+const BLOKKERING_TEKST: Record<BlokkeringActie, string | null> = {
+  geen: null,
+  aanmaken: "wordt aangemaakt",
+  overnemen: "bestaande handmatige regel wordt gekoppeld",
+  bijwerken: "wordt bijgewerkt naar deze datums",
+  verwijderen: "wordt verwijderd — nachten komen vrij",
+};
+
 export function maakVoorstellen(
   regels: ImportRegel[],
   bestaand: BestaandVerblijf[],
   bezet: BezettePeriode[],
+  blokkeringen: BestaandeBlokkering[] = [],
 ): Voorstel[] {
   const perExternId = new Map<string, BestaandVerblijf>();
   for (const b of bestaand) {
@@ -436,42 +540,74 @@ export function maakVoorstellen(
     ...uitBestand.filter(u => !bezet.some(b => b.externId === u.externId)),
   ];
 
+  const vergevenBlokkeringen = new Set<string>();
+
   return regels.map(regel => {
     if (regel.fouten.length > 0) {
-      return { regel, soort: "fout" as const, bestaandId: null, wijzigingen: [], conflicten: [], toelichting: regel.fouten.join(" · ") };
+      return {
+        regel, soort: "fout" as const, bestaandId: null, wijzigingen: [], conflicten: [],
+        toelichting: regel.fouten.join(" · "), blokkering: GEEN_BLOKKERING,
+      };
     }
 
     const bestaandeRij = perExternId.get(regel.externId) ?? null;
+    const blokkering = planBlokkering(regel, blokkeringen, vergevenBlokkeringen);
 
     if (regel.status !== "actief") {
+      const watErmee = blokkering.actie === "verwijderen"
+        ? " De blokkering in de agenda wordt verwijderd."
+        : "";
       if (!bestaandeRij) {
+        /* Zonder verblijf én zonder blokkering valt er niets te doen. Ligt er
+         * nog wel een blokkering, dan is dat juist het geval dat je wilt zien:
+         * nachten die dichtstaan voor een boeking die niet meer bestaat. */
+        if (blokkering.actie !== "verwijderen") {
+          return {
+            regel, soort: "overgeslagen" as const, bestaandId: null, wijzigingen: [], conflicten: [],
+            toelichting: regel.status === "no_show" ? "No-show die we niet in het overzicht hadden" : "Geannuleerd en stond nog niet in het overzicht",
+            blokkering,
+          };
+        }
         return {
-          regel, soort: "overgeslagen" as const, bestaandId: null, wijzigingen: [], conflicten: [],
-          toelichting: regel.status === "no_show" ? "No-show die we niet in het overzicht hadden" : "Geannuleerd en stond nog niet in het overzicht",
+          regel, soort: "geannuleerd" as const, bestaandId: null, wijzigingen: [], conflicten: [],
+          toelichting: `Stond niet in het overzicht, maar de agenda staat nog dicht.${watErmee}`,
+          blokkering,
         };
       }
-      if (bestaandeRij.status === "geannuleerd") {
-        return { regel, soort: "ongewijzigd" as const, bestaandId: bestaandeRij.id, wijzigingen: [], conflicten: [], toelichting: "Stond al als geannuleerd" };
+      if (bestaandeRij.status === "geannuleerd" && blokkering.actie !== "verwijderen") {
+        return {
+          regel, soort: "ongewijzigd" as const, bestaandId: bestaandeRij.id, wijzigingen: [], conflicten: [],
+          toelichting: "Stond al als geannuleerd", blokkering,
+        };
       }
       return {
         regel, soort: "geannuleerd" as const, bestaandId: bestaandeRij.id, wijzigingen: [], conflicten: [],
-        toelichting: regel.status === "no_show" ? "No-show — wordt op geannuleerd gezet" : "Wordt op geannuleerd gezet",
+        toelichting: (regel.status === "no_show" ? "No-show — wordt op geannuleerd gezet" : "Wordt op geannuleerd gezet") + watErmee,
+        blokkering,
       };
     }
 
     /* Conflictcontrole: overlapt deze boeking met een periode die van iets
      * anders komt? Dat is precies het geval waarin overtypen misgaat, dus we
-     * blokkeren hem niet maar zetten hem wel apart voor je. */
+     * blokkeren hem niet maar zetten hem wel apart voor je. De blokkering die
+     * bij deze reservering zélf hoort telt niet mee — anders zou elke boeking
+     * botsen met haar eigen regel in de agenda. */
     const conflicten = alleBezet
       .filter(p =>
         p.lodge === regel.lodge &&
         p.externId !== regel.externId &&
+        !(blokkering.id && p.blokkeringId === blokkering.id) &&
         regel.checkIn && regel.checkOut &&
         overlapt(regel.checkIn, regel.checkOut, p.check_in, p.check_out))
       .map(p => `${p.wie} (${p.check_in} — ${p.check_out})`);
 
     if (!bestaandeRij) {
-      return { regel, soort: "nieuw" as const, bestaandId: null, wijzigingen: [], conflicten, toelichting: "Nieuwe boeking" };
+      return {
+        regel, soort: "nieuw" as const, bestaandId: null, wijzigingen: [], conflicten,
+        toelichting: blokkering.actie === "overnemen"
+          ? "Nieuwe boeking — je handmatige blokkering wordt eraan gekoppeld"
+          : "Nieuwe boeking", blokkering,
+      };
     }
 
     const wijzigingen: { veld: string; van: string; naar: string }[] = [];
@@ -491,10 +627,23 @@ export function maakVoorstellen(
       vergelijk("extern_commissie", formatBedrag(alsGetal(bestaandeRij.extern_commissie)), formatBedrag(regel.commissie));
     }
 
-    if (wijzigingen.length === 0) {
-      return { regel, soort: "ongewijzigd" as const, bestaandId: bestaandeRij.id, wijzigingen: [], conflicten, toelichting: "Al verwerkt" };
+    /* Een ontbrekende of afwijkende blokkering telt als wijziging. Zo komt een
+     * boeking die verder al klopt tóch in het voorstel terecht — anders zou de
+     * agenda stilzwijgend open blijven staan voor een verblijf dat we al
+     * hebben. */
+    const blokkeringTekst = BLOKKERING_TEKST[blokkering.actie];
+    if (blokkeringTekst) {
+      wijzigingen.push({
+        veld: "Blokkering",
+        van: blokkering.actie === "aanmaken" ? "ontbreekt" : "staat in de agenda",
+        naar: blokkeringTekst,
+      });
     }
-    return { regel, soort: "gewijzigd" as const, bestaandId: bestaandeRij.id, wijzigingen, conflicten, toelichting: "Gewijzigd bij Booking.com" };
+
+    if (wijzigingen.length === 0) {
+      return { regel, soort: "ongewijzigd" as const, bestaandId: bestaandeRij.id, wijzigingen: [], conflicten, toelichting: "Al verwerkt", blokkering };
+    }
+    return { regel, soort: "gewijzigd" as const, bestaandId: bestaandeRij.id, wijzigingen, conflicten, toelichting: "Gewijzigd bij Booking.com", blokkering };
   });
 }
 

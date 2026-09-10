@@ -16,7 +16,7 @@ import { getSupabase } from "@/lib/supabase";
 import { BLOCKING_STATUSES } from "@/lib/availability";
 import {
   leesReserveringen, maakVoorstellen, telVoorstellen,
-  type BestaandVerblijf, type BezettePeriode, type Voorstel,
+  type BestaandVerblijf, type BestaandeBlokkering, type BezettePeriode, type Voorstel,
 } from "@/lib/booking-import";
 import {
   berekenEindfactuur, isGeldigeStatus, telNachten,
@@ -46,8 +46,12 @@ function decodeerUpload(bestand: unknown): { buf: Buffer } | { fout: string } {
   return { buf };
 }
 
-/** Alles wat al in het overzicht staat en met een import kan botsen. */
-async function haalContext(): Promise<{ bestaand: BestaandVerblijf[]; bezet: BezettePeriode[] }> {
+/** Alles wat al in het overzicht en in de agenda staat en met een import kan botsen. */
+async function haalContext(): Promise<{
+  bestaand: BestaandVerblijf[];
+  bezet: BezettePeriode[];
+  blokkeringen: BestaandeBlokkering[];
+}> {
   const sb = getSupabase();
 
   const { data: stays } = await sb
@@ -68,10 +72,18 @@ async function haalContext(): Promise<{ bestaand: BestaandVerblijf[]; bezet: Bez
 
   const { data: requests } = await sb
     .from("booking_requests")
-    .select("lodge, check_in, check_out, gast_naam, status")
+    .select("id, bron, extern_id, lodge, check_in, check_out, gast_naam, status")
     .in("status", BLOCKING_STATUSES as unknown as string[])
     .not("check_in", "is", null)
     .not("check_out", "is", null);
+
+  /* De agendakant: handmatige blokkeringen, ongeacht status. Ook een regel die
+   * ooit is afgewezen telt mee — die willen we kunnen koppelen en herstellen in
+   * plaats van er een tweede naast te zetten. */
+  const { data: blokkeringenRaw } = await sb
+    .from("booking_requests")
+    .select("id, extern_id, lodge, check_in, check_out, gast_naam, bericht, status")
+    .eq("bron", "handmatig");
 
   const bezet: BezettePeriode[] = [
     ...staysLijst
@@ -83,25 +95,33 @@ async function haalContext(): Promise<{ bestaand: BestaandVerblijf[]; bezet: Bez
         wie: s.gast_naam || (s.guest_id ? namen[s.guest_id] : "") || "verblijf",
         externId: s.extern_id,
       })),
-    ...((requests || []) as { lodge: string; check_in: string; check_out: string; gast_naam: string | null }[])
+    ...((requests || []) as {
+      id: string; bron: string; extern_id: string | null;
+      lodge: string; check_in: string; check_out: string; gast_naam: string | null;
+    }[])
       .map(r => ({
         lodge: r.lodge,
         check_in: r.check_in.slice(0, 10),
         check_out: r.check_out.slice(0, 10),
         wie: r.gast_naam ? `aanvraag ${r.gast_naam}` : "eigen reservering",
-        externId: null,
+        externId: r.extern_id,
+        blokkeringId: r.bron === "handmatig" ? r.id : null,
       })),
   ];
 
-  return { bestaand: staysLijst, bezet };
+  return {
+    bestaand: staysLijst,
+    bezet,
+    blokkeringen: (blokkeringenRaw || []) as BestaandeBlokkering[],
+  };
 }
 
 async function bouwVoorstel(buf: Buffer) {
   const gelezen = leesReserveringen(buf);
   if (gelezen.bestandsfout) return { fout: gelezen.bestandsfout };
 
-  const { bestaand, bezet } = await haalContext();
-  const voorstellen = maakVoorstellen(gelezen.regels, bestaand, bezet);
+  const { bestaand, bezet, blokkeringen } = await haalContext();
+  const voorstellen = maakVoorstellen(gelezen.regels, bestaand, bezet, blokkeringen);
   return { voorstellen, formaat: gelezen.formaat };
 }
 
@@ -151,6 +171,69 @@ export async function handleImportPost(
   return verwerk(teDoen);
 }
 
+type BlokkeringTelling = { aangemaakt: number; gekoppeld: number; bijgewerkt: number; verwijderd: number };
+
+/* De agendakant van één voorstel: de handmatige blokkering in booking_requests.
+ *
+ * Dat is dezelfde rij die de knop 'Handmatige boeking' maakt — tot nu toe voor
+ * elke Booking.com-boeking met de hand overgetypt. Het voorstel heeft al
+ * bepaald wát er moet gebeuren (zie planBlokkering in booking-import.ts); hier
+ * gebeurt het.
+ *
+ * `bericht` blijft met rust: daar staat het platform in, en bij een blokkering
+ * die je zelf maakte kan dat een eigen formulering zijn ("Booking.com — via
+ * telefoon"). Die tekst overschrijven zou je aantekening wissen. */
+async function synchroniseerBlokkering(
+  sb: ReturnType<typeof getSupabase>,
+  v: Voorstel,
+  tel: BlokkeringTelling,
+): Promise<void> {
+  const plan = v.blokkering;
+  const r = v.regel;
+  if (plan.actie === "geen") return;
+
+  if (plan.actie === "verwijderen") {
+    if (!plan.id) return;
+    const { error } = await sb.from("booking_requests")
+      .delete().eq("id", plan.id).eq("bron", "handmatig");
+    if (error) throw new Error(error.message);
+    tel.verwijderd++;
+    return;
+  }
+
+  const velden = {
+    lodge: r.lodge,
+    check_in: r.checkIn,
+    check_out: r.checkOut,
+    nachten: r.nachten,
+    /* Zonder naam in de export blijft het reserveringsnummer over. Dat is
+     * lelijker dan een naam, maar in de agenda wil je kunnen zien welke
+     * boeking deze nachten dichtzet. */
+    gast_naam: r.gastNaam || `Booking.com ${r.externId}`,
+    status: "bevestigd",
+    extern_id: r.externId,
+  };
+
+  if (plan.id) {
+    const { error } = await sb.from("booking_requests")
+      .update(velden).eq("id", plan.id).eq("bron", "handmatig");
+    if (error) throw new Error(error.message);
+    if (plan.actie === "overnemen") tel.gekoppeld++;
+    else tel.bijgewerkt++;
+    return;
+  }
+
+  const { error } = await sb.from("booking_requests").insert({
+    ...velden,
+    bron: "handmatig",
+    gast_email: "",
+    bericht: "Booking.com",
+    extra_regels: [],
+  });
+  if (error) throw new Error(error.message);
+  tel.aangemaakt++;
+}
+
 async function verwerk(voorstellen: Voorstel[]): Promise<NextResponse> {
   const sb = getSupabase();
   const nu = new Date().toISOString();
@@ -160,65 +243,86 @@ async function verwerk(voorstellen: Voorstel[]): Promise<NextResponse> {
   let bijgewerkt = 0;
   let geannuleerd = 0;
   const mislukt: { reservering: string; reden: string }[] = [];
+  const blokkering: BlokkeringTelling = { aangemaakt: 0, gekoppeld: 0, bijgewerkt: 0, verwijderd: 0 };
+  const blokkeringMislukt: { reservering: string; reden: string }[] = [];
 
   for (const v of voorstellen) {
     const r = v.regel;
+    let verblijfGelukt = true;
+
     try {
-      if (v.soort === "geannuleerd" && v.bestaandId) {
-        const { error } = await sb.from("stays")
-          .update({ status: "geannuleerd", geimporteerd_op: nu })
-          .eq("id", v.bestaandId);
-        if (error) throw new Error(error.message);
-        geannuleerd++;
-        continue;
+      if (v.soort === "geannuleerd") {
+        /* Een annulering zonder verblijf komt ook hier langs: dan staat er
+         * alleen nog een blokkering in de agenda die weg moet. */
+        if (v.bestaandId) {
+          const { error } = await sb.from("stays")
+            .update({ status: "geannuleerd", geimporteerd_op: nu })
+            .eq("id", v.bestaandId);
+          if (error) throw new Error(error.message);
+          geannuleerd++;
+        }
+      } else {
+        const velden = {
+          lodge: r.lodge,
+          check_in: r.checkIn,
+          check_out: r.checkOut,
+          gast_naam: r.gastNaam || null,
+          extern_bedrag: r.bedrag,
+          extern_commissie: r.commissie,
+          extern_valuta: r.valuta,
+          geboekt_op: r.geboektOp,
+          geimporteerd_op: nu,
+        };
+
+        if (v.soort === "gewijzigd" && v.bestaandId) {
+          /* Status, token en deurcode blijven met rust: die horen bij ons
+           * proces, niet bij de export. Een verblijf dat de admin op vertrokken
+           * heeft gezet moet dat blijven. */
+          const { error } = await sb.from("stays").update(velden).eq("id", v.bestaandId);
+          if (error) throw new Error(error.message);
+          bijgewerkt++;
+        } else {
+          const { error } = await sb.from("stays").insert({
+            ...velden,
+            ...(await nieuweStaySleutels()),
+            guest_id: null,
+            bron: "booking_com",
+            extern_id: r.externId,
+            /* Een verblijf dat al voorbij is hoeft niet meer als 'gepland' in het
+             * overzicht te staan; de bedankmailcron zou hem anders eeuwig blijven
+             * langslopen zonder ooit iets te doen (geen e-mailadres). */
+            status: r.checkOut && r.checkOut < vandaag ? "vertrokken" : "gepland",
+            welcome_sent: false,
+          });
+          if (error) throw new Error(error.message);
+          toegevoegd++;
+        }
       }
-
-      const velden = {
-        lodge: r.lodge,
-        check_in: r.checkIn,
-        check_out: r.checkOut,
-        gast_naam: r.gastNaam || null,
-        extern_bedrag: r.bedrag,
-        extern_commissie: r.commissie,
-        extern_valuta: r.valuta,
-        geboekt_op: r.geboektOp,
-        geimporteerd_op: nu,
-      };
-
-      if (v.soort === "gewijzigd" && v.bestaandId) {
-        /* Status, token en deurcode blijven met rust: die horen bij ons
-         * proces, niet bij de export. Een verblijf dat de admin op vertrokken
-         * heeft gezet moet dat blijven. */
-        const { error } = await sb.from("stays").update(velden).eq("id", v.bestaandId);
-        if (error) throw new Error(error.message);
-        bijgewerkt++;
-        continue;
-      }
-
-      const { error } = await sb.from("stays").insert({
-        ...velden,
-        ...(await nieuweStaySleutels()),
-        guest_id: null,
-        bron: "booking_com",
-        extern_id: r.externId,
-        /* Een verblijf dat al voorbij is hoeft niet meer als 'gepland' in het
-         * overzicht te staan; de bedankmailcron zou hem anders eeuwig blijven
-         * langslopen zonder ooit iets te doen (geen e-mailadres). */
-        status: r.checkOut && r.checkOut < vandaag ? "vertrokken" : "gepland",
-        welcome_sent: false,
-      });
-      if (error) throw new Error(error.message);
-      toegevoegd++;
     } catch (e) {
       const reden = e instanceof Error ? e.message : "onbekende fout";
       console.error("[import] regel mislukt", r.externId, reden);
       mislukt.push({ reservering: r.externId, reden });
+      verblijfGelukt = false;
+    }
+
+    /* De agenda apart, en pas als het verblijf gelukt is. Zo levert een
+     * database die de migratie nog mist een import op die het overzicht wél
+     * bijwerkt, met één duidelijke melding over de agenda erbij — in plaats van
+     * regels die in hun geheel omvallen. */
+    if (!verblijfGelukt) continue;
+    try {
+      await synchroniseerBlokkering(sb, v, blokkering);
+    } catch (e) {
+      const reden = e instanceof Error ? e.message : "onbekende fout";
+      console.error("[import] blokkering mislukt", r.externId, reden);
+      blokkeringMislukt.push({ reservering: r.externId, reden });
     }
   }
 
   return NextResponse.json({
-    success: mislukt.length === 0,
+    success: mislukt.length === 0 && blokkeringMislukt.length === 0,
     toegevoegd, bijgewerkt, geannuleerd, mislukt,
+    blokkering, blokkeringMislukt,
   });
 }
 
