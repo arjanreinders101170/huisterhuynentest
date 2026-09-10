@@ -28,6 +28,19 @@ const C = {
 
 type Tab = "dashboard" | "boekingen" | "importeren" | "eindfacturen" | "gasten" | "reviews" | "aanvragen_v2" | "archief" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard" | "search_console" | "groei";
 
+/** Aankomst als getal; NaN wanneer de aanvraag geen datums heeft. */
+function aankomstTijd(r: BookingRequest): number {
+  return r.check_in ? Date.parse(r.check_in) : NaN;
+}
+
+/* Eerst wat nog komt, dan wat geweest is, dan de aanvragen zonder datums.
+ * Binnen elke groep telt de aankomstdatum. */
+function aankomstRang(r: BookingRequest): number {
+  const t = aankomstTijd(r);
+  if (Number.isNaN(t)) return 2;
+  return t < Date.now() ? 1 : 0;
+}
+
 type NavItem = { id: Tab; label: string };
 type NavGroup = { groupLabel: string; sub: NavItem[] };
 type NavSection = { id: string; icon: string; label: string; short: string; direct?: Tab; items: (NavItem | NavGroup)[] };
@@ -142,8 +155,16 @@ export default function AdminDashboard() {
   const newBookings = bookings.filter(b => b.status === "nieuw").length;
   const openAanvragen = bookingRequests.filter(r => r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd").length;
   /* Alles behalve het archief: afgewezen en definitief verlopen aanvragen
-   * hebben op het overzicht niets meer te zoeken. */
-  const lopendeAanvragen = bookingRequests.filter(r => faseVan(r) !== "gesloten");
+   * hebben op het overzicht niets meer te zoeken.
+   *
+   * Op aankomstdatum, net als in Reserveringen → Aanvragen: januari bovenaan,
+   * december onderaan. De lijst kwam eerder in volgorde van binnenkomst binnen
+   * — recentste eerst — en dat leest naast een kolom met periodes als een
+   * willekeurige volgorde. Wat al geweest is zakt naar onderen, en een
+   * aanvraag die alleen een periode in tekst heeft sluit de rij. */
+  const lopendeAanvragen = bookingRequests
+    .filter(r => faseVan(r) !== "gesloten")
+    .sort((a, b) => aankomstRang(a) - aankomstRang(b) || aankomstTijd(a) - aankomstTijd(b));
   const avgStars = reviews.length > 0 ? (reviews.reduce((s, r) => s + r.sterren, 0) / reviews.length).toFixed(1) : "—";
 
   const font = "'Inter', system-ui, -apple-system, sans-serif";
