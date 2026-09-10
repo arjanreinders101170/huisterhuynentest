@@ -87,3 +87,25 @@ select coalesce(to_jsonb(s) ->> 'bron', 'direct') as bron,
 from stays s
 group by 1, 2
 order by 1, 2;
+
+
+-- ── 4. Welke kolom kan een nieuw verblijf nog tegenhouden? ──
+--
+-- Aanleiding: de Booking.com-import meldde bij elke nieuwe reservering
+-- `null value in column "wifi_code" ... violates not-null constraint`. Die
+-- kolom is verplicht maar heeft geen standaardwaarde, en de code vult hem niet
+-- meer — wifi loopt allang via één vast wachtwoord uit de omgeving.
+-- migrations/2026_09_10_wifi_code_niet_meer_verplicht.sql haalt dat weg.
+--
+-- Deze query laat elke kolom zien die hetzelfde kan doen: verplicht, zonder
+-- standaardwaarde. Wat de code bij een insert altijd meegeeft (lodge, datums,
+-- token, status) hoort in die lijst thuis; iets anders is een val die op de
+-- volgende insert wacht.
+
+select c.column_name, c.data_type
+from information_schema.columns c
+where c.table_schema   = 'public'
+  and c.table_name     = 'stays'
+  and c.is_nullable    = 'NO'
+  and c.column_default is null
+order by c.column_name;

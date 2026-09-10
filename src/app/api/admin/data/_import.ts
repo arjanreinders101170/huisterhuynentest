@@ -22,6 +22,7 @@ import {
   berekenEindfactuur, isGeldigeStatus, telNachten,
   type FeeSjabloon,
 } from "@/lib/eindfactuur";
+import { nieuweStaySleutels } from "@/lib/stay-sleutels";
 
 /* Ruim boven een jaar aan reserveringen, ruim onder wat een JSON-body aankan.
  * De export van acht maanden in dit huis is zo'n 6 kB. */
@@ -152,7 +153,6 @@ export async function handleImportPost(
 
 async function verwerk(voorstellen: Voorstel[]): Promise<NextResponse> {
   const sb = getSupabase();
-  const { randomBytes, randomInt } = await import("crypto");
   const nu = new Date().toISOString();
   const vandaag = vandaagIso();
 
@@ -197,11 +197,10 @@ async function verwerk(voorstellen: Voorstel[]): Promise<NextResponse> {
 
       const { error } = await sb.from("stays").insert({
         ...velden,
+        ...(await nieuweStaySleutels()),
         guest_id: null,
         bron: "booking_com",
         extern_id: r.externId,
-        token: randomBytes(24).toString("hex"),
-        door_code: String(randomInt(0, 1_000_000)).padStart(6, "0"),
         /* Een verblijf dat al voorbij is hoeft niet meer als 'gepland' in het
          * overzicht te staan; de bedankmailcron zou hem anders eeuwig blijven
          * langslopen zonder ooit iets te doen (geen e-mailadres). */

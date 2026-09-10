@@ -8,6 +8,7 @@ import { getSupabase } from "@/lib/supabase";
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { todayISO, withinGrace, graceEndDate, OFFER_GRACE_DAYS } from "@/lib/offer-expiry";
 import { findConflict, openOffersOverlapping, type Period } from "@/lib/availability";
+import { nieuweStaySleutels } from "@/lib/stay-sleutels";
 
 export const runtime = "nodejs";
 
@@ -388,19 +389,16 @@ export async function POST(request: NextRequest) {
           .eq("check_out", a.checkOutIso)
           .maybeSingle();
         if (!existing) {
-          const { randomBytes, randomInt } = await import("crypto");
-          const token = randomBytes(24).toString("hex");
-          const door_code = String(randomInt(1000, 9999));
-          await getSupabase().from("stays").insert({
+          const { error } = await getSupabase().from("stays").insert({
             guest_id: a.guestId,
             lodge: a.lodge,
             check_in: a.checkInIso,
             check_out: a.checkOutIso,
-            token,
-            door_code,
+            ...(await nieuweStaySleutels()),
             status: "gepland",
             welcome_sent: false,
           });
+          if (error) throw new Error(error.message);
         }
       } catch (e) {
         console.error("[bevestig] auto-create stay failed:", e);
