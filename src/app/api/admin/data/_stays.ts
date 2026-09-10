@@ -5,6 +5,7 @@ import { esc, lodgePhoto, welcomeEmail, thankYouEmail, lateCheckoutEmail } from 
 import { APP_URL_FALLBACK, lodgeName } from "@/data/lodge";
 import { GOOGLE_REVIEW_URL } from "@/lib/google-reviews";
 import { normaliseerEmail } from "@/lib/gast-email";
+import { nieuweStaySleutels } from "@/lib/stay-sleutels";
 
 export async function handleStaysGet(table: string): Promise<NextResponse | null> {
   if (table !== "stays") return null;
@@ -51,15 +52,9 @@ export async function handleStaysPost(action: string, body: Record<string, unkno
       if (!guestId) {
         return NextResponse.json({ error: "Kon gast niet aanmaken" }, { status: 500 });
       }
-      const { randomBytes, randomInt } = await import("crypto");
-      const token = randomBytes(24).toString("hex");
-      /* Zes cijfers in plaats van vier: randomInt(1000, 9999) gaf 8.999
-       * mogelijkheden (bovengrens is exclusief, en codes met een voorloopnul
-       * kwamen nooit voor). Dit is de code voor het fysieke keypad, dus de
-       * zoekruimte gaat van 9.000 naar een miljoen. */
-      const door_code = String(randomInt(0, 1_000_000)).padStart(6, "0");
       const { error } = await getSupabase().from("stays").insert({
-        guest_id: guestId, lodge, check_in, check_out, token, door_code,
+        guest_id: guestId, lodge, check_in, check_out,
+        ...(await nieuweStaySleutels()),
         status: "gepland", welcome_sent: false,
       });
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });

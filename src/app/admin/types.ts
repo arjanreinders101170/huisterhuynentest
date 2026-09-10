@@ -6,7 +6,11 @@ export type Review = { id: string; naam: string; sterren: number; tekst: string;
 export type Product = { id: string; naam: string; omschrijving: string | null; prijs: number; categorie: string; actief: boolean; volgorde: number; btw_percentage: number; grootboek_code: string };
 export type Stay = {
   id: string; guest_id: string | null; lodge: string; check_in: string; check_out: string;
-  token: string; door_code: string; wifi_code: string; status: string; welcome_sent: boolean;
+  token: string; door_code: string; status: string; welcome_sent: boolean;
+  /* Verouderd: het gastnetwerk heeft één vast wachtwoord (zie src/lib/wifi.ts).
+   * De kolom bestaat nog, maar wordt nergens meer gelezen en mag leeg zijn —
+   * zie migrations/2026_09_10_wifi_code_niet_meer_verplicht.sql. */
+  wifi_code?: string | null;
   /* Bedankmail na afloop — zie migrations/2026_09_04_bedankmail_bijhouden.sql.
    * Leeg betekent: nog niet verstuurd. */
   bedankt_verstuurd_op?: string | null;
