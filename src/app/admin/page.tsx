@@ -12,7 +12,7 @@ import { VerblijvenTab } from "./components/VerblijvenTab";
 import { ActiesTab } from "./components/ActiesTab";
 import { BlogTab } from "./components/BlogTab";
 import { LandingTab } from "./components/LandingTab";
-import { AanvragenV2Tab } from "./components/AanvragenV2Tab";
+import { AanvragenV2Tab, faseVan } from "./components/AanvragenV2Tab";
 import { ImportTab } from "./components/ImportTab";
 import { EindfacturenTab } from "./components/EindfacturenTab";
 import { ToeslagenTab } from "./components/ToeslagenTab";
@@ -26,7 +26,7 @@ const C = {
   green: "#2F4F3E", gold: "#B49A5E",
 };
 
-type Tab = "dashboard" | "boekingen" | "importeren" | "eindfacturen" | "gasten" | "reviews" | "aanvragen_v2" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard" | "search_console" | "groei";
+type Tab = "dashboard" | "boekingen" | "importeren" | "eindfacturen" | "gasten" | "reviews" | "aanvragen_v2" | "archief" | "producten" | "verblijven" | "tarieven" | "financieel" | "lodge_1" | "lodge_2" | "housekeeping" | "lodge_1_iot" | "lodge_2_iot" | "acties" | "blog" | "landingspaginas" | "toeslagen" | "marketing_dashboard" | "search_console" | "groei";
 
 type NavItem = { id: Tab; label: string };
 type NavGroup = { groupLabel: string; sub: NavItem[] };
@@ -141,6 +141,9 @@ export default function AdminDashboard() {
 
   const newBookings = bookings.filter(b => b.status === "nieuw").length;
   const openAanvragen = bookingRequests.filter(r => r.status === "nieuw" || r.status === "in_behandeling" || r.status === "offerte_verstuurd").length;
+  /* Alles behalve het archief: afgewezen en definitief verlopen aanvragen
+   * hebben op het overzicht niets meer te zoeken. */
+  const lopendeAanvragen = bookingRequests.filter(r => faseVan(r) !== "gesloten");
   const avgStars = reviews.length > 0 ? (reviews.reduce((s, r) => s + r.sterren, 0) / reviews.length).toFixed(1) : "—";
 
   const font = "'Inter', system-ui, -apple-system, sans-serif";
@@ -150,6 +153,7 @@ export default function AdminDashboard() {
     { id: "reserveringen", icon: "📅", label: "Reserveringen", short: "Reserveer.", items: [
       { id: "boekingen", label: "Boekingen" },
       { id: "aanvragen_v2", label: "Aanvragen" },
+      { id: "archief", label: "Archief" },
       { id: "importeren", label: "Booking.com importeren" },
       { id: "eindfacturen", label: "Eindfacturen" },
     ]},
@@ -409,13 +413,15 @@ export default function AdminDashboard() {
                   ])}
                 />
 
-                {bookingRequests.length > 0 && (
+                {/* Afgehandelde dossiers horen in het archief, niet op de
+                    voorpagina: die duwden de lopende aanvragen uit beeld. */}
+                {lopendeAanvragen.length > 0 && (
                   <>
                     <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12, marginTop: 28, letterSpacing: -0.1 }}>Aanvragen</div>
                     <Table
                       cols={["Gast", "Periode", "Personen", "Status", "Bedrag"]}
                       widths={["2fr", "2fr", "1fr", "1fr", "1fr"]}
-                      rows={bookingRequests.slice(0, 8).map(r => {
+                      rows={lopendeAanvragen.slice(0, 8).map(r => {
                         const periode = r.check_in && r.check_out
                           ? `${new Date(r.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })} – ${new Date(r.check_out).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}`
                           : (r.periode_tekst || "—");
@@ -492,7 +498,21 @@ export default function AdminDashboard() {
             )}
 
             {tab === "aanvragen_v2" && (
-              <AanvragenV2Tab requests={bookingRequests} setRequests={setBookingRequests} feeTemplates={feeTemplates} />
+              <AanvragenV2Tab
+                requests={bookingRequests}
+                setRequests={setBookingRequests}
+                feeTemplates={feeTemplates}
+                onOpenArchief={() => setTab("archief")}
+              />
+            )}
+
+            {tab === "archief" && (
+              <AanvragenV2Tab
+                requests={bookingRequests}
+                setRequests={setBookingRequests}
+                feeTemplates={feeTemplates}
+                modus="archief"
+              />
             )}
 
             {tab === "importeren" && (
