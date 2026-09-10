@@ -33,12 +33,22 @@ function aankomstTijd(r: BookingRequest): number {
   return r.check_in ? Date.parse(r.check_in) : NaN;
 }
 
-/* Eerst wat nog komt, dan wat geweest is, dan de aanvragen zonder datums.
- * Binnen elke groep telt de aankomstdatum. */
+/* Afgelopen is niet hetzelfde als 'aankomst ligt achter ons': een gast die er
+ * nu is, is aangekomen én nog niet weg. Daarom telt de vertrekdatum. */
+function isAfgelopen(r: BookingRequest): boolean {
+  const eind = r.check_out ?? r.check_in;
+  if (!eind) return false;
+  const t = Date.parse(eind);
+  const vandaag = new Date();
+  vandaag.setHours(0, 0, 0, 0);
+  return !Number.isNaN(t) && t < vandaag.getTime();
+}
+
+/* Eerst wat loopt of nog komt, dan wat geweest is, dan de aanvragen zonder
+ * datums. Binnen elke groep telt de aankomstdatum. */
 function aankomstRang(r: BookingRequest): number {
-  const t = aankomstTijd(r);
-  if (Number.isNaN(t)) return 2;
-  return t < Date.now() ? 1 : 0;
+  if (Number.isNaN(aankomstTijd(r))) return 2;
+  return isAfgelopen(r) ? 1 : 0;
 }
 
 type NavItem = { id: Tab; label: string };
@@ -47,6 +57,7 @@ type NavSection = { id: string; icon: string; label: string; short: string; dire
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>("dashboard");
+  const [toonAlleAanvragen, setToonAlleAanvragen] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -165,6 +176,17 @@ export default function AdminDashboard() {
   const lopendeAanvragen = bookingRequests
     .filter(r => faseVan(r) !== "gesloten")
     .sort((a, b) => aankomstRang(a) - aankomstRang(b) || aankomstTijd(a) - aankomstTijd(b));
+
+  /* Alleen wat nog komt. Een vaste kop van acht regels sneed hier eerder de
+   * laatste reserveringen weg zodra de lijst op datum ging staan: de nieuwste
+   * boekingen liggen het verst in de toekomst en vielen er dus achteraan af.
+   * Wat al geweest is verdwijnt daarom van het overzicht in plaats van de
+   * plaatsen op te eten — dat staat compleet in Reserveringen → Aanvragen. */
+  const komendeAanvragen = lopendeAanvragen.filter(r => aankomstRang(r) !== 1);
+  const afgelopenAanvragen = lopendeAanvragen.length - komendeAanvragen.length;
+  /* Pas afkappen als het scherm er echt aan onderdoor gaat, en dan zichtbaar. */
+  const AANVRAGEN_KOP = 20;
+  const zichtbareAanvragen = toonAlleAanvragen ? komendeAanvragen : komendeAanvragen.slice(0, AANVRAGEN_KOP);
   const avgStars = reviews.length > 0 ? (reviews.reduce((s, r) => s + r.sterren, 0) / reviews.length).toFixed(1) : "—";
 
   const font = "'Inter', system-ui, -apple-system, sans-serif";
@@ -436,13 +458,19 @@ export default function AdminDashboard() {
 
                 {/* Afgehandelde dossiers horen in het archief, niet op de
                     voorpagina: die duwden de lopende aanvragen uit beeld. */}
-                {lopendeAanvragen.length > 0 && (
+                {komendeAanvragen.length > 0 && (
                   <>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 12, marginTop: 28, letterSpacing: -0.1 }}>Aanvragen</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12, marginTop: 28 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: C.text, letterSpacing: -0.1 }}>Aanvragen</span>
+                      <span style={{ fontSize: 12, color: C.light }}>
+                        {komendeAanvragen.length} op komst
+                        {afgelopenAanvragen > 0 && ` · ${afgelopenAanvragen} afgelopen in Reserveringen`}
+                      </span>
+                    </div>
                     <Table
                       cols={["Gast", "Periode", "Personen", "Status", "Bedrag"]}
                       widths={["2fr", "2fr", "1fr", "1fr", "1fr"]}
-                      rows={lopendeAanvragen.slice(0, 8).map(r => {
+                      rows={zichtbareAanvragen.map(r => {
                         const periode = r.check_in && r.check_out
                           ? `${new Date(r.check_in).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })} – ${new Date(r.check_out).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}`
                           : (r.periode_tekst || "—");
@@ -456,6 +484,16 @@ export default function AdminDashboard() {
                         ];
                       })}
                     />
+                    {komendeAanvragen.length > AANVRAGEN_KOP && (
+                      <div
+                        onClick={() => setToonAlleAanvragen(v => !v)}
+                        style={{ fontSize: 12, color: C.muted, textAlign: "center", padding: "10px 0", cursor: "pointer" }}
+                      >
+                        {toonAlleAanvragen
+                          ? "Toon minder"
+                          : `Toon alle ${komendeAanvragen.length} aanvragen`}
+                      </div>
+                    )}
                   </>
                 )}
               </>
