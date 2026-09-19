@@ -293,12 +293,6 @@ export default function LandingPage() {
               of ontdek eerst de omgeving
             </a>
           </div>
-          <p style={{
-            fontFamily: T.sans, fontSize: 12, fontWeight: 400,
-            color: "rgba(255,255,255,.55)", marginTop: 24, letterSpacing: "0.3px",
-          }}>
-            Opening 1 april 2027 · Claim nu uw datum als Eerste Gast
-          </p>
         </div>
       </section>
 
@@ -1189,13 +1183,13 @@ export default function LandingPage() {
             color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase",
             marginBottom: 14,
           }}>
-            Eerste Gasten · Vroegboeker-voordeel
+            Vroegboeker-voordeel
           </div>
           <h2 style={{
             fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)",
             color: "white", margin: "0 0 12px", fontWeight: 700, lineHeight: 1.2,
           }}>
-            Word een Eerste Gast
+            Wees er als eerste bij
           </h2>
           <p style={{
             fontFamily: T.sans, fontSize: 15, color: "rgba(255,255,255,.65)",
