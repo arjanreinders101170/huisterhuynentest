@@ -18,6 +18,17 @@ const SURCHARGE_LABELS: Record<keyof SurchargeConfig, string> = {
   weekend: "Weekend (vrijdag t/m zondag)",
 };
 
+/* start_date en end_date zijn allebei inclusief — zie priceForDate in
+ * BookingCalendar, dat matcht met >= start en <= end. Het gaat hier dus om
+ * dagen, niet om nachten. */
+function dagenInPeriode(start: string, eind: string): number {
+  return Math.round((Date.parse(`${eind}T00:00:00Z`) - Date.parse(`${start}T00:00:00Z`)) / 86400000) + 1;
+}
+
+function csvVeld(waarde: string): string {
+  return /[";\n\r]/.test(waarde) ? `"${waarde.replace(/"/g, '""')}"` : waarde;
+}
+
 export function TarievenTab() {
   const C = { bg: "#F5F3EE", card: "#fff", border: "#E8E4DC", text: "#2A2418", muted: "#8A7D6A", light: "#B4AFA5", green: "#2F4F3E", gold: "#B49A5E", orange: "#E67E22" };
   const inp: React.CSSProperties = { width: "100%", padding: "9px 12px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, fontSize: 13, color: C.text, outline: "none", boxSizing: "border-box" };
@@ -52,8 +63,56 @@ export function TarievenTab() {
   const [saving, setSaving] = useState(false);
   const emptyForm = { lodge_id: "lodge_1", label: "", start_date: "", end_date: "", price_per_night: "" };
   const [form, setForm] = useState(emptyForm);
+  const [exportMsg, setExportMsg] = useState<string | null>(null);
 
   const lodgeLabel = (id: string) => id === "lodge_1" ? "De Heide" : "De Eik";
+
+  /* De tabel hieronder staat per lodge, want zo bewerk je hem. Wie de lijst
+   * buiten de admin wil gebruiken — in een mail of een spreadsheet — wil hem
+   * juist chronologisch achter elkaar, beide lodges door elkaar. */
+  const EXPORT_KOLOMMEN = ["Lodge", "Periode", "Van", "Tot", "Dagen", "Per nacht"];
+
+  const exportRegels = (): string[][] =>
+    [...periods]
+      .sort((a, b) => a.start_date.localeCompare(b.start_date) || a.lodge_id.localeCompare(b.lodge_id))
+      .map(p => [
+        lodgeLabel(p.lodge_id),
+        p.label,
+        p.start_date,
+        p.end_date,
+        String(dagenInPeriode(p.start_date, p.end_date)),
+        Number(p.price_per_night).toFixed(2),
+      ]);
+
+  const downloadCsv = () => {
+    const regels = [EXPORT_KOLOMMEN, ...exportRegels()];
+    /* Puntkomma's en een BOM: daarmee opent Excel op een Nederlandse
+     * instelling het bestand meteen in kolommen in plaats van alles in A1. */
+    const csv = "\ufeff" + regels.map(r => r.map(csvVeld).join(";")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tariefperiodes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportMsg(`${periods.length} periodes gedownload`);
+    setTimeout(() => setExportMsg(null), 3000);
+  };
+
+  const kopieerLijst = async () => {
+    const tekst = exportRegels()
+      .map(r => `${r[2]} t/m ${r[3]}  ·  ${r[1]} (${r[0]})  ·  € ${r[5]} p.n.`)
+      .join("\n");
+    try {
+      await navigator.clipboard.writeText(tekst);
+      setExportMsg(`${periods.length} periodes gekopieerd`);
+    } catch {
+      /* Clipboard kan geweigerd worden. Niet stil falen: dan denkt de
+       * gebruiker dat er iets op het klembord staat. */
+      setExportMsg("Kopiëren lukte niet — gebruik de CSV-knop");
+    }
+    setTimeout(() => setExportMsg(null), 3000);
+  };
 
   // Load all data
   useEffect(() => {
@@ -344,16 +403,39 @@ export function TarievenTab() {
           style={{ padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
         >
           <div>
-            <div style={{ fontWeight: 600, fontSize: 15, color: C.text }}>Handmatige tariefperiodes</div>
-            <div style={{ fontSize: 12, color: C.light, marginTop: 2 }}>Voeg aangepaste periodes toe of bewerk bestaande</div>
+            {/* Heette "Handmatige tariefperiodes", maar deze lijst bevat álle
+                rijen uit pricing_periods — ook de vakanties en feestdagen die
+                de synchronisatie heeft aangemaakt. Onder de oude kop was dat
+                niet te vinden. */}
+            <div style={{ fontWeight: 600, fontSize: 15, color: C.text }}>Alle tariefperiodes</div>
+            <div style={{ fontSize: 12, color: C.light, marginTop: 2 }}>
+              Vakanties, feestdagen en weekenden uit de synchronisatie, plus wat je zelf toevoegt
+              {!periodsLoading && periods.length > 0 && ` · ${periods.length} in totaal`}
+            </div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {periods.length > 0 && (
+              <>
+                <button onClick={e => { e.stopPropagation(); kopieerLijst(); }} style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, fontSize: 12, color: C.muted, cursor: "pointer" }}>
+                  Kopieer lijst
+                </button>
+                <button onClick={e => { e.stopPropagation(); downloadCsv(); }} style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, fontSize: 12, color: C.muted, cursor: "pointer" }}>
+                  CSV
+                </button>
+              </>
+            )}
             <button onClick={e => { e.stopPropagation(); startCreate(); }} style={{ padding: "7px 14px", borderRadius: 8, border: "none", background: C.green, color: "#fff", fontSize: 12, cursor: "pointer" }}>
               + Nieuw
             </button>
             <span style={{ fontSize: 18, color: C.light }}>{showManual ? "▲" : "▼"}</span>
           </div>
         </div>
+
+        {exportMsg && (
+          <div style={{ padding: "8px 24px", fontSize: 12, color: C.green, background: "rgba(47,79,62,.06)", borderTop: `1px solid ${C.border}` }} aria-live="polite">
+            {exportMsg}
+          </div>
+        )}
 
         {showManual && (
           <div style={{ padding: "0 24px 20px", borderTop: `1px solid ${C.border}` }}>
@@ -401,7 +483,7 @@ export function TarievenTab() {
                   <div key={lodgeId} style={{ marginTop: 16 }}>
                     <div style={{ fontSize: 13, fontWeight: 500, color: C.text, marginBottom: 8 }}>Lodge {lodgeLabel(lodgeId)} ({byLodge.length})</div>
                     {byLodge.length === 0 ? (
-                      <div style={{ fontSize: 12, color: C.light, padding: "8px 0" }}>Geen handmatige periodes</div>
+                      <div style={{ fontSize: 12, color: C.light, padding: "8px 0" }}>Geen periodes voor deze lodge</div>
                     ) : (
                       <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, overflow: "hidden" }}>
                         <div style={{ display: "grid", gridTemplateColumns: "2fr 100px 100px 90px 100px", padding: "7px 14px", background: C.bg, fontSize: 11, color: C.light }}>
