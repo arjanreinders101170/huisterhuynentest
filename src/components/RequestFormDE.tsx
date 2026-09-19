@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate, MIN_NIGHTS,
          isAankomstdag, vertrekdatumsVoor, vormLabel } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
@@ -28,6 +28,11 @@ export default function RequestFormDE() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+  /* Beschikbaarheid van beide lodges. Dit formulier had tot nu toe geen
+   * enkele check: een Duitse gast kon een volle periode aanvragen zonder
+   * iets te merken. null = nog niet bekend, niet "bezet". */
+  const [vrij, setVrij] = useState<Record<Lodge, boolean> | null>(null);
+  const [checking, setChecking] = useState(false);
 
   const minDate = earliestStayDate();
   const nights = checkIn && checkOut ? diffDays(checkIn, checkOut) : 0;
@@ -35,7 +40,38 @@ export default function RequestFormDE() {
   const vertrekOpties = checkIn && isAankomstdag(checkIn) ? vertrekdatumsVoor(checkIn) : [];
   const datesValid = dateCheck.ok;
   const dateError = checkIn && checkOut && !dateCheck.ok ? dateCheck.error : "";
-  const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending;
+  const andereLodge: Lodge = lodge === "lodge_1" ? "lodge_2" : "lodge_1";
+  const gekozenVrij = vrij ? vrij[lodge] : null;
+  const andereVrij = vrij ? vrij[andereLodge] : null;
+  const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending && gekozenVrij !== false;
+
+  /* Eén vraag voor beide lodges, dus lodge staat niet in de deps: wisselen
+   * van lodge hoeft geen nieuwe fetch. Zelfde opzet als het NL-formulier. */
+  useEffect(() => {
+    if (!datesValid) {
+      setVrij(null);
+      setChecking(false);
+      return;
+    }
+    let afgebroken = false;
+    setChecking(true);
+
+    fetch(`/api/beschikbaarheid?checkIn=${checkIn}&checkOut=${checkOut}`)
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then(data => {
+        if (afgebroken) return;
+        const v = data?.vrij;
+        setVrij(
+          v && typeof v.lodge_1 === "boolean" && typeof v.lodge_2 === "boolean"
+            ? { lodge_1: v.lodge_1, lodge_2: v.lodge_2 }
+            : null,
+        );
+      })
+      .catch(() => { if (!afgebroken) setVrij(null); })
+      .finally(() => { if (!afgebroken) setChecking(false); });
+
+    return () => { afgebroken = true; };
+  }, [checkIn, checkOut, datesValid]);
 
   const handleSubmit = async () => {
     setError("");
@@ -81,6 +117,14 @@ export default function RequestFormDE() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
+        /* 409: die Nächte sind doch belegt. Antwort in den Status oben
+         * zurücklegen, damit die Alternative sichtbar wird. */
+        if (res.status === 409 && d.bezet) {
+          setVrij({
+            lodge_1: lodge === "lodge_1" ? false : d.alternatief === "lodge_1",
+            lodge_2: lodge === "lodge_2" ? false : d.alternatief === "lodge_2",
+          });
+        }
         setError(d.error || "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder schreiben Sie uns auf WhatsApp.");
         setSending(false);
         return;
@@ -104,7 +148,7 @@ export default function RequestFormDE() {
           <button
             type="button"
             className="hth-form-restart"
-            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); }}
+            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setVrij(null); }}
           >
             Neue Anfrage
           </button>
@@ -126,7 +170,7 @@ export default function RequestFormDE() {
                 type="button"
                 aria-pressed={lodge === l}
                 className={`hth-lodge${lodge === l ? " hth-lodge--on" : ""}`}
-                onClick={() => setLodge(l)}
+                onClick={() => { setLodge(l); setError(""); }}
               >
                 <span className="hth-lodge-title">Lodge {LODGE_LABELS[l]}</span>
                 <span className="hth-lodge-desc">{LODGE_DESC[l]}</span>
@@ -175,9 +219,41 @@ export default function RequestFormDE() {
             </p>
           )}
           <div className="hth-form-status" aria-live="polite">
-            {dateError ? (
+            {dateError && (
               <p className="hth-form-note hth-form-note--error">{dateError}</p>
-            ) : (
+            )}
+            {!dateError && checking && (
+              <p className="hth-form-note">Verf&uuml;gbarkeit wird gepr&uuml;ft...</p>
+            )}
+            {!dateError && !checking && gekozenVrij === true && (
+              <p className="hth-form-note hth-form-note--ok">
+                ✓ Dieser Zeitraum ist verf&uuml;gbar &mdash; {nights} Nacht{nights !== 1 ? "e" : ""}
+              </p>
+            )}
+            {/* Belegt, aber die andere Lodge ist frei: Wechsel in einem Klick. */}
+            {!dateError && !checking && gekozenVrij === false && andereVrij === true && (
+              <div className="hth-alt">
+                <p className="hth-form-note hth-form-note--error">
+                  ✗ Lodge {LODGE_LABELS[lodge]} ist in diesen N&auml;chten bereits belegt
+                </p>
+                <p className="hth-form-note">
+                  Lodge {LODGE_LABELS[andereLodge]} ist dann noch frei &mdash; {LODGE_DESC[andereLodge].toLowerCase()}.
+                </p>
+                <button
+                  type="button"
+                  className="hth-alt-btn"
+                  onClick={() => { setLodge(andereLodge); setError(""); }}
+                >
+                  Lodge {LODGE_LABELS[andereLodge]} w&auml;hlen &rarr;
+                </button>
+              </div>
+            )}
+            {!dateError && !checking && gekozenVrij === false && andereVrij !== true && (
+              <p className="hth-form-note hth-form-note--error">
+                ✗ Beide Lodges sind in diesen N&auml;chten belegt &mdash; bitte andere Daten w&auml;hlen
+              </p>
+            )}
+            {!dateError && !checking && gekozenVrij === null && (
               <p className="hth-form-note hth-form-note--small">
                 {datesValid
                   ? `${nights} Nacht${nights !== 1 ? "e" : ""} ausgewählt`

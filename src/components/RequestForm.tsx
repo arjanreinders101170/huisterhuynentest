@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate, MIN_NIGHTS,
          isAankomstdag, vertrekdatumsVoor, vormLabel } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
@@ -41,8 +41,11 @@ export default function RequestForm() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  const [availabilityStatus, setAvailabilityStatus] = useState<"idle" | "checking" | "available" | "unavailable">("idle");
-  const availCheckRef = useRef<string>("");
+  /* Beschikbaarheid van beide lodges tegelijk. null = nog niet bekend, en
+   * dat is iets anders dan "bezet": bij een mislukte fetch blijft het
+   * formulier gewoon bruikbaar en vangt de server het af bij het versturen. */
+  const [vrij, setVrij] = useState<Record<Lodge, boolean> | null>(null);
+  const [checking, setChecking] = useState(false);
 
   // De lodgekaarten op de homepage staan boven dit formulier en kiezen mee:
   // hun knop scrollt hierheen en zet meteen de juiste lodge klaar.
@@ -63,34 +66,43 @@ export default function RequestForm() {
   const datesValid = dateCheck.ok;
   // Alleen tonen als er iets te melden valt over ingevulde datums.
   const dateError = checkIn && checkOut && !dateCheck.ok ? dateCheck.error : "";
-  const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending && availabilityStatus !== "unavailable";
+  /* De andere lodge is het hele punt van laag 2: is de gekozen lodge bezet
+   * maar de andere vrij, dan is er geen reden om de gast weg te sturen. */
+  const andereLodge: Lodge = lodge === "lodge_1" ? "lodge_2" : "lodge_1";
+  const gekozenVrij = vrij ? vrij[lodge] : null;
+  const andereVrij = vrij ? vrij[andereLodge] : null;
+  const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending && gekozenVrij !== false;
 
+  /* Eén vraag voor beide lodges, dus lodge staat bewust niet in de deps:
+   * wisselen van lodge hoeft geen nieuwe fetch, het antwoord gold al voor
+   * allebei. Alleen andere datums leveren een nieuwe vraag op. */
   useEffect(() => {
-    if (!checkIn || !checkOut || nights < 2) {
-      setAvailabilityStatus("idle");
+    if (!datesValid) {
+      setVrij(null);
+      setChecking(false);
       return;
     }
-    const key = `${lodge}:${checkIn}:${checkOut}`;
-    if (availCheckRef.current === key) return;
-    availCheckRef.current = key;
-    setAvailabilityStatus("checking");
+    let afgebroken = false;
+    setChecking(true);
 
-    fetch(`/api/ical?lodge=${lodge}`)
-      .then(r => r.json())
+    fetch(`/api/beschikbaarheid?checkIn=${checkIn}&checkOut=${checkOut}`)
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then(data => {
-        const events: { start: string; end: string }[] = data.events || [];
-        let d = checkIn;
-        let conflict = false;
-        while (d < checkOut) {
-          if (events.some(e => d >= e.start && d < e.end)) { conflict = true; break; }
-          const [y, m, day] = d.split("-").map(Number);
-          const next = new Date(y, m - 1, day + 1);
-          d = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
-        }
-        setAvailabilityStatus(conflict ? "unavailable" : "available");
+        if (afgebroken) return;
+        const v = data?.vrij;
+        setVrij(
+          v && typeof v.lodge_1 === "boolean" && typeof v.lodge_2 === "boolean"
+            ? { lodge_1: v.lodge_1, lodge_2: v.lodge_2 }
+            : null,
+        );
       })
-      .catch(() => setAvailabilityStatus("idle"));
-  }, [lodge, checkIn, checkOut, nights]);
+      /* Niets tonen is hier beter dan "bezet" of "vrij" gokken. De controle
+       * bij het versturen is de echte poortwachter. */
+      .catch(() => { if (!afgebroken) setVrij(null); })
+      .finally(() => { if (!afgebroken) setChecking(false); });
+
+    return () => { afgebroken = true; };
+  }, [checkIn, checkOut, datesValid]);
 
   const handleSubmit = async () => {
     setError("");
@@ -135,6 +147,16 @@ export default function RequestForm() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
+        /* 409: de nachten bleken bij het versturen alsnog bezet — de
+         * formuliercheck kan ze gemist hebben, of er kwam er net iemand
+         * voor. Het serverantwoord terugzetten in de status hierboven, zodat
+         * de gast ziet wat er wél kan in plaats van alleen een rode regel. */
+        if (res.status === 409 && d.bezet) {
+          setVrij({
+            lodge_1: lodge === "lodge_1" ? false : d.alternatief === "lodge_1",
+            lodge_2: lodge === "lodge_2" ? false : d.alternatief === "lodge_2",
+          });
+        }
         setError(d.error || "Er ging iets mis. Probeer het opnieuw of WhatsApp ons.");
         setSending(false);
         return;
@@ -158,7 +180,7 @@ export default function RequestForm() {
           <button
             type="button"
             className="hth-form-restart"
-            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
+            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setVrij(null); }}
           >
             Nieuwe aanvraag
           </button>
@@ -180,7 +202,7 @@ export default function RequestForm() {
                 type="button"
                 aria-pressed={lodge === l}
                 className={`hth-lodge${lodge === l ? " hth-lodge--on" : ""}`}
-                onClick={() => { setLodge(l); setAvailabilityStatus("idle"); availCheckRef.current = ""; }}
+                onClick={() => { setLodge(l); setError(""); }}
               >
                 <span className="hth-lodge-title">Lodge {LODGE_LABELS[l]}</span>
                 <span className="hth-lodge-desc">{LODGE_DESC[l]}</span>
@@ -234,20 +256,39 @@ export default function RequestForm() {
             {dateError && (
               <p className="hth-form-note hth-form-note--error">{dateError}</p>
             )}
-            {!dateError && availabilityStatus === "checking" && (
+            {!dateError && checking && (
               <p className="hth-form-note">Beschikbaarheid controleren...</p>
             )}
-            {!dateError && availabilityStatus === "available" && datesValid && (
+            {!dateError && !checking && gekozenVrij === true && (
               <p className="hth-form-note hth-form-note--ok">
                 ✓ Deze periode is beschikbaar &mdash; {nights} nacht{nights !== 1 ? "en" : ""}
               </p>
             )}
-            {!dateError && availabilityStatus === "unavailable" && (
+            {/* Bezet, maar de andere lodge is vrij: geen doodlopende melding
+                maar de overstap in één klik, met het formulier ingevuld. */}
+            {!dateError && !checking && gekozenVrij === false && andereVrij === true && (
+              <div className="hth-alt">
+                <p className="hth-form-note hth-form-note--error">
+                  ✗ Lodge {LODGE_LABELS[lodge]} is deze nachten al bezet
+                </p>
+                <p className="hth-form-note">
+                  Lodge {LODGE_LABELS[andereLodge]} is dan w&eacute;l vrij &mdash; {LODGE_DESC[andereLodge].toLowerCase()}.
+                </p>
+                <button
+                  type="button"
+                  className="hth-alt-btn"
+                  onClick={() => { setLodge(andereLodge); setError(""); }}
+                >
+                  Kies Lodge {LODGE_LABELS[andereLodge]} &rarr;
+                </button>
+              </div>
+            )}
+            {!dateError && !checking && gekozenVrij === false && andereVrij !== true && (
               <p className="hth-form-note hth-form-note--error">
-                ✗ Deze periode is helaas al bezet &mdash; kies andere datums
+                ✗ Beide lodges zijn deze nachten al bezet &mdash; kies andere datums
               </p>
             )}
-            {!dateError && availabilityStatus === "idle" && (
+            {!dateError && !checking && gekozenVrij === null && (
               <p className="hth-form-note hth-form-note--small">
                 Een verblijf duurt minimaal {MIN_NIGHTS} nachten.
               </p>

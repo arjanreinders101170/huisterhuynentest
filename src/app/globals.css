@@ -304,6 +304,35 @@ html { scroll-behavior: smooth; }
  * zodra er een melding verschijnt. Twee regels op een telefoon. */
 .hth-form-status { min-height: 22px; }
 
+/* Het alternatief wanneer de gekozen lodge bezet is en de andere niet.
+ * Bewust een blok en geen losse regel: dit is geen foutmelding maar een
+ * volgende stap, en die moet aan te tikken zijn. */
+.hth-alt {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid #E0D8C8;
+  border-left: 3px solid #B49A5E;
+  border-radius: 10px;
+  background: rgba(180,154,94,.07);
+}
+.hth-alt-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2F4F3E;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+}
+.hth-alt-btn:hover { background: #26402F; }
+
 /* ── Eén hoogte voor alles wat je kunt aanraken ─────────────────────── */
 .hth-control {
   display: block;
