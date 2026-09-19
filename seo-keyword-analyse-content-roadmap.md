@@ -1,5 +1,5 @@
 # SEO Keyword-Analyse & Content-Roadmap — Huis ter Huynen
-**Opgesteld:** mei 2026 · **Opening:** 1 januari 2027 · **Horizon:** 18 maanden
+**Opgesteld:** mei 2026 · **Opening:** 1 april 2027 · **Horizon:** 18 maanden
 **Rollen:** CRO Specialist · SEO Strategist · Startup Growth Marketeer · Conversion Copywriter
 
 ---
@@ -563,7 +563,7 @@ Luxe verblijven worden gekocht op vertrouwen + persoonlijkheid.
 
 **Q5 — Reviews eerlijk beheren (impact: 🟠🟠)**
 - Verwijder alle nep-fallbackreviews (al gedaan per audit ✅)
-- Toon eerlijke boodschap pre-opening: "Wij openen 1 januari 2027. Schrijf je in en wees de eerste om je ervaring te delen."
+- Toon eerlijke boodschap pre-opening: "Wij openen 1 april 2027. Schrijf je in en wees de eerste om je ervaring te delen."
 - Automatiseer review-verzoek na verblijf (email + directe Google Review link)
 
 **Q6 — WhatsApp als primair contactkanaal (impact: 🟠)**
@@ -642,7 +642,7 @@ GBP is de snelste, gratis weg naar zichtbaarheid. Zonder GBP geen lokale pack, g
 3. NAP exact: Zeijen [adres], 9407 Drenthe — zelfde als op website
 4. Beschrijving (750 tekens): keyword-rijk + persoonlijk
 5. Foto's: minimaal 10 bij aanmaak (exterieur, lodge-Eik, lodge-Heide, hottub, omgeving)
-6. Openingsdatum: 1 januari 2027 zichtbaar
+6. Openingsdatum: 1 april 2027 zichtbaar
 7. Producten toevoegen: Lodge de Heide + Lodge de Eik met prijs
 8. Posts plaatsen zodra blog-artikelen live zijn (GBP-posts = gratis zichtbaarheid)
 
@@ -669,7 +669,7 @@ Aanmelden bij (in prioriteitsvolgorde):
 | Bron | Aanpak | Verwacht |
 |---|---|---|
 | Reisbloggers Drenthe | Uitnodiging voor gratis verblijf in ruil voor authentiek artikel | 1 DA30+ backlink |
-| RTV Drenthe | Persericht: "Nieuwe boutique lodge opent 1 jan 2027 in Zeijen" | 1 nieuwsartikel = sterke lokale backlink |
+| RTV Drenthe | Persericht: "Nieuwe boutique lodge opent 1 apr 2027 in Zeijen" | 1 nieuwsartikel = sterke lokale backlink |
 | Wandelnet / ANWB fietspaden | Gastpost of vermelding als "uitvalsbasis bij route X" | Backlink + doelgroeprelevantie |
 | Staatsbosbeheer Drenthe | Partnervermelding bij heidewandeling Zeijen | Autoriteitsbacklink |
 | Lokale ondernemersnetwerken Assen | Vermelding op lokale bedrijvenpagina's | NAP-citaties |
@@ -689,7 +689,7 @@ Bezoeker landt op blog/LP
   → Email 2 (week 2): artikel over heide/fietsen + teaser lodge
   → Email 3 (week 4): achter-de-schermen bericht van Arjan
   → Email 4 (november): opening-aankondiging + vroegboekvoordeel
-  → Email 5 (1 jan 2027): "We zijn open" + boeking nu mogelijk
+  → Email 5 (1 apr 2027): "We zijn open" + boeking nu mogelijk
 ```
 
 ### 8.2 Post-Opening Seizoensbrieven (4×/jaar)

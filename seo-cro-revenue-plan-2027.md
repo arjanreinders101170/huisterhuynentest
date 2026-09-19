@@ -1174,7 +1174,7 @@ De regel **"niet-merkgebonden klikken"** is de eerlijkste enkele graadmeter die 
 
 9. **Bouw `/lodge-de-heide` en `/lodge-de-eik`.** Er is nu geen enkele stap waarin de bezoeker een lodge kiest — terwijl kiezen precies de stap is die twijfel omzet in een boeking. Bovendien vangt het long tail die uw themapagina's niet kunnen bedienen.
 
-10. **Kom in de listicles in plaats van ertegen te vechten.** origineelovernachten.nl, bijzonderplekje.nl, naturescanner.nl, luxevakantieplekjes.nl, drenthe.nl: samen bezetten zij de top 10 van "bijzonder overnachten Drenthe", "wellness huisje Drenthe" en "huisje met hottub Drenthe". Die SERP's wint u niet met een betere pagina — die wint u door erin te staan. En "nieuwe boutique lodges, opening januari 2027" is precies het verhaal waar zij nu naar op zoek zijn. Dat venster sluit zodra u niet meer nieuw bent.
+10. **Kom in de listicles in plaats van ertegen te vechten.** origineelovernachten.nl, bijzonderplekje.nl, naturescanner.nl, luxevakantieplekjes.nl, drenthe.nl: samen bezetten zij de top 10 van "bijzonder overnachten Drenthe", "wellness huisje Drenthe" en "huisje met hottub Drenthe". Die SERP's wint u niet met een betere pagina — die wint u door erin te staan. En "nieuwe boutique lodges, opening april 2027" is precies het verhaal waar zij nu naar op zoek zijn. Dat venster sluit zodra u niet meer nieuw bent.
 
 ---
 

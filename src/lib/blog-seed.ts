@@ -676,7 +676,7 @@ De zomer is voor buiten zijn. De herfst is voor buiten zijn én daarna lekker bi
 
 ## Volgend jaar rond deze tijd ben je welkom in de lodges
 
-Wij kijken zelf al maanden naar dit seizoen uit, want vanaf 1 januari 2027 openen onze twee lodges bij Huis ter Huynen in Zeijen hun deuren. Dat betekent dat je volgend jaar rond deze periode — augustus, september, oktober 2027, precies wanneer de heide op zijn mooist is — bij ons kunt overnachten.
+Wij kijken zelf al maanden naar dit seizoen uit, want vanaf 1 april 2027 openen onze twee lodges bij Huis ter Huynen in Zeijen hun deuren. Dat betekent dat je volgend jaar rond deze periode — augustus, september, oktober 2027, precies wanneer de heide op zijn mooist is — bij ons kunt overnachten.
 
 Lodge De Heide en Lodge De Eik zijn allebei volledig privé: een eigen terras, een eigen hottub, geen receptie en geen gedeelde voorzieningen. Je komt aan, doet de deur achter je dicht en de heide begint bij wijze van spreken bij het tuinhek. Voor een herfstweekend is dat precies de goede opzet: 's ochtends de mist in, 's middags terug, en 's avonds de hottub in terwijl het buiten donker en stil wordt.
 
@@ -698,7 +698,7 @@ Ja. Buiten de herfstvakantieweek zelf zijn de heidegebieden en beekdalen doordew
 
 ### Wanneer kan ik in de herfst bij Huis ter Huynen overnachten?
 
-De lodges openen op 1 januari 2027. Het najaar van 2027 — inclusief de heideperiode en de herfstvakantie — is daarmee het eerste herfstseizoen waarin gasten welkom zijn. Via de nieuwsbrief hoor je als eerste wanneer deze data te boeken zijn.`,
+De lodges openen op 1 april 2027. Het najaar van 2027 — inclusief de heideperiode en de herfstvakantie — is daarmee het eerste herfstseizoen waarin gasten welkom zijn. Via de nieuwsbrief hoor je als eerste wanneer deze data te boeken zijn.`,
     categorie: "Seizoen",
     leestijd: "8 minuten",
     auteur: "Arjan Reinders",
@@ -709,7 +709,7 @@ De lodges openen op 1 januari 2027. Het najaar van 2027 — inclusief de heidepe
     slug: "zomerupdate-oplevering-lodges",
     titel: "De heide staat in bloei — en wij hebben wat meer tijd nodig",
     intro:
-      "Terwijl half Nederland in de file naar het zuiden staat, kleurt de heide rond Zeijen paars. Een zomerse update vanaf het terrein, met eerlijk nieuws erbij: de oplevering loopt vertraging op, waardoor de lodges helaas nog niet vanaf 1 januari beschikbaar zijn.",
+      "Terwijl half Nederland in de file naar het zuiden staat, kleurt de heide rond Zeijen paars. Een zomerse update vanaf het terrein, met eerlijk nieuws erbij: de oplevering loopt vertraging op, waardoor de lodges later opengaan dan gepland. De nieuwe openingsdatum is 1 april 2027.",
     inhoud: `Augustus in Zeijen ruikt naar warm zand, dennennaalden en heide. Wie hier nu over het Zeijerveld loopt, ziet wat het hele jaar in de aanloop zat: de heide staat in bloei. Niet een beetje, maar tot aan de horizon — dat diepe paars dat op foto's altijd net iets te mooi lijkt om waar te zijn, en in het echt gewoon klopt. De bijen weten het al weken. De rest van Nederland staat ondertussen in de file bij Lyon.
 
 Ik stond er vorige week weer, vroeg in de ochtend, met koffie uit een thermoskan. En terwijl ik daar stond, wist ik dat ik dit stukje moest schrijven. Want er is goed nieuws, en er is nieuws waar ik eerlijk over wil zijn.
@@ -724,9 +724,9 @@ Lees je dit met zand in je koffer, net terug van vakantie of nog midden in de vr
 
 ## Eerlijk is eerlijk: de oplevering loopt vertraging op
 
-De planning was helder. De lodges zouden worden opgeleverd zodat Lodge De Heide en Lodge De Eik vanaf 1 januari beschikbaar zouden zijn voor gasten. Die datum staat al maanden in onze communicatie, in de nieuwsbrief en op de site.
+De planning was helder. De lodges zouden worden opgeleverd zodat Lodge De Heide en Lodge De Eik aan het begin van het nieuwe jaar beschikbaar zouden zijn voor gasten. Die datum stond maandenlang in onze communicatie, in de nieuwsbrief en op de site.
 
-Die datum halen we niet. De oplevering heeft meer tijd nodig dan gepland, en daarmee schuift ook het moment op waarop wij de eerste gasten kunnen ontvangen. De lodges zijn dus helaas nog niet vanaf 1 januari beschikbaar.
+Die datum halen we niet. De oplevering heeft meer tijd nodig dan gepland, en daarmee schuift ook het moment op waarop wij de eerste gasten kunnen ontvangen. De nieuwe openingsdatum is 1 april 2027, en dat is de datum die vanaf nu overal op de site staat.
 
 Ik had dit liever anders geschreven. Maar niets is vervelender dan een vakantie plannen rond een datum die achteraf niet blijkt te kloppen — en dus vertel ik het liever nu, met de zomer nog aan de gang, dan in december met een mail die niemand wil krijgen.
 
@@ -746,9 +746,9 @@ Dat laatste is trouwens het aangenaamste deel van het werk. Ik ken inmiddels het
 
 ## Wat betekent dit voor jou?
 
-Vooral dit: reken voor je plannen in de eerste weken van het nieuwe jaar nog niet op ons. Heb je al een aanvraag gedaan of sta je op de lijst voor de opening, dan nemen we persoonlijk contact met je op zodra de nieuwe datum vaststaat — je hoeft daar zelf niets voor te doen.
+Vooral dit: reken voor je plannen in de eerste maanden van het nieuwe jaar nog niet op ons. Wij ontvangen onze eerste gasten vanaf 1 april 2027. Heb je al een aanvraag gedaan of sta je op de lijst voor de opening, dan nemen we persoonlijk contact met je op om je datum om te zetten — je hoeft daar zelf niets voor te doen.
 
-Zodra de nieuwe openingsdatum definitief is, hoor je het. Niet via een omweg, maar direct: nieuwsbrief-abonnees krijgen als eersten bericht, met de datum, de tarieven en het vroegboekvoordeel dat we voor die groep achterhouden. Dat voordeel blijft gewoon staan — de vertraging gaat niet ten koste van de mensen die vanaf het begin meekijken.
+De nieuwe datum staat vast, en de rest volgt op dezelfde manier: niet via een omweg, maar direct. Nieuwsbrief-abonnees krijgen als eersten bericht, met de tarieven en het vroegboekvoordeel dat we voor die groep achterhouden. Dat voordeel blijft gewoon staan — de vertraging gaat niet ten koste van de mensen die vanaf het begin meekijken.
 
 En tot die tijd houden we je op de hoogte van de voortgang. Niet met marketingpraat, maar met wat het is: foto's vanaf het terrein, de stand van zaken en het eerlijke verhaal als er weer iets verandert.
 

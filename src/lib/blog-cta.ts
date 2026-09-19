@@ -31,9 +31,9 @@ export interface BlogCta {
 }
 
 export const STANDAARD_BLOG_CTA: BlogCta = {
-  eyebrow: "Opening 1 januari 2027",
+  eyebrow: "Opening 1 april 2027",
   tekst:
-    "De lodges zijn beschikbaar vanaf 1 januari 2027. Schrijf je in voor de nieuwsbrief en ontvang als eerste de vroegboekkorting.",
+    "De lodges zijn beschikbaar vanaf 1 april 2027. Schrijf je in voor de nieuwsbrief en ontvang als eerste de vroegboekkorting.",
   knop: "Schrijf me in →",
   href: "/#nieuwsbrief",
 };
