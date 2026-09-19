@@ -8,6 +8,7 @@ import {
 } from "@/lib/email";
 import { APP_URL_FALLBACK } from "@/data/lodge";
 import { checkStayDates } from "@/lib/stay-dates";
+import { vrijeLodges, andereLodge } from "@/lib/availability";
 import { attributieKolommen } from "@/lib/attributie";
 import { normaliseerEmail } from "@/lib/gast-email";
 
@@ -25,6 +26,21 @@ const LODGE_LABELS: Record<string, string> = {
   lodge_1: "De Heide",
   lodge_2: "De Eik",
 };
+
+/* Meldingen wanneer de gevraagde nachten al bezet zijn. Het formulier toont
+ * zijn eigen variant; dit is wat er terugkomt als het die check heeft gemist. */
+const BEZET_MELDING = {
+  nl: {
+    metAlternatief: (bezet: string, vrij: string) =>
+      `Lodge ${bezet} is deze nachten al bezet. Lodge ${vrij} is nog wel vrij — kies die lodge en verstuur de aanvraag opnieuw.`,
+    beide: "Beide lodges zijn deze nachten al bezet. Kies andere datums.",
+  },
+  de: {
+    metAlternatief: (bezet: string, vrij: string) =>
+      `Lodge ${bezet} ist in diesen Nächten bereits belegt. Lodge ${vrij} ist noch frei — wählen Sie diese Lodge und senden Sie die Anfrage erneut.`,
+    beide: "Beide Lodges sind in diesen Nächten bereits belegt. Bitte wählen Sie andere Daten.",
+  },
+} as const;
 
 type DiscountCode = {
   id: string;
@@ -91,6 +107,47 @@ export async function POST(request: NextRequest) {
   const dateCheck = checkStayDates(checkIn, checkOut, { locale });
   if (!dateCheck.ok) {
     return NextResponse.json({ error: dateCheck.error }, { status: 400 });
+  }
+
+  /* Zijn deze nachten nog vrij?
+   *
+   * De check in het formulier is er voor de melding, deze is er voor de
+   * waarheid — precies zoals bij checkStayDates hierboven. Het formulier kan
+   * hem missen: valt de fetch om, dan mag er alsnog verstuurd worden, en de
+   * Duitse variant had tot nu toe helemaal geen check. Zonder deze regels
+   * belandt een onmogelijke aanvraag als gewone "nieuwe aanvraag" in de
+   * admin en moet de gast er achteraf alsnog uit.
+   *
+   * Is de externe agenda onbereikbaar, dan weigeren we niet. Dat beeld is
+   * onvolledig, en een gast wegsturen op een halve agenda kost een boeking
+   * die er wél had kunnen zijn. De aanvraag gaat dan door met een
+   * waarschuwing in de mail naar de eigenaar.
+   */
+  let agendaOnvolledig = false;
+  try {
+    const { vrij, volledig } = await vrijeLodges({ checkIn, checkOut });
+    agendaOnvolledig = !volledig;
+
+    if (volledig && vrij[lodge] === false) {
+      const ander = andereLodge(lodge);
+      const anderVrij = !!ander && vrij[ander] === true;
+      const m = BEZET_MELDING[locale === "de" ? "de" : "nl"];
+      return NextResponse.json(
+        {
+          error: anderVrij && ander
+            ? m.metAlternatief(LODGE_LABELS[lodge] || lodge, LODGE_LABELS[ander] || ander)
+            : m.beide,
+          bezet: true,
+          alternatief: anderVrij ? ander : null,
+        },
+        { status: 409 },
+      );
+    }
+  } catch (e) {
+    /* Beschikbaarheid niet te bepalen is geen reden om de aanvraag te laten
+     * vallen: die is waardevoller dan de zekerheid. Wel melden. */
+    console.error("[reservering] beschikbaarheidscheck mislukt:", e);
+    agendaOnvolledig = true;
   }
 
   /* Tracking signals — for Meta CAPI deduplication when the booking later
@@ -232,6 +289,16 @@ export async function POST(request: NextRequest) {
             "⚠️ Niet opgeslagen in de admin",
             "Deze aanvraag kon niet in de database worden gezet en staat dus <strong>niet</strong> in de Aanvragen-tab. " +
             "Neem hem handmatig over of reageer rechtstreeks op deze mail.",
+          )] : []),
+          /* De aanvraag is binnengelaten zonder dat de beschikbaarheid hard
+           * bevestigd kon worden. Dat is bewust — zie de check bovenin — maar
+           * het mag niet stil gebeuren: deze nachten kunnen via Booking.com
+           * al vergeven zijn. */
+          ...(agendaOnvolledig ? [calloutBlock(
+            "⚠️ Beschikbaarheid niet bevestigd",
+            "De externe agenda was niet volledig op te halen, dus deze aanvraag is doorgelaten " +
+            "<strong>zonder</strong> zekerheid dat de nachten vrij zijn. Controleer Booking.com " +
+            "voordat je een offerte verstuurt.",
           )] : []),
           infoBlock("Aanvraag", periodLine, subLine),
           calloutBlock("Geschatte prijs", prijsLine),

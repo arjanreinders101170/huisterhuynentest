@@ -147,6 +147,51 @@ export async function findConflict(opts: {
   return { conflict, icalOk: ical.ok };
 }
 
+export type LodgeBeschikbaarheid = {
+  /** Per lodge-id: zijn deze nachten vrij? */
+  vrij: Record<string, boolean>;
+  /** False als een externe agenda onbereikbaar was — dan is dit beeld onvolledig. */
+  volledig: boolean;
+};
+
+/**
+ * Beschikbaarheid van álle lodges voor één periode, in één keer.
+ *
+ * Het aanvraagformulier vroeg dit tot nu toe per lodge op en liep in de
+ * browser zelf de nachten langs. Daardoor beantwoordde de client de vraag
+ * "is dit vrij?" net iets anders dan de server, en zag de gast alleen iets
+ * over de lodge die hij toevallig had aangeklikt — ook als de andere die
+ * nachten gewoon vrij was.
+ *
+ * Eén antwoord voor beide lodges, via dezelfde findConflict die de admin en
+ * /api/bevestig gebruiken. `volledig` blijft meereizen: is de externe agenda
+ * onbereikbaar, dan is "vrij" niet hetzelfde als zeker vrij.
+ */
+export async function vrijeLodges(opts: {
+  checkIn: string;
+  checkOut: string;
+}): Promise<LodgeBeschikbaarheid> {
+  const uitkomsten = await Promise.all(
+    Object.keys(LODGE_NAMES).map(async lodge => ({
+      lodge,
+      ...(await findConflict({ lodge, checkIn: opts.checkIn, checkOut: opts.checkOut })),
+    })),
+  );
+
+  const vrij: Record<string, boolean> = {};
+  let volledig = true;
+  for (const u of uitkomsten) {
+    vrij[u.lodge] = u.conflict === null;
+    if (!u.icalOk) volledig = false;
+  }
+  return { vrij, volledig };
+}
+
+/** De andere lodge dan deze. Twee lodges, dus altijd precies één. */
+export function andereLodge(lodge: string): string | null {
+  return Object.keys(LODGE_NAMES).find(l => l !== lodge) ?? null;
+}
+
 export type OpenOffer = {
   id: string;
   gast_naam: string | null;
