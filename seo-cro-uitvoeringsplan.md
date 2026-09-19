@@ -1,6 +1,6 @@
 # Huis ter Huynen — SEO & CRO Uitvoeringsplan (6–12 maanden)
 
-**Opgesteld:** mei 2026 · **Context:** pre-opening (lodges boekbaar, opening 1 jan 2027)
+**Opgesteld:** mei 2026 · **Context:** pre-opening (lodges boekbaar, opening 1 apr 2027)
 **Doel:** dé best vindbare luxe lodge met hottub in Drenthe worden en structureel directe boekingen genereren — onafhankelijk van Booking.com.
 
 > **Belangrijke nuance vooraf.** Deze audit is gebaseerd op de werkelijke broncode van de site (Next.js 15 App Router), niet op aannames. De technische SEO-basis is **veel sterker dan een gemiddelde accommodatiesite**: er staat al een nette `LodgingBusiness` schema, hreflang (nl/de), een dynamische sitemap, een Meta Pixel + Conversions API-stack met Consent Mode v2, security headers en AVIF/WebP-beeldoptimalisatie. Het echte probleem is **niet de techniek maar de architectuur**: de site is in feite één landingspagina (`/`) + `/omgeving` + `/blog` + `/faq` + Duitse variant + juridische pagina's. Er zijn **geen aparte commerciële landingspagina's** voor zoektermen met koopintentie. Dáár ligt 80% van de groeikans.

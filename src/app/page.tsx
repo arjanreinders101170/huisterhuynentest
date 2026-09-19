@@ -9,6 +9,7 @@ import { BookingFaq } from "@/components/BookingFaq";
 import { footerLinks, LODGE_OP_SLUG } from "@/lib/site";
 import { ReserveerContextRegel } from "@/components/ReserveerContextRegel";
 import { kiesLodge } from "@/lib/reserveer-params";
+import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
 const RequestForm = dynamic(() => import("@/components/RequestForm"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Formulier laden...</div> });
 
 interface GoogleReview {
@@ -80,7 +81,7 @@ function SectionHeader({ eyebrow, title, sub }: { eyebrow: string; title: string
 function BookingSection() {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   useEffect(() => {
-    const opening = new Date("2027-01-01T00:00:00");
+    const opening = new Date(`${BOOKINGS_OPEN_FROM}T00:00:00`);
     const calc = () => setDaysLeft(Math.max(0, Math.ceil((opening.getTime() - Date.now()) / 86400000)));
     calc();
     const id = setInterval(calc, 60000);
@@ -296,7 +297,7 @@ export default function LandingPage() {
             fontFamily: T.sans, fontSize: 12, fontWeight: 400,
             color: "rgba(255,255,255,.55)", marginTop: 24, letterSpacing: "0.3px",
           }}>
-            Opening 1 januari 2027 · Claim nu uw datum als Eerste Gast
+            Opening 1 april 2027 · Claim nu uw datum als Eerste Gast
           </p>
         </div>
       </section>
@@ -496,7 +497,7 @@ export default function LandingPage() {
                     fontFamily: T.sans, fontSize: 11, color: T.muted,
                     fontWeight: 400, marginBottom: 16, letterSpacing: "0.2px",
                   }}>
-                    Beschikbaar vanaf 1 januari 2027 · Openingsseizoen
+                    Beschikbaar vanaf 1 april 2027 · Openingsseizoen
                   </div>
                   <a
                     href="#reserveren"
@@ -958,7 +959,7 @@ export default function LandingPage() {
           <SectionHeader
             eyebrow="Openingsjaar 2027"
             title="De populairste momenten gaan als eerste"
-            sub="Huis ter Huynen opent op 1 januari 2027. Vroegboekers claimen nu al hun voorkeursdatum, vóór de officiële opening."
+            sub="Huis ter Huynen opent op 1 april 2027. Vroegboekers claimen nu al hun voorkeursdatum, vóór de officiële opening."
           />
           <div style={{
             display: "grid",
@@ -969,24 +970,24 @@ export default function LandingPage() {
             {[
               {
                 periode: "Opening",
-                datum: "1 – 3 jan 2027",
+                datum: "1 – 4 apr 2027",
                 badge: "Historisch weekend",
                 badgeKleur: T.gold,
                 desc: "De allereerste gasten van Huis ter Huynen. Een moment dat slechts één keer bestaat.",
               },
               {
-                periode: "Valentijn",
-                datum: "13 – 16 feb 2027",
+                periode: "Meivakantie",
+                datum: "24 apr – 2 mei 2027",
                 badge: "Populair",
                 badgeKleur: T.green,
-                desc: "Romantisch en stil, de hottub op zijn best in de Drentse winter.",
+                desc: "Lente in Drenthe, jonge dieren en bloeiende bossen. De eerste vakantieweek na de opening.",
               },
               {
-                periode: "Pasen",
-                datum: "18 – 21 apr 2027",
+                periode: "Hemelvaart & Pinksteren",
+                datum: "6 – 17 mei 2027",
                 badge: "Langweekend",
                 badgeKleur: T.green,
-                desc: "Lente in Drenthe, jonge dieren en bloeiende bossen. Vier dagen vrij.",
+                desc: "Twee lange weekenden vlak na elkaar, met het voorjaar op zijn mooist.",
               },
               {
                 periode: "Heideseizoen",
@@ -997,7 +998,7 @@ export default function LandingPage() {
               },
               {
                 periode: "Kerst & Oud & Nieuw",
-                datum: "25 dec – 1 jan",
+                datum: "25 dec 2027 – 2 jan 2028",
                 badge: "Verwacht vol",
                 badgeKleur: T.green,
                 desc: "Hottub, vuur en stilte. De winter op zijn allermooist.",
@@ -1073,7 +1074,7 @@ export default function LandingPage() {
           {googleReviews.length === 0 ? (
             <div style={{ textAlign: "center", maxWidth: 560, margin: "0 auto" }}>
               <p style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.8, marginBottom: 8 }}>
-                Huis ter Huynen opent op 1 januari 2027. De eerste beoordelingen verschijnen
+                Huis ter Huynen opent op 1 april 2027. De eerste beoordelingen verschijnen
                 hier zodra onze Eerste Gasten hebben verbleven, rechtstreeks vanuit Google,
                 ongefilterd en echt.
               </p>

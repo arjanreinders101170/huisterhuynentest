@@ -368,7 +368,7 @@ export default async function ArtikelPagina(
             fontFamily: T.sans, fontSize: 11, fontWeight: 600,
             color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase" as const, marginBottom: 14,
           }}>
-            Opening 1 januari 2027
+            Opening 1 april 2027
           </div>
           <h2 style={{
             fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 30px)",

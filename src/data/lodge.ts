@@ -57,5 +57,9 @@ export const MAX_GUESTS_PER_LODGE = 4;
 
 /* Earliest date guests can request via website/app booking flow.
  * Used by both BookingCalendar (homepage) and Terugkomen (in-app) so the
- * two stay aligned. Update here when the season opens. */
-export const BOOKINGS_OPEN_FROM = "2027-01-01";
+ * two stay aligned. Update here when the season opens.
+ *
+ * Dit is tevens de openingsdatum die overal op de site wordt getoond
+ * ("Opening 1 april 2027"). Wijzigt de datum, pas dan ook de teksten aan
+ * die hem voluit noemen. */
+export const BOOKINGS_OPEN_FROM = "2027-04-01";
