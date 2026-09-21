@@ -1708,7 +1708,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         eyebrow: "Praktisch",
         heading: "Prijzen en beschikbaarheid",
         body: [
-          "De prijs begint bij €165 per nacht voor de hele lodge, niet per persoon. In de schoolvakanties, rond feestdagen en in het hoogseizoen ligt hij hoger. Bovenop de nachtprijs komen schoonmaakkosten en toeristenbelasting van de gemeente Tynaarlo; boekingskosten rekenen wij niet, omdat u rechtstreeks bij de eigenaar boekt.",
+          "De prijs begint bij €165 per nacht voor de hele lodge, niet per persoon. In de schoolvakanties, rond feestdagen en in het hoogseizoen ligt hij hoger. Kosten voor eindschoonmaak, toeristenbelasting en bedlinnen worden apart vermeld en komen bij de dagprijs. Boekingskosten rekenen wij niet, omdat u rechtstreeks bij de eigenaar boekt.",
           "Losse nachten verhuren wij niet. Er zijn twee wisseldagen — maandag en vrijdag — en daarmee drie vormen:",
         ],
         table: {
@@ -1857,7 +1857,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         eyebrow: "Praktisch",
         heading: "Prijzen en beschikbaarheid",
         body: [
-          "De prijs begint bij €165 per nacht voor de hele lodge, niet per persoon. In de schoolvakanties, rond feestdagen en in het hoogseizoen ligt hij hoger. Bovenop de nachtprijs komen schoonmaakkosten en toeristenbelasting van de gemeente Tynaarlo; boekingskosten rekenen wij niet, omdat u rechtstreeks bij de eigenaar boekt.",
+          "De prijs begint bij €165 per nacht voor de hele lodge, niet per persoon. In de schoolvakanties, rond feestdagen en in het hoogseizoen ligt hij hoger. Kosten voor eindschoonmaak, toeristenbelasting en bedlinnen worden apart vermeld en komen bij de dagprijs. Boekingskosten rekenen wij niet, omdat u rechtstreeks bij de eigenaar boekt.",
           "Losse nachten verhuren wij niet. Er zijn twee wisseldagen — maandag en vrijdag — en daarmee drie vormen:",
         ],
         table: {
