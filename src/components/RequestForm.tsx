@@ -9,8 +9,8 @@ import { leesReserveerParams, KIES_LODGE_EVENT } from "@/lib/reserveer-params";
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
 const LODGE_DESC: Record<Lodge, string> = {
-  lodge_1: "Panoramisch heide-uitzicht, eigen sauna",
-  lodge_2: "Onder de eiken, volledige keuken & BBQ",
+  lodge_1: "Panoramisch heide-uitzicht, privé-hottub",
+  lodge_2: "Onder de eiken, buitensauna & BBQ",
 };
 
 function diffDays(a: string, b: string): number {

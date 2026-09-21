@@ -8,8 +8,8 @@ import { getAttribution } from "@/lib/tracking/attribution";
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
 const LODGE_DESC: Record<Lodge, string> = {
-  lodge_1: "Panoramablick über die Heide, eigene Sauna",
-  lodge_2: "Unter den Eichen, vollständige Küche & BBQ",
+  lodge_1: "Panoramablick über die Heide, privater Hot Tub",
+  lodge_2: "Unter den Eichen, Fasssauna & Grill",
 };
 
 function diffDays(a: string, b: string): number {

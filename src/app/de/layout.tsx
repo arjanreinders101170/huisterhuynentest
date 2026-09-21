@@ -147,11 +147,11 @@ const jsonLd = {
       name: "De Heide",
       inLanguage: "de",
       description:
-        "Luxuriöse Lodge auf der Drentse Heide für vier Personen. Eigene Sauna, privater Hot Tub und Panoramablick über den Wald.",
+        "Luxuriöse Lodge auf der Drentse Heide für vier Personen. Privater Hot Tub auf der Terrasse und Panoramablick über Heide und Wald.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privater Hot Tub", value: true },
-        { "@type": "LocationFeatureSpecification", name: "Sauna", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Sauna", value: false },
       ],
     },
     {
@@ -159,10 +159,11 @@ const jsonLd = {
       name: "De Eik",
       inLanguage: "de",
       description:
-        "Geräumige Lodge unter Eichen für vier Personen. Hohe Decken, voll ausgestattete Küche und Außenküche mit Grill.",
+        "Geräumige Lodge unter Eichen für vier Personen. Eigene Fasssauna im Freien, privater Hot Tub, hohe Decken und eine Außenküche mit Grill.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privater Hot Tub", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Fasssauna im Freien", alternateName: ["Sauna", "Außensauna"], value: true },
         { "@type": "LocationFeatureSpecification", name: "Außenküche & Grill", value: true },
       ],
     },

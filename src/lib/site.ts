@@ -231,8 +231,8 @@ export interface ReserveerContext {
   /** Zin die in de boekingssectie bevestigt wat de bezoeker aanvraagt. */
   regel: string;
   /** Alleen voorselecteren waar er een inhoudelijke reden voor is: een pagina
-   *  over sauna en wellness hoort bij De Heide, een pagina die op ruimte
-   *  verkoopt bij De Eik. Zonder reden geen voorselectie — dan is de keuze
+   *  over sauna en wellness hoort bij De Eik, een pagina die op uitzicht en
+   *  rust met z'n tweeën verkoopt bij De Heide. Zonder reden geen voorselectie — dan is de keuze
    *  van de bezoeker zelf het eerlijkste startpunt. */
   lodge?: LodgeParam;
 }
@@ -244,13 +244,13 @@ export const RESERVEER_CONTEXT: Record<string, ReserveerContext> = {
   },
   "wellness-vakantie-drenthe": {
     van: "wellness",
-    lodge: "heide",
-    regel: "U bekijkt beschikbaarheid voor een wellnessverblijf in Lodge De Heide, met eigen sauna en hottub.",
+    lodge: "eik",
+    regel: "U bekijkt beschikbaarheid voor een wellnessverblijf in Lodge De Eik, met eigen buitensauna en hottub.",
   },
   "romantisch-weekend-weg-drenthe": {
     van: "romantisch",
     lodge: "heide",
-    regel: "U bekijkt beschikbaarheid voor een romantisch weekend in Lodge De Heide, met sauna en panoramisch uitzicht.",
+    regel: "U bekijkt beschikbaarheid voor een romantisch weekend in Lodge De Heide, met hottub en panoramisch uitzicht.",
   },
   "luxe-lodge-drenthe": {
     van: "luxe",
@@ -302,12 +302,12 @@ export const RESERVEER_CONTEXT: Record<string, ReserveerContext> = {
   "lodge-de-heide": {
     van: "de-heide",
     lodge: "heide",
-    regel: "U bekijkt beschikbaarheid voor Lodge De Heide, met eigen sauna en uitzicht over de heide.",
+    regel: "U bekijkt beschikbaarheid voor Lodge De Heide, met privé-hottub en uitzicht over de heide.",
   },
   "lodge-de-eik": {
     van: "de-eik",
     lodge: "eik",
-    regel: "U bekijkt beschikbaarheid voor Lodge De Eik, met buitenkeuken en BBQ onder de eiken.",
+    regel: "U bekijkt beschikbaarheid voor Lodge De Eik, met eigen buitensauna en BBQ onder de eiken.",
   },
 };
 
@@ -340,8 +340,8 @@ export function reserveerHref(slug?: string): string {
  * commitment. Deze twee records voeden zowel het keuzeblok op de commerciële
  * pagina's als de verwijzingen tussen de lodgepagina's onderling.
  *
- * Het onderscheid is bewust hard: De Heide heeft de sauna en het uitzicht, De
- * Eik de buitenkeuken en de BBQ. Twee lodges die hetzelfde beloven zijn geen
+ * Het onderscheid is bewust hard: De Eik heeft de buitensauna, de buitenkeuken
+ * en de BBQ, De Heide het panoramisch uitzicht en de rust. Twee lodges die hetzelfde beloven zijn geen
  * keuze maar ruis — en op paginaniveau precies het kannibalisatieprobleem dat
  * de site al heeft.
  */
@@ -362,8 +362,8 @@ export const LODGE_PAGINAS: LodgePagina[] = [
     param: "heide",
     naam: "Lodge De Heide",
     slug: "lodge-de-heide",
-    onderscheid: "De enige met een eigen sauna, en met panoramisch uitzicht over heide en bos.",
-    kenmerken: ["Eigen sauna", "Panoramisch uitzicht", "Privé-hottub op het terras"],
+    onderscheid: "Panoramisch uitzicht over heide en bos, en geen enkel ander gebouw in zicht.",
+    kenmerken: ["Panoramisch uitzicht", "Volledig vrij uitzicht", "Privé-hottub op het terras"],
     afbeelding: "/lodge-heide.jpg",
     alt: "Lodge De Heide met privé-hottub op het terras en uitzicht over de Drentse heide",
   },
@@ -371,8 +371,8 @@ export const LODGE_PAGINAS: LodgePagina[] = [
     param: "eik",
     naam: "Lodge De Eik",
     slug: "lodge-de-eik",
-    onderscheid: "De ruimste van de twee, met een buitenkeuken en BBQ onder de eiken.",
-    kenmerken: ["Buitenkeuken & BBQ", "Hoge plafonds", "Privé-hottub op het terras"],
+    onderscheid: "De enige met een eigen buitensauna, plus een buitenkeuken en BBQ onder de eiken.",
+    kenmerken: ["Eigen buitensauna", "Buitenkeuken & BBQ", "Privé-hottub op het terras"],
     afbeelding: "/lodge-eik.jpg",
     alt: "Lodge De Eik onder de eiken met buitenkeuken, BBQ en eigen terras",
   },

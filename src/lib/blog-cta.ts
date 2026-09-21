@@ -84,7 +84,7 @@ export function blogCtaHalverwege(slug: string): { tekst: string; knop: string; 
   return {
     tekst:
       "Twee volledig privé lodges op de heide bij Zeijen, elk met een eigen hottub op het terras. " +
-      "De Heide heeft een sauna, De Eik een buitenkeuken met BBQ.",
+      "De Eik heeft een buitensauna en een buitenkeuken met BBQ, De Heide het panoramisch uitzicht.",
     knop: "Bekijk de twee lodges →",
     href: "/vakantiehuis-met-hottub-drenthe",
   };
