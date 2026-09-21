@@ -294,7 +294,7 @@ export function welcomeEmail(opts: WelcomeEmailOpts): string {
       ], { background: "muted", compact: true }),
       checklist([
         "Inchecken vanaf 15:00, sleutel niet nodig",
-        "Laadpaal beschikbaar op locatie",
+        "Laadstation beschikbaar bij de lodge",
         "Tips, route en extra's regelen via de app",
       ]),
     ],

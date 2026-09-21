@@ -53,7 +53,7 @@ export const nl = {
   verblijf: {
     title: "Mijn verblijf",
     subtitle: "Boutique Lodge · Zeijen, Drenthe",
-    lodgeHint: "Verwarming, verlichting en laadpaal regel je via het menu linksboven",
+    lodgeHint: "Verwarming, verlichting en laadstation regel je via het menu linksboven",
     doorOpen: "Deur is open",
     doorOpening: "Even geduld...",
     doorError: "Niet gelukt",
@@ -79,8 +79,8 @@ export const nl = {
     practical: "Praktisch",
     parking: "Parkeren",
     parkingInfo: "Gratis op eigen terrein",
-    charger: "Laadpaal",
-    chargerInfo: "Laadpaal aanwezig voor elektrische auto's",
+    charger: "Laadstation",
+    chargerInfo: "Laadstation aanwezig voor elektrische auto's",
     houseRules: "Huisregels",
     houseRulesInfo: "Niet roken · Huisdieren welkom · Rust na 22:00",
     checkout: "Vertrek",
@@ -244,7 +244,7 @@ export const nl = {
     subtitle: "Smart home",
     temperature: "Temperatuur",
     lighting: "Verlichting",
-    charger: "Laadpaal",
+    charger: "Laadstation",
     scenes: {
       morning: "Ochtend",
       relax: "Ontspannen",

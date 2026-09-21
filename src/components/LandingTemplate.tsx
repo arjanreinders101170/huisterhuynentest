@@ -125,6 +125,11 @@ const ICOON_PADEN: Record<string, string> = {
   nietRoken: "M2 15h14v4H2zM18 15h4v4h-4M17 12c2-1 2-3 0-4M13 12c2-1 2-3 0-4M3 3l18 18",
   huisdier: "M11 18a3 3 0 0 0 3 3 3 3 0 0 0 3-3c0-2-2-3-3-5-1 2-3 3-3 5zM6 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
   geenFeest: "M4 20l5-12 7 7-12 5zM14 5l1-2M18 8l2-1M17 3l1 1M20 11l1 .5M3 3l18 18",
+  wifi: "M2.5 8.5a16 16 0 0 1 19 0M5.5 12.5a11 11 0 0 1 13 0M8.5 16.5a6 6 0 0 1 7 0M12 20h.01",
+  parkeren: "M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM9 17V7h4a3 3 0 0 1 0 6H9",
+  koffie: "M4 9h13v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M3 21h15M7 2v3M11 2v3",
+  waterkoker: "M6 9h10l1 11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zM16 11l3-2M9 9V7a2 2 0 0 1 4 0v2",
+  verwarming: "M4 6v13M8 6v13M12 6v13M16 6v13M3 4h14M3 21h14M20 7c-1 1.5-1 2.5 0 4s1 2.5 0 4",
 };
 
 function Icoon({ naam, kleur }: { naam?: string; kleur: string }) {

@@ -106,7 +106,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         bullets: [
           "[Lodge De Heide](/lodge-de-heide) — privé-hottub op het terras en vrij uitzicht over heide en bos, zonder een ander gebouw in beeld.",
           "[Lodge De Eik](/lodge-de-eik) — ruimste van de twee, met eigen buitensauna, privé-hottub en buitenkeuken met BBQ onder de eiken.",
-          "Beide: gratis WiFi, volledige privacy en een laadpaal bij de lodge (laden niet inbegrepen).",
+          "Beide: gratis WiFi, volledige privacy en een laadstation bij de lodge (laden niet inbegrepen).",
           "Honden zijn in overleg welkom, zodat ook uw viervoeter mee kan op pad.",
         ],
       },
@@ -171,7 +171,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Luxe is rust, ruimte en privacy",
         body: [
           "Bij echte luxe gaat het niet om hoeveel er is, maar om wat ontbreekt: geen buren, geen geluid, geen haast. Onze lodges staan vrij in het landschap, elk met een eigen terras en uitzicht over heide of bos. U deelt niets met andere gasten. Dat gevoel van een plek helemaal voor uzelf is wat een verblijf hier onderscheidt van een gemiddeld vakantiehuis of hotel.",
-          "Tegelijk ontbreekt het u aan niets. Een privé-hottub op het terras, een volledig uitgeruste keuken, snelle WiFi en een laadpaal bij de lodge — alles is geregeld zodat u zich kunt richten op wat u kwam doen: niets.",
+          "Tegelijk ontbreekt het u aan niets. Een privé-hottub op het terras, een volledig uitgeruste keuken, snelle WiFi en een laadstation bij de lodge — alles is geregeld zodat u zich kunt richten op wat u kwam doen: niets.",
         ],
       },
       {
@@ -184,7 +184,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Lodge De Eik — eigen buitensauna, privé-hottub en buitenkeuken met BBQ.",
           "Lodge De Eik — hoge plafonds, authentieke uitstraling, buitenkeuken met BBQ en eigen hottub.",
           "Volledig uitgeruste keuken, fijne bedden en een privé-terras in beide lodges.",
-          "Gratis WiFi, een laadpaal bij de lodge (laden niet inbegrepen) en persoonlijk contact met de gastheer.",
+          "Gratis WiFi, een laadstation bij de lodge (laden niet inbegrepen) en persoonlijk contact met de gastheer.",
         ],
       },
       {
@@ -347,7 +347,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Eigen buitensauna in Lodge De Eik — een barrelsauna in de tuin naast het terras.",
           "Lodge De Heide heeft geen sauna, maar wel panoramisch uitzicht over heide en bos.",
           "Volledige privacy: uw terras kijkt uit op heide en bos, niet op een ander huisje.",
-          "Wandel- en fietsroutes vanuit de deur, een laadpaal bij de lodge en gratis wifi.",
+          "Wandel- en fietsroutes vanuit de deur, een laadstation bij de lodge en gratis wifi.",
         ],
       },
       {
@@ -461,7 +461,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         eyebrow: "De accommodatie",
         heading: "Twee luxe lodges met privé-hottub",
         body: [
-          "Huis ter Huynen heeft twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras. [Onze ruimste lodge](/lodge-de-eik), De Eik, heeft bovendien een eigen buitensauna en een buitenkeuken met BBQ; [Lodge De Heide](/lodge-de-heide) het vrije uitzicht over heide en bos. Beide bieden een volledig uitgeruste keuken, een laadpaal bij de lodge en gratis WiFi.",
+          "Huis ter Huynen heeft twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras. [Onze ruimste lodge](/lodge-de-eik), De Eik, heeft bovendien een eigen buitensauna en een buitenkeuken met BBQ; [Lodge De Heide](/lodge-de-heide) het vrije uitzicht over heide en bos. Beide bieden een volledig uitgeruste keuken, een laadstation bij de lodge en gratis WiFi.",
           "U boekt rechtstreeks, zonder tussenpersoon — persoonlijk geregeld door de gastheer.",
         ],
       },
@@ -530,7 +530,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         eyebrow: "De accommodatie",
         heading: "Twee privé lodges met hottub",
         body: [
-          "Huis ter Huynen biedt twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras. Lodge De Eik heeft een eigen buitensauna en een buitenkeuken met BBQ, Lodge De Heide panoramisch uitzicht. Beide zijn voorzien van een volledige keuken, een laadpaal bij de lodge en gratis WiFi.",
+          "Huis ter Huynen biedt twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras. Lodge De Eik heeft een eigen buitensauna en een buitenkeuken met BBQ, Lodge De Heide panoramisch uitzicht. Beide zijn voorzien van een volledige keuken, een laadstation bij de lodge en gratis WiFi.",
           "Na een dag fietsen of wandelen rond Norg keert u terug naar uw eigen stille plek — en de hottub staat klaar.",
         ],
       },
@@ -594,7 +594,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Lodge De Eik — buitensauna, privé-hottub en buitenkeuken met BBQ.",
           "Lodge De Eik — hoge plafonds, buitenkeuken met BBQ en eigen hottub onder de eiken.",
           "Beide lodges: volledig uitgeruste keuken, comfortabele bedden en een eigen afgeschermd terras.",
-          "Laadpaal bij de lodge, gratis WiFi en persoonlijk contact met de gastheer.",
+          "Laadstation bij de lodge, gratis WiFi en persoonlijk contact met de gastheer.",
         ],
       },
       {
@@ -827,7 +827,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Slapen bij de hunebedden: twee lodges in Zeijen",
         body: [
           "In een hunebed slapen kan niet — het zijn rijksmonumenten. Ernaast wonen kan wel. Huis ter Huynen ligt in Zeijen, twee kilometer van hunebed D5, en telt twee volledig privé lodges voor maximaal vier personen, elk met een eigen hottub op het terras.",
-          "Lodge De Eik heeft daarnaast een eigen buitensauna — in de praktijk [een wellness huisje op de heide](/wellness-vakantie-drenthe) — plus een buitenkeuken met BBQ onder de eiken. Beide hebben een volledig uitgeruste keuken, een laadpaal bij de lodge en gratis wifi. Geen receptie, geen gedeelde wellness, geen buren — en met [Lodge De Heide, op vijf minuten](/lodge-de-heide) van hunebed D5 slaapt u dichter bij de stenen dan waar ook.",
+          "Lodge De Eik heeft daarnaast een eigen buitensauna — in de praktijk [een wellness huisje op de heide](/wellness-vakantie-drenthe) — plus een buitenkeuken met BBQ onder de eiken. Beide hebben een volledig uitgeruste keuken, een laadstation bij de lodge en gratis wifi. Geen receptie, geen gedeelde wellness, geen buren — en met [Lodge De Heide, op vijf minuten](/lodge-de-heide) van hunebed D5 slaapt u dichter bij de stenen dan waar ook.",
           "U boekt rechtstreeks bij de eigenaar: geen tussenpartij, geen boekingskosten, en direct contact met de gastheer over de beste route langs de hunebedden.",
         ],
       },
@@ -977,7 +977,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         eyebrow: "De accommodatie",
         heading: "Luxe overnachten in Zeijen",
         body: [
-          "Na een dag vol indrukken keert u terug naar Huis ter Huynen in Zeijen. Twee volledig privé lodges voor maximaal vier personen staan voor u klaar, elk met een eigen hottub op het terras. Lodge De Eik heeft een eigen buitensauna en een buitenkeuken met BBQ, Lodge De Heide het panoramisch uitzicht — beide met volledige keuken, een laadpaal bij de lodge en gratis WiFi.",
+          "Na een dag vol indrukken keert u terug naar Huis ter Huynen in Zeijen. Twee volledig privé lodges voor maximaal vier personen staan voor u klaar, elk met een eigen hottub op het terras. Lodge De Eik heeft een eigen buitensauna en een buitenkeuken met BBQ, Lodge De Heide het panoramisch uitzicht — beide met volledige keuken, een laadstation bij de lodge en gratis WiFi.",
           "De combinatie van een indrukwekkend cultureel uitstapje en een rustige, luxe overnachting in de natuur maakt uw verblijf compleet.",
         ],
       },
@@ -1336,7 +1336,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         body: [
           "Werk met knooppunten: noteer de nummers van uw route op een briefje of in de fietsknooppuntenapp, dan hoeft u onderweg alleen de bordjes te volgen. In de lodge ligt een fietskaart van de omgeving klaar.",
           "Plan een pauze in: Café Hingstman aan de brink van Zeijen, het Bospaviljoen De Norgerberg en de terrassen rond het Drents Museum in Assen zijn alle drie fijne stops. In het hoogseizoen is reserveren voor een lunch geen slecht idee.",
-          "Het mooiste fietsseizoen loopt van april tot en met oktober. Mei en juni geven fris groen en lange dagen, augustus en september de paarse heide en de oogst op het land. Neem een windjack mee — het is vlak, en dat betekent dat u de wind altijd voelt. Uw e-bike laadt u 's avonds op aan een buitenstopcontact; de laadpaal bij de lodge is voor elektrische auto's.",
+          "Het mooiste fietsseizoen loopt van april tot en met oktober. Mei en juni geven fris groen en lange dagen, augustus en september de paarse heide en de oogst op het land. Neem een windjack mee — het is vlak, en dat betekent dat u de wind altijd voelt. Uw e-bike laadt u 's avonds op aan een buitenstopcontact; de laadstation bij de lodge is voor elektrische auto's.",
         ],
       },
       {
@@ -1641,7 +1641,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Volledig uitgeruste keuken: oven, kookplaat, koelkast, vaatwasser, servies en pannen.",
           "Vrij uitzicht over heide en bos vanaf het terras, zonder ander gebouw in beeld.",
           "Privé-hottub op het afgeschermde terras, het hele jaar door op 38 °C.",
-          "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadpaal aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
+          "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadstation aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
           "Digitale sloten: inchecken kan tot middernacht zonder dat iemand op u wacht.",
         ],
       },
@@ -1678,6 +1678,22 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           },
         ],
         note: "De lodge is 60 m² en biedt plaats aan maximaal vier personen.",
+      },
+      {
+        eyebrow: "Voorzieningen",
+        heading: "Wat er verder aanwezig is",
+        body: [
+          "De voorzieningen waar gasten het vaakst naar vragen, hier op een rij. Ze zijn in beide lodges gelijk — het verschil tussen De Heide en De Eik zit in het uitzicht en de buitensauna, niet in wat er binnen staat.",
+        ],
+        marks: [
+          { icon: "wifi", tekst: "Gratis snel WiFi" },
+          { icon: "tv", tekst: "Televisie" },
+          { icon: "parkeren", tekst: "Parkeren op eigen terrein" },
+          { icon: "koelkast", tekst: "Koelkast" },
+          { icon: "koffie", tekst: "Koffieapparaat" },
+          { icon: "waterkoker", tekst: "Waterkoker" },
+          { icon: "verwarming", tekst: "Verwarming" },
+        ],
       },
       {
         eyebrow: "Het onderscheid",
@@ -1826,8 +1842,24 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Buitenkeuken met BBQ onder de eiken, met de eettafel op hetzelfde terras.",
           "Eigen barrelsauna in de tuin, te stoken wanneer u wilt — geen reservering, geen tijdslot.",
           "Privé-hottub op het terras, het hele jaar door op 38 °C.",
-          "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadpaal aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
+          "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadstation aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
           "Digitale sloten: inchecken kan tot middernacht zonder dat iemand op u wacht.",
+        ],
+      },
+      {
+        eyebrow: "Voorzieningen",
+        heading: "Wat er verder aanwezig is",
+        body: [
+          "De voorzieningen waar gasten het vaakst naar vragen, hier op een rij. Ze zijn in beide lodges gelijk — het verschil tussen De Heide en De Eik zit in het uitzicht en de buitensauna, niet in wat er binnen staat.",
+        ],
+        marks: [
+          { icon: "wifi", tekst: "Gratis snel WiFi" },
+          { icon: "tv", tekst: "Televisie" },
+          { icon: "parkeren", tekst: "Parkeren op eigen terrein" },
+          { icon: "koelkast", tekst: "Koelkast" },
+          { icon: "koffie", tekst: "Koffieapparaat" },
+          { icon: "waterkoker", tekst: "Waterkoker" },
+          { icon: "verwarming", tekst: "Verwarming" },
         ],
       },
       {

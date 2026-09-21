@@ -352,7 +352,7 @@ export default function LandingPage() {
               { label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek. Wandelen vanuit de deur." },
               { label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf. Altijd een persoonlijk antwoord." },
               { label: "Uniek design", desc: "De Heide én De Eik, elk met eigen karakter en sfeer. Ontworpen voor maximaal comfort in de natuur." },
-              { label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein. Laad op terwijl u geniet." },
+              { label: "EV Laadstation", desc: "Duurzaam reizen? Er is een laadstation aanwezig bij de lodge. Laad op terwijl u geniet; het laden zelf is niet inbegrepen." },
             ].map((usp, i) => (
               <div key={i} style={{ borderTop: `2px solid ${T.gold}`, paddingTop: 20 }}>
                 <h3 style={{

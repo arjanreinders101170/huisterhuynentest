@@ -6,7 +6,7 @@ const SITE_URL = "https://www.huisterhuynen.nl";
 export const metadata: Metadata = {
   title: "Veelgestelde vragen (FAQ)",
   description:
-    "Antwoorden op de meest gestelde vragen over Huis ter Huynen: inchecken, huisdieren, hottub, parkeren, EV-laadpaal, annulering en meer.",
+    "Antwoorden op de meest gestelde vragen over Huis ter Huynen: inchecken, huisdieren, hottub, parkeren, laadstation, annulering en meer.",
   alternates: {
     canonical: `${SITE_URL}/faq`,
   },
@@ -57,10 +57,10 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "Is er een EV-laadpaal aanwezig?",
+      name: "Is er een laadstation aanwezig?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Ja, er is een laadpaal aanwezig bij de lodge waar u gebruik van kunt maken. Het laden zelf is niet bij de huur inbegrepen.",
+        text: "Ja, er is een laadstation aanwezig bij de lodge waar u gebruik van kunt maken. Het laden zelf is niet bij de huur inbegrepen.",
       },
     },
     {
