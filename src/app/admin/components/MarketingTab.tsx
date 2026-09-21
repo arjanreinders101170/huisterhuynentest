@@ -230,7 +230,7 @@ const MONTHS: Month[] = [
     phase: "Groei 2027",
     tasks: [
       { id: "f27-1", title: "Valentijn-piektarief actief, minimaal 2 nachten", category: "Revenue", priority: "kritiek" },
-      { id: "f27-2", title: "aggregateRating-schema toevoegen zodra er ≥5 echte reviews zijn", category: "Techniek", priority: "hoog", note: "Sterren in de SERP zijn de sterkste CTR-hefboom die er is. Nooit eerder toevoegen, nooit verzinnen." },
+      { id: "f27-2", title: "aggregateRating-schema toevoegen zodra er ≥5 echte reviews zijn", category: "Techniek", priority: "hoog", note: "Sterren in de SERP zijn de sterkste CTR-hefboom die er is. Nooit eerder toevoegen, nooit verzinnen. Voorbereid op 21 september 2026: de schema-kant staat klaar in src/data/reviews.ts. Zet de beoordelingen in de array REVIEWS en aggregateRating verschijnt vanzelf op de lodgepagina's en op het bedrijf. Zolang die array leeg is komt er gegarandeerd niets in de output — geen ratingValue 0, geen reviewCount 0." },
       { id: "f27-3", title: "'Wanneer bloeit de heide in Drenthe' actualiseren", category: "Blog", priority: "hoog", keyword: "wanneer bloeit de heide in drenthe", note: "Staat op positie 10,9. Met een jaarlijkse update met actuele bloeiverwachting naar de top 3 te brengen." },
       { id: "f27-4", title: "Blog: Pasen en meivakantie in Drenthe", category: "Blog", priority: "hoog", note: "Drie maanden vóór de piek." },
       { id: "f27-5", title: "Drie fietsartikelen samenvoegen tot één sterke gids", category: "Blog", priority: "midden" },
