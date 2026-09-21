@@ -1851,6 +1851,50 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         },
       },
       {
+        eyebrow: "Praktische informatie",
+        heading: "Aankomst, vertrek en verhuurperiodes",
+        body: [
+          "De dingen waar een boeking op vastloopt als u ze pas achteraf leest.",
+        ],
+        table: {
+          head: ["Onderwerp", "Details"],
+          rows: [
+            ["Geschikt voor", "1 – 4 personen"],
+            ["Verhuurperiodes", "Midweek (ma – vr), weekend (vr – zo) of week (ma – zo)"],
+            ["Inchecken", "Van 15:00 tot 21:00"],
+            ["Uitchecken", "Uiterlijk 11:00"],
+          ],
+          note: "Later aankomen dan 21:00 kan zonder extra kosten: de lodge heeft digitale sloten die tot middernacht werken, en er is geen receptie waar u zich hoeft te melden.",
+        },
+      },
+      {
+        eyebrow: "Huisregels",
+        heading: "Wat we van u vragen",
+        body: [
+          "Kort, en er staat niets tussen dat u niet had verwacht. Eén ervan is hier extra van belang, want de BBQ staat buiten: roken doet u op de daarvoor bestemde plek.",
+        ],
+        bullets: [
+          "Binnen wordt niet gerookt. Buiten mag het, op de daarvoor bestemde plek.",
+          "Huisdieren zijn toegestaan tegen een eenmalige toeslag van €25.",
+          "Geen feesten of evenementen.",
+          "Tussen 22:00 en 08:00 uur geldt de nachtrust.",
+          "Alleen de directe omgeving van de accommodatie is vuurwerkvrij.",
+        ],
+      },
+      {
+        eyebrow: "Annuleren",
+        heading: "Als uw plannen veranderen",
+        body: [
+          "De volledige voorwaarden staan in de [algemene voorwaarden](/terms); dit is de samenvatting die er voor uw boeking toe doet.",
+        ],
+        bullets: [
+          "Tot 60 dagen voor aankomst krijgt u alles terug, op €25 administratiekosten na.",
+          "Tussen 60 en 30 dagen voor aankomst 70%, tussen 30 en 14 dagen 50% en tussen 14 en 7 dagen 25%.",
+          "Binnen 7 dagen voor aankomst is er geen restitutie.",
+          "Omboeken kan tot 30 dagen voor aankomst, na goedkeuring en afhankelijk van beschikbaarheid. Daarvoor geldt een wijzigingsvergoeding van €25.",
+        ],
+      },
+      {
         eyebrow: "De keuze",
         heading: "De Eik of De Heide?",
         body: [
