@@ -1,0 +1,39 @@
+-- Praktische informatie, huisregels en annuleren op /lodge-de-eik.
+--
+-- Zelfde drie blokken als /lodge-de-heide gekregen heeft. Het zijn
+-- terreinbrede afspraken, geen eigenschappen van een afzonderlijke lodge:
+-- de incheckvensters, de huisregels en de annuleringsstaffel gelden voor
+-- allebei. De waarden zijn daarom letterlijk gelijk, en net als bij De Heide
+-- gecontroleerd tegen /faq, de JSON-LD, lib/stay-dates.ts, het fee-sjabloon
+-- 'Huisdier' en artikel 4.1 en 4.3 van /terms.
+--
+-- NIET meegenomen, omdat de gegevens ontbreken: de kamerindeling en de
+-- specificatieregel (oppervlak, slaapkamers, badkamer). Voor De Heide zijn
+-- die door de eigenaar aangeleverd; voor De Eik staat alleen "ruimte voor
+-- maximaal vier personen, verdeeld over twee slaapplekken" in de tekst, en
+-- dat is te vaag om er een tabel van te maken. Zodra de indeling bekend is,
+-- komt er een migratie bij die hem toevoegt.
+--
+-- De JSON is gegenereerd uit src/lib/landing-seed.ts. Wie de secties
+-- aanpast, genereert deze migratie opnieuw.
+--
+-- Idempotent.
+--
+-- BIJGEWERKT 21 september: de blokken gebruiken nu kaarten, label/waarde-regels
+-- en een pictogramrij in plaats van tabellen en opsommingen, conform het
+-- aangeleverde ontwerp. Elk item heeft een eigen pictogram; een onbekende
+-- naam levert géén icoon op in plaats van een willekeurig symbool.
+--
+-- BIJGEWERKT 21 september, na de sauna-omkering: deze JSON bevat de huidige
+-- inhoud van de pagina, dus dezelfde secties als
+-- 2026_09_21_sauna_van_de_heide_naar_de_eik.sql eruit zet. De volgorde waarin
+-- je de twee draait, maakt daardoor niet uit.
+
+update landing_pages
+   set sections = '[{"eyebrow": "De inventaris", "heading": "Wat er in de lodge zit", "body": ["De Eik is de ruimste van de twee. Dat merkt u vooral aan de hoogte: het is een omgebouwd gebouw met hoge plafonds, en dat maakt een verblijf met vier mensen aanzienlijk minder krap dan de vierkante meters doen vermoeden."], "bullets": ["Ruimte voor maximaal vier personen, verdeeld over twee slaapplekken.", "Volledig uitgeruste binnenkeuken: oven, kookplaat, koelkast, vaatwasser, servies en pannen.", "Buitenkeuken met BBQ onder de eiken, met de eettafel op hetzelfde terras.", "Eigen barrelsauna in de tuin, te stoken wanneer u wilt — geen reservering, geen tijdslot.", "Privé-hottub op het terras, het hele jaar door op 38 °C.", "Gratis snel WiFi, gratis parkeren op eigen terrein en een gratis EV-laadpaal.", "Digitale sloten: inchecken kan tot middernacht zonder dat iemand op u wacht."]}, {"eyebrow": "Het onderscheid", "heading": "De buitenkeuken en de BBQ", "body": ["Buiten koken is iets anders dan een BBQ op het gras zetten. Hier staat een echte buitenkeuken: werkblad, BBQ en de ruimte om alles klaar te maken zonder tien keer naar binnen te lopen. Dat verandert hoe een avond verloopt — u staat niet om beurten binnen te koken terwijl de rest buiten zit, u bent er gewoon allemaal.", "De eiken erboven doen de rest. Ze houden de middagzon eruit, waardoor het terras ook in juli bruikbaar blijft, en ze maken het geluid zachter dan u van een terras gewend bent. Als het eten op is, staat de hottub op twee meter.", "En dan is er de barrelsauna. Die staat buiten, in de tuin naast het terras, en is alleen van de gasten van deze lodge. Geen reservering, geen tijdslot, geen mede-gasten — er is op het terrein geen gedeelde wellnessruimte. Van de sauna naar de hottub is tien stappen, en juist in de winter is dat het rondje waar gasten achteraf over vertellen. Wat hier niet staat is het vergezicht: [vergelijk met De Heide](/lodge-de-heide) als vrij uitzicht voor u zwaarder weegt."]}, {"eyebrow": "Voor wie", "heading": "Voor wie deze lodge is", "body": ["De Eik is de lodge voor gezelschappen die samen willen eten. Twee stellen die om beurten koken, een gezin met kinderen die de hele dag buiten zijn, of vier vrienden die vooral een lange tafel en een BBQ nodig hebben.", "Ook met z''n tweeën werkt hij, en dan vooral in het voor- en naseizoen: de ruimte is dan luxe in plaats van overmaat, en de sauna komt juist dan het best tot zijn recht. Zoekt u vooral stilte en een vrij vergezicht, dan is De Heide de betere keuze."]}, {"eyebrow": "De ligging", "heading": "Onder de eiken in Zeijen", "body": ["Zeijen is een van de brinkdorpen van Drenthe: een kerk, een brink, en daaromheen vrijwel meteen het veld. De lodge staat aan de rand daarvan, met de eiken eromheen en de Zeijerstrubben op loopafstand. Het centrum van Assen ligt op twintig minuten, wat ver genoeg is om er ''s avonds niets van te merken.", "Vanaf de deur beginnen de wandelroutes; er lopen meer dan 1.000 kilometer fietspaden door de omgeving en de e-bike laadt u op de laadpaal op het terrein. Wie hier komt voor de streek zelf, vindt de routes op onze pagina''s over [wandelroutes in Drenthe](/wandelroutes-drenthe) en [fietsen in Drenthe](/fietsen-in-drenthe)."]}, {"eyebrow": "Praktisch", "heading": "Prijzen en beschikbaarheid", "body": ["De prijs begint bij €165 per nacht voor de hele lodge, niet per persoon. In de schoolvakanties, rond feestdagen en in het hoogseizoen ligt hij hoger. Kosten voor eindschoonmaak en toeristenbelasting worden apart vermeld en komen bij de dagprijs. Boekingskosten rekenen wij niet, omdat u rechtstreeks bij de eigenaar boekt.", "Losse nachten verhuren wij niet. Er zijn twee wisseldagen — maandag en vrijdag — en daarmee drie vormen:"], "table": {"head": ["Vorm", "Aankomst", "Vertrek", "Nachten"], "rows": [["Weekend", "Vrijdag", "Zondag", "2"], ["Midweek", "Maandag", "Vrijdag", "4"], ["Week", "Maandag", "Zondag", "6"]], "note": "U geeft uw datums door en krijgt binnen 24 uur een persoonlijk voorstel met de volledige prijsopbouw: nachtprijs, schoonmaak en toeristenbelasting als aparte regels."}}, {"heading": "Praktische informatie", "body": [], "rows": [{"label": "Geschikt voor", "waarde": "1 – 4 personen"}, {"label": "Verhuurperiodes", "waarde": "Midweek (ma – vr), weekend (vr – zo) of week (ma – zo)"}, {"label": "Inchecken", "waarde": "Van 15:00 tot 21:00"}, {"label": "Uitchecken", "waarde": "Uiterlijk 11:00"}], "note": "Later aankomen dan 21:00 kan zonder extra kosten: de lodge heeft digitale sloten die tot middernacht werken, en er is geen receptie waar u zich hoeft te melden."}, {"heading": "Huisregels", "body": [], "marks": [{"icon": "nietRoken", "tekst": "Niet roken binnen"}, {"icon": "huisdier", "tekst": "Huisdieren toegestaan (€25)"}, {"icon": "geenFeest", "tekst": "Geen feesten of evenementen"}], "subheading": "Aanvullende huisregels", "dots": ["Tussen 22:00 en 08:00 uur geldt de nachtrust.", "Roken mag buiten, op de daarvoor bestemde plek.", "Alleen de directe omgeving van deze accommodatie is vuurwerkvrij."]}, {"heading": "Annuleren", "body": ["De volledige voorwaarden staan in de [algemene voorwaarden](/terms); dit is de samenvatting die er voor uw boeking toe doet."], "bullets": ["Tot 60 dagen voor aankomst krijgt u alles terug, op €25 administratiekosten na.", "Tussen 60 en 30 dagen voor aankomst 70%, tussen 30 en 14 dagen 50% en tussen 14 en 7 dagen 25%.", "Binnen 7 dagen voor aankomst is er geen restitutie.", "Omboeken kan tot 30 dagen voor aankomst, na goedkeuring en afhankelijk van beschikbaarheid. Daarvoor geldt een wijzigingsvergoeding van €25."]}, {"eyebrow": "De keuze", "heading": "De Eik of De Heide?", "body": ["Kort: De Eik heeft de buitensauna, de buitenkeuken en de ruimte, De Heide het panoramisch uitzicht. Verder zijn ze gelijkwaardig — beide voor vier personen, beide met een eigen hottub, beide volledig privé en op hetzelfde terrein.", "Weet u het nog niet, kies dan op wat u ''s avonds wilt doen. Buiten eten met de BBQ aan en daarna de sauna in: De Eik. Rustig naar de heide kijken met het water op 38 °C: De Heide."]}]'::jsonb,
+       updated_at = now()
+ where slug = 'lodge-de-eik';
+
+-- Controle: hoort 9 secties te geven.
+--
+--   select jsonb_array_length(sections) from landing_pages where slug = 'lodge-de-eik';

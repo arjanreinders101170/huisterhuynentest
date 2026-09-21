@@ -26,8 +26,8 @@ const faqItems = [
     a: "Ja, er is gratis parkeergelegenheid op eigen terrein direct naast de lodge.",
   },
   {
-    v: "Is er een EV-laadpaal aanwezig?",
-    a: "Ja, op het terrein staat een laadpaal voor elektrische voertuigen. Gebruik hiervan is gratis voor gasten.",
+    v: "Is er een laadstation aanwezig?",
+    a: "Ja, er is een laadstation aanwezig bij de lodge waar u gebruik van kunt maken. Het laden zelf is niet bij de huur inbegrepen.",
   },
   {
     v: "Wat zijn de annuleringsvoorwaarden?",

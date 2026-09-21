@@ -182,7 +182,7 @@ export function LodgeControl({ open, onClose }: Props) {
           {/* ═══ CHARGER ═══ */}
           {chargerConnected && (
             <>
-              <div style={{ fontFamily: T.serif, fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 10 }}>Laadpaal</div>
+              <div style={{ fontFamily: T.serif, fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 10 }}>Laadstation</div>
               <div style={{
                 background: T.card, borderRadius: 16,
                 border: `1px solid ${T.border}`, padding: "16px 18px",

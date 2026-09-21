@@ -21,7 +21,7 @@ export function LodgeView({ lodgeId }: { lodgeId: string }) {
   const devices = [
     { name: "Airco / verwarming", status: "online", value: `${temp}°C` },
     { name: "Hue verlichting", status: "online", value: scene },
-    { name: "Laadpaal", status: "online", value: "Standby" },
+    { name: "Laadstation", status: "online", value: "Standby" },
     { name: "Energiemeter", status: "online", value: "4.2 kW" },
     { name: "Nuki deurslot", status: "online", value: "Op slot" },
   ];

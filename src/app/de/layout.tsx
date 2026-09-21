@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
-import { LODGE_LAT, LODGE_LON } from "@/data/lodge";
+import { BOOKINGS_OPEN_FROM, LODGE_LAT, LODGE_LON, LODGE_PHONE_E164 } from "@/data/lodge";
+import { bookingsNotYetOpen } from "@/lib/stay-dates";
 import { GOOGLE_MAPS_PLACE_URL } from "@/lib/google-reviews";
 
 const SITE = "https://www.huisterhuynen.nl";
@@ -73,7 +74,7 @@ const jsonLd = {
   description:
     "Zwei exklusive Boutique Wellness Lodges auf der Drentse Heide bei Zeijen. Private Sauna, Hot Tub, Wandern und Radfahren direkt vor der Tür. 20 Minuten von Assen entfernt.",
   url: `${SITE}/de`,
-  telephone: "+31642568603",
+  telephone: LODGE_PHONE_E164,
   email: "lodge@huisterhuynen.nl",
   address: {
     "@type": "PostalAddress",
@@ -101,7 +102,13 @@ const jsonLd = {
       "Ab-Preis pro Nacht für eine der beiden Lodges, bei einem Aufenthalt von mindestens zwei Nächten.",
     price: PRICE_FROM_EUR,
     priceCurrency: "EUR",
-    availability: "https://schema.org/InStock",
+    /* Wie auf der niederländischen Seite: InStock behauptete sofortige
+     * Verfügbarkeit, obwohl die Lodges erst zum Eröffnungsdatum Gäste
+     * empfangen. availabilityStarts nennt das Datum ausdrücklich. */
+    availability: bookingsNotYetOpen()
+      ? "https://schema.org/PreOrder"
+      : "https://schema.org/InStock",
+    availabilityStarts: BOOKINGS_OPEN_FROM,
     url: `${SITE}/de`,
     priceSpecification: {
       "@type": "UnitPriceSpecification",
@@ -140,11 +147,11 @@ const jsonLd = {
       name: "De Heide",
       inLanguage: "de",
       description:
-        "Luxuriöse Lodge auf der Drentse Heide für vier Personen. Eigene Sauna, privater Hot Tub und Panoramablick über den Wald.",
+        "Luxuriöse Lodge auf der Drentse Heide für vier Personen. Privater Hot Tub auf der Terrasse und Panoramablick über Heide und Wald.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privater Hot Tub", value: true },
-        { "@type": "LocationFeatureSpecification", name: "Sauna", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Sauna", value: false },
       ],
     },
     {
@@ -152,10 +159,11 @@ const jsonLd = {
       name: "De Eik",
       inLanguage: "de",
       description:
-        "Geräumige Lodge unter Eichen für vier Personen. Hohe Decken, voll ausgestattete Küche und Außenküche mit Grill.",
+        "Geräumige Lodge unter Eichen für vier Personen. Eigene Fasssauna im Freien, privater Hot Tub, hohe Decken und eine Außenküche mit Grill.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privater Hot Tub", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Fasssauna im Freien", alternateName: ["Sauna", "Außensauna"], value: true },
         { "@type": "LocationFeatureSpecification", name: "Außenküche & Grill", value: true },
       ],
     },

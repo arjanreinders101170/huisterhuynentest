@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { Betaalmethoden } from "@/components/Betaalmethoden";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { BookingFaq } from "@/components/BookingFaq";
+import { LODGE_PHONE_E164, LODGE_PHONE_DISPLAY, LODGE_WHATSAPP_URL } from "@/data/lodge";
 
 const RequestFormDE = dynamic(() => import("@/components/RequestFormDE"), {
   ssr: false,
@@ -374,8 +376,8 @@ export default function LandingPageDE() {
                 id: "lodge_1",
                 name: "De Heide",
                 tag: "4 Personen",
-                desc: "Eine luxuriöse Lodge auf der Drentse Heide, gestaltet für vier Gäste. Panoramablick über den Wald, eigene Sauna und privater Hot Tub auf der Terrasse.",
-                features: ["4 Personen", "Privater Hot Tub", "Sauna", "Heideblick"],
+                desc: "Eine luxuriöse Lodge auf der Drentse Heide, gestaltet für vier Gäste. Panoramablick über Heide und Wald, und ein privater Hot Tub auf der Terrasse.",
+                features: ["4 Personen", "Privater Hot Tub", "Panoramablick", "Keine Nachbarn"],
                 img: "/lodge-heide.jpg",
                 alt: "Außenansicht von Lodge De Heide mit privatem Hot Tub auf der Terrasse und Blick über die Drentse Heide",
               },
@@ -842,7 +844,14 @@ export default function LandingPageDE() {
                 <div style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 300, lineHeight: 1.6 }}>
                   Zuiderstraat 6 p<br />9491 TH Zeijen, Drenthe
                 </div>
-                <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{
+                <a href={`tel:${LODGE_PHONE_E164}`} style={{
+                  fontFamily: T.sans, fontSize: 13, fontWeight: 400,
+                  color: "rgba(255,255,255,.7)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
+                }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  {LODGE_PHONE_DISPLAY}
+                </a>
+                <a href={LODGE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 400,
                   color: "#25D366", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
                 }}>
@@ -927,6 +936,10 @@ export default function LandingPageDE() {
             color: "rgba(255,255,255,.6)",
           }}>
             <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
+            <Betaalmethoden variant="onderbalk" locale="de" />
+            {/* De bedrijfsgegevens blijven hier staan, anders dan op de
+                Nederlandse pagina: de Duitse Impressumspflicht wil ze
+                doorlopend bereikbaar hebben, niet alleen op /impressum. */}
             <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.55)" }}>
               VVR Vastgoed BV · KvK: 96382600 · USt-IdNr: NL867587106B01
             </span>

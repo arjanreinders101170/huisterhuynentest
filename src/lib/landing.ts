@@ -8,6 +8,7 @@
 import { getSupabase } from "@/lib/supabase";
 import { SEED_LANDING_PAGES, SEED_BY_SLUG, type LandingPageRecord } from "@/lib/landing-seed";
 import { REDIRECTED_LANDING_SLUGS } from "@/lib/redirects";
+import { LODGE_OP_SLUG } from "@/lib/site";
 import type { LandingConfig, LandingFaq, LandingKeyFact, RelatedLink } from "@/components/LandingTemplate";
 
 /** "Vraag :: Antwoord" per regel → [{ q, a }]. */
@@ -86,6 +87,10 @@ export function recordToConfig(rec: LandingPageRecord, locale?: "nl" | "de"): La
     keyFacts: parseKeyFacts(rec.key_facts),
     about: rec.about ?? undefined,
     updatedAt: rec.updated_at ?? undefined,
+    /* Op de lodgepagina's geen inhoudsopgave: wie hier komt, kiest een lodge
+     * en leest van boven naar beneden. Een sprongmenu haalt hem juist uit dat
+     * verhaal. Op de themapagina's blijft hij staan. */
+    toonIndex: !(rec.slug in LODGE_OP_SLUG),
   };
 }
 

@@ -5,11 +5,12 @@ import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
+import { Betaalmethoden } from "@/components/Betaalmethoden";
 import { BookingFaq } from "@/components/BookingFaq";
 import { footerLinks, LODGE_OP_SLUG } from "@/lib/site";
 import { ReserveerContextRegel } from "@/components/ReserveerContextRegel";
 import { kiesLodge } from "@/lib/reserveer-params";
-import { BOOKINGS_OPEN_FROM } from "@/data/lodge";
+import { BOOKINGS_OPEN_FROM, LODGE_PHONE_E164, LODGE_PHONE_DISPLAY, LODGE_WHATSAPP_URL } from "@/data/lodge";
 const RequestForm = dynamic(() => import("@/components/RequestForm"), { ssr: false, loading: () => <div style={{ textAlign: "center", padding: 48, color: "#8A7D6A", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: 14 }}>Formulier laden...</div> });
 
 interface GoogleReview {
@@ -352,7 +353,7 @@ export default function LandingPage() {
               { label: "Natuur pur sang", desc: "Heide, bos, hunebedden en beekdalen, direct om de hoek. Wandelen vanuit de deur." },
               { label: "Persoonlijk contact", desc: "Direct bereikbaar bij de eigenaar, voor en tijdens uw verblijf. Altijd een persoonlijk antwoord." },
               { label: "Uniek design", desc: "De Heide én De Eik, elk met eigen karakter en sfeer. Ontworpen voor maximaal comfort in de natuur." },
-              { label: "EV Laadpaal", desc: "Duurzaam reizen? We hebben een snellader op het terrein. Laad op terwijl u geniet." },
+              { label: "EV Laadstation", desc: "Duurzaam reizen? Er is een laadstation aanwezig bij de lodge. Laad op terwijl u geniet; het laden zelf is niet inbegrepen." },
             ].map((usp, i) => (
               <div key={i} style={{ borderTop: `2px solid ${T.gold}`, paddingTop: 20 }}>
                 <h3 style={{
@@ -401,8 +402,8 @@ export default function LandingPage() {
                 name: "De Heide",
                 slug: "lodge-de-heide",
                 tag: "4 personen",
-                desc: "Een luxe lodge op de Drentse heide, ingericht voor vier. Panoramisch uitzicht over het bos, eigen sauna en privé-hottub op het terras.",
-                features: ["4 personen", "Privé-hottub", "Sauna", "Hei uitzicht"],
+                desc: "Een luxe lodge op de Drentse heide, ingericht voor vier. Panoramisch uitzicht over heide en bos, en een privé-hottub op het terras.",
+                features: ["4 personen", "Privé-hottub", "Panoramisch uitzicht", "Geen buren"],
                 img: "/lodge-heide.jpg",
                 alt: "Buitenaanzicht van Lodge De Heide met privé-hottub op het terras en uitzicht over de Drentse heide",
               },
@@ -1281,7 +1282,14 @@ export default function LandingPage() {
                 <div style={{ fontFamily: T.sans, fontSize: 13, fontWeight: 300, lineHeight: 1.6 }}>
                   Zuiderstraat 6 p<br />9491 TH Zeijen, Drenthe
                 </div>
-                <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{
+                <a href={`tel:${LODGE_PHONE_E164}`} style={{
+                  fontFamily: T.sans, fontSize: 13, fontWeight: 400,
+                  color: "rgba(255,255,255,.7)", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
+                }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  {LODGE_PHONE_DISPLAY}
+                </a>
+                <a href={LODGE_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" style={{
                   fontFamily: T.sans, fontSize: 13, fontWeight: 400,
                   color: "#25D366", textDecoration: "none", display: "flex", alignItems: "center", gap: 6,
                 }}>
@@ -1366,9 +1374,11 @@ export default function LandingPage() {
             color: "rgba(255,255,255,.6)",
           }}>
             <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
-            <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.55)" }}>
-              Boutique Lodge · KVK: 96382600
-            </span>
+            {/* Het KvK-nummer stond hier tweemaal op de site: hier en in de
+                algemene voorwaarden. Het blijft op /terms staan — daar hoort
+                het en daar is het vindbaar. Deze plek gaat naar de vraag die
+                een bezoeker hier wél heeft: kan ik veilig betalen. */}
+            <Betaalmethoden variant="onderbalk" />
           </div>
         </div>
       </footer>

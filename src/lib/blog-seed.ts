@@ -267,7 +267,7 @@ De meeste aanbieders laten een prijs pas zien nadat je een formulier hebt ingevu
 
 **Minimaal twee nachten.** Eén nacht boeken kan niet. De dag van aankomst gaat grotendeels op aan aankomen, en een weekend van vrijdag tot zondag is precies het ritme waar deze plek voor gemaakt is.
 
-**Inbegrepen zonder toeslag:** de privé hottub op je eigen terras, 24 uur per dag op 38 °C, de sauna in Lodge De Heide, gratis wifi, parkeren op eigen terrein en het gebruik van de laadpaal voor een elektrische auto. Bij veel accommodaties staat minstens één van deze punten als losse post op de rekening.
+**Inbegrepen zonder toeslag:** de privé hottub op je eigen terras, 24 uur per dag op 38 °C, de buitensauna bij Lodge De Eik, gratis wifi en parkeren op eigen terrein. Er is een laadstation aanwezig bij de lodge; het laden zelf is niet inbegrepen. Bij veel accommodaties staat minstens één van deze punten als losse post op de rekening.
 
 **Bovenop de nachtprijs komen:** schoonmaakkosten en toeristenbelasting van de gemeente Tynaarlo. Optioneel zijn een hond (€25), een late check-out tot 13:00 uur (€25) en het wijzigen van een boeking (€25).
 
@@ -293,7 +293,7 @@ Bij een boeking betaal je 30% aanbetaling; het restant is uiterlijk 30 dagen vó
 
 ## Twee privé lodges in Drenthe: Huis ter Huynen
 
-Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. Lodge De Heide heeft daarnaast een eigen sauna, Lodge De Eik een buitenkeuken met BBQ onder de eiken. Beide lodges zijn geschikt voor maximaal vier personen. Hoe ze erbij staan en wat er bij die vanafprijs inbegrepen zit, leest u op de pagina over ons [vakantiehuis met hottub in Drenthe](/vakantiehuis-met-hottub-drenthe).
+Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. Lodge De Eik heeft daarnaast een eigen buitensauna en een buitenkeuken met BBQ onder de eiken, Lodge De Heide een vrij uitzicht over heide en bos. Beide lodges zijn geschikt voor maximaal vier personen. Hoe ze erbij staan en wat er bij die vanafprijs inbegrepen zit, leest u op de pagina over ons [vakantiehuis met hottub in Drenthe](/vakantiehuis-met-hottub-drenthe).
 
 Je boekt rechtstreeks bij de eigenaar: je geeft je data door en krijgt binnen 24 uur een persoonlijk voorstel met de volledige prijsopbouw erin — nachtprijs, schoonmaakkosten en toeristenbelasting als aparte regels, zodat er onderaan geen verrassing staat.
 
@@ -402,7 +402,7 @@ Wil je het combineren met de bloeiende heide, dan kies je half augustus tot begi
 
 ## Zo'n weekend bij Huis ter Huynen
 
-Bij Huis ter Huynen in Zeijen staan twee vrijstaande lodges op de heide, allebei met een privé hottub op het eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna en panoramisch uitzicht over het bos; Lodge De Eik heeft een buitenkeuken met BBQ onder de eiken. Er staan maar twee huisjes op het terrein, er is geen receptie en er is geen gedeelde wellnessruimte.
+Bij Huis ter Huynen in Zeijen staan twee vrijstaande lodges op de heide, allebei met een privé hottub op het eigen terras die het hele jaar op 38 °C staat. Lodge De Eik heeft daarnaast een eigen buitensauna en een buitenkeuken met BBQ onder de eiken; Lodge De Heide heeft panoramisch uitzicht over heide en bos. Er staan maar twee huisjes op het terrein, er is geen receptie en er is geen gedeelde wellnessruimte.
 
 Een verblijf duurt minimaal twee nachten en begint bij €165 per nacht voor de hele lodge, voor maximaal vier personen. Je boekt rechtstreeks bij de eigenaar, zonder boekingskosten, en krijgt binnen 24 uur een persoonlijk voorstel.
 
@@ -504,7 +504,7 @@ Een dag kanovaren combineert goed met de andere manieren om de Drentsche Aa te o
 
 ## Tot rust komen na een dag op het water
 
-Na een dag peddelen ben je vaak verrassend moe — een goede, ontspannen vermoeidheid die om niets anders vraagt dan een rustige avond. Vanuit Zeijen ben je binnen een kwartier bij de Drentsche Aa, en even snel weer terug op je eigen terras. Bij Huis ter Huynen hebben Lodge De Heide en Lodge De Eik allebei een eigen hottub buiten — perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats. Lodge De Heide heeft daarnaast een eigen sauna: [de sauna in na een dag op het water](/wellness-vakantie-drenthe) is precies waar een wellnessverblijf voor bedoeld is.`,
+Na een dag peddelen ben je vaak verrassend moe — een goede, ontspannen vermoeidheid die om niets anders vraagt dan een rustige avond. Vanuit Zeijen ben je binnen een kwartier bij de Drentsche Aa, en even snel weer terug op je eigen terras. Bij Huis ter Huynen hebben Lodge De Heide en Lodge De Eik allebei een eigen hottub buiten — perfect om spieren te ontspannen en de dag op het water rustig te laten landen, met uitzicht op het bos in plaats van op een drukke parkeerplaats. Lodge De Eik heeft daarnaast een eigen buitensauna: [de sauna in na een dag op het water](/wellness-vakantie-drenthe) is precies waar een wellnessverblijf voor bedoeld is.`,
     categorie: "Drenthe",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",
@@ -542,7 +542,7 @@ De huurprijs van een e-bike in Nederland ligt doorgaans rond de 20 tot 30 euro p
 
 ## Fietsen vanaf je vakantieadres
 
-Wie in Zeijen verblijft, heeft het voordeel dat de natuur al bij de voordeur begint — het Zeijerveld en de Zeijerstrubben liggen op loop- en fietsafstand, en de Drentsche Aa, het Dwingelderveld en de hunebedden rond Borger zijn allemaal binnen een uur fietsen te bereiken. Bij Huis ter Huynen is er op het terrein een laadpaal aanwezig, wat het opladen van een (e-)fiets eenvoudig maakt. De mooiste [fietsroutes vanuit Zeijen](/fietsen-in-drenthe) staan bij elkaar op onze fietspagina. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.`,
+Wie in Zeijen verblijft, heeft het voordeel dat de natuur al bij de voordeur begint — het Zeijerveld en de Zeijerstrubben liggen op loop- en fietsafstand, en de Drentsche Aa, het Dwingelderveld en de hunebedden rond Borger zijn allemaal binnen een uur fietsen te bereiken. Bij Huis ter Huynen laadt u een (e-)fiets eenvoudig op aan een buitenstopcontact bij de lodge. De mooiste [fietsroutes vanuit Zeijen](/fietsen-in-drenthe) staan bij elkaar op onze fietspagina. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.`,
     categorie: "Reistips",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",

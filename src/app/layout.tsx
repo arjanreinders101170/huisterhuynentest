@@ -11,7 +11,8 @@ import { GA4 } from "@/components/tracking/GA4";
 import { RouteChangePixel } from "@/components/tracking/RouteChangePixel";
 import { TrackingListeners } from "@/components/tracking/TrackingListeners";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
-import { LODGE_LAT, LODGE_LON } from "@/data/lodge";
+import { BOOKINGS_OPEN_FROM, LODGE_LAT, LODGE_LON, LODGE_PHONE_E164 } from "@/data/lodge";
+import { bookingsNotYetOpen } from "@/lib/stay-dates";
 import { GOOGLE_MAPS_PLACE_URL } from "@/lib/google-reviews";
 
 const dmSans = DM_Sans({
@@ -137,7 +138,7 @@ const jsonLd = {
   description:
     "Twee luxe boutique lodges op de Drentse heide bij Zeijen. Privé hottub, sauna, wandelen en fietsen vanuit de deur. 20 minuten van Assen.",
   url: SITE_URL,
-  telephone: "+31642568603",
+  telephone: LODGE_PHONE_E164,
   email: "lodge@huisterhuynen.nl",
   address: {
     "@type": "PostalAddress",
@@ -166,7 +167,19 @@ const jsonLd = {
       "Vanafprijs per nacht voor een van beide lodges, bij een verblijf van minimaal twee nachten.",
     price: PRICE_FROM_EUR,
     priceCurrency: "EUR",
-    availability: "https://schema.org/InStock",
+    /* InStock zei "vandaag te boeken", terwijl de lodges pas op de
+     * openingsdatum gasten ontvangen. Dat is precies het veld waarop een
+     * zoekmachine of een AI-systeem die vraag beantwoordt, dus stond daar een
+     * onwaarheid in machineleesbare vorm.
+     *
+     * availabilityStarts noemt de datum hoe dan ook, zodat een lezer ook na
+     * de opening het juiste beeld heeft. De keuze tussen PreOrder en InStock
+     * wordt bij het bouwen gemaakt: de eerste deploy ná de openingsdatum zet
+     * hem om. */
+    availability: bookingsNotYetOpen()
+      ? "https://schema.org/PreOrder"
+      : "https://schema.org/InStock",
+    availabilityStarts: BOOKINGS_OPEN_FROM,
     url: `${SITE_URL}/#reserveren`,
     priceSpecification: {
       "@type": "UnitPriceSpecification",
@@ -195,30 +208,44 @@ const jsonLd = {
     { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },
     { "@type": "LocationFeatureSpecification", name: "Sauna", value: true },
     { "@type": "LocationFeatureSpecification", name: "Gratis WiFi", value: true },
-    { "@type": "LocationFeatureSpecification", name: "EV laadpaal", value: true },
+    { "@type": "LocationFeatureSpecification", name: "EV laadstation", value: true },
     { "@type": "LocationFeatureSpecification", name: "Privé terras", value: true },
     { "@type": "LocationFeatureSpecification", name: "Volledig uitgeruste keuken", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Parkeren op eigen terrein", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Televisie", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Koelkast", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Koffieapparaat", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Waterkoker", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Verwarming", value: true },
+    /* Expliciet op false: een zwembad is precies wat bezoekers bij "wellness"
+     * verwachten en hier niet is. Een systeem dat alleen true-waarden ziet, kan
+     * de afwezigheid niet van onbekend onderscheiden. */
+    { "@type": "LocationFeatureSpecification", name: "Zwembad", value: false },
   ],
   containsPlace: [
     {
       "@type": "Accommodation",
       name: "De Heide",
       description:
-        "Luxe lodge op de Drentse heide voor 4 personen. Eigen sauna, privé hottub en panoramisch uitzicht over het bos.",
+        "Luxe lodge op de Drentse heide voor 4 personen. Privé hottub op het terras en panoramisch uitzicht over heide en bos.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
+      /* value:false is hier geen ontkenning maar een antwoord: zonder deze
+       * regel kan een systeem niet zien of De Heide een sauna heeft die
+       * alleen niet vermeld is. */
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },
-        { "@type": "LocationFeatureSpecification", name: "Sauna", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Sauna", value: false },
       ],
     },
     {
       "@type": "Accommodation",
       name: "De Eik",
       description:
-        "Ruime lodge onder de eiken voor 4 personen. Hoge plafonds, volledige keuken en buitenkeuken met BBQ.",
+        "Ruime lodge onder de eiken voor 4 personen. Eigen buitensauna, privé hottub, hoge plafonds en een buitenkeuken met BBQ.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Buitensauna", alternateName: ["Barrelsauna", "Sauna"], value: true },
         { "@type": "LocationFeatureSpecification", name: "Buitenkeuken & BBQ", value: true },
       ],
     },

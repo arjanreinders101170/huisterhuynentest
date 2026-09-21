@@ -2,30 +2,26 @@ import { MetadataRoute } from "next";
 import { getSupabase } from "@/lib/supabase";
 import { getServedLandingPages } from "@/lib/landing";
 import { REDIRECTED_BLOG_SLUGS } from "@/lib/redirects";
+import { nieuwsteDatum } from "@/lib/site";
 
 const SITE_URL = "https://www.huisterhuynen.nl";
 
-/** De echte laatste wijziging van een artikel: de nieuwste van updated_at en
- *  gepubliceerd_op.
+/* De echte laatste wijziging van een artikel: de nieuwste van updated_at en
+ * gepubliceerd_op.
  *
- *  Tot nu toe telde alleen gepubliceerd_op. Een herschreven artikel hield
- *  daardoor de lastmod van zijn oorspronkelijke publicatie, en Google zag aan
- *  de sitemap niet dat er iets veranderd was — precies het geval bij het
- *  prijsartikel van september. De landingspagina's gebruiken updated_at al;
- *  dit trekt de blogs daarmee gelijk.
+ * Tot nu toe telde alleen gepubliceerd_op. Een herschreven artikel hield
+ * daardoor de lastmod van zijn oorspronkelijke publicatie, en Google zag aan
+ * de sitemap niet dat er iets veranderd was — precies het geval bij het
+ * prijsartikel van september. De landingspagina's gebruiken updated_at al;
+ * dit trekt de blogs daarmee gelijk.
  *
- *  Waarom de nieuwste van de twee en niet updated_at alleen: updated_at wordt
- *  ook gezet door een import of een technische aanpassing, terwijl
- *  gepubliceerd_op de datum is die de bezoeker op de pagina ziet. De nieuwste
- *  van beide is het eerste moment waarop deze URL anders was dan daarvoor. */
-function nieuwsteDatum(...waarden: (string | null | undefined)[]): Date | null {
-  const datums = waarden
-    .filter((v): v is string => typeof v === "string" && v.length > 0)
-    .map((v) => new Date(v))
-    .filter((d) => !Number.isNaN(d.getTime()));
-  if (datums.length === 0) return null;
-  return datums.reduce((a, b) => (a > b ? a : b));
-}
+ * Waarom de nieuwste van de twee en niet updated_at alleen: updated_at wordt
+ * ook gezet door een import of een technische aanpassing, terwijl
+ * gepubliceerd_op de datum is die de bezoeker op de pagina ziet. De nieuwste
+ * van beide is het eerste moment waarop deze URL anders was dan daarvoor.
+ *
+ * De berekening zelf staat in lib/site.ts, omdat het BlogPosting-schema hem
+ * ook nodig heeft voor zijn dateModified. */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
