@@ -168,6 +168,13 @@ const T = {
   // op card en white wél leesbaar te zijn. T.gold blijft voor donkere vlakken
   // en voor niet-tekstuele accenten.
   goldInk: "#8A6F2E",
+  // Op de groene banden (breadcrumb, feitenbalk, slot-CTA) haalt T.gold maar
+  // 3,35:1 — onder de 4,5:1 die WCAG AA voor kleine tekst vraagt, en juist
+  // daar staan de kleinste labels van de pagina. goldOnGreen is dezelfde
+  // tint (H 42°), alleen lichter, en komt op T.green uit op 4,9:1.
+  // Kortom: goldInk op lichte vlakken, goldOnGreen op groen, T.gold voor
+  // bijna-zwart en voor vullingen en lijnen die geen tekst zijn.
+  goldOnGreen: "#D8BA73",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",
@@ -381,12 +388,14 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <nav aria-label="Breadcrumb">
             <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <li>
-                <Link href="/" style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>
+                <Link href="/" style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.78)", textDecoration: "none" }}>
                   {t.home}
                 </Link>
               </li>
-              <li style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>›</li>
-              <li style={{ fontFamily: T.sans, fontSize: 12, color: T.gold, fontWeight: 600 }}>{config.breadcrumb}</li>
+              {/* Puur een scheidingsteken: aria-hidden, zodat het niet als
+                  lijstitem wordt voorgelezen en de contrasteis er niet op rust. */}
+              <li aria-hidden style={{ fontSize: 12, color: "rgba(255,255,255,.45)" }}>›</li>
+              <li style={{ fontFamily: T.sans, fontSize: 12, color: T.goldOnGreen, fontWeight: 600 }}>{config.breadcrumb}</li>
             </ol>
           </nav>
         </div>
@@ -397,7 +406,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,8,4,.18) 0%, rgba(10,8,4,.6) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "72px 32px" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnGreen, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
             {config.eyebrow}
           </div>
           <h1 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.15, color: "white" }}>
@@ -431,7 +440,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <dl className="lp-facts" style={{ maxWidth: 980, margin: "0 auto", padding: 0 }}>
             {config.keyFacts.map((f, i) => (
               <div key={i}>
-                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.gold, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
+                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.goldOnGreen, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
                   {f.label}
                 </dt>
                 <dd style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 700, color: "white", margin: 0, lineHeight: 1.35 }}>
@@ -676,7 +685,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       {/* Final CTA */}
       <section className="lp-pad" style={{ background: T.green, paddingTop: 72, paddingBottom: 72, textAlign: "center" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnGreen, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
             {t.opening}
           </div>
           <h2 style={{ fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)", color: "white", margin: "0 0 14px", fontWeight: 700, lineHeight: 1.2 }}>
