@@ -1604,8 +1604,15 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     hero_image_alt:
       "Lodge De Heide met privé-hottub op het terras en panoramisch uitzicht over de Drentse heide bij Zeijen",
     price_from: PRICE,
+    /* De harde specificaties vooraan: personen, slaapkamers, badkamer en
+     * oppervlak. Dat is wat een bezoeker het eerst zoekt en wat een
+     * zoekmachine of AI-systeem letterlijk kan overnemen — het stond tot nu
+     * toe alleen verspreid in lopende tekst, en het oppervlak nergens. */
     key_facts: [
-      "Voor :: Maximaal 4 personen",
+      "Personen :: Maximaal 4",
+      "Slaapkamers :: 2",
+      "Badkamer :: 1",
+      "Oppervlakte :: 60 m²",
       "Wellness :: Eigen sauna én hottub",
       "Uitzicht :: Heide en bos, geen buren",
       "Verblijf :: Weekend, midweek of week",
