@@ -47,6 +47,11 @@ export interface LandingSection {
   rows?: LandingRow[];
   /** Pictogramrij: korte kernpunten naast elkaar, elk met een eigen icoon. */
   marks?: { icon: string; tekst: string }[];
+  /** Zet `marks` in een witte kaart, zoals het kaartenraster erboven.
+   *  Voor een opsomming die als één blok hoort te lezen (voorzieningen).
+   *  Zonder deze vlag blijft de rij open staan — dat is wat de huisregels
+   *  willen, waar de pictogrammen juist bij de lopende tekst horen. */
+  marksKaart?: boolean;
   /** Tussenkop boven `dots`. */
   subheading?: string;
   /** Opsomming met bolletjes, naast de vinkjes van `bullets`. */
@@ -96,6 +101,10 @@ export interface LandingConfig {
   /** ISO-datum van de laatste inhoudelijke wijziging. Wordt zichtbaar getoond
    *  en als dateModified in de structured data gezet. */
   updatedAt?: string;
+  /** Inhoudsopgave onder de intro. Standaard aan bij lange pagina's; op de
+   *  lodgepagina's uit, omdat de bezoeker daar niet naar een deelonderwerp
+   *  zoekt maar de lodge van boven naar beneden doorleest. */
+  toonIndex?: boolean;
   /** Waar de pagina inhoudelijk over gaat, los van de accommodatie. Levert een
    *  `about`-entiteit in de structured data (bijv. een TouristAttraction). */
   about?: { name: string; type?: string; description?: string; url?: string };
@@ -358,7 +367,7 @@ function Lodgekeuze({ slug }: { slug: string }) {
 export function LandingTemplate({ config }: { config: LandingConfig }) {
   const t = I18N[config.locale ?? "nl"];
   const anchors = config.sections.map((s, i) => sectionAnchor(s, i));
-  const toonToc = config.sections.length >= TOC_DREMPEL;
+  const toonToc = (config.toonIndex ?? true) && config.sections.length >= TOC_DREMPEL;
   const bijgewerkt = config.updatedAt
     ? new Date(config.updatedAt).toLocaleDateString(config.locale === "de" ? "de-DE" : "nl-NL", {
         day: "numeric", month: "long", year: "numeric",
@@ -542,7 +551,13 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
 
               {/* Pictogramrij — de kernhuisregels naast elkaar. */}
               {s.marks && s.marks.length > 0 && (
-                <div className="lp-marks">
+                <div
+                  className="lp-marks"
+                  style={s.marksKaart ? {
+                    border: `1px solid ${T.border}`, borderRadius: 12,
+                    background: "white", padding: "20px 22px", marginTop: 18,
+                  } : undefined}
+                >
                   {s.marks.map((m, k) => (
                     <div key={k} style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: T.sans, fontSize: 14.5, color: T.text, fontWeight: 400 }}>
                       <Icoon naam={m.icon} kleur={T.goldInk} />

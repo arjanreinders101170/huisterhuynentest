@@ -21,6 +21,7 @@ export interface LandingSectionData {
   rows?: { label: string; waarde: string }[];
   /** Pictogramrij met korte kernpunten. */
   marks?: { icon: string; tekst: string }[];
+  marksKaart?: boolean;
   subheading?: string;
   /** Opsomming met bolletjes in plaats van vinkjes. */
   dots?: string[];
@@ -1631,7 +1632,6 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Van de twee lodges op het terrein is De Heide degene met het uitzicht. Dat is niet een extraatje bij de rest — het is de reden dat mensen deze lodge kiezen. Vanaf het terras kijkt u over heide en bos, zonder dat er ook maar één ander gebouw in beeld staat. De hottub staat er het hele jaar warm bij. Ervoor ligt de heide, en verder niets.",
     sections: [
       {
-        eyebrow: "De inventaris",
         heading: "Wat er in de lodge zit",
         body: [
           "Een lodgepagina zonder concrete inventaris is een foto met een prijs eronder. Daarom hieronder wat er werkelijk in staat, zodat u niet hoeft te mailen om te weten of u een koffiezetapparaat moet meenemen.",
@@ -1685,6 +1685,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         body: [
           "De voorzieningen waar gasten het vaakst naar vragen, hier op een rij. Ze zijn in beide lodges gelijk — het verschil tussen De Heide en De Eik zit in het uitzicht en de buitensauna, niet in wat er binnen staat.",
         ],
+        marksKaart: true,
         marks: [
           { icon: "wifi", tekst: "Gratis snel WiFi" },
           { icon: "tv", tekst: "Televisie" },
@@ -1831,7 +1832,6 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "De Eik is het huis waar alles buiten gebeurt. Onder de oude eiken staat een buitenkeuken met BBQ, met de tafel ernaast, de hottub op hetzelfde terras en een eigen barrelsauna in de tuin — een vakantiehuisje in Zeijen waar de avond buiten begint en daar ook eindigt. Binnen: hoge plafonds, ruimte voor vier en niets dat aan een vakantiepark doet denken.",
     sections: [
       {
-        eyebrow: "De inventaris",
         heading: "Wat er in de lodge zit",
         body: [
           "De Eik is de ruimste van de twee. Dat merkt u vooral aan de hoogte: het is een omgebouwd gebouw met hoge plafonds, en dat maakt een verblijf met vier mensen aanzienlijk minder krap dan de vierkante meters doen vermoeden.",
@@ -1852,6 +1852,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         body: [
           "De voorzieningen waar gasten het vaakst naar vragen, hier op een rij. Ze zijn in beide lodges gelijk — het verschil tussen De Heide en De Eik zit in het uitzicht en de buitensauna, niet in wat er binnen staat.",
         ],
+        marksKaart: true,
         marks: [
           { icon: "wifi", tekst: "Gratis snel WiFi" },
           { icon: "tv", tekst: "Televisie" },
