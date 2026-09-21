@@ -394,7 +394,13 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
 
       {/* Hero */}
       <section style={{ position: "relative", minHeight: 460, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color: "white", overflow: "hidden", background: "#141210" }}>
-        <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
+        {/* quality 70 in plaats van 55. De hero-bronbestanden zijn 1536 px
+            breed en worden op een breed scherm op ware grootte getoond; op een
+            retina-scherm vraagt de browser om het dubbele en rekt hij op wat
+            hij krijgt. Dan is elke vorm van compressieverlies meteen zichtbaar,
+            want het wordt mee opgeschaald. Dit dempt het; wég is het pas met
+            een origineel van 2880 px of breder. */}
+        <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={70} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,8,4,.18) 0%, rgba(10,8,4,.6) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "72px 32px" }}>
           <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
@@ -403,9 +409,22 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <h1 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.15, color: "white" }}>
             {config.h1}
           </h1>
-          <p style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 300, lineHeight: 1.7, margin: "0 auto 32px", maxWidth: 580, color: "rgba(255,255,255,.88)" }}>
+          <p style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 300, lineHeight: 1.7, margin: config.priceFrom ? "0 auto 20px" : "0 auto 32px", maxWidth: 580, color: "rgba(255,255,255,.88)" }}>
             {config.heroSub}
           </p>
+          {/* De prijsindicatie staat vóór de knoppen, niet eronder. Op een
+              telefoon is de hero hoog genoeg dat alles ná de knoppen onder de
+              vouw valt: de bezoeker moest tot de sectie "Prijzen en
+              beschikbaarheid" scrollen — op de lodgepagina's ruim 40% van de
+              paginahoogte — voordat er een bedrag in beeld kwam. Een bezoeker
+              die de prijs niet ziet, klikt niet door om hem te zoeken; die
+              gaat terug naar het zoekresultaat. */}
+          {config.priceFrom && (
+            <div style={{ marginBottom: 26, fontFamily: T.sans, fontSize: 14.5, fontWeight: 600, color: "white", letterSpacing: ".3px" }}>
+              {config.priceFrom}
+              <span style={{ fontWeight: 400, color: "rgba(255,255,255,.82)" }}> · {t.priceLabel}</span>
+            </div>
+          )}
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href={reserveerHref(config.slug)} style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "15px 32px", borderRadius: 10, textDecoration: "none", boxShadow: "0 6px 24px rgba(180,154,94,.45)" }}>
               {t.heroCta}
@@ -415,11 +434,6 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
             </Link>
           </div>
           <DirectBookingUSP locale={config.locale ?? "nl"} tone="onDark" size={12.5} style={{ marginTop: 18 }} />
-          {config.priceFrom && (
-            <div style={{ marginTop: 18, fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,.85)", letterSpacing: ".3px" }}>
-              {config.priceFrom} · {t.priceLabel}
-            </div>
-          )}
         </div>
       </section>
 
