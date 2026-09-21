@@ -105,6 +105,11 @@ export interface LandingConfig {
    *  lodgepagina's uit, omdat de bezoeker daar niet naar een deelonderwerp
    *  zoekt maar de lodge van boven naar beneden doorleest. */
   toonIndex?: boolean;
+  /** Kleinere hero-kop. Op de lodgepagina's staat de naam van de lodge in de
+   *  H1 en die is daardoor langer dan een themakop; op 48px liep hij over drie
+   *  regels en duwde hij de subtekst, de knoppen en de prijs onder de vouw.
+   *  Een kop van 34px past op twee regels en laat de rest van de hero staan. */
+  heroCompact?: boolean;
   /** Waar de pagina inhoudelijk over gaat, los van de accommodatie. Levert een
    *  `about`-entiteit in de structured data (bijv. een TouristAttraction). */
   about?: { name: string; type?: string; description?: string; url?: string };
@@ -436,7 +441,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnGreen, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
             {config.eyebrow}
           </div>
-          <h1 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.15, color: "white" }}>
+          <h1 style={{ fontFamily: T.serif, fontSize: config.heroCompact ? "clamp(24px, 3.6vw, 34px)" : "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.2, color: "white" }}>
             {config.h1}
           </h1>
           <p style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 300, lineHeight: 1.7, margin: "0 auto 32px", maxWidth: 580, color: "rgba(255,255,255,.88)" }}>
