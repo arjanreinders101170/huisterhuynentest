@@ -66,9 +66,12 @@ export function landingOgImageUrl(rec: { slug: string; og_image?: string | null 
     : `${SITE_URL}/api/og/landing?slug=${encodeURIComponent(rec.slug)}`;
 }
 
-/** Starting price per night (both lodges). Single source for copy + Offer schema. */
+/** Starting price per night (both lodges). Single source for copy + Offer schema.
+ *  De labels worden uit het bedrag opgebouwd: bij een prijswijziging is er één
+ *  regel om aan te passen in plaats van drie die uit elkaar kunnen lopen. */
 export const PRICE_FROM_EUR = 165;
-export const PRICE_FROM_LABEL = "Vanaf €165 per nacht";
+export const PRICE_FROM_LABEL = `Vanaf €${PRICE_FROM_EUR} per nacht`;
+export const PRICE_FROM_LABEL_DE = `Ab €${PRICE_FROM_EUR} pro Nacht`;
 
 /** Curated landing pages for footer / internal-linking blocks (short labels). */
 export const LANDING_NAV: { label: string; href: string }[] = [

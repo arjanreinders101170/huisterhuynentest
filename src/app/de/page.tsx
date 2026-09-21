@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { BookingFaq } from "@/components/BookingFaq";
 import { LODGE_PHONE_E164, LODGE_PHONE_DISPLAY, LODGE_WHATSAPP_URL } from "@/data/lodge";
+import { PRICE_FROM_LABEL_DE } from "@/lib/site";
 
 const RequestFormDE = dynamic(() => import("@/components/RequestFormDE"), {
   ssr: false,
@@ -151,12 +152,16 @@ export default function LandingPageDE() {
         display: "flex", alignItems: "center", justifyContent: "center",
         textAlign: "center", color: "white", position: "relative", overflow: "hidden",
       }}>
+        {/* quality 70 statt 45 — dieselbe Begründung wie auf der
+            niederländischen Startseite: lodge-heide.jpg ist 1536 px breit und
+            füllt hier die volle Breite, auf einem Retina-Display fordert der
+            Browser das Doppelte an. */}
         <Image
           src="/lodge-heide.jpg"
           alt="Boutique Lodge De Heide von Huis ter Huynen, umgeben von Heide und Wald in Zeijen, Drenthe"
           fill
           priority
-          quality={45}
+          quality={70}
           sizes="100vw"
           style={{ objectFit: "cover", objectPosition: "center 40%", opacity: 0.72 }}
         />
@@ -190,10 +195,23 @@ export default function LandingPageDE() {
 
           <p style={{
             fontFamily: T.sans, fontSize: 17, fontWeight: 300,
-            lineHeight: 1.7, marginBottom: 36, color: "rgba(255,255,255,.88)",
+            lineHeight: 1.7, marginBottom: 20, color: "rgba(255,255,255,.88)",
           }}>
             Private Sauna, Hot Tub und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden.
           </p>
+
+          {/* Auf /de stand bisher nirgends ein Preis — weder in der Hero noch
+              auf den Lodge-Karten, die anders als auf der niederländischen
+              Startseite kein Preis-Badge haben. Ein deutscher Besucher sah auf
+              der gesamten Seite keinen Betrag, während das Offer-Schema im
+              Layout längst 165 € nennt. Hier steht er, aus derselben Quelle. */}
+          <div style={{
+            fontFamily: T.sans, fontSize: 15, fontWeight: 600,
+            color: "white", letterSpacing: ".3px", marginBottom: 30,
+          }}>
+            {PRICE_FROM_LABEL_DE}
+            <span style={{ fontWeight: 400, color: "rgba(255,255,255,.82)" }}> · für die gesamte Lodge, nicht pro Person</span>
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: "100%" }}>
             <a href="#verfugbarkeit" className="hth-hero-cta" style={{

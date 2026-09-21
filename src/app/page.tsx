@@ -7,7 +7,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { Betaalmethoden } from "@/components/Betaalmethoden";
 import { BookingFaq } from "@/components/BookingFaq";
-import { footerLinks, LODGE_OP_SLUG } from "@/lib/site";
+import { footerLinks, LODGE_OP_SLUG, PRICE_FROM_LABEL } from "@/lib/site";
 import { ReserveerContextRegel } from "@/components/ReserveerContextRegel";
 import { kiesLodge } from "@/lib/reserveer-params";
 import { BOOKINGS_OPEN_FROM, LODGE_PHONE_E164, LODGE_PHONE_DISPLAY, LODGE_WHATSAPP_URL } from "@/data/lodge";
@@ -201,12 +201,18 @@ export default function LandingPage() {
         textAlign: "center", color: "white", position: "relative", overflow: "hidden",
       }}>
         {/* lodge photo */}
+        {/* quality 70 in plaats van 45. lodge-heide.jpg is 1536 px breed en
+            vult hier de volle breedte; op een retina-scherm vraagt de browser
+            om het dubbele en rekt hij op wat hij krijgt. Compressieverlies
+            wordt dan mee opgeschaald, en dit is de foto waarmee verkocht
+            wordt. Helemaal scherp wordt het pas met een origineel van 2880 px
+            of breder. */}
         <Image
           src="/lodge-heide.jpg"
           alt="Boutique Lodge De Heide van Huis ter Huynen, omgeven door Drentse heide en bos in Zeijen"
           fill
           priority
-          quality={45}
+          quality={70}
           sizes="100vw"
           style={{ objectFit: "cover", objectPosition: "center 40%", opacity: 0.72 }}
         />
@@ -245,12 +251,26 @@ export default function LandingPage() {
 
           <p style={{
             fontFamily: T.sans, fontSize: 17, fontWeight: 300,
-            lineHeight: 1.7, marginBottom: 36, color: "rgba(255,255,255,.88)",
+            lineHeight: 1.7, marginBottom: 20, color: "rgba(255,255,255,.88)",
           }}>
             Twee unieke boutique lodges midden in het hart van Drenthe.
             Wandel vanuit de deur door eeuwenoude strubbenbossen,
             geniet van de heide en keer terug naar uw privé-hottub.
           </p>
+
+          {/* De vanafprijs stond alleen als badge op de lodgekaarten, en die
+              staan op een telefoon ruim 2.600 pixels naar beneden — bijna
+              twintig procent van de pagina. Bovendien komt die badge uit een
+              client-side fetch op /api/pricing: blijft dat verzoek hangen, dan
+              staat er op de hele pagina geen bedrag. Hier staat hij vast in de
+              hero, boven de knop, uit dezelfde bron als het Offer-schema. */}
+          <div style={{
+            fontFamily: T.sans, fontSize: 15, fontWeight: 600,
+            color: "white", letterSpacing: ".3px", marginBottom: 30,
+          }}>
+            {PRICE_FROM_LABEL}
+            <span style={{ fontWeight: 400, color: "rgba(255,255,255,.82)" }}> · voor de hele lodge, niet per persoon</span>
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: "100%" }}>
             <a href="#reserveren" className="hth-hero-cta" style={{
