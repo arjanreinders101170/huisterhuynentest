@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { isDuitsePagina } from "@/lib/site";
 import {
   readConsent,
   writeConsent,
@@ -59,13 +61,22 @@ export function ConsentBanner() {
   const [open, setOpen] = useState(false);
   const [layer2, setLayer2] = useState(false);
   const [state, setState] = useState<ConsentState>(DEFAULT_CONSENT);
-  const [lang, setLang] = useState<Lang>("nl");
+  /* De taal van de banner volgt in de eerste plaats het pad. Hij hing alleen
+   * aan navigator.language, en dus kreeg een bezoeker op /de met een Engelse
+   * of Nederlandse browser een Nederlandse cookiebanner op een Duitse pagina.
+   * Op de rest van de site blijft de browsertaal de beste gok die er is.
+   *
+   * Afgeleid uit het pad in plaats van in een effect gezet: wisselt de
+   * bezoeker van taal terwijl de banner openstaat, dan wisselt de banner mee. */
+  const pathname = usePathname();
+  const [browserDuits, setBrowserDuits] = useState(false);
+  const lang: Lang = isDuitsePagina(pathname) || browserDuits ? "de" : "nl";
 
   useEffect(() => {
     const current = readConsent();
     setState(current.state);
     setOpen(!current.decided);
-    setLang((navigator.language || "nl").toLowerCase().startsWith("de") ? "de" : "nl");
+    setBrowserDuits((navigator.language || "nl").toLowerCase().startsWith("de"));
 
     /* Returning visitors: replay the stored consent so GTM picks it up on
      * this page load. Without this, default-deny stays active and tags

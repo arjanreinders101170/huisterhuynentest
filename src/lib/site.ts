@@ -73,6 +73,21 @@ export const PRICE_FROM_EUR = 165;
 export const PRICE_FROM_LABEL = `Vanaf €${PRICE_FROM_EUR} per nacht`;
 export const PRICE_FROM_LABEL_DE = `Ab €${PRICE_FROM_EUR} pro Nacht`;
 
+/** Duitstalige pagina's: /de en /de/*, plus de drie Duitse rechtspagina's
+ *  (/impressum, /datenschutz, /agb). De taal van een pagina hangt aan het pad
+ *  en niet aan de browsertaal van de bezoeker: een Duitser met een Engelse
+ *  browser hoort op /de geen Nederlandse teksten te zien, en andersom. */
+export function isDuitsePagina(pathname: string | null | undefined): boolean {
+  if (!pathname) return false;
+  return (
+    pathname === "/de" ||
+    pathname.startsWith("/de/") ||
+    pathname === "/impressum" ||
+    pathname === "/datenschutz" ||
+    pathname === "/agb"
+  );
+}
+
 /** Curated landing pages for footer / internal-linking blocks (short labels). */
 export const LANDING_NAV: { label: string; href: string }[] = [
   { label: "Vakantiehuis met hottub", href: "/vakantiehuis-met-hottub-drenthe" },
