@@ -17,6 +17,18 @@ export interface LandingTable {
   note?: string;
 }
 
+/** Eén kaart in een kaartenraster, bijv. een ruimte in de kamerindeling. */
+export interface LandingCard {
+  titel: string;
+  items: { icon?: string; tekst: string }[];
+}
+
+/** Label/waarde-regel, bijv. "Inchecken — van 15:00 tot 21:00". */
+export interface LandingRow {
+  label: string;
+  waarde: string;
+}
+
 export interface LandingSection {
   id?: string;
   eyebrow?: string;
@@ -27,6 +39,20 @@ export interface LandingSection {
    *  afstanden, prijzen, openingstijden. Google trekt zo'n tabel ook
    *  makkelijker als snippet uit de pagina dan een lopende alinea. */
   table?: LandingTable;
+  /** Kaartenraster. Voor inhoud die per ruimte of per onderdeel uiteenvalt
+   *  en waar een tabel te zwaar voor is. */
+  cards?: LandingCard[];
+  /** Label/waarde-regels met een dunne scheidslijn. Leest rustiger dan een
+   *  tabel met een gekleurde kopregel wanneer er maar twee kolommen zijn. */
+  rows?: LandingRow[];
+  /** Pictogramrij: korte kernpunten naast elkaar, elk met een eigen icoon. */
+  marks?: { icon: string; tekst: string }[];
+  /** Tussenkop boven `dots`. */
+  subheading?: string;
+  /** Opsomming met bolletjes, naast de vinkjes van `bullets`. */
+  dots?: string[];
+  /** Toelichting onderaan de sectie. */
+  note?: string;
 }
 
 /** Losse feiten onder de hero: het antwoord op de eerste vier vragen van de
@@ -73,6 +99,46 @@ export interface LandingConfig {
   /** Waar de pagina inhoudelijk over gaat, los van de accommodatie. Levert een
    *  `about`-entiteit in de structured data (bijv. een TouristAttraction). */
   about?: { name: string; type?: string; description?: string; url?: string };
+}
+
+/* ═══ Pictogrammen ═══
+ *
+ * Elk item krijgt zijn eigen tekening. In het aangeleverde ontwerp kreeg
+ * ieder item binnen een kaart hetzelfde icoon — een badkuip bij "Toilet",
+ * een bank bij "TV", vier keer hetzelfde pannetje bij afwasmachine,
+ * koelkast, combimagnetron en fornuis. Een icoon dat het verkeerde ding
+ * toont, kost meer aan begrijpelijkheid dan het aan sier oplevert.
+ *
+ * Onbekende naam levert daarom niets op in plaats van een willekeurig
+ * symbool: liever geen icoon dan het verkeerde. */
+const ICOON_PADEN: Record<string, string> = {
+  bed: "M2 17v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5M2 17h20M2 17v3M22 17v3M6 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3",
+  douche: "M4 20v-9a5 5 0 0 1 10 0M14 4a2 2 0 1 1 4 0v7M8 16v1M11 15v2M5 15v2",
+  toilet: "M6 3v8a5 5 0 0 0 5 5h1l1 5M6 11h11M17 3v8",
+  tafel: "M3 10h18M5 10v9M19 10v9M8 10V7h8v3",
+  tv: "M3 6h18v11H3zM8 21h8M12 17v4",
+  vaatwasser: "M4 3h16v18H4zM4 8h16M7 5.5h.01M10 5.5h.01M12 12a3 3 0 0 0 0 6 3 3 0 0 0 0-6z",
+  koelkast: "M5 2h14v20H5zM5 10h14M8 6v2M8 13v2",
+  magnetron: "M2 5h20v14H2zM15 5v14M5 8h6M5 12h6M18 9v.01M18 13v.01",
+  fornuis: "M4 8h16v13H4zM4 8V5h16v3M8 12h.01M12 12h.01M16 12h.01M8 16h8",
+  keuken: "M6 2v8a2 2 0 0 0 4 0V2M8 10v12M16 2c-1.5 1-2 3-2 5s.5 3 2 3 2-1 2-3-.5-4-2-5zM16 10v12",
+  nietRoken: "M2 15h14v4H2zM18 15h4v4h-4M17 12c2-1 2-3 0-4M13 12c2-1 2-3 0-4M3 3l18 18",
+  huisdier: "M11 18a3 3 0 0 0 3 3 3 3 0 0 0 3-3c0-2-2-3-3-5-1 2-3 3-3 5zM6 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  geenFeest: "M4 20l5-12 7 7-12 5zM14 5l1-2M18 8l2-1M17 3l1 1M20 11l1 .5M3 3l18 18",
+};
+
+function Icoon({ naam, kleur }: { naam?: string; kleur: string }) {
+  const pad = naam ? ICOON_PADEN[naam] : undefined;
+  if (!pad) return null;
+  return (
+    <svg
+      width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={kleur}
+      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+      style={{ flexShrink: 0 }} aria-hidden focusable="false"
+    >
+      <path d={pad} />
+    </svg>
+  );
 }
 
 const T = {
@@ -432,6 +498,71 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                   ))}
                 </ul>
               )}
+              {/* Kaartenraster — de kamerindeling. Eén kaart per ruimte,
+                  elk item met zijn eigen pictogram. */}
+              {s.cards && s.cards.length > 0 && (
+                <div className="lp-cards">
+                  {s.cards.map((kaart, k) => (
+                    <div key={k} style={{ border: `1px solid ${T.border}`, borderRadius: 12, background: "white", padding: "18px 20px" }}>
+                      <div style={{ fontFamily: T.sans, fontSize: 14.5, fontWeight: 600, color: T.text, marginBottom: 12 }}>
+                        {kaart.titel}
+                      </div>
+                      <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
+                        {kaart.items.map((it, m) => (
+                          <li key={m} style={{ fontFamily: T.sans, fontSize: 14.5, color: T.muted, fontWeight: 300, display: "flex", alignItems: "center", gap: 10 }}>
+                            <Icoon naam={it.icon} kleur={T.goldInk} />
+                            {it.tekst}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Label/waarde-regels — praktische informatie. Bewust geen
+                  tabel met gekleurde kopregel: bij twee kolommen leest een
+                  rustige definitielijst beter, en op een telefoon vouwt hij
+                  onder elkaar in plaats van te scrollen. */}
+              {s.rows && s.rows.length > 0 && (
+                <dl className="lp-rows">
+                  {s.rows.map((r, k) => (
+                    <div key={k} className="lp-row">
+                      <dt style={{ fontFamily: T.sans, fontSize: 13.5, color: T.muted, fontWeight: 400 }}>{r.label}</dt>
+                      <dd style={{ fontFamily: T.sans, fontSize: 15.5, color: T.text, fontWeight: 400, margin: 0 }}>{r.waarde}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              {/* Pictogramrij — de kernhuisregels naast elkaar. */}
+              {s.marks && s.marks.length > 0 && (
+                <div className="lp-marks">
+                  {s.marks.map((m, k) => (
+                    <div key={k} style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: T.sans, fontSize: 14.5, color: T.text, fontWeight: 400 }}>
+                      <Icoon naam={m.icon} kleur={T.goldInk} />
+                      {m.tekst}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {s.subheading && (
+                <div style={{ fontFamily: T.sans, fontSize: 14.5, fontWeight: 600, color: T.text, margin: "26px 0 10px" }}>
+                  {s.subheading}
+                </div>
+              )}
+
+              {s.dots && s.dots.length > 0 && (
+                <ul style={{ margin: 0, paddingLeft: 20, listStyle: "disc" }}>
+                  {s.dots.map((d, k) => (
+                    <li key={k} style={{ fontFamily: T.sans, fontSize: 15, color: T.muted, fontWeight: 300, lineHeight: 1.7, padding: "3px 0" }}>
+                      {renderTekstMetLinks(d, `d${i}-${k}`)}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
               {s.table && s.table.head.length > 0 && (
                 <>
                   {/* De wrapper scrollt, niet de pagina: een tabel van vier
@@ -474,6 +605,12 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                     </p>
                   )}
                 </>
+              )}
+
+              {s.note && (
+                <p style={{ fontFamily: T.sans, fontSize: 12.5, color: T.muted, fontWeight: 300, margin: "14px 0 0", lineHeight: 1.6 }}>
+                  {s.note}
+                </p>
               )}
             </div>
           ))}

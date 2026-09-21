@@ -87,6 +87,40 @@ html { scroll-behavior: smooth; }
   .lp-facts { grid-template-columns: repeat(2, 1fr); gap: 16px 18px; }
 }
 
+/* Kaartenraster op een landingspagina (kamerindeling). Drie kolommen op
+ * een breed scherm, één op een telefoon — kaarten naast elkaar persen op
+ * 360px levert afgekapte woorden op. */
+.lp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+
+/* Label/waarde-regels. Op een breed scherm staat het label links en de
+ * waarde ernaast; onder 560px komt de waarde onder het label te staan. */
+.lp-rows { margin: 8px 0 0; padding: 0; }
+.lp-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 30%) 1fr;
+  gap: 8px 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid #E0D8C8;
+  align-items: baseline;
+}
+.lp-row:last-child { border-bottom: none; }
+@media (max-width: 560px) {
+  .lp-row { grid-template-columns: 1fr; gap: 2px; padding: 12px 0; }
+}
+
+/* Pictogramrij met korte kernpunten. */
+.lp-marks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px 24px;
+  margin-top: 8px;
+}
+
 /* Een tabel van vier kolommen past niet op een telefoon. De wrapper
  * scrollt, de pagina niet. */
 .lp-table-wrap {

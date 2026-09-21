@@ -15,6 +15,16 @@ export interface LandingSectionData {
   bullets?: string[];
   /** Feiten die als tabel leesbaarder zijn dan als bullets. */
   table?: { head: string[]; rows: string[][]; note?: string };
+  /** Kaartenraster, bijv. de kamerindeling per ruimte. */
+  cards?: { titel: string; items: { icon?: string; tekst: string }[] }[];
+  /** Label/waarde-regels, bijv. in- en uitchecktijden. */
+  rows?: { label: string; waarde: string }[];
+  /** Pictogramrij met korte kernpunten. */
+  marks?: { icon: string; tekst: string }[];
+  subheading?: string;
+  /** Opsomming met bolletjes in plaats van vinkjes. */
+  dots?: string[];
+  note?: string;
 }
 
 export interface LandingPageRecord {
@@ -1636,22 +1646,38 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
       },
       {
-        eyebrow: "Kamerindeling",
-        heading: "Hoe de lodge is ingedeeld",
+        heading: "Kamerindeling",
         body: [
           "Vier personen past hier zonder te schuiven: twee slaapkamers, elk met een eigen opzet, en een woonkamer waar met z'n vieren aan tafel gegeten kan worden.",
         ],
-        table: {
-          head: ["Ruimte", "Inrichting"],
-          rows: [
-            ["Slaapkamer 1", "2-persoonsbed (1×)"],
-            ["Slaapkamer 2", "1-persoonsbed (2×)"],
-            ["Badkamer", "Douche (1×), toilet (1×)"],
-            ["Woonkamer", "Eettafel met stoelen, tv (1×)"],
-            ["Keuken", "Afwasmachine, koelkast, combimagnetron, fornuis"],
-          ],
-          note: "De lodge is 60 m² en biedt plaats aan maximaal vier personen.",
-        },
+        cards: [
+          { titel: "Slaapkamer 1", items: [{ icon: "bed", tekst: "2-persoons bed 1×" }] },
+          { titel: "Slaapkamer 2", items: [{ icon: "bed", tekst: "1-persoons bed 2×" }] },
+          {
+            titel: "Badkamer",
+            items: [
+              { icon: "douche", tekst: "Douche 1×" },
+              { icon: "toilet", tekst: "Toilet 1×" },
+            ],
+          },
+          {
+            titel: "Woonkamer",
+            items: [
+              { icon: "tafel", tekst: "Eettafel met stoelen" },
+              { icon: "tv", tekst: "TV 1×" },
+            ],
+          },
+          {
+            titel: "Keuken",
+            items: [
+              { icon: "vaatwasser", tekst: "Afwasmachine 1×" },
+              { icon: "koelkast", tekst: "Koelkast 1×" },
+              { icon: "magnetron", tekst: "Combimagnetron 1×" },
+              { icon: "fornuis", tekst: "Fornuis 1×" },
+            ],
+          },
+        ],
+        note: "De lodge is 60 m² en biedt plaats aan maximaal vier personen.",
       },
       {
         eyebrow: "Het onderscheid",
@@ -1696,39 +1722,33 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         },
       },
       {
-        eyebrow: "Praktische informatie",
-        heading: "Aankomst, vertrek en verhuurperiodes",
-        body: [
-          "De dingen waar een boeking op vastloopt als u ze pas achteraf leest.",
+        heading: "Praktische informatie",
+        body: [],
+        rows: [
+          { label: "Geschikt voor", waarde: "1 – 4 personen" },
+          { label: "Verhuurperiodes", waarde: "Midweek (ma – vr), weekend (vr – zo) of week (ma – zo)" },
+          { label: "Inchecken", waarde: "Van 15:00 tot 21:00" },
+          { label: "Uitchecken", waarde: "Uiterlijk 11:00" },
         ],
-        table: {
-          head: ["Onderwerp", "Details"],
-          rows: [
-            ["Geschikt voor", "1 – 4 personen"],
-            ["Verhuurperiodes", "Midweek (ma – vr), weekend (vr – zo) of week (ma – zo)"],
-            ["Inchecken", "Van 15:00 tot 21:00"],
-            ["Uitchecken", "Uiterlijk 11:00"],
-          ],
-          note: "Later aankomen dan 21:00 kan zonder extra kosten: de lodge heeft digitale sloten die tot middernacht werken, en er is geen receptie waar u zich hoeft te melden.",
-        },
+        note: "Later aankomen dan 21:00 kan zonder extra kosten: de lodge heeft digitale sloten die tot middernacht werken, en er is geen receptie waar u zich hoeft te melden.",
       },
       {
-        eyebrow: "Huisregels",
-        heading: "Wat we van u vragen",
-        body: [
-          "Kort, en er staat niets tussen dat u niet had verwacht.",
+        heading: "Huisregels",
+        body: [],
+        marks: [
+          { icon: "nietRoken", tekst: "Niet roken binnen" },
+          { icon: "huisdier", tekst: "Huisdieren toegestaan (€25)" },
+          { icon: "geenFeest", tekst: "Geen feesten of evenementen" },
         ],
-        bullets: [
-          "Binnen wordt niet gerookt. Buiten mag het, op de daarvoor bestemde plek.",
-          "Huisdieren zijn toegestaan tegen een eenmalige toeslag van €25.",
-          "Geen feesten of evenementen.",
+        subheading: "Aanvullende huisregels",
+        dots: [
           "Tussen 22:00 en 08:00 uur geldt de nachtrust.",
-          "Alleen de directe omgeving van de accommodatie is vuurwerkvrij.",
+          "Roken mag buiten, op de daarvoor bestemde plek.",
+          "Alleen de directe omgeving van deze accommodatie is vuurwerkvrij.",
         ],
       },
       {
-        eyebrow: "Annuleren",
-        heading: "Als uw plannen veranderen",
+        heading: "Annuleren",
         body: [
           "De volledige voorwaarden staan in de [algemene voorwaarden](/terms); dit is de samenvatting die er voor uw boeking toe doet.",
         ],
@@ -1851,39 +1871,33 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         },
       },
       {
-        eyebrow: "Praktische informatie",
-        heading: "Aankomst, vertrek en verhuurperiodes",
-        body: [
-          "De dingen waar een boeking op vastloopt als u ze pas achteraf leest.",
+        heading: "Praktische informatie",
+        body: [],
+        rows: [
+          { label: "Geschikt voor", waarde: "1 – 4 personen" },
+          { label: "Verhuurperiodes", waarde: "Midweek (ma – vr), weekend (vr – zo) of week (ma – zo)" },
+          { label: "Inchecken", waarde: "Van 15:00 tot 21:00" },
+          { label: "Uitchecken", waarde: "Uiterlijk 11:00" },
         ],
-        table: {
-          head: ["Onderwerp", "Details"],
-          rows: [
-            ["Geschikt voor", "1 – 4 personen"],
-            ["Verhuurperiodes", "Midweek (ma – vr), weekend (vr – zo) of week (ma – zo)"],
-            ["Inchecken", "Van 15:00 tot 21:00"],
-            ["Uitchecken", "Uiterlijk 11:00"],
-          ],
-          note: "Later aankomen dan 21:00 kan zonder extra kosten: de lodge heeft digitale sloten die tot middernacht werken, en er is geen receptie waar u zich hoeft te melden.",
-        },
+        note: "Later aankomen dan 21:00 kan zonder extra kosten: de lodge heeft digitale sloten die tot middernacht werken, en er is geen receptie waar u zich hoeft te melden.",
       },
       {
-        eyebrow: "Huisregels",
-        heading: "Wat we van u vragen",
-        body: [
-          "Kort, en er staat niets tussen dat u niet had verwacht. Eén ervan is hier extra van belang, want de BBQ staat buiten: roken doet u op de daarvoor bestemde plek.",
+        heading: "Huisregels",
+        body: [],
+        marks: [
+          { icon: "nietRoken", tekst: "Niet roken binnen" },
+          { icon: "huisdier", tekst: "Huisdieren toegestaan (€25)" },
+          { icon: "geenFeest", tekst: "Geen feesten of evenementen" },
         ],
-        bullets: [
-          "Binnen wordt niet gerookt. Buiten mag het, op de daarvoor bestemde plek.",
-          "Huisdieren zijn toegestaan tegen een eenmalige toeslag van €25.",
-          "Geen feesten of evenementen.",
+        subheading: "Aanvullende huisregels",
+        dots: [
           "Tussen 22:00 en 08:00 uur geldt de nachtrust.",
-          "Alleen de directe omgeving van de accommodatie is vuurwerkvrij.",
+          "Roken mag buiten, op de daarvoor bestemde plek.",
+          "Alleen de directe omgeving van deze accommodatie is vuurwerkvrij.",
         ],
       },
       {
-        eyebrow: "Annuleren",
-        heading: "Als uw plannen veranderen",
+        heading: "Annuleren",
         body: [
           "De volledige voorwaarden staan in de [algemene voorwaarden](/terms); dit is de samenvatting die er voor uw boeking toe doet.",
         ],
