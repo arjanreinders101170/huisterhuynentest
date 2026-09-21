@@ -14,6 +14,10 @@ const COPY = {
   nl: {
     title: "Cookies & privacy",
     body: "Wij gebruiken cookies voor een optimale websitebeleving, bezoekersstatistieken en gepersonaliseerde advertenties. U kiest zelf welke cookies u toestaat.",
+    /* Op een telefoon nam de volledige zin het halve scherm in beslag. Daar
+     * staat de korte versie; het hele verhaal blijft achter "Voorkeuren
+     * aanpassen" en het privacybeleid. */
+    bodyShort: "Wij gebruiken cookies voor statistieken en advertenties. U kiest zelf.",
     acceptAll: "Alles accepteren",
     necessaryOnly: "Alleen noodzakelijke",
     customize: "Voorkeuren aanpassen",
@@ -30,6 +34,7 @@ const COPY = {
   de: {
     title: "Cookies & Datenschutz",
     body: "Wir verwenden Cookies für ein optimales Website-Erlebnis, Besucherstatistiken und personalisierte Werbung. Sie entscheiden, welche Cookies Sie zulassen.",
+    bodyShort: "Wir verwenden Cookies für Statistiken und Werbung. Sie entscheiden.",
     acceptAll: "Alle akzeptieren",
     necessaryOnly: "Nur notwendige",
     customize: "Einstellungen anpassen",
@@ -228,7 +233,8 @@ export function ConsentBanner() {
         <p className="hth-consent-text">
           <strong style={{ color: "white", fontWeight: 600 }}>{t.title}</strong>
           {" — "}
-          {t.body}{" "}
+          <span className="hth-consent-long">{t.body}</span>
+          <span className="hth-consent-short">{t.bodyShort}</span>{" "}
           <a
             href={lang === "de" ? "/datenschutz" : "/privacy"}
             style={{ color: PALETTE.gold, textDecoration: "underline", textUnderlineOffset: 3 }}

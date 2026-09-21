@@ -85,6 +85,13 @@
   gap: 8px;
   flex: 0 0 auto;
 }
+/* Volledige zin op een breed scherm, korte zin op een telefoon (zie
+ * ConsentBanner → bodyShort). */
+.hth-consent-short { display: none; }
+@media (max-width: 600px) {
+  .hth-consent-long { display: none; }
+  .hth-consent-short { display: inline; }
+}
 @media (max-width: 768px) {
   .hth-consent-bar { bottom: calc(92px + env(safe-area-inset-bottom)); }
   .hth-consent-bar-inner { padding: 12px 16px; gap: 10px 12px; }
