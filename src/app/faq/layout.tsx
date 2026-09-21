@@ -60,7 +60,7 @@ const faqSchema = {
       name: "Is er een EV-laadpaal aanwezig?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Ja, bij de lodge staat een laadpaal voor elektrische auto's waar u gebruik van kunt maken. Het laden zelf is niet bij de huur inbegrepen.",
+        text: "Ja, er is een laadpaal aanwezig bij de lodge waar u gebruik van kunt maken. Het laden zelf is niet bij de huur inbegrepen.",
       },
     },
     {

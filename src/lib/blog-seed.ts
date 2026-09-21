@@ -267,7 +267,7 @@ De meeste aanbieders laten een prijs pas zien nadat je een formulier hebt ingevu
 
 **Minimaal twee nachten.** Eén nacht boeken kan niet. De dag van aankomst gaat grotendeels op aan aankomen, en een weekend van vrijdag tot zondag is precies het ritme waar deze plek voor gemaakt is.
 
-**Inbegrepen zonder toeslag:** de privé hottub op je eigen terras, 24 uur per dag op 38 °C, de buitensauna bij Lodge De Eik, gratis wifi en parkeren op eigen terrein. Bij de lodge staat een laadpaal voor elektrische auto's; het laden zelf is niet inbegrepen. Bij veel accommodaties staat minstens één van deze punten als losse post op de rekening.
+**Inbegrepen zonder toeslag:** de privé hottub op je eigen terras, 24 uur per dag op 38 °C, de buitensauna bij Lodge De Eik, gratis wifi en parkeren op eigen terrein. Er is een laadpaal aanwezig bij de lodge; het laden zelf is niet inbegrepen. Bij veel accommodaties staat minstens één van deze punten als losse post op de rekening.
 
 **Bovenop de nachtprijs komen:** schoonmaakkosten en toeristenbelasting van de gemeente Tynaarlo. Optioneel zijn een hond (€25), een late check-out tot 13:00 uur (€25) en het wijzigen van een boeking (€25).
 

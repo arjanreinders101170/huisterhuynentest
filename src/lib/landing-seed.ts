@@ -171,7 +171,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Luxe is rust, ruimte en privacy",
         body: [
           "Bij echte luxe gaat het niet om hoeveel er is, maar om wat ontbreekt: geen buren, geen geluid, geen haast. Onze lodges staan vrij in het landschap, elk met een eigen terras en uitzicht over heide of bos. U deelt niets met andere gasten. Dat gevoel van een plek helemaal voor uzelf is wat een verblijf hier onderscheidt van een gemiddeld vakantiehuis of hotel.",
-          "Tegelijk ontbreekt het u aan niets. Een privé-hottub op het terras, een volledig uitgeruste keuken, snelle WiFi en een EV-laadpaal op het terrein — alles is geregeld zodat u zich kunt richten op wat u kwam doen: niets.",
+          "Tegelijk ontbreekt het u aan niets. Een privé-hottub op het terras, een volledig uitgeruste keuken, snelle WiFi en een laadpaal bij de lodge — alles is geregeld zodat u zich kunt richten op wat u kwam doen: niets.",
         ],
       },
       {
@@ -1336,7 +1336,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         body: [
           "Werk met knooppunten: noteer de nummers van uw route op een briefje of in de fietsknooppuntenapp, dan hoeft u onderweg alleen de bordjes te volgen. In de lodge ligt een fietskaart van de omgeving klaar.",
           "Plan een pauze in: Café Hingstman aan de brink van Zeijen, het Bospaviljoen De Norgerberg en de terrassen rond het Drents Museum in Assen zijn alle drie fijne stops. In het hoogseizoen is reserveren voor een lunch geen slecht idee.",
-          "Het mooiste fietsseizoen loopt van april tot en met oktober. Mei en juni geven fris groen en lange dagen, augustus en september de paarse heide en de oogst op het land. Neem een windjack mee — het is vlak, en dat betekent dat u de wind altijd voelt. Uw e-bike laadt u 's avonds op aan een buitenstopcontact bij de lodge; de laadpaal op het terrein is voor elektrische auto's.",
+          "Het mooiste fietsseizoen loopt van april tot en met oktober. Mei en juni geven fris groen en lange dagen, augustus en september de paarse heide en de oogst op het land. Neem een windjack mee — het is vlak, en dat betekent dat u de wind altijd voelt. Uw e-bike laadt u 's avonds op aan een buitenstopcontact; de laadpaal bij de lodge is voor elektrische auto's.",
         ],
       },
       {
@@ -1641,7 +1641,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Volledig uitgeruste keuken: oven, kookplaat, koelkast, vaatwasser, servies en pannen.",
           "Vrij uitzicht over heide en bos vanaf het terras, zonder ander gebouw in beeld.",
           "Privé-hottub op het afgeschermde terras, het hele jaar door op 38 °C.",
-          "Gratis snel WiFi en gratis parkeren op eigen terrein. Bij de lodge staat een laadpaal voor elektrische auto's; het laden zelf is niet inbegrepen.",
+          "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadpaal aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
           "Digitale sloten: inchecken kan tot middernacht zonder dat iemand op u wacht.",
         ],
       },
@@ -1826,7 +1826,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Buitenkeuken met BBQ onder de eiken, met de eettafel op hetzelfde terras.",
           "Eigen barrelsauna in de tuin, te stoken wanneer u wilt — geen reservering, geen tijdslot.",
           "Privé-hottub op het terras, het hele jaar door op 38 °C.",
-          "Gratis snel WiFi en gratis parkeren op eigen terrein. Bij de lodge staat een laadpaal voor elektrische auto's; het laden zelf is niet inbegrepen.",
+          "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadpaal aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
           "Digitale sloten: inchecken kan tot middernacht zonder dat iemand op u wacht.",
         ],
       },
