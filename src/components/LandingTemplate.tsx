@@ -290,6 +290,12 @@ const I18N = {
   },
 };
 
+/* `sizes` per rasterindeling — de afleiding staat bij het raster hieronder. */
+const KAART_SIZES_EEN =
+  "(max-width: 640px) calc(100vw - 40px), (max-width: 1060px) calc(100vw - 80px), 980px";
+const KAART_SIZES_TWEE =
+  "(max-width: 640px) calc(100vw - 40px), (max-width: 702px) calc(100vw - 80px), (max-width: 1060px) calc((100vw - 102px) / 2), 480px";
+
 /* ═══ Het lodgekeuzeblok ═══
  *
  * Staat bewust ná de FAQ en vóór de slot-CTA. De FAQ neemt de laatste bezwaren
@@ -308,6 +314,7 @@ function Lodgekeuze({ slug }: { slug: string }) {
   const lodges = lodgekeuzeVoorSlug(slug);
   if (lodges.length === 0) return null;
   const opLodgePagina = lodges.length === 1;
+  const kaartSizes = opLodgePagina ? KAART_SIZES_EEN : KAART_SIZES_TWEE;
 
   return (
     <section className="lp-pad" style={{ background: T.bg, paddingTop: 64, paddingBottom: 64 }}>
@@ -326,11 +333,31 @@ function Lodgekeuze({ slug }: { slug: string }) {
           </p>
         </div>
 
+        {/* De kaartbreedte hangt af van hóéveel kaarten er staan, en `sizes` moet
+          * dat volgen: staat het verkeerd, dan haalt de browser keurig een te klein
+          * bestand op en rekt de browser het uit.
+          *
+          * De maten volgen uit de opbouw hieronder: .lp-pad geeft 40px marge links
+          * en rechts (20px onder 640px), de wrapper is maximaal 980px breed en de
+          * kolommen staan 22px uit elkaar. Twee kolommen passen pas vanaf 622px
+          * containerbreedte, dus vanaf een venster van 702px.
+          *
+          * Met één kaart — de vergelijking op een lodgepagina — is de kaart dus de
+          * volle 980px, niet de 480px van een tweekaartsrij. Daar ging het mis: de
+          * vergelijkingsfoto van de andere lodge werd op ruim 970px getoond terwijl
+          * de browser een bestand voor 480px had opgehaald. Juist die foto moet de
+          * bezoeker naar de andere lodge trekken.
+          *
+          * De calc()-vorm laat next/image de hele reeks breedtes in de srcset
+          * zetten in plaats van alleen die vanaf 640px; de browser kiest zelf de
+          * eerste kandidaat die groot genoeg is, dus de kleine maten schaden niet
+          * en schelen bandbreedte op een telefoon.
+          */}
         <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(300px, 100%), 1fr))`, gap: 22 }}>
           {lodges.map((lodge) => (
             <div key={lodge.slug} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column" }}>
               <div style={{ position: "relative", height: 190 }}>
-                <Image src={lodge.afbeelding} alt={lodge.alt} fill quality={60} sizes="(max-width: 800px) 100vw, 480px" style={{ objectFit: "cover", objectPosition: "center 45%" }} />
+                <Image src={lodge.afbeelding} alt={lodge.alt} fill quality={60} sizes={kaartSizes} style={{ objectFit: "cover", objectPosition: "center 45%" }} />
               </div>
               <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1 }}>
                 <h3 style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 700, color: T.green, margin: "0 0 8px" }}>
