@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { Betaalmethoden } from "@/components/Betaalmethoden";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { BookingFaq } from "@/components/BookingFaq";
@@ -935,6 +936,10 @@ export default function LandingPageDE() {
             color: "rgba(255,255,255,.6)",
           }}>
             <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
+            <Betaalmethoden variant="onderbalk" locale="de" />
+            {/* De bedrijfsgegevens blijven hier staan, anders dan op de
+                Nederlandse pagina: de Duitse Impressumspflicht wil ze
+                doorlopend bereikbaar hebben, niet alleen op /impressum. */}
             <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.55)" }}>
               VVR Vastgoed BV · KvK: 96382600 · USt-IdNr: NL867587106B01
             </span>

@@ -30,21 +30,25 @@ const T = {
   sans: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
-export type BetaalVariant = "kaart" | "kaal" | "voettekst";
+export type BetaalVariant = "kaart" | "kaal" | "voettekst" | "onderbalk";
 
 export function Betaalmethoden({
   variant = "kaart",
   titel = "Veilig betalen",
   tekst = "Uw betaling loopt via Mollie. Wij zien of bewaren uw kaartgegevens niet.",
   locale = "nl",
+  hoogte: hoogteProp,
 }: {
   variant?: BetaalVariant;
   titel?: string;
   tekst?: string;
   locale?: "nl" | "de";
+  /** Logohoogte in pixels. Standaard per variant; de onderbalk van de footer
+   *  heeft een lagere regel dan een blok midden op een pagina. */
+  hoogte?: number;
 }) {
-  const klein = variant === "voettekst";
-  const hoogte = klein ? 26 : 32;
+  const klein = variant === "voettekst" || variant === "onderbalk";
+  const hoogte = hoogteProp ?? (klein ? 26 : 32);
 
   const logos = (
     <ul
@@ -73,6 +77,24 @@ export function Betaalmethoden({
   );
 
   if (variant === "kaal") return logos;
+
+  /* Label en logo's op één regel, voor de onderbalk van de footer. Staat op
+   * een donkere ondergrond, dus het label is licht in plaats van gedempt. */
+  if (variant === "onderbalk") {
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <span
+          style={{
+            fontFamily: T.sans, fontSize: 12.5, fontWeight: 500,
+            color: "rgba(255,255,255,.85)", whiteSpace: "nowrap",
+          }}
+        >
+          {locale === "de" ? "Sicher bezahlen" : "Veilig betalen"}
+        </span>
+        {logos}
+      </div>
+    );
+  }
 
   if (variant === "voettekst") {
     return (

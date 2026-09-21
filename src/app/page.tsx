@@ -5,6 +5,7 @@ import Image from "next/image";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
+import { Betaalmethoden } from "@/components/Betaalmethoden";
 import { BookingFaq } from "@/components/BookingFaq";
 import { footerLinks, LODGE_OP_SLUG } from "@/lib/site";
 import { ReserveerContextRegel } from "@/components/ReserveerContextRegel";
@@ -1373,9 +1374,11 @@ export default function LandingPage() {
             color: "rgba(255,255,255,.6)",
           }}>
             <span>© 2026 Huis ter Huynen · Zeijen, Drenthe</span>
-            <span style={{ fontFamily: T.sans, fontSize: 11, color: "rgba(255,255,255,.55)" }}>
-              Boutique Lodge · KVK: 96382600
-            </span>
+            {/* Het KvK-nummer stond hier tweemaal op de site: hier en in de
+                algemene voorwaarden. Het blijft op /terms staan — daar hoort
+                het en daar is het vindbaar. Deze plek gaat naar de vraag die
+                een bezoeker hier wél heeft: kan ik veilig betalen. */}
+            <Betaalmethoden variant="onderbalk" />
           </div>
         </div>
       </footer>
