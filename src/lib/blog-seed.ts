@@ -542,7 +542,7 @@ De huurprijs van een e-bike in Nederland ligt doorgaans rond de 20 tot 30 euro p
 
 ## Fietsen vanaf je vakantieadres
 
-Wie in Zeijen verblijft, heeft het voordeel dat de natuur al bij de voordeur begint — het Zeijerveld en de Zeijerstrubben liggen op loop- en fietsafstand, en de Drentsche Aa, het Dwingelderveld en de hunebedden rond Borger zijn allemaal binnen een uur fietsen te bereiken. Bij Huis ter Huynen is er op het terrein een laadpaal aanwezig, wat het opladen van een (e-)fiets eenvoudig maakt. De mooiste [fietsroutes vanuit Zeijen](/fietsen-in-drenthe) staan bij elkaar op onze fietspagina. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.`,
+Wie in Zeijen verblijft, heeft het voordeel dat de natuur al bij de voordeur begint — het Zeijerveld en de Zeijerstrubben liggen op loop- en fietsafstand, en de Drentsche Aa, het Dwingelderveld en de hunebedden rond Borger zijn allemaal binnen een uur fietsen te bereiken. Bij Huis ter Huynen laadt u een (e-)fiets eenvoudig op aan een buitenstopcontact bij de lodge. De mooiste [fietsroutes vanuit Zeijen](/fietsen-in-drenthe) staan bij elkaar op onze fietspagina. Na een dag fietsen is het terras met hottub van Lodge De Heide of Lodge De Eik de ideale plek om moe maar voldaan terug te keren.`,
     categorie: "Reistips",
     leestijd: "5 minuten",
     auteur: "Arjan Reinders",

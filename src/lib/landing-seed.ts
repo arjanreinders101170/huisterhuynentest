@@ -1336,7 +1336,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         body: [
           "Werk met knooppunten: noteer de nummers van uw route op een briefje of in de fietsknooppuntenapp, dan hoeft u onderweg alleen de bordjes te volgen. In de lodge ligt een fietskaart van de omgeving klaar.",
           "Plan een pauze in: Café Hingstman aan de brink van Zeijen, het Bospaviljoen De Norgerberg en de terrassen rond het Drents Museum in Assen zijn alle drie fijne stops. In het hoogseizoen is reserveren voor een lunch geen slecht idee.",
-          "Het mooiste fietsseizoen loopt van april tot en met oktober. Mei en juni geven fris groen en lange dagen, augustus en september de paarse heide en de oogst op het land. Neem een windjack mee — het is vlak, en dat betekent dat u de wind altijd voelt. Uw e-bike laadt u 's avonds gewoon bij de lodge op; auto's kunnen terecht bij de EV-laadpaal op het terrein.",
+          "Het mooiste fietsseizoen loopt van april tot en met oktober. Mei en juni geven fris groen en lange dagen, augustus en september de paarse heide en de oogst op het land. Neem een windjack mee — het is vlak, en dat betekent dat u de wind altijd voelt. Uw e-bike laadt u 's avonds op aan een buitenstopcontact bij de lodge; de laadpaal op het terrein is voor elektrische auto's.",
         ],
       },
       {
@@ -1852,7 +1852,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         heading: "Onder de eiken in Zeijen",
         body: [
           "Zeijen is een van de brinkdorpen van Drenthe: een kerk, een brink, en daaromheen vrijwel meteen het veld. De lodge staat aan de rand daarvan, met de eiken eromheen en de Zeijerstrubben op loopafstand. Het centrum van Assen ligt op twintig minuten, wat ver genoeg is om er 's avonds niets van te merken.",
-          "Vanaf de deur beginnen de wandelroutes; er lopen meer dan 1.000 kilometer fietspaden door de omgeving en de e-bike laadt u op de laadpaal op het terrein. Wie hier komt voor de streek zelf, vindt de routes op onze pagina's over [wandelroutes in Drenthe](/wandelroutes-drenthe) en [fietsen in Drenthe](/fietsen-in-drenthe).",
+          "Vanaf de deur beginnen de wandelroutes; er lopen meer dan 1.000 kilometer fietspaden door de omgeving en de e-bike laadt u op aan een buitenstopcontact bij de lodge. Wie hier komt voor de streek zelf, vindt de routes op onze pagina's over [wandelroutes in Drenthe](/wandelroutes-drenthe) en [fietsen in Drenthe](/fietsen-in-drenthe).",
         ],
       },
       {
