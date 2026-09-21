@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PRICE_FROM_EUR, jsonLdScript } from "@/lib/site";
-import { LODGE_LAT, LODGE_LON } from "@/data/lodge";
+import { BOOKINGS_OPEN_FROM, LODGE_LAT, LODGE_LON, LODGE_PHONE_E164 } from "@/data/lodge";
+import { bookingsNotYetOpen } from "@/lib/stay-dates";
 import { GOOGLE_MAPS_PLACE_URL } from "@/lib/google-reviews";
 
 const SITE = "https://www.huisterhuynen.nl";
@@ -73,7 +74,7 @@ const jsonLd = {
   description:
     "Zwei exklusive Boutique Wellness Lodges auf der Drentse Heide bei Zeijen. Private Sauna, Hot Tub, Wandern und Radfahren direkt vor der Tür. 20 Minuten von Assen entfernt.",
   url: `${SITE}/de`,
-  telephone: "+31642568603",
+  telephone: LODGE_PHONE_E164,
   email: "lodge@huisterhuynen.nl",
   address: {
     "@type": "PostalAddress",
@@ -101,7 +102,13 @@ const jsonLd = {
       "Ab-Preis pro Nacht für eine der beiden Lodges, bei einem Aufenthalt von mindestens zwei Nächten.",
     price: PRICE_FROM_EUR,
     priceCurrency: "EUR",
-    availability: "https://schema.org/InStock",
+    /* Wie auf der niederländischen Seite: InStock behauptete sofortige
+     * Verfügbarkeit, obwohl die Lodges erst zum Eröffnungsdatum Gäste
+     * empfangen. availabilityStarts nennt das Datum ausdrücklich. */
+    availability: bookingsNotYetOpen()
+      ? "https://schema.org/PreOrder"
+      : "https://schema.org/InStock",
+    availabilityStarts: BOOKINGS_OPEN_FROM,
     url: `${SITE}/de`,
     priceSpecification: {
       "@type": "UnitPriceSpecification",

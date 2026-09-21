@@ -1,6 +1,8 @@
 # SEO + AI Search Audit — Huis ter Huynen
 
-**Opgesteld:** 21 september 2026 · **Scope:** https://www.huisterhuynen.nl · **Status:** nulmeting, geen wijzigingen doorgevoerd
+**Opgesteld:** 21 september 2026 · **Scope:** https://www.huisterhuynen.nl · **Status:** nulmeting
+
+> **Bijgewerkt 21 september:** de drie concrete codefouten uit dit rapport (`availability`, `dateModified`, zichtbaar telefoonnummer) zijn inmiddels opgelost. De rest van de aanbevelingen staat nog open. De bevinding over het telefoonnummer is bij die gelegenheid gecorrigeerd — zie sectie 4.1.
 
 ---
 
@@ -197,9 +199,13 @@ E-mail:    lodge@huisterhuynen.nl
 Geo:       53.050119, 6.517024
 ```
 
-**PROBLEEM** — het telefoonnummer staat in de JSON-LD maar **nergens zichtbaar op de site**. De footer toont alleen adres en e-mailadres. Een NAP waarvan de P alleen in machineleesbare vorm bestaat, is voor lokale SEO een halve NAP: citaties en gebruikers kunnen hem niet overnemen, en Google kan hem niet tegen andere bronnen valideren.
+**CORRECTIE op een eerdere versie van dit rapport.** Daar stond dat het telefoonnummer "nergens zichtbaar op de site" was. Dat klopt niet. Het nummer staat wél als `tel:`-link met leesbare weergave op `/impressum`, `/privacy`, `/agb`, `/datenschutz`, `/bevestig`, `/betaald`, `/welkom` en `/concierge/locked`, en in de e-mailsjablonen.
 
-**RECOMMENDATION** — zet het telefoonnummer zichtbaar in de footer naast het e-mailadres, als `tel:`-link.
+**PROBLEEM** — waar het nummer ontbrak, is op de twee pagina's die het meest bezocht en het vaakst geciteerd worden: de **homepage** en de **Duitse homepage**. Hun footer toonde adres, WhatsApp en e-mail. Het nummer zat daar alleen ín de `wa.me`-URL verwerkt, dus wel aanklikbaar maar nergens leesbaar — en een citatie of bedrijfsvermelding neemt over wat er staat, niet wat er in een href verstopt zit.
+
+**OBSERVATION** — het nummer stond op zestien plekken in de code hardgecodeerd, in twee verschillende vormen (`+31642568603` en `+31 6 42568603`). Dat is precies hoe NAP-inconsistentie ontstaat.
+
+**RECOMMENDATION** — zichtbare `tel:`-link in beide homepage-footers, en het nummer uit één constante halen.
 
 ## 4.2 De geografische keten
 
@@ -581,12 +587,12 @@ Uit de SERP-analyse komt één accommodatie op eigen kracht naar boven: **De Vie
 | Technical SEO | **Goed** | — | Canonicals, 301-map, HSTS, CSP, sitemap met echte lastmod | Alleen www-redirect verifiëren |
 | Indexability | **Goed** | — | robots.txt correct; blogartikel aangetroffen in zoekresultaten | — |
 | On-page SEO | **Goed** | Midden | Title/description homepage sterk; sauna en Groningen ongedekt | Twee nieuwe pagina's |
-| Local SEO | **Aandachtspunt** | Hoog | Geo-signalen sterk, maar telefoon niet zichtbaar; naamverwarring | NAP compleet maken |
+| Local SEO | **Aandachtspunt** | Hoog | Geo-signalen sterk; telefoon ontbrak op beide homepages; naamverwarring | NAP compleet maken |
 | Structured Data | **Aandachtspunt** | Hoog | Rijk, maar `InStock` onjuist en `dateModified` fout | 5.2 + 5.3 |
 | Entity SEO | **Kritiek** | **Zeer hoog** | Geen `sameAs`; naam gedeeld met 70-woningenpark; merkpositie 15,3 | 5.3 + 6.3 |
 | Content | **Goed** | Midden | Echte lokale kennis; gaten bij sauna, Groningen, over-ons | Sectie 7.2 |
 | Internal Linking | **Goed** | Laag | Lodgekeuzeblok, contextuele CTA's met herkomstparameter | — |
-| E-E-A-T | **Probleem** | Hoog | Geen over-ons, geen eigenaar-entiteit, geen reviews, telefoon onzichtbaar | `/over-ons`, `/contact` |
+| E-E-A-T | **Probleem** | Hoog | Geen over-ons, geen eigenaar-entiteit, geen reviews | `/over-ons`, `/contact` |
 | AI Search | **Probleem** | **Zeer hoog** | Niet genoemd in het antwoord op de kernvraag | Sectie 8.3 |
 | GEO/AEO | **Aandachtspunt** | Hoog | FAQ-schema goed; beschikbaarheidsstatus misleidend | `PreOrder` + `llms.txt` |
 | Performance | **Niet verifieerbaar** | Onbekend | Codepatronen goed; vier tagsystemen in de root layout | Eerst meten |
@@ -622,7 +628,7 @@ Uit de SERP-analyse komt één accommodatie op eigen kracht naar boven: **De Vie
 
 **5. `/over-ons` en `/contact`.** E-E-A-T mist nu de basis. Het verhaal en de lokale kennis zijn er al in de blogteksten; ze hebben alleen geen eigen pagina en geen `Person`-entiteit.
 
-**6. Telefoonnummer zichtbaar maken.** Staat in de JSON-LD maar nergens op de site.
+**6. Telefoonnummer zichtbaar maken op beide homepages.** Stond daar alleen in de `wa.me`-URL verwerkt, niet leesbaar. Op de rechtspagina's stond het al wel.
 
 **7. `dateModified` repareren** in `blog/[slug]/page.tsx` — de sitemap en het schema spreken elkaar nu tegen.
 
@@ -697,7 +703,7 @@ Uit de SERP-analyse komt één accommodatie op eigen kracht naar boven: **De Vie
 3. **`availability` naar `PreOrder`** met `availabilityStarts: 2027-04-01`. De site zegt nu dat je er vandaag terecht kunt.
 4. **Aanmelden bij origineelovernachten.nl, bijzonderplekje.nl, natuurhuisje.nl en drenthe.nl.** Acht van de negen bronnen in het AI-antwoord op de kernvraag zijn portals; geen daarvan kent Huis ter Huynen.
 5. **`/over-ons` met een `Person`-entiteit** voor de eigenaar. De Experience is er al in de blogteksten, alleen niet gekoppeld.
-6. **`/contact` maken en het telefoonnummer zichtbaar zetten.** Nu bestaat de P van NAP alleen in JSON-LD.
+6. **`/contact` maken.** Het telefoonnummer is inmiddels zichtbaar in beide homepage-footers; een eigen contactpagina ontbreekt nog.
 7. **`dateModified` repareren** in het BlogPosting-schema — sitemap en schema spreken elkaar nu tegen over dezelfde URL.
 8. **De nieuwe openingsdatum doorvoeren bij externe partijen.** Booking.com, Google-bedrijfsprofiel en Kleen Resorts dragen nog 1 januari 2027.
 9. **`/vakantiehuis-met-sauna-drenthe` bouwen.** De faciliteit bestaat, de zoekterm is commercieel, de pagina ontbreekt.

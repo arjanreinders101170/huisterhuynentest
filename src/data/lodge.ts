@@ -52,6 +52,20 @@ export function lodgeName(id: string): string {
  * voor een verblijf onder een ander tarief hoort dus tegen dát tarief. */
 export const LOGIES_BTW_PCT = 21;
 
+/* Telefoonnummer, één keer.
+ *
+ * Stond als los stuk tekst in de JSON-LD én verstopt in de wa.me-URL's in de
+ * footers. Daardoor was het nummer wel machineleesbaar en wel aanklikbaar,
+ * maar nergens leesbaar — en dat is precies wat een citatie of een
+ * bedrijfsvermelding overneemt. E164 voor schema en href, DISPLAY voor wat de
+ * bezoeker ziet. */
+export const LODGE_PHONE_E164 = "+31642568603";
+/* Zelfde groepering als op de rechtspagina's en in de mails — NAP-consistentie
+ * is het hele punt van deze constante, dus niet hier een andere spatiëring. */
+export const LODGE_PHONE_DISPLAY = "+31 6 42568603";
+/** Zelfde nummer, in de vorm die wa.me verwacht (geen plus, geen spaties). */
+export const LODGE_WHATSAPP_URL = `https://wa.me/${LODGE_PHONE_E164.replace(/\D/g, "")}`;
+
 /* Max guests per lodge. Both lodges sleep 4. */
 export const MAX_GUESTS_PER_LODGE = 4;
 

@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { getSupabase } from "@/lib/supabase";
-import { SITE_URL, blogOgImageUrl, jsonLdScript, footerLinks } from "@/lib/site";
+import { SITE_URL, blogOgImageUrl, nieuwsteDatum, jsonLdScript, footerLinks } from "@/lib/site";
 import { blogCta, blogCtaHalverwege, ctaPositieHalverwege } from "@/lib/blog-cta";
 import { ontleedInhoud, splitsVet, type KopNiveau, type InhoudDeel } from "@/lib/blog-inhoud";
 import { renderTekstMetLinks } from "@/lib/tekst";
@@ -20,6 +20,9 @@ type BlogPost = {
   auteur: string;
   og_image: string | null;
   gepubliceerd_op: string | null;
+  /* Wordt door select("*") al opgehaald, maar stond niet in het type en werd
+   * daardoor nergens gebruikt. De sitemap rekende er wél mee. */
+  updated_at: string | null;
 };
 
 async function getPost(slug: string): Promise<BlogPost | null> {
@@ -53,7 +56,11 @@ export async function generateMetadata(
       url: `${SITE_URL}/blog/${post.slug}`,
       type: "article",
       publishedTime: post.gepubliceerd_op || undefined,
-      modifiedTime: post.gepubliceerd_op || undefined,
+      /* Niet de publicatiedatum: een herschreven artikel meldde zo dat het
+       * sinds publicatie onveranderd was, terwijl de sitemap de echte
+       * wijziging wél doorgaf. Zie nieuwsteDatum in lib/site.ts. */
+      modifiedTime:
+        nieuwsteDatum(post.updated_at, post.gepubliceerd_op)?.toISOString() || undefined,
       authors: [post.auteur],
       images: [
         {
@@ -190,7 +197,11 @@ export default async function ArtikelPagina(
     description: post.intro,
     author: { "@type": "Person", name: post.auteur },
     datePublished: post.gepubliceerd_op || undefined,
-    dateModified: post.gepubliceerd_op || undefined,
+    /* Dezelfde berekening als de sitemap. Stonden hier allebei op
+     * gepubliceerd_op, dan spraken sitemap en schema elkaar tegen over
+     * dezelfde URL — en versheid is voor AI-citatie een selectiecriterium. */
+    dateModified:
+      nieuwsteDatum(post.updated_at, post.gepubliceerd_op)?.toISOString() || undefined,
     publisher: {
       "@type": "Organization",
       name: "Huis ter Huynen",

@@ -22,6 +22,24 @@ export function jsonLdScript(data: unknown): string {
     .replace(/\u2029/g, "\\u2029");
 }
 
+/**
+ * De nieuwste van een reeks datumwaarden, of null als er geen bruikbare bij zit.
+ *
+ * Stond in sitemap.ts en gold daar alleen voor de lastmod. Het BlogPosting-
+ * schema berekende zijn dateModified niet en nam gewoon de publicatiedatum,
+ * waardoor sitemap en schema elkaar tegenspraken over dezelfde URL: de een
+ * meldde een wijziging, de ander zei "onveranderd sinds publicatie". Nu
+ * rekenen ze allebei hetzelfde uit.
+ */
+export function nieuwsteDatum(...waarden: (string | null | undefined)[]): Date | null {
+  const datums = waarden
+    .filter((v): v is string => typeof v === "string" && v.length > 0)
+    .map((v) => new Date(v))
+    .filter((d) => !Number.isNaN(d.getTime()));
+  if (datums.length === 0) return null;
+  return datums.reduce((a, b) => (a > b ? a : b));
+}
+
 /** Images in /public usable as hero/OG images for landing pages and blog posts. */
 export const PUBLIC_IMAGES = [
   "/lodge-heide.jpg", "/lodge-eik.jpg", "/heide1.jpg", "/heide2.jpg", "/heide3.jpg",
