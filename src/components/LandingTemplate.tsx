@@ -106,6 +106,11 @@ export interface LandingConfig {
    *  lodgepagina's uit, omdat de bezoeker daar niet naar een deelonderwerp
    *  zoekt maar de lodge van boven naar beneden doorleest. */
   toonIndex?: boolean;
+  /** Kleinere hero-kop. Op de lodgepagina's staat de naam van de lodge in de
+   *  H1 en die is daardoor langer dan een themakop; op 48px liep hij over drie
+   *  regels en duwde hij de subtekst, de knoppen en de prijs onder de vouw.
+   *  Een kop van 34px past op twee regels en laat de rest van de hero staan. */
+  heroCompact?: boolean;
   /** Waar de pagina inhoudelijk over gaat, los van de accommodatie. Levert een
    *  `about`-entiteit in de structured data (bijv. een TouristAttraction). */
   about?: { name: string; type?: string; description?: string; url?: string };
@@ -168,15 +173,14 @@ const T = {
   // vinkjes zijn klein. goldInk is dezelfde tint, donker genoeg (4,7:1) om
   // op card en white wél leesbaar te zijn. T.gold blijft voor donkere vlakken
   // en voor niet-tekstuele accenten.
-  /* Was #8A6F2E. Dat haalde 4,6:1 op card en wit, maar op T.bg (het donkerder
-   * crème) bleef het op 3,74:1 steken — en juist de eyebrows dáár zijn klein.
-   * Deze tint haalt 4,7:1 op T.bg en 6,0:1 op wit, dus overal ruim. */
-  goldInk: "#786027",
-  /* T.gold (#B49A5E) is op donkergroen maar 3,35:1. Mooi als vlak of lijn,
-   * te zwak voor 11px hoofdletters — en dat is precies waar het stond: de
-   * labels van de feitenbalk, de breadcrumb, de eyebrows. Deze tint haalt
-   * 4,76:1 op T.green. T.gold blijft voor randen, vinkjes en vlakken. */
-  goldOnDark: "#CCBA8E",
+  goldInk: "#8A6F2E",
+  // Op de groene banden (breadcrumb, feitenbalk, slot-CTA) haalt T.gold maar
+  // 3,35:1 — onder de 4,5:1 die WCAG AA voor kleine tekst vraagt, en juist
+  // daar staan de kleinste labels van de pagina. goldOnGreen is dezelfde
+  // tint (H 42°), alleen lichter, en komt op T.green uit op 4,9:1.
+  // Kortom: goldInk op lichte vlakken, goldOnGreen op groen, T.gold voor
+  // bijna-zwart en voor vullingen en lijnen die geen tekst zijn.
+  goldOnGreen: "#D8BA73",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",
@@ -350,6 +354,12 @@ const I18N = {
   },
 };
 
+/* `sizes` per rasterindeling — de afleiding staat bij het raster hieronder. */
+const KAART_SIZES_EEN =
+  "(max-width: 640px) calc(100vw - 40px), (max-width: 1060px) calc(100vw - 80px), 980px";
+const KAART_SIZES_TWEE =
+  "(max-width: 640px) calc(100vw - 40px), (max-width: 702px) calc(100vw - 80px), (max-width: 1060px) calc((100vw - 102px) / 2), 480px";
+
 /* ═══ Het lodgekeuzeblok ═══
  *
  * Staat bewust ná de FAQ en vóór de slot-CTA. De FAQ neemt de laatste bezwaren
@@ -368,6 +378,7 @@ function Lodgekeuze({ slug }: { slug: string }) {
   const lodges = lodgekeuzeVoorSlug(slug);
   if (lodges.length === 0) return null;
   const opLodgePagina = lodges.length === 1;
+  const kaartSizes = opLodgePagina ? KAART_SIZES_EEN : KAART_SIZES_TWEE;
 
   return (
     <section className="lp-pad" style={{ background: T.bg, paddingTop: 64, paddingBottom: 64 }}>
@@ -386,18 +397,31 @@ function Lodgekeuze({ slug }: { slug: string }) {
           </p>
         </div>
 
+        {/* De kaartbreedte hangt af van hóéveel kaarten er staan, en `sizes` moet
+          * dat volgen: staat het verkeerd, dan haalt de browser keurig een te klein
+          * bestand op en rekt de browser het uit.
+          *
+          * De maten volgen uit de opbouw hieronder: .lp-pad geeft 40px marge links
+          * en rechts (20px onder 640px), de wrapper is maximaal 980px breed en de
+          * kolommen staan 22px uit elkaar. Twee kolommen passen pas vanaf 622px
+          * containerbreedte, dus vanaf een venster van 702px.
+          *
+          * Met één kaart — de vergelijking op een lodgepagina — is de kaart dus de
+          * volle 980px, niet de 480px van een tweekaartsrij. Daar ging het mis: de
+          * vergelijkingsfoto van de andere lodge werd op ruim 970px getoond terwijl
+          * de browser een bestand voor 480px had opgehaald. Juist die foto moet de
+          * bezoeker naar de andere lodge trekken.
+          *
+          * De calc()-vorm laat next/image de hele reeks breedtes in de srcset
+          * zetten in plaats van alleen die vanaf 640px; de browser kiest zelf de
+          * eerste kandidaat die groot genoeg is, dus de kleine maten schaden niet
+          * en schelen bandbreedte op een telefoon.
+          */}
         <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(300px, 100%), 1fr))`, gap: 22 }}>
           {lodges.map((lodge) => (
             <div key={lodge.slug} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column" }}>
               <div style={{ position: "relative", height: 190 }}>
-                <Image src={lodge.afbeelding} alt={lodge.alt} fill quality={60} sizes={opLodgePagina
-                    /* Eén kaart vult de container van 980px; twee kaarten
-                     * delen hem, dus (980 - 22 gap) / 2 ≈ 480. Stond hier
-                     * vast op 480, waardoor de browser op een lodgepagina
-                     * een bestand van 480px ophaalde voor een kaart van
-                     * 978px — twee keer uitgerekt. */
-                    ? "(max-width: 1020px) 100vw, 980px"
-                    : "(max-width: 800px) 100vw, 480px"} style={{ objectFit: "cover", objectPosition: "center 45%" }} />
+                <Image src={lodge.afbeelding} alt={lodge.alt} fill quality={60} sizes={kaartSizes} style={{ objectFit: "cover", objectPosition: "center 45%" }} />
               </div>
               <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1 }}>
                 <h3 style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 700, color: T.green, margin: "0 0 8px" }}>
@@ -448,12 +472,14 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <nav aria-label="Breadcrumb">
             <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <li>
-                <Link href="/" style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>
+                <Link href="/" style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.78)", textDecoration: "none" }}>
                   {t.home}
                 </Link>
               </li>
-              <li style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>›</li>
-              <li style={{ fontFamily: T.sans, fontSize: 12, color: T.goldOnDark, fontWeight: 600 }}>{config.breadcrumb}</li>
+              {/* Puur een scheidingsteken: aria-hidden, zodat het niet als
+                  lijstitem wordt voorgelezen en de contrasteis er niet op rust. */}
+              <li aria-hidden style={{ fontSize: 12, color: "rgba(255,255,255,.45)" }}>›</li>
+              <li style={{ fontFamily: T.sans, fontSize: 12, color: T.goldOnGreen, fontWeight: 600 }}>{config.breadcrumb}</li>
             </ol>
           </nav>
         </div>
@@ -464,10 +490,10 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,8,4,.18) 0%, rgba(10,8,4,.6) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "72px 32px" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnDark, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnGreen, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
             {config.eyebrow}
           </div>
-          <h1 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.15, color: "white" }}>
+          <h1 style={{ fontFamily: T.serif, fontSize: config.heroCompact ? "clamp(24px, 3.6vw, 34px)" : "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.2, color: "white" }}>
             {config.h1}
           </h1>
           <p style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 300, lineHeight: 1.7, margin: "0 auto 32px", maxWidth: 580, color: "rgba(255,255,255,.88)" }}>
@@ -498,7 +524,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <dl className="lp-facts" style={{ maxWidth: 980, margin: "0 auto", padding: 0 }}>
             {config.keyFacts.map((f, i) => (
               <div key={i}>
-                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.goldOnDark, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
+                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.goldOnGreen, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
                   {f.label}
                 </dt>
                 <dd style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 700, color: "white", margin: 0, lineHeight: 1.35 }}>
@@ -743,7 +769,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       {/* Final CTA */}
       <section className="lp-pad" style={{ background: T.green, paddingTop: 72, paddingBottom: 72, textAlign: "center" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnDark, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnGreen, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
             {t.opening}
           </div>
           <h2 style={{ fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)", color: "white", margin: "0 0 14px", fontWeight: 700, lineHeight: 1.2 }}>
@@ -792,7 +818,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <div style={{ paddingBottom: 28, marginBottom: 24, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
             <div style={{
               fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-              color: T.goldOnDark, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
+              color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
             }}>
               {t.footerMore}
             </div>

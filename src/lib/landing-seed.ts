@@ -1608,9 +1608,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     updated_at: "2026-09-04",
     breadcrumb: "Lodge De Heide",
     eyebrow: "Lodge De Heide · Zeijen · 4 personen",
-    h1: "Lodge De Heide — privé-hottub en panoramisch uitzicht op de heide",
+    h1: "Lodge De Heide — privé-hottub en vrij uitzicht",
     hero_sub:
-      "De enige van de twee met vrij uitzicht over heide en bos. Een hottub op het terras die het hele jaar op 38 °C staat, en verder geen enkel gebouw in zicht.",
+      "De enige van de twee met vrij uitzicht over heide en bos. Een hottub op het terras, het hele jaar op 38 °C, en geen enkel gebouw in zicht.",
     hero_image: "/lodge-heide.jpg",
     hero_image_alt:
       "Lodge De Heide met privé-hottub op het terras en panoramisch uitzicht over de Drentse heide bij Zeijen",
@@ -1814,9 +1814,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     updated_at: "2026-09-04",
     breadcrumb: "Lodge De Eik",
     eyebrow: "Lodge De Eik · Zeijen · 4 personen",
-    h1: "Lodge De Eik — met eigen buitensauna, buitenkeuken en hottub",
+    h1: "Lodge De Eik — buitensauna, buitenkeuken en hottub",
     hero_sub:
-      "De enige van de twee met een eigen buitensauna. Hoge plafonds, ruimte voor vier en een buitenkeuken met BBQ onder oude eiken. Een hottub op het eigen terras, en een keuken waar u de hele avond buiten kunt blijven.",
+      "De enige van de twee met een eigen buitensauna. Een buitenkeuken met BBQ onder oude eiken, en een hottub op het eigen terras.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
       "Lodge De Eik in Zeijen onder oude eiken, met buitenkeuken, BBQ en privé-hottub op het terras",
