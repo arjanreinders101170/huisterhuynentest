@@ -35,7 +35,12 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   // een betere volgende stap dan een leeg boekingsformulier.
   const blogSlug = taal === "nl" && pathname?.startsWith("/blog/") ? pathname.slice("/blog/".length) : null;
   const blog = blogSlug ? stickyBlogCta(blogSlug) : null;
-  const doel = bookingHref ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
+  // Op de lodgepagina in de nieuwe opmaak staat het formulier op de pagina
+  // zelf. De balk hoort de bezoeker dan naar dat blok te brengen en niet
+  // naar de homepage, waar hij opnieuw zou moeten kiezen welke lodge hij
+  // al gekozen had.
+  const eigenFormulier = pathname?.startsWith("/preview/") ? "#aanvraag" : null;
+  const doel = bookingHref ?? eigenFormulier ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
   const label = blog?.knop ?? copy.cta;
 
   return (

@@ -384,7 +384,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           LODGES
       ══════════════════════════════════════════ */}
-      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
+      <section id="lodges" className="hth-gutter lp-anchor" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Onze accommodaties"
