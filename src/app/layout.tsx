@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { beoordelingSchema } from "@/data/reviews";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
@@ -222,9 +223,15 @@ const jsonLd = {
      * de afwezigheid niet van onbekend onderscheiden. */
     { "@type": "LocationFeatureSpecification", name: "Zwembad", value: false },
   ],
+  ...beoordelingSchema(),
   containsPlace: [
     {
       "@type": "Accommodation",
+      /* Vaste @id, zodat /lodge-de-heide met mainEntity naar déze knoop kan
+       * wijzen in plaats van een tweede, losse beschrijving op te voeren. Eén
+       * entiteit met één identiteit, op elke pagina waar hij voorkomt. */
+      "@id": `${SITE_URL}/lodge-de-heide#accommodation`,
+      url: `${SITE_URL}/lodge-de-heide`,
       name: "De Heide",
       description:
         "Luxe lodge op de Drentse heide voor 4 personen. Privé hottub op het terras en panoramisch uitzicht over heide en bos.",
@@ -239,6 +246,8 @@ const jsonLd = {
     },
     {
       "@type": "Accommodation",
+      "@id": `${SITE_URL}/lodge-de-eik#accommodation`,
+      url: `${SITE_URL}/lodge-de-eik`,
       name: "De Eik",
       description:
         "Ruime lodge onder de eiken voor 4 personen. Eigen buitensauna, privé hottub, hoge plafonds en een buitenkeuken met BBQ.",

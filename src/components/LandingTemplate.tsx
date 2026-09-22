@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SITE_URL, footerLinks, paginaTypeVoorSlug, reserveerHref, lodgekeuzeVoorSlug } from "@/lib/site";
+import { SITE_URL, footerLinks, paginaTypeVoorSlug, reserveerHref, lodgekeuzeVoorSlug, LODGE_OP_SLUG } from "@/lib/site";
+import { beoordelingSchema } from "@/data/reviews";
 import { renderTekstMetLinks } from "@/lib/tekst";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 
@@ -172,7 +173,11 @@ const T = {
   // vinkjes zijn klein. goldInk is dezelfde tint, donker genoeg (4,7:1) om
   // op card en white wél leesbaar te zijn. T.gold blijft voor donkere vlakken
   // en voor niet-tekstuele accenten.
-  goldInk: "#8A6F2E",
+  /* Was #8A6F2E. Dat haalt 4,6:1 op card en op wit, maar op T.bg — het
+   * donkerder crème van de lodgekeuze — bleef het op 3,74:1 steken, en
+   * juist de eyebrow dáár ("De andere lodge") is 11px. Deze tint haalt
+   * 4,7:1 op T.bg, 5,8:1 op card en 6,0:1 op wit, dus overal ruim. */
+  goldInk: "#786027",
   // Op de groene banden (breadcrumb, feitenbalk, slot-CTA) haalt T.gold maar
   // 3,35:1 — onder de 4,5:1 die WCAG AA voor kleine tekst vraagt, en juist
   // daar staan de kleinste labels van de pagina. goldOnGreen is dezelfde
@@ -212,6 +217,28 @@ const TOC_DREMPEL = 5;
  *  onderwerp van de pagina — alleen een kruimelpad en een FAQ die los in de
  *  lucht hingen. Met een expliciete WebPage hangen die twee nu aan een pagina
  *  die zelf bij de LodgingBusiness hoort. */
+/* Feitenbalk → schema. "60 m²" wordt floorSize, "2" slaapkamers wordt
+ * numberOfBedrooms. Alleen wat zeker te lezen is: een label dat niet herkend
+ * wordt of een waarde zonder getal levert niets op, in plaats van een gok. */
+function feitenNaarSchema(facts: LandingKeyFact[] | undefined): Record<string, unknown> {
+  const uit: Record<string, unknown> = {};
+  for (const f of facts ?? []) {
+    const label = f.label.toLowerCase();
+    const getal = Number((f.value.match(/\d+(?:[.,]\d+)?/) ?? [])[0]?.replace(",", "."));
+    if (!Number.isFinite(getal)) continue;
+    if (label.startsWith("oppervlak")) {
+      uit.floorSize = { "@type": "QuantitativeValue", value: getal, unitCode: "MTK", unitText: "m²" };
+    } else if (label.startsWith("slaapkamer")) {
+      uit.numberOfBedrooms = getal;
+    } else if (label.startsWith("badkamer")) {
+      uit.numberOfBathroomsTotal = getal;
+    } else if (label.startsWith("persone")) {
+      uit.occupancy = { "@type": "QuantitativeValue", maxValue: getal, unitText: "personen" };
+    }
+  }
+  return uit;
+}
+
 export function landingSchemas(config: LandingConfig): object[] {
   const url = `${SITE_URL}/${config.slug}`;
   const taal = config.locale === "de" ? "de-DE" : "nl-NL";
@@ -242,8 +269,37 @@ export function landingSchemas(config: LandingConfig): object[] {
   };
   if (config.updatedAt) webPage.dateModified = config.updatedAt;
 
+  /* Gaat deze pagina over één lodge, zeg dat dan ook. Zonder mainEntity moet
+   * een zoekmachine uit een containsPlace met twee lodges afleiden welke van
+   * de twee deze URL beschrijft — en dat is precies het soort gok waarop een
+   * pagina zijn eigen onderwerp kwijtraakt. */
+  const lodge = LODGE_OP_SLUG[config.slug];
+  const accommodatie = lodge
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Accommodation",
+        /* Dezelfde @id als de knoop in containsPlace op de homepage: het is
+         * één lodge, niet twee die toevallig hetzelfde heten. */
+        "@id": `${SITE_URL}/${lodge.slug}#accommodation`,
+        url: `${SITE_URL}/${lodge.slug}`,
+        name: lodge.naam,
+        description: config.heroSub,
+        image: `${SITE_URL}${config.heroImage}`,
+        ...feitenNaarSchema(config.keyFacts),
+        amenityFeature: lodge.kenmerken.map((k) => ({
+          "@type": "LocationFeatureSpecification",
+          name: k,
+          value: true,
+        })),
+        containedInPlace: { "@type": "LodgingBusiness", "@id": `${SITE_URL}#lodging`, name: "Huis ter Huynen", url: SITE_URL },
+        ...beoordelingSchema(lodge.slug),
+      }
+    : null;
+  if (accommodatie) webPage.mainEntity = { "@id": accommodatie["@id"] };
+
   const schemas: object[] = [
     webPage,
+    ...(accommodatie ? [accommodatie] : []),
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
