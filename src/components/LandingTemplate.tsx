@@ -173,7 +173,11 @@ const T = {
   // vinkjes zijn klein. goldInk is dezelfde tint, donker genoeg (4,7:1) om
   // op card en white wél leesbaar te zijn. T.gold blijft voor donkere vlakken
   // en voor niet-tekstuele accenten.
-  goldInk: "#8A6F2E",
+  /* Was #8A6F2E. Dat haalt 4,6:1 op card en op wit, maar op T.bg — het
+   * donkerder crème van de lodgekeuze — bleef het op 3,74:1 steken, en
+   * juist de eyebrow dáár ("De andere lodge") is 11px. Deze tint haalt
+   * 4,7:1 op T.bg, 5,8:1 op card en 6,0:1 op wit, dus overal ruim. */
+  goldInk: "#786027",
   // Op de groene banden (breadcrumb, feitenbalk, slot-CTA) haalt T.gold maar
   // 3,35:1 — onder de 4,5:1 die WCAG AA voor kleine tekst vraagt, en juist
   // daar staan de kleinste labels van de pagina. goldOnGreen is dezelfde
