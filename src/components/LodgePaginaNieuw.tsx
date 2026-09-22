@@ -8,7 +8,7 @@ import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { andereLodgePagina, VERTROUWEN, PRAKTISCH, PRAKTISCH_NOOT, HUISREGELS,
          HUISREGELS_EXTRA, ANNULEREN, type LodgePaginaData } from "@/data/lodge-paginas";
 import { PRICE_FROM_EUR } from "@/lib/site";
-import { LODGE_PHONE_DISPLAY, LODGE_PHONE_E164 } from "@/data/lodge";
+import { LODGE_PHONE_DISPLAY, LODGE_WHATSAPP_URL } from "@/data/lodge";
 
 /* Zelfde laadstrategie als op de homepage: het formulier leest de query en
  * luistert naar de lodgekeuze, dus het heeft geen serverrender nodig. */
@@ -190,7 +190,7 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
               <ul className="lpx-regels">
                 {HUISREGELS.map((r) => (
                   <li key={r.tekst}>
-                    <Icoon naam={r.icoon} kleur="#8A6F2E" maat={18} />
+                    <Icoon naam={r.icoon} kleur="#8A6F2E" maat={15} />
                     {r.tekst}
                   </li>
                 ))}
@@ -217,15 +217,16 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
               <p className="lpx-kaart-noot">
                 Omboeken kan tot 30 dagen voor aankomst, na goedkeuring en afhankelijk van
                 beschikbaarheid; daarvoor geldt € 25 wijzigingskosten. De volledige voorwaarden
-                staan in de <Link href="/terms" className="lpx-link">algemene voorwaarden</Link> —
-                dit is de samenvatting die er voor uw boeking toe doet.
+                staan in de <Link href="/terms" className="lpx-link">algemene voorwaarden</Link>.
               </p>
             </section>
 
             <p className="lpx-vraag">
-              Staat iets er niet bij? Bel of app{" "}
-              <a href={`tel:${LODGE_PHONE_E164}`} className="lpx-link">{LODGE_PHONE_DISPLAY}</a> —
-              u spreekt de eigenaar, niet een callcenter.
+              <Icoon naam="whatsapp" kleur="#2F4F3E" maat={18} />
+              Staat iets er niet bij? App{" "}
+              <a href={LODGE_WHATSAPP_URL} className="lpx-link" target="_blank" rel="noopener noreferrer">
+                {LODGE_PHONE_DISPLAY}
+              </a>
             </p>
           </div>
         </main>

@@ -54,6 +54,9 @@ export const ICOON_PADEN: Record<string, string> = {
   ster: "M12 3l2.6 5.5 5.9.8-4.3 4.3 1 6.1-5.2-2.9-5.2 2.9 1-6.1L3.5 9.3l5.9-.8z",
   klok: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
   sleutel: "M15 3a6 6 0 0 0-5.6 8.2L3 17.6V21h3.4l1-1v-2h2v-2h2l1.4-1.4A6 6 0 1 0 15 3zM16.5 7.5h.01",
+  /* De spraakbel met hoorn: in de lijnstijl van de rest van de set, niet
+   * het ingekleurde merklogo. Naast het woord "App" is dat genoeg. */
+  whatsapp: "M12 21a9 9 0 1 0-7.8-4.5L3.2 20.8l4.4-1.1A8.9 8.9 0 0 0 12 21zM9.2 8.6c0 3.4 2.8 6.2 6.2 6.2.5 0 .9-.4.9-.9v-1.2l-2.1-.9-.9 1.1a5.6 5.6 0 0 1-2.3-2.3l1.1-.9-.9-2.1H10c-.4 0-.8.4-.8.9z",
 };
 
 export function Icoon({ naam, kleur, maat = 17 }: { naam?: string; kleur: string; maat?: number }) {

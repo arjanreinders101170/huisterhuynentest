@@ -56,7 +56,7 @@ const HEIDE: LodgePaginaData = {
   naam: "Lodge De Heide",
   eyebrow: "Zeijen · Drenthe",
   h1: "Lodge De Heide",
-  tagline: "Boutique lodge met privé-hottub en panoramisch uitzicht op de heide",
+  tagline: "Boutique lodge met privé-hottub en uitzicht op de heide",
   intro:
     "Van de twee lodges op het terrein is De Heide degene met het uitzicht. Vanaf het terras kijkt u over heide en bos, zonder dat er ook maar één ander gebouw in beeld staat. De hottub staat er het hele jaar warm bij, op 38 °C. Ervoor ligt de heide, en verder niets.",
   kerncijfers: [
@@ -83,7 +83,7 @@ const HEIDE: LodgePaginaData = {
     { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
     { icoon: "sleutel", tekst: "Self check-in tot middernacht" },
   ],
-  labels: ["Vrij uitzicht, geen buren", "Midden in de natuur", "Ideaal voor stellen & gezinnen", "Het hele jaar hottub"],
+  labels: ["Vrij uitzicht, geen buren", "Midden in de natuur", "Ideaal voor stellen & gezinnen", "Privé-hottub"],
   inventaris: [
     "Twee slaapkamers: een 2-persoonsbed en twee 1-persoonsbedden",
     "Badkamer met douche en toilet",

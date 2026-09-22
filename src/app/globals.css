@@ -893,7 +893,7 @@ html { scroll-behavior: smooth; }
   background: #FDFBF6;
   border: 1px solid #E0D8C8;
   border-radius: 16px;
-  padding: clamp(22px, 3vw, 32px);
+  padding: clamp(22px, 2.6vw, 28px);
   margin-top: 34px;
   display: flex;
   flex-direction: column;
@@ -922,12 +922,18 @@ html { scroll-behavior: smooth; }
 }
 
 /* De drie regels die er het meest toe doen als losse chips; de rest
- * eronder als gewone opsomming. */
-.lpx-regels { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 0 0 18px; padding: 0; }
+ * eronder als gewone opsomming.
+ *
+ * Ze horen op één rij te staan: samen zijn ze één antwoord op dezelfde
+ * vraag, en onder elkaar lezen ze als drie losse mededelingen. Een maat
+ * kleiner dan de rest van de kaart is de prijs daarvoor. Vanaf ongeveer
+ * 1200px past het; daaronder mogen ze alsnog afbreken, want daar is één
+ * rij niet meer haalbaar zonder de tekst onleesbaar te maken. */
+.lpx-regels { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0 0 18px; padding: 0; }
 .lpx-regels li {
-  display: inline-flex; align-items: center; gap: 9px;
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
   background: #fff; border: 1px solid #E0D8C8; border-radius: 999px;
-  padding: 8px 15px 8px 13px; font-size: 13px; font-weight: 500;
+  padding: 6px 10px 6px 8px; font-size: 11.5px; font-weight: 500;
 }
 .lpx-subkop {
   font-size: 11px; font-weight: 600; letter-spacing: .1em;
@@ -938,29 +944,34 @@ html { scroll-behavior: smooth; }
 
 /* De staffel: de periode links, wat u terugkrijgt rechts. Stond eerder
  * als vier zinnen met vinkjes ervoor — maar een vinkje belooft iets
- * goeds, en "geen restitutie" is dat niet. */
+ * goeds, en "geen restitutie" is dat niet.
+ *
+ * Bewust ingetogen. Dit is het kleine lettertje: het hoort vindbaar en
+ * leesbaar te zijn, niet opvallend. De percentages stonden groot en in
+ * de schreefletter en trokken daarmee meer aandacht dan het aanbod
+ * erboven. Nu dezelfde letter als de regel ernaast, alleen zwaarder. */
 .lpx-staffel { margin: 0; padding: 0; list-style: none; }
 .lpx-staffel li {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline; gap: 4px 18px;
-  padding: 12px 0; border-top: 1px solid #E0D8C8;
+  align-items: baseline; gap: 2px 18px;
+  padding: 7px 0; border-top: 1px solid #E0D8C8;
 }
 .lpx-staffel li:first-child { border-top: 0; padding-top: 0; }
-.lpx-staffel-periode { font-size: 14.5px; line-height: 1.5; color: #2A2418; }
-.lpx-staffel-bij { grid-column: 1; font-size: 12.5px; line-height: 1.6; color: #5A534C; }
+.lpx-staffel-periode { font-size: 13.5px; line-height: 1.5; color: #5A534C; }
+.lpx-staffel-bij { grid-column: 1; font-size: 12px; line-height: 1.5; color: #8A7D6A; }
 .lpx-staffel-deel {
   grid-row: 1; grid-column: 2;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 21px; font-weight: 700; color: #2F4F3E;
+  font-size: 13.5px; font-weight: 600; color: #2A2418;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.lpx-staffel-deel--niets { color: #5A534C; }
+.lpx-staffel-deel--niets { color: #8A7D6A; font-weight: 500; }
 
 /* Sluitregel van de kaart: geen eigen blok met een lijn erboven, maar een
  * zin die de kaart afmaakt. */
 .lpx-vraag {
   margin: 0; font-size: 13.5px; line-height: 1.7; color: #5A534C;
   border-top: 1px solid #E0D8C8; padding-top: 22px;
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
 }
 
 .lpx-inventaris {
