@@ -1449,7 +1449,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     h1: "Wellness Urlaub in Drenthe",
     hero_sub:
       "Ein privater Whirlpool auf der Terrasse, bei Lodge De Eik eine eigene Fasssauna, und die stillste Natur der Niederlande um Sie herum. Bei Huis ter Huynen ist Wellness keine Abteilung, sondern das gesamte Erlebnis.",
-    hero_image: "/lodge-heide.jpg",
+    hero_image: "/lodge-eik.jpg",
     hero_image_alt:
       "Lodge De Eik mit privatem Whirlpool und eigener Fasssauna im Freien, unter Eichen bei Zeijen in Drenthe",
     price_from: PRICE_DE,
