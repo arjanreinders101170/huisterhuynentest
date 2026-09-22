@@ -187,7 +187,16 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
          * valt hij gewoon onder de tekst. Zie .lpx-aanvraag in globals.css. */}
         <aside className="lpx-aanvraag" id="aanvraag" aria-label="Aanvraagformulier">
           <div className="lpx-aanvraag-kaart">
-            <h2 className="lpx-aanvraag-kop">Stel je aanvraag samen</h2>
+            {/* De prijs staat waar eerst de kop stond: dat is het eerste
+              * wat een bezoeker in dit blok zoekt, en "Stel je aanvraag
+              * samen" vertelde hem alleen wat hij al zag. Het bedrag komt
+              * uit PRICE_FROM_EUR, zodat het niet op twee plekken los van
+              * elkaar kan verouderen. */}
+            <h2 className="lpx-prijs">
+              <span className="lpx-prijs-label">Vanaf</span>
+              <span className="lpx-prijs-bedrag">&euro;&nbsp;{PRICE_FROM_EUR},-</span>
+              <span className="lpx-prijs-eenheid">per nacht</span>
+            </h2>
             <RequestForm voorkeur={data.lodgeParam} />
             <DirectBookingUSP tone="onLight" size={11.5} style={{ marginTop: 14, justifyContent: "center" }} />
           </div>
