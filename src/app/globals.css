@@ -973,6 +973,17 @@ html { scroll-behavior: smooth; }
   border-top: 1px solid #E0D8C8; padding-top: 22px;
   display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
 }
+.lpx-vraag b { font-weight: 600; }
+
+/* Pictogram en nummer samen één doel om aan te tikken, ruim genoeg voor
+ * een duim. */
+.lpx-wa {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: #2F4F3E; text-decoration: none;
+  border: 1px solid #E0D8C8; border-radius: 999px;
+  padding: 7px 14px 7px 11px; background: #fff;
+}
+.lpx-wa:hover { border-color: #2F4F3E; background: rgba(47,79,62,.05); }
 
 .lpx-inventaris {
   display: grid;

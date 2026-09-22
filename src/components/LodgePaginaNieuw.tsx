@@ -221,11 +221,21 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
               </p>
             </section>
 
+            {/* Het pictogram zit ín de link: het is de uitnodiging, niet een
+              * plaatje ernaast. Het woord "App" is daarmee overbodig — maar
+              * dan draagt alleen het beeld nog die betekenis, en een
+              * schermlezer ziet geen beeld. Vandaar het aria-label. */}
             <p className="lpx-vraag">
-              <Icoon naam="whatsapp" kleur="#2F4F3E" maat={18} />
-              Staat iets er niet bij? App{" "}
-              <a href={LODGE_WHATSAPP_URL} className="lpx-link" target="_blank" rel="noopener noreferrer">
-                {LODGE_PHONE_DISPLAY}
+              Staat er iets niet bij?{" "}
+              <a
+                href={LODGE_WHATSAPP_URL}
+                className="lpx-wa"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Stuur een WhatsApp-bericht naar ${LODGE_PHONE_DISPLAY}`}
+              >
+                <Icoon naam="whatsapp" kleur="#2F4F3E" maat={18} />
+                <b>{LODGE_PHONE_DISPLAY}</b>
               </a>
             </p>
           </div>
