@@ -136,7 +136,7 @@ const jsonLd = {
   "@type": "LodgingBusiness",
   name: "Huis ter Huynen",
   description:
-    "Twee luxe boutique lodges op de Drentse heide bij Zeijen. Privé hottub, sauna, wandelen en fietsen vanuit de deur. 20 minuten van Assen.",
+    "Twee luxe boutique lodges op de Drentse heide bij Zeijen. Privé hottub bij beide, buitensauna bij De Eik, wandelen en fietsen vanuit de deur. 20 minuten van Assen.",
   url: SITE_URL,
   telephone: LODGE_PHONE_E164,
   email: "lodge@huisterhuynen.nl",

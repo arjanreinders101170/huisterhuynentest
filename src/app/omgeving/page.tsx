@@ -362,7 +362,7 @@ export default function OmgevingPage() {
               {
                 titel: "Wellness & Spa",
                 kleur: "#7B6B3A",
-                items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Waterlelie Zevenhuizen", "Eigen sauna & hottub bij de lodge"],
+                items: ["LOFF Boutique Wellness Assen", "Spa Hof van Saksen", "Waterlelie Zevenhuizen", "Eigen hottub bij de lodge, buitensauna bij De Eik"],
               },
               {
                 titel: "Natuur & Park",

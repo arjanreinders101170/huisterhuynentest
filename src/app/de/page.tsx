@@ -192,7 +192,7 @@ export default function LandingPageDE() {
             fontFamily: T.sans, fontSize: 17, fontWeight: 300,
             lineHeight: 1.7, marginBottom: 36, color: "rgba(255,255,255,.88)",
           }}>
-            Private Sauna, Hot Tub und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden.
+            Hot Tub, Fasssauna und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden.
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: "100%" }}>
@@ -293,7 +293,7 @@ export default function LandingPageDE() {
             {[
               {
                 label: "Private Wellness",
-                desc: "Genießen Sie Ihre eigene Sauna und einen privaten Hot Tub unter dem Sternenhimmel — zu jeder Tages- und Jahreszeit.",
+                desc: "Genießen Sie Ihren privaten Hot Tub unter dem Sternenhimmel — und in Lodge De Eik die eigene Fasssauna im Freien.",
               },
               {
                 label: "Mitten in der Natur",
@@ -353,7 +353,7 @@ export default function LandingPageDE() {
             fontFamily: T.sans, fontSize: 16, fontWeight: 300,
             lineHeight: 1.8, color: "rgba(255,255,255,.85)",
           }}>
-            Beginnen Sie den Morgen mit Vogelstimmen, entspannen Sie in Ihrer privaten Sauna und genießen Sie den Abend im warmen Hot Tub unter freiem Himmel.
+            Beginnen Sie den Morgen mit Vogelstimmen, entspannen Sie in der Fasssauna von Lodge De Eik und genießen Sie den Abend im warmen Hot Tub unter freiem Himmel.
           </p>
         </div>
       </section>
@@ -466,7 +466,7 @@ export default function LandingPageDE() {
           <SectionHeader
             eyebrow="Wellness"
             title="Private Wellness erleben"
-            sub="Jede Lodge wurde mit Fokus auf Ruhe, Komfort und Privatsphäre gestaltet. Die Kombination aus Sauna, Hot Tub und natürlicher Umgebung schafft ein exklusives Wellness-Erlebnis zu jeder Jahreszeit."
+            sub="Jede Lodge wurde mit Fokus auf Ruhe, Komfort und Privatsphäre gestaltet. Beide haben einen eigenen Hot Tub, Lodge De Eik zusätzlich eine Fasssauna im Freien — ein exklusives Wellness-Erlebnis zu jeder Jahreszeit."
           />
           <div style={{
             background: T.card, borderRadius: 14,
