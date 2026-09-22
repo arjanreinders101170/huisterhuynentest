@@ -168,7 +168,15 @@ const T = {
   // vinkjes zijn klein. goldInk is dezelfde tint, donker genoeg (4,7:1) om
   // op card en white wél leesbaar te zijn. T.gold blijft voor donkere vlakken
   // en voor niet-tekstuele accenten.
-  goldInk: "#8A6F2E",
+  /* Was #8A6F2E. Dat haalde 4,6:1 op card en wit, maar op T.bg (het donkerder
+   * crème) bleef het op 3,74:1 steken — en juist de eyebrows dáár zijn klein.
+   * Deze tint haalt 4,7:1 op T.bg en 6,0:1 op wit, dus overal ruim. */
+  goldInk: "#786027",
+  /* T.gold (#B49A5E) is op donkergroen maar 3,35:1. Mooi als vlak of lijn,
+   * te zwak voor 11px hoofdletters — en dat is precies waar het stond: de
+   * labels van de feitenbalk, de breadcrumb, de eyebrows. Deze tint haalt
+   * 4,76:1 op T.green. T.gold blijft voor randen, vinkjes en vlakken. */
+  goldOnDark: "#CCBA8E",
   border: "#E0D8C8",
   serif: "Georgia, 'Times New Roman', serif",
   sans: "var(--font-dm-sans), system-ui, sans-serif",
@@ -382,7 +390,14 @@ function Lodgekeuze({ slug }: { slug: string }) {
           {lodges.map((lodge) => (
             <div key={lodge.slug} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column" }}>
               <div style={{ position: "relative", height: 190 }}>
-                <Image src={lodge.afbeelding} alt={lodge.alt} fill quality={60} sizes="(max-width: 800px) 100vw, 480px" style={{ objectFit: "cover", objectPosition: "center 45%" }} />
+                <Image src={lodge.afbeelding} alt={lodge.alt} fill quality={60} sizes={opLodgePagina
+                    /* Eén kaart vult de container van 980px; twee kaarten
+                     * delen hem, dus (980 - 22 gap) / 2 ≈ 480. Stond hier
+                     * vast op 480, waardoor de browser op een lodgepagina
+                     * een bestand van 480px ophaalde voor een kaart van
+                     * 978px — twee keer uitgerekt. */
+                    ? "(max-width: 1020px) 100vw, 980px"
+                    : "(max-width: 800px) 100vw, 480px"} style={{ objectFit: "cover", objectPosition: "center 45%" }} />
               </div>
               <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1 }}>
                 <h3 style={{ fontFamily: T.serif, fontSize: 20, fontWeight: 700, color: T.green, margin: "0 0 8px" }}>
@@ -438,7 +453,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                 </Link>
               </li>
               <li style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>›</li>
-              <li style={{ fontFamily: T.sans, fontSize: 12, color: T.gold, fontWeight: 600 }}>{config.breadcrumb}</li>
+              <li style={{ fontFamily: T.sans, fontSize: 12, color: T.goldOnDark, fontWeight: 600 }}>{config.breadcrumb}</li>
             </ol>
           </nav>
         </div>
@@ -449,7 +464,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,8,4,.18) 0%, rgba(10,8,4,.6) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "72px 32px" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnDark, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
             {config.eyebrow}
           </div>
           <h1 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.15, color: "white" }}>
@@ -483,7 +498,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <dl className="lp-facts" style={{ maxWidth: 980, margin: "0 auto", padding: 0 }}>
             {config.keyFacts.map((f, i) => (
               <div key={i}>
-                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.gold, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
+                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.goldOnDark, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
                   {f.label}
                 </dt>
                 <dd style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 700, color: "white", margin: 0, lineHeight: 1.35 }}>
@@ -728,7 +743,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
       {/* Final CTA */}
       <section className="lp-pad" style={{ background: T.green, paddingTop: 72, paddingBottom: 72, textAlign: "center" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
+          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldOnDark, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 14 }}>
             {t.opening}
           </div>
           <h2 style={{ fontFamily: T.serif, fontSize: "clamp(24px, 3.5vw, 34px)", color: "white", margin: "0 0 14px", fontWeight: 700, lineHeight: 1.2 }}>
@@ -777,7 +792,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
           <div style={{ paddingBottom: 28, marginBottom: 24, borderBottom: "1px solid rgba(255,255,255,.1)" }}>
             <div style={{
               fontFamily: T.sans, fontSize: 11, fontWeight: 600,
-              color: T.gold, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
+              color: T.goldOnDark, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 16,
             }}>
               {t.footerMore}
             </div>
