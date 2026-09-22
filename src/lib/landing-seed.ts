@@ -1822,10 +1822,17 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Lodge De Eik in Zeijen onder oude eiken, met buitenkeuken, BBQ en privé-hottub op het terras",
     price_from: PRICE,
     key_facts: [
-      "Voor :: Maximaal 4 personen",
+      /* Dezelfde vier feitelijke labels als De Heide, met precies dezelfde
+       * schrijfwijze. feitenNaarSchema herkent ze daaraan en vult daarmee
+       * floorSize, numberOfBedrooms, numberOfBathroomsTotal en occupancy.
+       * "Voor :: Maximaal 4 personen" herkende het niet: het zoekt op het
+       * label, en dat heette hier anders. */
+      "Personen :: Maximaal 4",
+      "Slaapkamers :: 2",
+      "Badkamer :: 1",
+      "Oppervlakte :: 60 m²",
       "Wellness :: Eigen buitensauna én hottub",
       "Buiten :: Buitenkeuken met BBQ",
-      "Ligging :: Zeijen, 20 min van Assen",
       "Verblijf :: Weekend, midweek of week",
     ].join("\n"),
     intro:
@@ -1845,6 +1852,44 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadstation aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
           "Digitale sloten: inchecken kan tot middernacht zonder dat iemand op u wacht.",
         ],
+      },
+      {
+        heading: "Kamerindeling",
+        body: [
+          "De indeling is gelijk aan die van De Heide: twee slaapkamers, elk met een eigen opzet, en een woonkamer waar met z'n vieren aan tafel gegeten kan worden.",
+        ],
+        cards: [
+          { titel: "Slaapkamer 1", items: [{ icon: "bed", tekst: "2-persoons bed 1×" }] },
+          { titel: "Slaapkamer 2", items: [{ icon: "bed", tekst: "1-persoons bed 2×" }] },
+          {
+            titel: "Badkamer",
+            items: [
+              { icon: "douche", tekst: "Douche 1×" },
+              { icon: "toilet", tekst: "Toilet 1×" },
+            ],
+          },
+          {
+            titel: "Woonkamer",
+            items: [
+              { icon: "tafel", tekst: "Eettafel met stoelen" },
+              { icon: "tv", tekst: "TV 1×" },
+            ],
+          },
+          {
+            titel: "Keuken",
+            items: [
+              { icon: "vaatwasser", tekst: "Afwasmachine 1×" },
+              { icon: "koelkast", tekst: "Koelkast 1×" },
+              { icon: "magnetron", tekst: "Combimagnetron 1×" },
+              { icon: "fornuis", tekst: "Fornuis 1×" },
+            ],
+          },
+        ],
+        /* Bewust niet alleen de vierkante meters: de pagina zegt verderop dat
+         * De Eik de ruimste van de twee is en dat je dat aan de hoogte merkt,
+         * niet aan het grondvlak. Zonder die zin hier zou de gelijke 60 m²
+         * die claim lijken tegen te spreken. */
+        note: "De lodge is 60 m² en biedt plaats aan maximaal vier personen. Het grondvlak is gelijk aan dat van De Heide; de ruimte zit hier in de hoogte.",
       },
       {
         eyebrow: "Voorzieningen",
