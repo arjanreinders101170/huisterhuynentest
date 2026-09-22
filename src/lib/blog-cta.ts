@@ -54,11 +54,12 @@ const CTA_PER_ARTIKEL: Record<string, BlogCta> = {
   "wellnessweekend-drenthe": {
     eyebrow: `Vanaf €${PRICE_FROM_EUR} per nacht`,
     tekst:
-      "Zo'n weekend begint bij een huis waar de sauna en de hottub van jou alleen zijn. Beide lodges staan " +
-      "vrij op de heide bij Zeijen, met een hottub op het eigen terras die het hele jaar op 38 °C staat.",
+      "Zo'n weekend begint bij een huis waar het water van jou alleen is. Beide lodges staan " +
+      "vrij op de heide bij Zeijen, met een hottub op het eigen terras die het hele jaar op 38 °C staat — " +
+      "en De Eik heeft daarnaast een eigen buitensauna.",
     halverwege:
-      "Zo'n weekend staat of valt bij het huis: een eigen sauna en een hottub die van jou alleen zijn, " +
-      "in plaats van een tijdslot in een resort.",
+      "Zo'n weekend staat of valt bij het huis: een hottub die van jou alleen is, bij De Eik met een " +
+      "eigen buitensauna erbij, in plaats van een tijdslot in een resort.",
     knop: "Bekijk de wellness huisjes →",
     href: "/wellness-vakantie-drenthe",
   },

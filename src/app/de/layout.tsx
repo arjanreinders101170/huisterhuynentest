@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: "%s – Huis ter Huynen",
   },
   description:
-    "Genießen Sie Ruhe, Natur und exklusiven Wellnesskomfort in Drenthe. Private Lodges mit Sauna und Hot Tub – perfekt für eine entspannte Auszeit in den Niederlanden.",
+    "Genießen Sie Ruhe, Natur und exklusiven Wellnesskomfort in Drenthe. Private Lodges mit Hot Tub, De Eik mit Fasssauna – perfekt für eine entspannte Auszeit in den Niederlanden.",
   keywords: [
     "Wellness Lodge Niederlande",
     "Luxus Ferienhaus Holland",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "Huis ter Huynen",
     title: "Exklusive Wellness Lodges in Drenthe | Huis ter Huynen",
     description:
-      "Private Sauna, Hot Tub und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden. Zwei Boutique Lodges auf der Drentse Heide bei Zeijen.",
+      "Hot Tub, Fasssauna und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden. Zwei Boutique Lodges auf der Drentse Heide bei Zeijen, De Eik mit eigener Fasssauna.",
     images: [
       {
         url: OG_IMAGE,
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Exklusive Wellness Lodges in Drenthe | Huis ter Huynen",
     description:
-      "Private Sauna, Hot Tub und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden.",
+      "Hot Tub, Fasssauna und absolute Ruhe — Ihr luxuriöser Rückzugsort in den Niederlanden.",
     images: [OG_IMAGE],
   },
   alternates: {
@@ -72,7 +72,7 @@ const jsonLd = {
   inLanguage: "de",
   name: "Huis ter Huynen",
   description:
-    "Zwei exklusive Boutique Wellness Lodges auf der Drentse Heide bei Zeijen. Private Sauna, Hot Tub, Wandern und Radfahren direkt vor der Tür. 20 Minuten von Assen entfernt.",
+    "Zwei exklusive Boutique Wellness Lodges auf der Drentse Heide bei Zeijen. Privater Hot Tub bei beiden, Fasssauna bei De Eik, Wandern und Radfahren direkt vor der Tür. 20 Minuten von Assen entfernt.",
   url: `${SITE}/de`,
   telephone: LODGE_PHONE_E164,
   email: "lodge@huisterhuynen.nl",
