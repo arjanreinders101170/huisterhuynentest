@@ -88,21 +88,27 @@
 /* Volledige zin op een breed scherm, korte zin op een telefoon (zie
  * ConsentBanner → bodyShort). */
 .hth-consent-short { display: none; }
+/* "Voorkeuren aanpassen" staat op een telefoon als link achter de tekst en
+ * daarboven als knop in de balk; er is er altijd precies één zichtbaar. */
+.hth-consent-prefs-inline { display: none; }
 @media (max-width: 600px) {
   .hth-consent-long { display: none; }
   .hth-consent-short { display: inline; }
+  .hth-consent-prefs-inline { display: inline; }
+  .hth-consent-prefs-btn { display: none; }
 }
 @media (max-width: 768px) {
   .hth-consent-bar { bottom: calc(92px + env(safe-area-inset-bottom)); }
   .hth-consent-bar-inner { padding: 12px 16px; gap: 10px 12px; }
+  /* Knoppen passen hier niet meer naast de tekst; ze krijgen hun eigen regel,
+   * zodat "Voorkeuren aanpassen" niet buiten beeld valt. */
   .hth-consent-text { flex-basis: 100%; font-size: 12px; line-height: 1.45; }
-  /* Knoppen passen op een telefoon niet naast de tekst; ze krijgen hun eigen
-   * regel en verdelen de breedte, zodat "Voorkeuren aanpassen" niet langer
-   * buiten beeld valt. */
   .hth-consent-actions { flex: 1 1 100%; }
-  .hth-consent-actions > button:nth-child(1),
-  .hth-consent-actions > button:nth-child(2) { flex: 1 1 130px; }
-  .hth-consent-actions > button:nth-child(3) { flex: 1 1 100%; text-align: center; }
+}
+/* Op een telefoon zijn er nog twee knoppen (de derde staat als link achter de
+ * tekst); die verdelen samen de regel. */
+@media (max-width: 600px) {
+  .hth-consent-actions > button { flex: 1 1 130px; }
 }
 
 /* Compacte FAQ bij het boekingsformulier (<details> zonder browsermarker) */

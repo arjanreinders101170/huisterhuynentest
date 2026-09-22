@@ -241,6 +241,29 @@ export function ConsentBanner() {
           >
             {t.privacyLink}
           </a>
+          {/* Op een telefoon scheelt een derde knoppenregel bijna 45px; daar
+           * staat "Voorkeuren aanpassen" als link achter de tekst. Boven de
+           * 600px blijft het de knop rechts in de balk — de CSS laat er
+           * precies één van de twee zien, scheidingsteken inbegrepen. */}
+          <span className="hth-consent-prefs-inline">
+            {" · "}
+            <button
+              type="button"
+              onClick={() => setLayer2(true)}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                font: "inherit",
+                color: PALETTE.gold,
+                textDecoration: "underline",
+                textUnderlineOffset: 3,
+                cursor: "pointer",
+              }}
+            >
+              {t.customize}
+            </button>
+          </span>
         </p>
         <div className="hth-consent-actions">
           <ConsentButton onClick={acceptAll} variant="primary">
@@ -249,7 +272,7 @@ export function ConsentBanner() {
           <ConsentButton onClick={necessaryOnly} variant="secondary">
             {t.necessaryOnly}
           </ConsentButton>
-          <ConsentButton onClick={() => setLayer2(true)} variant="tertiary">
+          <ConsentButton onClick={() => setLayer2(true)} variant="tertiary" className="hth-consent-prefs-btn">
             {t.customize}
           </ConsentButton>
         </div>
@@ -349,10 +372,12 @@ function ConsentButton({
   children,
   onClick,
   variant,
+  className,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   variant: "primary" | "secondary" | "tertiary";
+  className?: string;
 }) {
   const base: React.CSSProperties = {
     padding: "9px 14px",
@@ -366,7 +391,7 @@ function ConsentButton({
   };
   if (variant === "primary") {
     return (
-      <button onClick={onClick} style={{ ...base, background: PALETTE.gold, color: PALETTE.dark }}>
+      <button className={className} onClick={onClick} style={{ ...base, background: PALETTE.gold, color: PALETTE.dark }}>
         {children}
       </button>
     );
@@ -374,6 +399,7 @@ function ConsentButton({
   if (variant === "secondary") {
     return (
       <button
+        className={className}
         onClick={onClick}
         style={{
           ...base,
@@ -388,6 +414,7 @@ function ConsentButton({
   }
   return (
     <button
+      className={className}
       onClick={onClick}
       style={{
         ...base,
