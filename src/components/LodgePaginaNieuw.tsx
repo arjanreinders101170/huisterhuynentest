@@ -56,7 +56,9 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
               <span>DE</span>
             </a>
             <a href="#aanvraag" className="lpx-kop-cta">
-              Bekijk beschikbaarheid <span aria-hidden>→</span>
+              <span className="lpx-cta-lang">Bekijk beschikbaarheid</span>
+              <span className="lpx-cta-kort">Beschikbaarheid</span>{" "}
+              <span aria-hidden>→</span>
             </a>
           </div>
         </div>

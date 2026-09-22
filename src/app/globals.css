@@ -705,6 +705,14 @@ html { scroll-behavior: smooth; }
   white-space: nowrap;
 }
 .lpx-kop-cta:hover { background: #3A6350; }
+/* Naast de merknaam past "Bekijk beschikbaarheid" niet op een telefoon:
+ * de knop staat op white-space: nowrap en zou het scherm oprekken in
+ * plaats van af te breken. Hij verkort daar zijn eigen tekst. */
+.lpx-cta-kort { display: none; }
+@media (max-width: 560px) {
+  .lpx-cta-lang { display: none; }
+  .lpx-cta-kort { display: inline; }
+}
 
 /* ── Hero ── */
 .lpx-hero {
