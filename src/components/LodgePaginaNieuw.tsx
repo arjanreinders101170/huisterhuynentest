@@ -1,10 +1,12 @@
 "use client";
+import { Fragment } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { Icoon } from "@/components/Icoon";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
-import { andereLodgePagina, VERTROUWEN, type LodgePaginaData } from "@/data/lodge-paginas";
+import { andereLodgePagina, VERTROUWEN, PRAKTISCH, PRAKTISCH_NOOT, HUISREGELS,
+         HUISREGELS_EXTRA, ANNULEREN, type LodgePaginaData } from "@/data/lodge-paginas";
 import { PRICE_FROM_EUR } from "@/lib/site";
 import { LODGE_PHONE_DISPLAY, LODGE_PHONE_E164 } from "@/data/lodge";
 
@@ -164,22 +166,68 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
             </div>
           </section>
 
-          <hr className="lpx-scheiding" />
+          {/* Praktische informatie, huisregels en annuleren stonden als drie
+            * losse blokken onder elkaar, elk met een eigen streep erboven.
+            * Drie objecten die hetzelfde zeggen — "dit is het kleine
+            * lettertje" — lezen rustiger als één object met lijnen erbinnen,
+            * en houden de aandacht bij het verhaal erboven. */}
+          <div className="lpx-praktisch">
+            <section aria-labelledby="lpx-praktisch">
+              <h2 id="lpx-praktisch" className="lpx-h3">Praktische informatie</h2>
+              <dl className="lpx-gegevens">
+                {PRAKTISCH.map((r) => (
+                  <Fragment key={r.label}>
+                    <dt>{r.label}</dt>
+                    <dd>{r.waarde}</dd>
+                  </Fragment>
+                ))}
+              </dl>
+              <p className="lpx-kaart-noot">{PRAKTISCH_NOOT}</p>
+            </section>
 
-          <section aria-labelledby="lpx-prijs">
-            <h2 id="lpx-prijs" className="lpx-h2">Prijs en verblijfsvorm</h2>
-            <p className="lpx-alinea">
-              De prijs begint bij €{PRICE_FROM_EUR} per nacht voor de hele lodge, niet per persoon.
-              Losse nachten verhuren wij niet: er zijn twee wisseldagen — maandag en vrijdag — en
-              daarmee drie vormen: midweek (ma&nbsp;–&nbsp;vr), weekend (vr&nbsp;–&nbsp;zo) of de
-              hele week (ma&nbsp;–&nbsp;zo). Boekingskosten rekenen wij niet, omdat u rechtstreeks
-              bij de eigenaar boekt.
+            <section aria-labelledby="lpx-huisregels">
+              <h2 id="lpx-huisregels" className="lpx-h3">Huisregels</h2>
+              <ul className="lpx-regels">
+                {HUISREGELS.map((r) => (
+                  <li key={r.tekst}>
+                    <Icoon naam={r.icoon} kleur="#8A6F2E" maat={18} />
+                    {r.tekst}
+                  </li>
+                ))}
+              </ul>
+              <p className="lpx-subkop">Aanvullende huisregels</p>
+              <ul className="lpx-stippen">
+                {HUISREGELS_EXTRA.map((r) => <li key={r}>{r}</li>)}
+              </ul>
+            </section>
+
+            <section aria-labelledby="lpx-annuleren">
+              <h2 id="lpx-annuleren" className="lpx-h3">Annuleren</h2>
+              <ul className="lpx-staffel">
+                {ANNULEREN.map((a) => (
+                  <li key={a.periode}>
+                    <span className="lpx-staffel-periode">{a.periode}</span>
+                    {a.bij && <span className="lpx-staffel-bij">{a.bij}</span>}
+                    <span className={`lpx-staffel-deel${a.niets ? " lpx-staffel-deel--niets" : ""}`}>
+                      {a.deel}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="lpx-kaart-noot">
+                Omboeken kan tot 30 dagen voor aankomst, na goedkeuring en afhankelijk van
+                beschikbaarheid; daarvoor geldt € 25 wijzigingskosten. De volledige voorwaarden
+                staan in de <Link href="/terms" className="lpx-link">algemene voorwaarden</Link> —
+                dit is de samenvatting die er voor uw boeking toe doet.
+              </p>
+            </section>
+
+            <p className="lpx-vraag">
+              Staat iets er niet bij? Bel of app{" "}
+              <a href={`tel:${LODGE_PHONE_E164}`} className="lpx-link">{LODGE_PHONE_DISPLAY}</a> —
+              u spreekt de eigenaar, niet een callcenter.
             </p>
-            <p className="lpx-alinea">
-              Liever even overleggen? Bel of app{" "}
-              <a href={`tel:${LODGE_PHONE_E164}`} className="lpx-link">{LODGE_PHONE_DISPLAY}</a>.
-            </p>
-          </section>
+          </div>
         </main>
 
         {/* De aanvraagkolom schuift op een breed scherm over de onderrand

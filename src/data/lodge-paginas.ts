@@ -12,6 +12,8 @@
  * feitelijke claim die je niet kunt waarmaken.
  */
 
+import { PRICE_FROM_EUR } from "@/lib/site";
+
 export interface LodgeFoto {
   src: string;
   alt: string;
@@ -144,6 +146,51 @@ const EIK: LodgePaginaData = {
     "Digitale sloten: inchecken kan tot middernacht",
   ],
 };
+
+/* ── De praktische kaart ──
+ * Praktische informatie, huisregels en annuleren zijn in de seed voor
+ * beide lodges woordelijk gelijk, dus staan ze hier één keer. Wijkt er
+ * ooit iets af per lodge, dan verhuizen ze naar LodgePaginaData.
+ *
+ * "Huisdieren toegestaan (€25)" staat zo in de huisregels van de huidige
+ * pagina, terwijl de veelgestelde vragen op diezelfde pagina zeggen "in
+ * overleg". Hier één formulering, zodat de pagina zichzelf niet
+ * tegenspreekt — en dezelfde als bij de voorzieningen hierboven.
+ */
+export const PRAKTISCH: { label: string; waarde: string }[] = [
+  { label: "Geschikt voor", waarde: "1 – 4 personen" },
+  { label: "Verhuurperiodes", waarde: "Midweek (ma – vr), weekend (vr – zo) of week (ma – zo)" },
+  { label: "Inchecken", waarde: "Van 15:00 tot 21:00" },
+  { label: "Uitchecken", waarde: "Uiterlijk 11:00" },
+  { label: "Prijs", waarde: `Vanaf € ${PRICE_FROM_EUR},- per nacht voor de hele lodge, niet per persoon` },
+  { label: "Bijkomende kosten", waarde: "Eindschoonmaak en toeristenbelasting, apart vermeld. Geen boekingskosten." },
+];
+
+export const PRAKTISCH_NOOT =
+  "Later aankomen dan 21:00 kan zonder extra kosten: de lodge heeft digitale sloten die tot middernacht werken, en er is geen receptie waar u zich hoeft te melden.";
+
+export const HUISREGELS: { icoon: string; tekst: string }[] = [
+  { icoon: "nietRoken", tekst: "Niet roken binnen" },
+  { icoon: "huisdier", tekst: "Hond in overleg (€ 25)" },
+  { icoon: "geenFeest", tekst: "Geen feesten of evenementen" },
+];
+
+export const HUISREGELS_EXTRA: string[] = [
+  "Tussen 22:00 en 08:00 uur geldt de nachtrust.",
+  "Roken mag buiten, op de daarvoor bestemde plek.",
+  "Alleen de directe omgeving van deze accommodatie is vuurwerkvrij.",
+];
+
+/* De staffel stond als vier zinnen met vinkjes ervoor. Een vinkje belooft
+ * iets goeds, en "geen restitutie" is dat niet — als percentages onder
+ * elkaar is het in één blik te overzien. */
+export const ANNULEREN: { periode: string; deel: string; bij?: string; niets?: boolean }[] = [
+  { periode: "Tot 60 dagen voor aankomst", deel: "100%", bij: "Op € 25 administratiekosten na" },
+  { periode: "60 tot 30 dagen voor aankomst", deel: "70%" },
+  { periode: "30 tot 14 dagen voor aankomst", deel: "50%" },
+  { periode: "14 tot 7 dagen voor aankomst", deel: "25%" },
+  { periode: "Binnen 7 dagen voor aankomst", deel: "0%", bij: "Geen restitutie", niets: true },
+];
 
 export const LODGE_PAGINAS: LodgePaginaData[] = [HEIDE, EIK];
 

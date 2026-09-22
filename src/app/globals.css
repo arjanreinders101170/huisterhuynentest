@@ -866,13 +866,101 @@ html { scroll-behavior: smooth; }
 
 .lpx-scheiding { border: 0; border-top: 1px solid #E0D8C8; margin: 34px 0; }
 
+/* Eén kleur voor elke sectiekop. Stond eerder deels in inkt en deels in
+ * groen, waardoor twee koppen op dezelfde pagina twee verschillende
+ * rangen leken te hebben. */
 .lpx-h2 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(22px, 2.8vw, 30px);
   font-weight: 700;
   line-height: 1.2;
-  color: #2A2418;
+  color: #2F4F3E;
   margin: 0 0 12px;
+}
+/* De koppen binnen de praktische kaart: een rang lager dan de koppen
+ * op de pagina zelf, want ze horen bij één blok. */
+.lpx-h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(19px, 2.2vw, 23px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #2F4F3E;
+  margin: 0 0 14px;
+}
+
+/* ── Praktische kaart ── */
+.lpx-praktisch {
+  background: #FDFBF6;
+  border: 1px solid #E0D8C8;
+  border-radius: 16px;
+  padding: clamp(22px, 3vw, 32px);
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.lpx-praktisch section + section { border-top: 1px solid #E0D8C8; padding-top: 30px; }
+
+/* Label links, waarde rechts, met een haarlijn per regel. De labels delen
+ * één kolombreedte, zodat de waarden één linkerrand vormen. */
+.lpx-gegevens { margin: 0; display: grid; grid-template-columns: minmax(130px, 170px) minmax(0, 1fr); }
+.lpx-gegevens dt {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: #8A6F2E;
+  padding: 13px 16px 13px 0; border-top: 1px solid #E0D8C8; line-height: 1.5;
+}
+.lpx-gegevens dd {
+  margin: 0; font-size: 14.5px; line-height: 1.6; color: #2A2418;
+  padding: 12px 0; border-top: 1px solid #E0D8C8;
+}
+.lpx-gegevens dt:first-of-type,
+.lpx-gegevens dt:first-of-type + dd { border-top: 0; padding-top: 0; }
+
+.lpx-kaart-noot {
+  font-size: 12.5px; line-height: 1.7; color: #5A534C;
+  margin: 14px 0 0; padding-top: 14px; border-top: 1px solid #E0D8C8;
+}
+
+/* De drie regels die er het meest toe doen als losse chips; de rest
+ * eronder als gewone opsomming. */
+.lpx-regels { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 0 0 18px; padding: 0; }
+.lpx-regels li {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: #fff; border: 1px solid #E0D8C8; border-radius: 999px;
+  padding: 8px 15px 8px 13px; font-size: 13px; font-weight: 500;
+}
+.lpx-subkop {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: #8A6F2E; margin: 0 0 9px;
+}
+.lpx-stippen { margin: 0; padding-left: 18px; }
+.lpx-stippen li { font-size: 13.5px; line-height: 1.7; color: #5A534C; }
+
+/* De staffel: de periode links, wat u terugkrijgt rechts. Stond eerder
+ * als vier zinnen met vinkjes ervoor — maar een vinkje belooft iets
+ * goeds, en "geen restitutie" is dat niet. */
+.lpx-staffel { margin: 0; padding: 0; list-style: none; }
+.lpx-staffel li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline; gap: 4px 18px;
+  padding: 12px 0; border-top: 1px solid #E0D8C8;
+}
+.lpx-staffel li:first-child { border-top: 0; padding-top: 0; }
+.lpx-staffel-periode { font-size: 14.5px; line-height: 1.5; color: #2A2418; }
+.lpx-staffel-bij { grid-column: 1; font-size: 12.5px; line-height: 1.6; color: #5A534C; }
+.lpx-staffel-deel {
+  grid-row: 1; grid-column: 2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px; font-weight: 700; color: #2F4F3E;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.lpx-staffel-deel--niets { color: #5A534C; }
+
+/* Sluitregel van de kaart: geen eigen blok met een lijn erboven, maar een
+ * zin die de kaart afmaakt. */
+.lpx-vraag {
+  margin: 0; font-size: 13.5px; line-height: 1.7; color: #5A534C;
+  border-top: 1px solid #E0D8C8; padding-top: 22px;
 }
 
 .lpx-inventaris {
@@ -1030,6 +1118,15 @@ html { scroll-behavior: smooth; }
 /* ── Tablet: de navigatie past niet meer naast de rest ── */
 @media (max-width: 1100px) {
   .lpx-nav { display: none; }
+}
+
+/* Onder de 520px is een labelkolom van 130px een derde van het scherm;
+ * label en waarde gaan daar onder elkaar. */
+@media (max-width: 520px) {
+  .lpx-gegevens { grid-template-columns: minmax(0, 1fr); }
+  .lpx-gegevens dt { padding: 12px 0 0; }
+  .lpx-gegevens dd { border-top: 0; padding: 4px 0 12px; }
+  .lpx-gegevens dt:first-of-type + dd { padding-top: 4px; }
 }
 
 /* ── Eén kolom ──
