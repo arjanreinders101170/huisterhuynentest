@@ -985,26 +985,58 @@ html { scroll-behavior: smooth; }
 }
 .lpx-wa:hover { border-color: #2F4F3E; background: rgba(47,79,62,.05); }
 
-.lpx-inventaris {
+/* ── De vier waarop iemand deze lodge kiest ──
+ * Stonden als tien vinkjes onder elkaar. Een vinkje zegt alleen "dit is
+ * er ook", en tien gelijkwaardige regels laten het bijzondere wegvallen
+ * tussen de vaatwasser en de waterkoker. Vier stuks, elk met zijn eigen
+ * tekening in een rondje, lezen als vier redenen. */
+.lpx-toppers {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  gap: 11px 30px;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 16px 24px;
   list-style: none;
-  margin: 20px 0 26px;
+  margin: 22px 0 26px;
   padding: 0;
 }
-.lpx-inventaris li {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: #2A2418;
+.lpx-toppers li { display: flex; align-items: flex-start; gap: 13px; }
+.lpx-topper-ic {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 999px; background: rgba(47,79,62,.08);
 }
-/* Het vinkje is versiering naast een opsomming die zelf al een lijst is;
- * een screenreader hoort het niet te spellen. Vandaar aria-hidden in de
- * component en hier alleen de vorm. */
-.lpx-vink { color: #8A6F2E; font-weight: 700; line-height: 1.5; flex-shrink: 0; }
+.lpx-topper-tekst {
+  font-size: 14.5px; line-height: 1.5; font-weight: 500;
+  color: #2A2418; padding-top: 8px;
+}
+
+/* ── De volledige lijst ── */
+.lpx-alle {
+  border-top: 1px solid #E0D8C8;
+  margin-top: 4px; padding-top: 24px;
+  display: flex; flex-direction: column; gap: 24px;
+  animation: lpxAlleOpen .22s ease both;
+}
+@keyframes lpxAlleOpen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .lpx-alle { animation: none; } }
+.lpx-alle-groep {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: #8A6F2E; margin: 0 0 12px;
+}
+.lpx-alle-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 10px 24px; list-style: none; margin: 0; padding: 0;
+}
+.lpx-alle-items li {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; line-height: 1.5; color: #2A2418;
+}
+
+.lpx-knop-chevron { transition: transform .2s ease; }
+.lpx-knop-rand[aria-expanded="true"] .lpx-knop-chevron { transform: rotate(180deg); }
 
 .lpx-knoppen { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
 .lpx-knop-rand {

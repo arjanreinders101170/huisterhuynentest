@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { reserveerHref } from "@/lib/site";
 import { stickyBlogCta } from "@/lib/blog-cta";
-import { openAanvraag } from "@/lib/reserveer-params";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
  * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
@@ -24,6 +23,11 @@ const COPY = {
 
 export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string; locale?: "nl" | "de" }) {
   const pathname = usePathname();
+  /* Niet op de lodgepagina in de nieuwe opmaak. Daar staat de knop naar het
+   * aanvraagpaneel in de bovenbalk, en die blijft staan bij het scrollen —
+   * een tweede vaste knop onderaan zegt hetzelfde en eet schermruimte. */
+  if (pathname?.startsWith("/preview/")) return null;
+
   const taal = locale ?? (pathname === "/de" || pathname?.startsWith("/de/") ? "de" : "nl");
   const copy = COPY[taal];
   // De balk hangt in de root-layout en krijgt van niemand een slug mee; het pad
@@ -36,13 +40,7 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   // een betere volgende stap dan een leeg boekingsformulier.
   const blogSlug = taal === "nl" && pathname?.startsWith("/blog/") ? pathname.slice("/blog/".length) : null;
   const blog = blogSlug ? stickyBlogCta(blogSlug) : null;
-  // Op de lodgepagina in de nieuwe opmaak staat het formulier op de pagina
-  // zelf. De balk hoort de bezoeker dan naar dat blok te brengen en niet
-  // naar de homepage, waar hij opnieuw zou moeten kiezen welke lodge hij
-  // al gekozen had.
-  const opLodgePagina = Boolean(pathname?.startsWith("/preview/"));
-  const eigenFormulier = opLodgePagina ? "#aanvraag" : null;
-  const doel = bookingHref ?? eigenFormulier ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
+  const doel = bookingHref ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
   const label = blog?.knop ?? copy.cta;
 
   return (
@@ -61,13 +59,6 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
         <DirectBookingUSP locale={taal} tone="onDark" size={10.5} style={{ gap: "4px 12px" }} />
         <Link
           href={doel}
-          onClick={(e) => {
-            // Daar is #aanvraag een paneel dat nog dicht is; de pagina zet
-            // het open, de balk springt er niet heen.
-            if (!opLodgePagina) return;
-            e.preventDefault();
-            openAanvraag();
-          }}
           style={{
             textAlign: "center", padding: "13px 0", borderRadius: 10,
             background: "#B49A5E", color: "#1A2E24", fontWeight: 700, fontSize: 15,

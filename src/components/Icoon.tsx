@@ -53,6 +53,10 @@ export const ICOON_PADEN: Record<string, string> = {
   blad: "M4 20c0-8 5-13 16-14 0 11-5 15-12 15H4zM8 16c2-4 5-6 8-7",
   ster: "M12 3l2.6 5.5 5.9.8-4.3 4.3 1 6.1-5.2-2.9-5.2 2.9 1-6.1L3.5 9.3l5.9-.8z",
   klok: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
+  /* Heuvels met een zon erboven: het vergezicht, niet een boom of een
+   * raam — dat laatste zou over het gebouw gaan in plaats van over wat
+   * je ziet. */
+  uitzicht: "M2 18h20M3 18l4.5-6 3.5 4.5L14 12l7 6M17.5 6.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
   sleutel: "M15 3a6 6 0 0 0-5.6 8.2L3 17.6V21h3.4l1-1v-2h2v-2h2l1.4-1.4A6 6 0 1 0 15 3zM16.5 7.5h.01",
   /* De spraakbel met hoorn: in de lijnstijl van de rest van de set, niet
    * het ingekleurde merklogo. Naast het woord "App" is dat genoeg. */

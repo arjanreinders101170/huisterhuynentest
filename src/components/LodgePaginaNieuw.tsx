@@ -8,7 +8,6 @@ import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { andereLodgePagina, VERTROUWEN, PRAKTISCH, PRAKTISCH_NOOT, HUISREGELS,
          HUISREGELS_EXTRA, ANNULEREN, type LodgePaginaData } from "@/data/lodge-paginas";
 import { PRICE_FROM_EUR } from "@/lib/site";
-import { OPEN_AANVRAAG_EVENT } from "@/lib/reserveer-params";
 import { LODGE_PHONE_DISPLAY, LODGE_WHATSAPP_URL } from "@/data/lodge";
 
 /* Zelfde laadstrategie als op de homepage: het formulier leest de query en
@@ -51,6 +50,7 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
    *
    * De grens staat ook in globals.css (.lpx-aanvraag); verander ze samen. */
   const [paneelOpen, setPaneelOpen] = useState(false);
+  const [alleOpen, setAlleOpen] = useState(false);
   const sluitKnop = useRef<HTMLButtonElement>(null);
   const kwamVan = useRef<HTMLElement | null>(null);
 
@@ -65,14 +65,6 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
     e.preventDefault();
     kwamVan.current = e.currentTarget as HTMLElement;
     setPaneelOpen(true);
-  }, []);
-
-  /* De vaste balk onderaan op een telefoon zegt het hier; hij staat in de
-   * root-layout en kan dus niet rechtstreeks bij deze toestand. */
-  useEffect(() => {
-    const opVerzoek = () => setPaneelOpen(true);
-    window.addEventListener(OPEN_AANVRAAG_EVENT, opVerzoek);
-    return () => window.removeEventListener(OPEN_AANVRAAG_EVENT, opVerzoek);
   }, []);
 
   useEffect(() => {
@@ -204,22 +196,58 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
               staat, zodat u niet hoeft te mailen om te weten of u een koffiezetapparaat moet
               meenemen.
             </p>
-            <ul className="lpx-inventaris">
-              {data.inventaris.map((i) => (
-                <li key={i}>
-                  <span className="lpx-vink" aria-hidden>✓</span>
-                  {i}
+            {/* Vier, niet tien. Een vinkje zegt alleen "dit is er ook", en
+              * tien gelijkwaardige regels laten het bijzondere wegvallen
+              * tussen de vaatwasser en de waterkoker. */}
+            <ul className="lpx-toppers">
+              {data.toppers.map((t) => (
+                <li key={t.tekst}>
+                  <span className="lpx-topper-ic">
+                    <Icoon naam={t.icoon} kleur="#2F4F3E" maat={20} />
+                  </span>
+                  <span className="lpx-topper-tekst">{t.tekst}</span>
                 </li>
               ))}
             </ul>
             <div className="lpx-knoppen">
-              <Link href={data.canoniekePagina} className="lpx-knop-rand">
-                Bekijk alle faciliteiten <span aria-hidden>→</span>
-              </Link>
+              {/* Klapt de lijst hieronder open in plaats van de bezoeker
+                * naar een andere pagina te sturen, waar hij de rest van dit
+                * verhaal kwijt is. */}
+              <button
+                type="button"
+                className="lpx-knop-rand"
+                aria-expanded={alleOpen}
+                aria-controls="lpx-alle"
+                onClick={() => setAlleOpen((o) => !o)}
+              >
+                {alleOpen ? "Verberg faciliteiten" : "Bekijk alle faciliteiten"}
+                <svg className="lpx-knop-chevron" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                     strokeLinejoin="round" aria-hidden focusable="false">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
               <Link href={ander.canoniekePagina} className="lpx-knop-tekst">
                 Of vergelijk met {ander.naam}
               </Link>
             </div>
+            {alleOpen && (
+              <div className="lpx-alle" id="lpx-alle">
+                {data.faciliteiten.map((g) => (
+                  <div key={g.groep}>
+                    <p className="lpx-alle-groep">{g.groep}</p>
+                    <ul className="lpx-alle-items">
+                      {g.items.map((it) => (
+                        <li key={it.tekst}>
+                          <Icoon naam={it.icoon} kleur="#8A6F2E" maat={17} />
+                          {it.tekst}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Praktische informatie, huisregels en annuleren stonden als drie

@@ -26,6 +26,12 @@ export interface LodgeVoorziening {
   tekst: string;
 }
 
+/** Eén groep in de volledige faciliteitenlijst. */
+export interface LodgeFaciliteitGroep {
+  groep: string;
+  items: LodgeVoorziening[];
+}
+
 export interface LodgePaginaData {
   /** Sleutel in de URL van de preview: /preview/<key>. */
   key: "de-heide" | "de-eik";
@@ -45,8 +51,13 @@ export interface LodgePaginaData {
   raster: LodgeFoto[];
   voorzieningen: LodgeVoorziening[];
   labels: string[];
-  /** "Wat er in de lodge zit" — in twee kolommen afgebeeld. */
-  inventaris: string[];
+  /* De vier dingen waarop iemand deze lodge kiest. Bewust vier en niet
+   * tien: een opsomming van tien gelijkwaardige regels leest als een
+   * inventarislijst, en dan valt het bijzondere weg tussen de vaatwasser
+   * en de waterkoker. De rest staat achter "Bekijk alle faciliteiten". */
+  toppers: LodgeVoorziening[];
+  /** De volledige lijst, per ruimte gegroepeerd. */
+  faciliteiten: LodgeFaciliteitGroep[];
 }
 
 const HEIDE: LodgePaginaData = {
@@ -84,17 +95,58 @@ const HEIDE: LodgePaginaData = {
     { icoon: "sleutel", tekst: "Self check-in tot middernacht" },
   ],
   labels: ["Vrij uitzicht, geen buren", "Midden in de natuur", "Ideaal voor stellen & gezinnen", "Privé-hottub"],
-  inventaris: [
-    "Twee slaapkamers: een 2-persoonsbed en twee 1-persoonsbedden",
-    "Badkamer met douche en toilet",
-    "Privé-hottub op het terras (38 °C, het hele jaar)",
-    "Volledig uitgeruste keuken met oven en vaatwasser",
-    "Koffieapparaat, waterkoker, koelkast en combimagnetron",
-    "Woonkamer met eettafel voor vier en televisie",
-    "Vrij uitzicht over heide en bos, geen ander gebouw in beeld",
-    "60 m² voor maximaal vier personen",
-    "Gratis parkeren op eigen terrein",
-    "Digitale sloten: inchecken kan tot middernacht",
+  toppers: [
+    { icoon: "hottub", tekst: "Privé-hottub op het terras, het hele jaar op 38 °C" },
+    { icoon: "uitzicht", tekst: "Vrij uitzicht over heide en bos, geen ander gebouw in beeld" },
+    { icoon: "slaapkamer", tekst: "Twee slaapkamers, 60 m² voor maximaal vier personen" },
+    { icoon: "sleutel", tekst: "Digitale sloten: inchecken kan tot middernacht" },
+  ],
+  faciliteiten: [
+    {
+      groep: "Slapen en badkamer",
+      items: [
+        { icoon: "bed", tekst: "Slaapkamer 1 — 2-persoonsbed" },
+        { icoon: "bed", tekst: "Slaapkamer 2 — twee 1-persoonsbedden" },
+        { icoon: "douche", tekst: "Douche" },
+        { icoon: "toilet", tekst: "Toilet" },
+      ],
+    },
+    {
+      groep: "Keuken",
+      items: [
+        { icoon: "fornuis", tekst: "Fornuis met oven" },
+        { icoon: "vaatwasser", tekst: "Vaatwasser" },
+        { icoon: "koelkast", tekst: "Koelkast" },
+        { icoon: "magnetron", tekst: "Combimagnetron" },
+        { icoon: "koffie", tekst: "Koffieapparaat" },
+        { icoon: "waterkoker", tekst: "Waterkoker" },
+      ],
+    },
+    {
+      groep: "Woonkamer",
+      items: [
+        { icoon: "tafel", tekst: "Eettafel met stoelen voor vier" },
+        { icoon: "tv", tekst: "Televisie" },
+        { icoon: "verwarming", tekst: "Verwarming" },
+      ],
+    },
+    {
+      groep: "Buiten",
+      items: [
+        { icoon: "hottub", tekst: "Privé-hottub op het afgeschermde terras" },
+        { icoon: "uitzicht", tekst: "Vrij uitzicht over heide en bos" },
+      ],
+    },
+    {
+      groep: "Praktisch",
+      items: [
+        { icoon: "wifi", tekst: "Gratis snel WiFi" },
+        { icoon: "parkeren", tekst: "Gratis parkeren op eigen terrein" },
+        { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
+        { icoon: "sleutel", tekst: "Digitale sloten, inchecken tot middernacht" },
+        { icoon: "huisdier", tekst: "Hond in overleg (€ 25)" },
+      ],
+    },
   ],
 };
 
@@ -133,17 +185,59 @@ const EIK: LodgePaginaData = {
     { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
   ],
   labels: ["Ruimste van de twee", "Sauna én hottub", "Samen buiten eten", "Het hele jaar genieten"],
-  inventaris: [
-    "Ruimte voor maximaal vier personen, verdeeld over twee slaapplekken",
-    "Hoge plafonds — ruimer dan de vierkante meters doen vermoeden",
-    "Eigen barrelsauna in de tuin, zonder reservering of tijdslot",
-    "Privé-hottub op het terras (38 °C, het hele jaar)",
-    "Buitenkeuken met BBQ onder de eiken",
-    "Volledig uitgeruste binnenkeuken met oven en vaatwasser",
-    "Koffieapparaat, waterkoker, koelkast en combimagnetron",
-    "Eettafel op hetzelfde terras als de buitenkeuken",
-    "Gratis parkeren op eigen terrein",
-    "Digitale sloten: inchecken kan tot middernacht",
+  toppers: [
+    { icoon: "sauna", tekst: "Eigen barrelsauna in de tuin, zonder reservering of tijdslot" },
+    { icoon: "hottub", tekst: "Privé-hottub op het terras, het hele jaar op 38 °C" },
+    { icoon: "bbq", tekst: "Buitenkeuken met BBQ onder de eiken" },
+    { icoon: "personen", tekst: "Hoge plafonds, ruimte voor maximaal vier personen" },
+  ],
+  faciliteiten: [
+    {
+      groep: "Slapen en badkamer",
+      items: [
+        { icoon: "bed", tekst: "Twee slaapplekken voor vier personen" },
+        { icoon: "douche", tekst: "Douche" },
+        { icoon: "toilet", tekst: "Toilet" },
+      ],
+    },
+    {
+      groep: "Keuken",
+      items: [
+        { icoon: "fornuis", tekst: "Fornuis met oven" },
+        { icoon: "vaatwasser", tekst: "Vaatwasser" },
+        { icoon: "koelkast", tekst: "Koelkast" },
+        { icoon: "magnetron", tekst: "Combimagnetron" },
+        { icoon: "koffie", tekst: "Koffieapparaat" },
+        { icoon: "waterkoker", tekst: "Waterkoker" },
+      ],
+    },
+    {
+      groep: "Woonkamer",
+      items: [
+        { icoon: "tafel", tekst: "Eettafel met stoelen voor vier" },
+        { icoon: "tv", tekst: "Televisie" },
+        { icoon: "verwarming", tekst: "Verwarming" },
+      ],
+    },
+    {
+      groep: "Buiten",
+      items: [
+        { icoon: "sauna", tekst: "Eigen barrelsauna in de tuin" },
+        { icoon: "hottub", tekst: "Privé-hottub op het terras" },
+        { icoon: "bbq", tekst: "Buitenkeuken met BBQ" },
+        { icoon: "tafel", tekst: "Eettafel op hetzelfde terras" },
+      ],
+    },
+    {
+      groep: "Praktisch",
+      items: [
+        { icoon: "wifi", tekst: "Gratis snel WiFi" },
+        { icoon: "parkeren", tekst: "Gratis parkeren op eigen terrein" },
+        { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
+        { icoon: "sleutel", tekst: "Digitale sloten, inchecken tot middernacht" },
+        { icoon: "huisdier", tekst: "Hond in overleg (€ 25)" },
+      ],
+    },
   ],
 };
 
