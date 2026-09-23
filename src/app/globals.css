@@ -1151,12 +1151,72 @@ html { scroll-behavior: smooth; }
   .lpx-gegevens dt:first-of-type + dd { padding-top: 4px; }
 }
 
-/* ── Eén kolom ──
- * De aanvraagkaart kan hier niet meer over de hero schuiven (er staat
- * geen kolom naast) en valt dus gewoon onder de tekst. */
+/* ── Het aanvraagpaneel op een smal scherm ──
+ * Onder de 1000px staat er geen kolom meer naast de tekst, en dan duwt
+ * het formulier — met keuzes, datums en zes velden een scherm hoog — de
+ * hele pagina omlaag. Wie wil lezen scrollt er eerst langs, wie wil
+ * aanvragen scrollt ernaartoe.
+ *
+ * Daarom hoort het daar niet in de pagina maar erachter: de knop staat
+ * bovenaan altijd in beeld, en het paneel schuift eroverheen. Op een
+ * breed scherm verandert er niets.
+ *
+ * Dezelfde grens staat in LodgePaginaNieuw.tsx; verander ze samen. */
+.lpx-waas { display: none; }
+.lpx-paneel-balk { display: none; }
+
 @media (max-width: 1000px) {
   .lpx-body { grid-template-columns: minmax(0, 1fr); }
-  .lpx-aanvraag { margin-top: 8px; }
+
+  .lpx-waas {
+    display: block;
+    position: fixed; inset: 0; z-index: 190;
+    background: rgba(20, 18, 16, .45);
+    opacity: 0; transition: opacity .25s ease;
+  }
+  .lpx-waas--open { opacity: 1; }
+
+  .lpx-aanvraag {
+    position: fixed; inset: 0; z-index: 200;
+    margin: 0; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #FDFBF6;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+    transform: translateX(100%);
+    transition: transform .28s ease;
+    visibility: hidden;
+  }
+  .lpx-aanvraag--open { transform: none; visibility: visible; }
+
+  /* Binnen het paneel is de kaart de pagina zelf: geen rand, geen
+   * schaduw, geen hoeken die van niets afsteken. */
+  .lpx-aanvraag-kaart {
+    border: 0; border-radius: 0; box-shadow: none;
+    min-height: 100%; padding: 0 var(--hth-gutter) 40px;
+  }
+
+  .lpx-paneel-balk {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; position: sticky; top: 0; z-index: 2;
+    margin: 0 calc(var(--hth-gutter) * -1) 18px;
+    padding: 14px var(--hth-gutter);
+    background: #FDFBF6; border-bottom: 1px solid #E0D8C8;
+  }
+  .lpx-paneel-titel {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 17px; font-weight: 700; color: #2A2418;
+  }
+  .lpx-paneel-sluit {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; margin-right: -9px;
+    border: 0; border-radius: 999px; background: transparent;
+    color: #2A2418; cursor: pointer;
+  }
+  .lpx-paneel-sluit:hover { background: rgba(47,79,62,.07); }
+}
+
+@media (max-width: 1000px) and (prefers-reduced-motion: reduce) {
+  .lpx-aanvraag, .lpx-waas { transition: none; }
 }
 
 /* ── Telefoon: de vier tegels onder de foto in plaats van ernaast ── */
@@ -1179,5 +1239,4 @@ html { scroll-behavior: smooth; }
   .lpx-merk-naam { font-size: 17px; }
   .lpx-kop-cta { padding: 10px 13px; font-size: 12.5px; }
   .lpx-taal { display: none; }
-  .lpx-aanvraag-kaart { padding: 16px; border-radius: 14px; }
 }

@@ -29,3 +29,15 @@ export function kiesLodge(lodge: LodgeParam): void {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent<LodgeParam>(KIES_LODGE_EVENT, { detail: lodge }));
 }
+
+/* De vaste balk onderaan op een telefoon wees naar #aanvraag. Op de
+ * lodgepagina staat het formulier daar niet meer in de pagina maar in een
+ * paneel, en dan landt die ankersprong op een blok dat verborgen is: een
+ * knop die niets doet. Dezelfde oplossing als hierboven — de balk zegt het
+ * tegen de pagina in plaats van ernaartoe te springen. */
+export const OPEN_AANVRAAG_EVENT = "hth:open-aanvraag";
+
+export function openAanvraag(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(OPEN_AANVRAAG_EVENT));
+}

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { reserveerHref } from "@/lib/site";
 import { stickyBlogCta } from "@/lib/blog-cta";
+import { openAanvraag } from "@/lib/reserveer-params";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
  * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
@@ -39,7 +40,8 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   // zelf. De balk hoort de bezoeker dan naar dat blok te brengen en niet
   // naar de homepage, waar hij opnieuw zou moeten kiezen welke lodge hij
   // al gekozen had.
-  const eigenFormulier = pathname?.startsWith("/preview/") ? "#aanvraag" : null;
+  const opLodgePagina = Boolean(pathname?.startsWith("/preview/"));
+  const eigenFormulier = opLodgePagina ? "#aanvraag" : null;
   const doel = bookingHref ?? eigenFormulier ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
   const label = blog?.knop ?? copy.cta;
 
@@ -59,6 +61,13 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
         <DirectBookingUSP locale={taal} tone="onDark" size={10.5} style={{ gap: "4px 12px" }} />
         <Link
           href={doel}
+          onClick={(e) => {
+            // Daar is #aanvraag een paneel dat nog dicht is; de pagina zet
+            // het open, de balk springt er niet heen.
+            if (!opLodgePagina) return;
+            e.preventDefault();
+            openAanvraag();
+          }}
           style={{
             textAlign: "center", padding: "13px 0", borderRadius: 10,
             background: "#B49A5E", color: "#1A2E24", fontWeight: 700, fontSize: 15,

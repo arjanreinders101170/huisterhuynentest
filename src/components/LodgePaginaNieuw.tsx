@@ -1,5 +1,5 @@
 "use client";
-import { Fragment } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { andereLodgePagina, VERTROUWEN, PRAKTISCH, PRAKTISCH_NOOT, HUISREGELS,
          HUISREGELS_EXTRA, ANNULEREN, type LodgePaginaData } from "@/data/lodge-paginas";
 import { PRICE_FROM_EUR } from "@/lib/site";
+import { OPEN_AANVRAAG_EVENT } from "@/lib/reserveer-params";
 import { LODGE_PHONE_DISPLAY, LODGE_WHATSAPP_URL } from "@/data/lodge";
 
 /* Zelfde laadstrategie als op de homepage: het formulier leest de query en
@@ -40,6 +41,61 @@ function Wordmark() {
 export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
   const ander = andereLodgePagina(data.key);
 
+  /* Onder de 1000px staat er geen kolom meer naast de tekst, en dan duwt
+   * het formulier — met keuzes, datums en zes velden een scherm hoog —
+   * de hele pagina omlaag. Wie wil lezen scrollt er eerst langs, wie wil
+   * aanvragen scrollt ernaartoe. Daar hoort het dus niet in de pagina
+   * maar erachter: de knop staat bovenaan altijd in beeld en het paneel
+   * schuift eroverheen. Op een breed scherm verandert er niets — daar is
+   * die kolom juist het hele idee.
+   *
+   * De grens staat ook in globals.css (.lpx-aanvraag); verander ze samen. */
+  const [paneelOpen, setPaneelOpen] = useState(false);
+  const sluitKnop = useRef<HTMLButtonElement>(null);
+  const kwamVan = useRef<HTMLElement | null>(null);
+
+  const sluit = useCallback(() => {
+    setPaneelOpen(false);
+    kwamVan.current?.focus();
+  }, []);
+
+  const opCta = useCallback((e: React.MouseEvent) => {
+    // Breed scherm: de ankersprong doet wat hij altijd deed.
+    if (!window.matchMedia("(max-width: 1000px)").matches) return;
+    e.preventDefault();
+    kwamVan.current = e.currentTarget as HTMLElement;
+    setPaneelOpen(true);
+  }, []);
+
+  /* De vaste balk onderaan op een telefoon zegt het hier; hij staat in de
+   * root-layout en kan dus niet rechtstreeks bij deze toestand. */
+  useEffect(() => {
+    const opVerzoek = () => setPaneelOpen(true);
+    window.addEventListener(OPEN_AANVRAAG_EVENT, opVerzoek);
+    return () => window.removeEventListener(OPEN_AANVRAAG_EVENT, opVerzoek);
+  }, []);
+
+  useEffect(() => {
+    if (!paneelOpen) return;
+    sluitKnop.current?.focus();
+    const vorige = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const opToets = (e: KeyboardEvent) => { if (e.key === "Escape") sluit(); };
+    /* Wie het paneel openzet en dan zijn scherm draait naar een breedte
+     * waar de kolom weer past, houdt anders een vastgezette pagina over. */
+    const breed = window.matchMedia("(min-width: 1001px)");
+    const opBreed = (e: MediaQueryListEvent) => { if (e.matches) sluit(); };
+
+    document.addEventListener("keydown", opToets);
+    breed.addEventListener("change", opBreed);
+    return () => {
+      document.body.style.overflow = vorige;
+      document.removeEventListener("keydown", opToets);
+      breed.removeEventListener("change", opBreed);
+    };
+  }, [paneelOpen, sluit]);
+
   return (
     <div className="lpx">
       {/* ── Bovenbalk ─────────────────────────────────────────────── */}
@@ -57,7 +113,7 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
               <span aria-hidden className="lpx-taal-punt">·</span>
               <span>DE</span>
             </a>
-            <a href="#aanvraag" className="lpx-kop-cta">
+            <a href="#aanvraag" className="lpx-kop-cta" onClick={opCta}>
               <span className="lpx-cta-lang">Bekijk beschikbaarheid</span>
               <span className="lpx-cta-kort">Beschikbaarheid</span>{" "}
               <span aria-hidden>→</span>
@@ -244,8 +300,29 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
         {/* De aanvraagkolom schuift op een breed scherm over de onderrand
          * van de hero heen en blijft daarna meelopen; op een smal scherm
          * valt hij gewoon onder de tekst. Zie .lpx-aanvraag in globals.css. */}
-        <aside className="lpx-aanvraag" id="aanvraag" aria-label="Aanvraagformulier">
+        <div
+          className={`lpx-waas${paneelOpen ? " lpx-waas--open" : ""}`}
+          onClick={sluit}
+          hidden={!paneelOpen}
+        />
+
+        <aside
+          className={`lpx-aanvraag${paneelOpen ? " lpx-aanvraag--open" : ""}`}
+          id="aanvraag"
+          aria-label="Aanvraagformulier"
+          {...(paneelOpen ? { role: "dialog", "aria-modal": true } : {})}
+        >
           <div className="lpx-aanvraag-kaart">
+            <div className="lpx-paneel-balk">
+              <span className="lpx-paneel-titel">Beschikbaarheid aanvragen</span>
+              <button type="button" className="lpx-paneel-sluit" onClick={sluit}
+                      ref={sluitKnop} aria-label="Sluiten">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     strokeWidth="1.8" strokeLinecap="round" aria-hidden focusable="false">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </div>
             {/* De prijs staat waar eerst de kop stond: dat is het eerste
               * wat een bezoeker in dit blok zoekt, en "Stel je aanvraag
               * samen" vertelde hem alleen wat hij al zag. Het bedrag komt
