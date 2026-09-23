@@ -171,7 +171,7 @@ export default function LandingPageDE() {
               fontFamily: T.serif, fontSize: 13, fontWeight: 700,
               color: T.gold, letterSpacing: "4px", textTransform: "uppercase", marginBottom: 10,
             }}>
-              Boutique Lodge · Zeijen · Drenthe
+              <span className="hth-hero-eyebrow-long">Boutique Lodge · </span>Zeijen · Drenthe
             </div>
             <h1 style={{
               fontFamily: T.serif, fontSize: "clamp(34px, 5.5vw, 56px)",
@@ -196,7 +196,7 @@ export default function LandingPageDE() {
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: "100%" }}>
-            <a href="#verfugbarkeit" className="hth-hero-cta" style={{
+            <a href="#verfugbarkeit" className="hth-hero-cta" data-hero-cta style={{
               background: T.gold,
               color: "#1A2E24",
               border: "none",

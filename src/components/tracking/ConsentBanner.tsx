@@ -20,6 +20,9 @@ const COPY = {
     bodyShort: "Wij gebruiken cookies voor statistieken en advertenties. U kiest zelf.",
     acceptAll: "Alles accepteren",
     necessaryOnly: "Alleen noodzakelijke",
+    /* Korte labels voor een telefoon, zodat beide knoppen naast elkaar passen. */
+    acceptShort: "Accepteren",
+    necessaryShort: "Alleen nodig",
     customize: "Voorkeuren aanpassen",
     save: "Voorkeuren opslaan",
     back: "Terug",
@@ -37,6 +40,8 @@ const COPY = {
     bodyShort: "Wir verwenden Cookies für Statistiken und Werbung. Sie entscheiden.",
     acceptAll: "Alle akzeptieren",
     necessaryOnly: "Nur notwendige",
+    acceptShort: "Akzeptieren",
+    necessaryShort: "Nur notwendige",
     customize: "Einstellungen anpassen",
     save: "Einstellungen speichern",
     back: "Zurück",
@@ -112,6 +117,15 @@ export function ConsentBanner() {
       document.body.style.paddingBottom = "";
     };
   }, [open, layer2]);
+
+  /* Zolang de keuze open staat, houdt globals.css de boekingsbalk op een
+   * telefoon verborgen: dan staat er onderaan maar één balk tegelijk. */
+  useEffect(() => {
+    if (!open) return;
+    const root = document.documentElement;
+    root.setAttribute("data-consent-open", "");
+    return () => root.removeAttribute("data-consent-open");
+  }, [open]);
 
   /* Escape sluit alleen de voorkeurenlaag; de keuze zelf blijft staan. */
   useEffect(() => {
@@ -267,10 +281,12 @@ export function ConsentBanner() {
         </p>
         <div className="hth-consent-actions">
           <ConsentButton onClick={acceptAll} variant="primary">
-            {t.acceptAll}
+            <span className="hth-consent-long">{t.acceptAll}</span>
+            <span className="hth-consent-short">{t.acceptShort}</span>
           </ConsentButton>
           <ConsentButton onClick={necessaryOnly} variant="secondary">
-            {t.necessaryOnly}
+            <span className="hth-consent-long">{t.necessaryOnly}</span>
+            <span className="hth-consent-short">{t.necessaryShort}</span>
           </ConsentButton>
           <ConsentButton onClick={() => setLayer2(true)} variant="tertiary" className="hth-consent-prefs-btn">
             {t.customize}
