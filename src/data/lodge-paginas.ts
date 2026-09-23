@@ -92,7 +92,7 @@ const HEIDE: LodgePaginaData = {
     { icoon: "parkeren", tekst: "Gratis parkeren" },
     { icoon: "huisdier", tekst: "Hond in overleg welkom" },
     { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
-    { icoon: "sleutel", tekst: "Self check-in tot middernacht" },
+    { icoon: "airco", tekst: "Vloerverwarming en airco" },
   ],
   labels: ["Vrij uitzicht, geen buren", "Midden in de natuur", "Ideaal voor stellen & gezinnen", "Privé-hottub"],
   toppers: [
@@ -127,7 +127,6 @@ const HEIDE: LodgePaginaData = {
       items: [
         { icoon: "tafel", tekst: "Eettafel met stoelen voor vier" },
         { icoon: "tv", tekst: "Televisie" },
-        { icoon: "verwarming", tekst: "Verwarming" },
       ],
     },
     {
@@ -140,6 +139,9 @@ const HEIDE: LodgePaginaData = {
     {
       groep: "Praktisch",
       items: [
+        { icoon: "vloerverwarming", tekst: "Vloerverwarming" },
+        { icoon: "airco", tekst: "Airconditioning" },
+        { icoon: "laadpaal", tekst: "All-electric, geen gasaansluiting" },
         { icoon: "wifi", tekst: "Gratis snel WiFi" },
         { icoon: "parkeren", tekst: "Gratis parkeren op eigen terrein" },
         { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
@@ -159,7 +161,7 @@ const EIK: LodgePaginaData = {
   h1: "Lodge De Eik",
   tagline: "Boutique lodge met eigen buitensauna, buitenkeuken en privé-hottub",
   intro:
-    "De Eik is het huis waar alles buiten gebeurt. Onder de oude eiken staat een buitenkeuken met BBQ, met de tafel ernaast, de hottub op hetzelfde terras en een eigen barrelsauna in de tuin. Binnen: hoge plafonds, ruimte voor vier en niets dat aan een vakantiepark doet denken.",
+    "De Eik is het huis waar alles buiten gebeurt. Onder de oude eiken staat een buitenkeuken met BBQ, met de tafel ernaast, de hottub op hetzelfde terras en een eigen barrelsauna in de tuin. Binnen: ruimte voor vier, vloerverwarming en airco, en niets dat aan een vakantiepark doet denken.",
   kerncijfers: [
     { icoon: "personen", tekst: "Max. 4 personen" },
     { icoon: "sauna", tekst: "Eigen buitensauna" },
@@ -178,18 +180,18 @@ const EIK: LodgePaginaData = {
   ],
   voorzieningen: [
     { icoon: "wifi", tekst: "Gratis snel WiFi" },
-    { icoon: "sauna", tekst: "Eigen buitensauna" },
-    { icoon: "hottub", tekst: "Privé-hottub" },
+    { icoon: "airco", tekst: "Vloerverwarming en airco" },
     { icoon: "parkeren", tekst: "Gratis parkeren" },
     { icoon: "huisdier", tekst: "Hond in overleg welkom" },
     { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
+    { icoon: "sleutel", tekst: "Self check-in tot middernacht" },
   ],
   labels: ["Ruimste van de twee", "Sauna én hottub", "Samen buiten eten", "Het hele jaar genieten"],
   toppers: [
     { icoon: "sauna", tekst: "Eigen barrelsauna in de tuin, zonder reservering of tijdslot" },
     { icoon: "hottub", tekst: "Privé-hottub op het terras, het hele jaar op 38 °C" },
     { icoon: "bbq", tekst: "Buitenkeuken met BBQ onder de eiken" },
-    { icoon: "personen", tekst: "Hoge plafonds, ruimte voor maximaal vier personen" },
+    { icoon: "vloerverwarming", tekst: "All-electric met vloerverwarming en airco" },
   ],
   faciliteiten: [
     {
@@ -216,7 +218,6 @@ const EIK: LodgePaginaData = {
       items: [
         { icoon: "tafel", tekst: "Eettafel met stoelen voor vier" },
         { icoon: "tv", tekst: "Televisie" },
-        { icoon: "verwarming", tekst: "Verwarming" },
       ],
     },
     {
@@ -231,6 +232,9 @@ const EIK: LodgePaginaData = {
     {
       groep: "Praktisch",
       items: [
+        { icoon: "vloerverwarming", tekst: "Vloerverwarming" },
+        { icoon: "airco", tekst: "Airconditioning" },
+        { icoon: "laadpaal", tekst: "All-electric, geen gasaansluiting" },
         { icoon: "wifi", tekst: "Gratis snel WiFi" },
         { icoon: "parkeren", tekst: "Gratis parkeren op eigen terrein" },
         { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },

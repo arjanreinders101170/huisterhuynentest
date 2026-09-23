@@ -57,6 +57,10 @@ export const ICOON_PADEN: Record<string, string> = {
    * raam — dat laatste zou over het gebouw gaan in plaats van over wat
    * je ziet. */
   uitzicht: "M2 18h20M3 18l4.5-6 3.5 4.5L14 12l7 6M17.5 6.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  /* Warmte die uit de vloer omhoogkomt — bewust iets anders dan de
+   * radiator van `verwarming`, want dat is precies het verschil. */
+  vloerverwarming: "M2 21h20M6 18c0-2 1.5-2 1.5-4S6 12 6 10M12 18c0-2 1.5-2 1.5-4S12 12 12 10M18 18c0-2 1.5-2 1.5-4S18 12 18 10",
+  airco: "M3 4h18v6H3zM6 7.5h12M6.5 14c1-1.2 2.5-1.2 3.5 0s2.5 1.2 3.5 0M8.5 18c1-1.2 2.5-1.2 3.5 0s2.5 1.2 3.5 0",
   sleutel: "M15 3a6 6 0 0 0-5.6 8.2L3 17.6V21h3.4l1-1v-2h2v-2h2l1.4-1.4A6 6 0 1 0 15 3zM16.5 7.5h.01",
   /* De spraakbel met hoorn: in de lijnstijl van de rest van de set, niet
    * het ingekleurde merklogo. Naast het woord "App" is dat genoeg. */

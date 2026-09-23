@@ -412,7 +412,7 @@ export default function LandingPage() {
                 name: "De Eik",
                 slug: "lodge-de-eik",
                 tag: "4 personen",
-                desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
+                desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Authentieke uitstraling, een volledige keuken en een eigen buitensauna.",
                 features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
                 img: "/lodge-eik.jpg",
                 alt: "Buitenaanzicht van Lodge De Eik onder eikenbomen met buitenkeuken en BBQ",
