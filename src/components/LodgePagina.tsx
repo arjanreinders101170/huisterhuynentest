@@ -312,6 +312,8 @@ export function LodgeKop({ data }: { data: LodgePaginaData }) {
  * is, daarvóór staat het in de weg. */
 export function PraktischeKaart() {
   return (
+  <section className="lp-pad lp-artikel lpx-praktisch-band">
+  <div>
   <div className="lpx-praktisch">
     <section aria-labelledby="lpx-praktisch">
       <h2 id="lpx-praktisch" className="lpx-h3">Praktische informatie</h2>
@@ -380,6 +382,8 @@ export function PraktischeKaart() {
       </a>
     </p>
   </div>
+  </div>
+  </section>
   );
 }
 

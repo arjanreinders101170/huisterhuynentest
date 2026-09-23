@@ -476,7 +476,7 @@ export function LandingTemplate({
       )}
 
       {/* Content sections */}
-      <section className="lp-pad" style={{ background: T.card, paddingTop: 32, paddingBottom: 64 }}>
+      <section className={`lp-pad${zonderKop ? " lp-artikel" : ""}`} style={{ background: T.card, paddingTop: 32, paddingBottom: 64 }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
           {secties.map((s, i) => (
             <div key={i} id={anchors[i]} className="lp-anchor" style={{ marginTop: i === 0 ? 24 : 44 }}>
@@ -640,7 +640,7 @@ export function LandingTemplate({
           laatste bezwaren wegnemen, dan pas vragen om te reserveren. De
           'ontdek ook'-links staan daarom ná de CTA. */}
       {config.faq.length > 0 && (
-        <section id="veelgestelde-vragen" className="lp-pad lp-anchor" style={{ background: "white", paddingTop: 64, paddingBottom: 64 }}>
+        <section id="veelgestelde-vragen" className={`lp-pad lp-anchor${zonderKop ? " lp-artikel" : ""}`} style={{ background: "white", paddingTop: 64, paddingBottom: 64 }}>
           <div style={{ maxWidth: 780, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 40 }}>
               <h2 style={{ fontFamily: T.serif, fontSize: "clamp(22px, 3vw, 32px)", color: T.text, margin: 0, fontWeight: 700 }}>

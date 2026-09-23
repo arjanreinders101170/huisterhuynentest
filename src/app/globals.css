@@ -939,7 +939,10 @@ html { scroll-behavior: smooth; }
   font-size: 11px; font-weight: 600; letter-spacing: .1em;
   text-transform: uppercase; color: #8A6F2E; margin: 0 0 9px;
 }
-.lpx-stippen { margin: 0; padding-left: 18px; }
+/* Expliciet disc: de basislaag van Tailwind haalt het bolletje van elke
+ * ul af, en zonder opsommingsteken leest dit als drie losse regels in
+ * plaats van als een lijst. De template doet dit elders inline. */
+.lpx-stippen { margin: 0; padding-left: 18px; list-style: disc; }
 .lpx-stippen li { font-size: 13.5px; line-height: 1.7; color: #5A534C; }
 
 /* De staffel: de periode links, wat u terugkrijgt rechts. Stond eerder
@@ -1272,3 +1275,56 @@ html { scroll-behavior: smooth; }
   .lpx-kop-cta { padding: 10px 13px; font-size: 12.5px; }
   .lpx-taal { display: none; }
 }
+
+/* ── Het artikel onder de tweekolom ──────────────────────────────────
+ * Gecentreerd sprong de kantlijn bij het scrollen naar rechts, precies
+ * op het moment dat het verhaal begint: de kolom erboven start op de
+ * rand van de container, het artikel 190 pixels verder naar binnen. Nu
+ * houdt het artikel dezelfde linkerrand én dezelfde breedte als die
+ * kolom, zodat de pagina één kolom tekst is met het formulier ernaast.
+ *
+ * De maat komt uit dezelfde som als .lpx-body: container 1240 min de
+ * twee gutters is 1160, en daarbinnen rechts de plek van de
+ * formulierkolom plus de kolomafstand vrijhouden. Wat overblijft is
+ * precies de linkerkolom.
+ *
+ * Het blok zelf blijft over de volle breedte staan — de achtergrondkleur
+ * van de band hoort van rand tot rand te lopen — dus de maat gaat op de
+ * binnenste container. Die krijgt zijn breedte van de template als
+ * inline-stijl (maxWidth: 780), en daar komt alleen een !important
+ * overheen. Onder de 1000px staat er geen formulierkolom naast en geldt
+ * dit niet. */
+@media (min-width: 1001px) {
+  .lp-artikel > div {
+    max-width: 1160px !important;
+    /* De blokken uit de template hebben deze marge al inline; de kaart
+     * hieronder niet, en die bleef daardoor tegen de linkerrand plakken. */
+    margin-inline: auto;
+    padding-right: calc(460px + clamp(28px, 4vw, 56px));
+  }
+}
+
+/* Tussen 640 en 1000 pixels staat er geen formulierkolom meer naast, maar
+ * bijt de leesmaat van 780 nog wel: het artikel ging daar gecentreerd
+ * staan terwijl de kop erboven de volle breedte pakt. De maat blijft —
+ * 900 pixels tekst leest niet — maar hij gaat tegen dezelfde linkerrand
+ * aan staan. */
+@media (min-width: 641px) and (max-width: 1000px) {
+  .lp-artikel > div { margin-left: 0 !important; margin-right: auto !important; }
+}
+
+/* Op een telefoon houdt .lp-pad 20 pixels aan en de kop 24 (of 16 op een
+ * heel smal scherm). Vier pixels verschil valt op zodra je scrollt, dus
+ * hier dezelfde maat als de rest van de pagina. */
+@media (max-width: 640px) {
+  .lp-artikel { padding-left: var(--hth-gutter); padding-right: var(--hth-gutter); }
+}
+
+/* De band waarin de praktische kaart staat: dezelfde zandkleur als de
+ * tweekolom erboven, zodat de kaart er als kaart op ligt. */
+.lpx-praktisch-band {
+  background: #EAE3D2;
+  padding-top: 8px;
+  padding-bottom: 56px;
+}
+.lpx-praktisch-band .lpx-praktisch { margin-top: 0; }
