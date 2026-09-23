@@ -296,6 +296,28 @@ export function lodgePagina(key: string): LodgePaginaData | undefined {
   return LODGE_PAGINAS.find((l) => l.key === key);
 }
 
+/** De lodgegegevens bij een landingsslug, of niets voor elke andere pagina. */
+export function lodgeVoorSlug(slug: string): LodgePaginaData | undefined {
+  return LODGE_PAGINAS.find((l) => l.canoniekePagina === `/${slug}`);
+}
+
+/* Secties die de eigen kop al dekt. Ze blijven in de database staan — de
+ * admin bewerkt ze daar en de Duitse pagina's gebruiken ze nog — maar de
+ * lodgepagina toont ze niet twee keer.
+ *
+ * Op kop gematcht en niet op volgorde: een sectie die in de admin wordt
+ * verplaatst blijft zo overgeslagen, en een nieuwe sectie verschijnt
+ * gewoon. Hernoemt iemand een kop, dan duikt die weer op — zichtbaar, en
+ * dat is beter dan stil verdwijnen. */
+export const LODGE_DUBBELE_SECTIES = [
+  "Wat er in de lodge zit",
+  "Kamerindeling",
+  "Wat er verder aanwezig is",
+  "Praktische informatie",
+  "Huisregels",
+  "Annuleren",
+];
+
 /** De ándere lodge — voor de vergelijkingslink onderaan de pagina. */
 export function andereLodgePagina(key: string): LodgePaginaData {
   return key === "de-heide" ? EIK : HEIDE;

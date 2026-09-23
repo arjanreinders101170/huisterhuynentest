@@ -1,3 +1,4 @@
+import type React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SITE_URL, footerLinks, paginaTypeVoorSlug, reserveerHref, lodgekeuzeVoorSlug } from "@/lib/site";
@@ -323,10 +324,42 @@ function Lodgekeuze({ slug }: { slug: string }) {
   );
 }
 
-export function LandingTemplate({ config }: { config: LandingConfig }) {
+/* De lodgepagina's zetten hun eigen kop bovenaan — een fotogalerij met het
+ * aanvraagformulier ernaast — en tonen daaronder deze template voor het
+ * verhaal, de veelgestelde vragen en de voet. Vandaar vier uitzonderingen
+ * die alleen daar gebruikt worden:
+ *
+ *   zonderKop        laat kruimelpad, hero, feiten en intro weg; die staan
+ *                    al in die eigen kop.
+ *   overslaanKoppen  secties die de eigen kop al dekt: de inventaris, de
+ *                    kamerindeling, de voorzieningen en het kleine
+ *                    lettertje dat daar in één kaart staat.
+ *   naSecties        wat na het verhaal komt en vóór de vragen — op een
+ *                    lodgepagina de praktische kaart en de vertrouwensbalk.
+ *   reserveerDoel    waar de knoppen heen wijzen. Staat het formulier op de
+ *                    pagina zelf, dan is dat een anker en geen sprong naar
+ *                    de homepage, waar de bezoeker opnieuw zou moeten
+ *                    kiezen welke lodge hij al gekozen had.
+ */
+export function LandingTemplate({
+  config,
+  zonderKop = false,
+  overslaanKoppen,
+  naSecties,
+  reserveerDoel,
+}: {
+  config: LandingConfig;
+  zonderKop?: boolean;
+  overslaanKoppen?: string[];
+  naSecties?: React.ReactNode;
+  reserveerDoel?: string;
+}) {
   const t = I18N[config.locale ?? "nl"];
-  const anchors = config.sections.map((s, i) => sectionAnchor(s, i));
-  const toonToc = (config.toonIndex ?? true) && config.sections.length >= TOC_DREMPEL;
+  const overslaan = new Set(overslaanKoppen ?? []);
+  const secties = config.sections.filter((s) => !overslaan.has(s.heading));
+  const reserveer = reserveerDoel ?? reserveerHref(config.slug);
+  const anchors = secties.map((s, i) => sectionAnchor(s, i));
+  const toonToc = (config.toonIndex ?? true) && secties.length >= TOC_DREMPEL;
   const bijgewerkt = config.updatedAt
     ? new Date(config.updatedAt).toLocaleDateString(config.locale === "de" ? "de-DE" : "nl-NL", {
         day: "numeric", month: "long", year: "numeric",
@@ -334,113 +367,118 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
     : null;
   return (
     <div style={{ background: T.bg, fontFamily: T.sans, color: T.text }}>
-      {/* Breadcrumb */}
-      <div className="lp-pad" style={{ background: T.green, paddingTop: 16, paddingBottom: 16 }}>
-        <div style={{ maxWidth: 980, margin: "0 auto" }}>
-          <nav aria-label="Breadcrumb">
-            <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <li>
-                <Link href="/" style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>
-                  {t.home}
-                </Link>
-              </li>
-              <li style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>›</li>
-              <li style={{ fontFamily: T.sans, fontSize: 12, color: T.gold, fontWeight: 600 }}>{config.breadcrumb}</li>
-            </ol>
-          </nav>
-        </div>
-      </div>
-
-      {/* Hero */}
-      <section style={{ position: "relative", minHeight: 460, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color: "white", overflow: "hidden", background: "#141210" }}>
-        <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,8,4,.18) 0%, rgba(10,8,4,.6) 100%)" }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "72px 32px" }}>
-          <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
-            {config.eyebrow}
-          </div>
-          <h1 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.15, color: "white" }}>
-            {config.h1}
-          </h1>
-          <p style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 300, lineHeight: 1.7, margin: "0 auto 32px", maxWidth: 580, color: "rgba(255,255,255,.88)" }}>
-            {config.heroSub}
-          </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href={reserveerHref(config.slug)} style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "15px 32px", borderRadius: 10, textDecoration: "none", boxShadow: "0 6px 24px rgba(180,154,94,.45)" }}>
-              {t.heroCta}
-            </Link>
-            <Link href="/#nieuwsbrief" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: "white", border: "1px solid rgba(255,255,255,.4)", padding: "15px 28px", borderRadius: 10, textDecoration: "none" }}>
-              {t.heroSub}
-            </Link>
-          </div>
-          <DirectBookingUSP locale={config.locale ?? "nl"} tone="onDark" size={12.5} style={{ marginTop: 18 }} />
-          {config.priceFrom && (
-            <div style={{ marginTop: 18, fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,.85)", letterSpacing: ".3px" }}>
-              {config.priceFrom} · {t.priceLabel}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Feiten in één oogopslag — staat bewust bóven de intro: wie op een
-          informatieve zoekopdracht binnenkomt wil eerst het antwoord zien en
-          pas daarna het verhaal. */}
-      {config.keyFacts && config.keyFacts.length > 0 && (
-        <section className="lp-pad" style={{ background: T.green, paddingTop: 26, paddingBottom: 26 }}>
-          <dl className="lp-facts" style={{ maxWidth: 980, margin: "0 auto", padding: 0 }}>
-            {config.keyFacts.map((f, i) => (
-              <div key={i}>
-                <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.gold, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
-                  {f.label}
-                </dt>
-                <dd style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 700, color: "white", margin: 0, lineHeight: 1.35 }}>
-                  {f.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-      )}
-
-      {/* Intro lead */}
-      <section className="lp-pad" style={{ background: T.card, paddingTop: 56, paddingBottom: 8 }}>
-        <div style={{ maxWidth: 780, margin: "0 auto" }}>
-          <p style={{ fontFamily: T.sans, fontSize: 18, color: T.text, lineHeight: 1.8, margin: 0, fontWeight: 400, borderLeft: `3px solid ${T.gold}`, paddingLeft: 20 }}>
-            {renderTekstMetLinks(config.intro, "intro")}
-          </p>
-
-          {/* Inhoudsopgave: alleen bij lange pagina's. Echte ankerlinks, zodat
-              de bezoeker springt én Google de deelonderwerpen ziet. */}
-          {toonToc && (
-            <nav aria-label={t.toc} style={{ marginTop: 28, background: "white", border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 22px" }}>
-              <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldInk, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 12 }}>
-                {t.toc}
-              </div>
-              <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
-                {config.sections.map((sec, i) => (
-                  <li key={i}>
-                    <a href={`#${anchors[i]}`} className="lp-toc-link" style={{ fontFamily: T.sans, fontSize: 14.5, color: T.green, textDecoration: "none", fontWeight: 500, lineHeight: 1.5 }}>
-                      {sec.heading}
-                    </a>
-                  </li>
-                ))}
-                {config.faq.length > 0 && (
-                  <li>
-                    <a href="#veelgestelde-vragen" className="lp-toc-link" style={{ fontFamily: T.sans, fontSize: 14.5, color: T.green, textDecoration: "none", fontWeight: 500, lineHeight: 1.5 }}>
-                      {t.faqTitle}
-                    </a>
-                  </li>
-                )}
+      {!zonderKop && (
+        <>
+        {/* Breadcrumb */}
+        <div className="lp-pad" style={{ background: T.green, paddingTop: 16, paddingBottom: 16 }}>
+          <div style={{ maxWidth: 980, margin: "0 auto" }}>
+            <nav aria-label="Breadcrumb">
+              <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <li>
+                  <Link href="/" style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(255,255,255,.6)", textDecoration: "none" }}>
+                    {t.home}
+                  </Link>
+                </li>
+                <li style={{ fontSize: 12, color: "rgba(255,255,255,.4)" }}>›</li>
+                <li style={{ fontFamily: T.sans, fontSize: 12, color: T.gold, fontWeight: 600 }}>{config.breadcrumb}</li>
               </ol>
             </nav>
-          )}
+          </div>
         </div>
-      </section>
+
+        {/* Hero */}
+        <section style={{ position: "relative", minHeight: 460, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", color: "white", overflow: "hidden", background: "#141210" }}>
+          <Image src={config.heroImage} alt={config.heroImageAlt} fill priority quality={55} sizes="100vw" style={{ objectFit: "cover", objectPosition: config.heroFocus || "center 45%", opacity: 0.7 }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,8,4,.18) 0%, rgba(10,8,4,.6) 100%)" }} />
+          <div style={{ position: "relative", zIndex: 2, maxWidth: 720, padding: "72px 32px" }}>
+            <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.gold, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: 16 }}>
+              {config.eyebrow}
+            </div>
+            <h1 style={{ fontFamily: T.serif, fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, margin: "0 0 18px", lineHeight: 1.15, color: "white" }}>
+              {config.h1}
+            </h1>
+            <p style={{ fontFamily: T.sans, fontSize: 16, fontWeight: 300, lineHeight: 1.7, margin: "0 auto 32px", maxWidth: 580, color: "rgba(255,255,255,.88)" }}>
+              {config.heroSub}
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <Link href={reserveer} style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "15px 32px", borderRadius: 10, textDecoration: "none", boxShadow: "0 6px 24px rgba(180,154,94,.45)" }}>
+                {t.heroCta}
+              </Link>
+              <Link href="/#nieuwsbrief" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: "white", border: "1px solid rgba(255,255,255,.4)", padding: "15px 28px", borderRadius: 10, textDecoration: "none" }}>
+                {t.heroSub}
+              </Link>
+            </div>
+            <DirectBookingUSP locale={config.locale ?? "nl"} tone="onDark" size={12.5} style={{ marginTop: 18 }} />
+            {config.priceFrom && (
+              <div style={{ marginTop: 18, fontFamily: T.sans, fontSize: 13, fontWeight: 500, color: "rgba(255,255,255,.85)", letterSpacing: ".3px" }}>
+                {config.priceFrom} · {t.priceLabel}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Feiten in één oogopslag — staat bewust bóven de intro: wie op een
+            informatieve zoekopdracht binnenkomt wil eerst het antwoord zien en
+            pas daarna het verhaal. */}
+        {config.keyFacts && config.keyFacts.length > 0 && (
+          <section className="lp-pad" style={{ background: T.green, paddingTop: 26, paddingBottom: 26 }}>
+            <dl className="lp-facts" style={{ maxWidth: 980, margin: "0 auto", padding: 0 }}>
+              {config.keyFacts.map((f, i) => (
+                <div key={i}>
+                  <dt style={{ fontFamily: T.sans, fontSize: 10.5, fontWeight: 600, color: T.gold, letterSpacing: "1.6px", textTransform: "uppercase", marginBottom: 6 }}>
+                    {f.label}
+                  </dt>
+                  <dd style={{ fontFamily: T.serif, fontSize: 17, fontWeight: 700, color: "white", margin: 0, lineHeight: 1.35 }}>
+                    {f.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
+
+        {/* Intro lead */}
+        <section className="lp-pad" style={{ background: T.card, paddingTop: 56, paddingBottom: 8 }}>
+          <div style={{ maxWidth: 780, margin: "0 auto" }}>
+            <p style={{ fontFamily: T.sans, fontSize: 18, color: T.text, lineHeight: 1.8, margin: 0, fontWeight: 400, borderLeft: `3px solid ${T.gold}`, paddingLeft: 20 }}>
+              {renderTekstMetLinks(config.intro, "intro")}
+            </p>
+
+            {/* Inhoudsopgave: alleen bij lange pagina's. Echte ankerlinks, zodat
+                de bezoeker springt én Google de deelonderwerpen ziet. */}
+            {toonToc && (
+              <nav aria-label={t.toc} style={{ marginTop: 28, background: "white", border: `1px solid ${T.border}`, borderRadius: 12, padding: "18px 22px" }}>
+                <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldInk, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 12 }}>
+                  {t.toc}
+                </div>
+                <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+                  {secties.map((sec, i) => (
+                    <li key={i}>
+                      <a href={`#${anchors[i]}`} className="lp-toc-link" style={{ fontFamily: T.sans, fontSize: 14.5, color: T.green, textDecoration: "none", fontWeight: 500, lineHeight: 1.5 }}>
+                        {sec.heading}
+                      </a>
+                    </li>
+                  ))}
+                  {config.faq.length > 0 && (
+                    <li>
+                      <a href="#veelgestelde-vragen" className="lp-toc-link" style={{ fontFamily: T.sans, fontSize: 14.5, color: T.green, textDecoration: "none", fontWeight: 500, lineHeight: 1.5 }}>
+                        {t.faqTitle}
+                      </a>
+                    </li>
+                  )}
+                </ol>
+              </nav>
+            )}
+          </div>
+        </section>
+
+        </>
+      )}
 
       {/* Content sections */}
       <section className="lp-pad" style={{ background: T.card, paddingTop: 32, paddingBottom: 64 }}>
         <div style={{ maxWidth: 780, margin: "0 auto" }}>
-          {config.sections.map((s, i) => (
+          {secties.map((s, i) => (
             <div key={i} id={anchors[i]} className="lp-anchor" style={{ marginTop: i === 0 ? 24 : 44 }}>
               {s.eyebrow && (
                 <div style={{ fontFamily: T.sans, fontSize: 11, fontWeight: 600, color: T.goldInk, letterSpacing: "2px", textTransform: "uppercase", marginBottom: 10 }}>
@@ -596,6 +634,8 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
         </div>
       </section>
 
+      {naSecties}
+
       {/* FAQ — staat bewust tussen de content en de boekings-CTA: eerst de
           laatste bezwaren wegnemen, dan pas vragen om te reserveren. De
           'ontdek ook'-links staan daarom ná de CTA. */}
@@ -645,7 +685,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
             {config.ctaBody}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href={reserveerHref(config.slug)} style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "14px 30px", borderRadius: 10, textDecoration: "none" }}>
+            <Link href={reserveer} style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 700, color: "#1A2E24", background: T.gold, padding: "14px 30px", borderRadius: 10, textDecoration: "none" }}>
               {t.ctaAvail}
             </Link>
             <a href="https://wa.me/31642568603" target="_blank" rel="noopener noreferrer" style={{ fontFamily: T.sans, fontSize: 15, fontWeight: 500, color: "white", border: "1px solid rgba(255,255,255,.35)", padding: "14px 28px", borderRadius: 10, textDecoration: "none" }}>
@@ -716,7 +756,7 @@ export function LandingTemplate({ config }: { config: LandingConfig }) {
                 { label: "Omgeving", href: "/omgeving" },
                 { label: "Blog", href: "/blog" },
                 { label: "FAQ", href: "/faq" },
-                { label: "Reserveren", href: reserveerHref(config.slug) },
+                { label: "Reserveren", href: reserveer },
               ].map((l, i) => (
                 <Link key={i} href={l.href} style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(255,255,255,.75)", textDecoration: "none" }}>
                   {l.label}

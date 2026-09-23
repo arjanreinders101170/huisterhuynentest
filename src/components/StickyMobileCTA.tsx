@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { reserveerHref } from "@/lib/site";
 import { stickyBlogCta } from "@/lib/blog-cta";
+import { LODGE_PAGINAS } from "@/data/lodge-paginas";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
  * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
@@ -23,10 +24,10 @@ const COPY = {
 
 export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string; locale?: "nl" | "de" }) {
   const pathname = usePathname();
-  /* Niet op de lodgepagina in de nieuwe opmaak. Daar staat de knop naar het
-   * aanvraagpaneel in de bovenbalk, en die blijft staan bij het scrollen —
-   * een tweede vaste knop onderaan zegt hetzelfde en eet schermruimte. */
-  if (pathname?.startsWith("/preview/")) return null;
+  /* Niet op de lodgepagina's. Daar staat de knop naar het aanvraagpaneel in
+   * de bovenbalk, en die blijft staan bij het scrollen — een tweede vaste
+   * knop onderaan zegt hetzelfde en eet schermruimte. */
+  if (pathname && LODGE_PAGINAS.some((l) => l.canoniekePagina === pathname)) return null;
 
   const taal = locale ?? (pathname === "/de" || pathname?.startsWith("/de/") ? "de" : "nl");
   const copy = COPY[taal];

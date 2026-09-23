@@ -37,7 +37,7 @@ function Wordmark() {
   );
 }
 
-export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
+export function LodgeKop({ data }: { data: LodgePaginaData }) {
   const ander = andereLodgePagina(data.key);
 
   /* Onder de 1000px staat er geen kolom meer naast de tekst, en dan duwt
@@ -89,7 +89,7 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
   }, [paneelOpen, sluit]);
 
   return (
-    <div className="lpx">
+    <>
       {/* ── Bovenbalk ─────────────────────────────────────────────── */}
       <header className="lpx-kop">
         <div className="lpx-kop-binnen">
@@ -250,79 +250,6 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
             )}
           </section>
 
-          {/* Praktische informatie, huisregels en annuleren stonden als drie
-            * losse blokken onder elkaar, elk met een eigen streep erboven.
-            * Drie objecten die hetzelfde zeggen — "dit is het kleine
-            * lettertje" — lezen rustiger als één object met lijnen erbinnen,
-            * en houden de aandacht bij het verhaal erboven. */}
-          <div className="lpx-praktisch">
-            <section aria-labelledby="lpx-praktisch">
-              <h2 id="lpx-praktisch" className="lpx-h3">Praktische informatie</h2>
-              <dl className="lpx-gegevens">
-                {PRAKTISCH.map((r) => (
-                  <Fragment key={r.label}>
-                    <dt>{r.label}</dt>
-                    <dd>{r.waarde}</dd>
-                  </Fragment>
-                ))}
-              </dl>
-              <p className="lpx-kaart-noot">{PRAKTISCH_NOOT}</p>
-            </section>
-
-            <section aria-labelledby="lpx-huisregels">
-              <h2 id="lpx-huisregels" className="lpx-h3">Huisregels</h2>
-              <ul className="lpx-regels">
-                {HUISREGELS.map((r) => (
-                  <li key={r.tekst}>
-                    <Icoon naam={r.icoon} kleur="#8A6F2E" maat={15} />
-                    {r.tekst}
-                  </li>
-                ))}
-              </ul>
-              <p className="lpx-subkop">Aanvullende huisregels</p>
-              <ul className="lpx-stippen">
-                {HUISREGELS_EXTRA.map((r) => <li key={r}>{r}</li>)}
-              </ul>
-            </section>
-
-            <section aria-labelledby="lpx-annuleren">
-              <h2 id="lpx-annuleren" className="lpx-h3">Annuleren</h2>
-              <ul className="lpx-staffel">
-                {ANNULEREN.map((a) => (
-                  <li key={a.periode}>
-                    <span className="lpx-staffel-periode">{a.periode}</span>
-                    {a.bij && <span className="lpx-staffel-bij">{a.bij}</span>}
-                    <span className={`lpx-staffel-deel${a.niets ? " lpx-staffel-deel--niets" : ""}`}>
-                      {a.deel}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p className="lpx-kaart-noot">
-                Omboeken kan tot 30 dagen voor aankomst, na goedkeuring en afhankelijk van
-                beschikbaarheid; daarvoor geldt € 25 wijzigingskosten. De volledige voorwaarden
-                staan in de <Link href="/terms" className="lpx-link">algemene voorwaarden</Link>.
-              </p>
-            </section>
-
-            {/* Het pictogram zit ín de link: het is de uitnodiging, niet een
-              * plaatje ernaast. Het woord "App" is daarmee overbodig — maar
-              * dan draagt alleen het beeld nog die betekenis, en een
-              * schermlezer ziet geen beeld. Vandaar het aria-label. */}
-            <p className="lpx-vraag">
-              Staat er iets niet bij?{" "}
-              <a
-                href={LODGE_WHATSAPP_URL}
-                className="lpx-wa"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Stuur een WhatsApp-bericht naar ${LODGE_PHONE_DISPLAY}`}
-              >
-                <Icoon naam="whatsapp" kleur="#2F4F3E" maat={18} />
-                <b>{LODGE_PHONE_DISPLAY}</b>
-              </a>
-            </p>
-          </div>
         </main>
 
         {/* De aanvraagkolom schuift op een breed scherm over de onderrand
@@ -356,31 +283,122 @@ export function LodgePaginaNieuw({ data }: { data: LodgePaginaData }) {
               * samen" vertelde hem alleen wat hij al zag. Het bedrag komt
               * uit PRICE_FROM_EUR, zodat het niet op twee plekken los van
               * elkaar kan verouderen. */}
-            <h2 className="lpx-prijs">
+            {/* Bewust geen kop. Als h2 stond de prijs tussen "Wat er in de
+              * lodge zit" en "Het uitzicht en de hottub" in de kopstructuur
+              * van de pagina — een kop die geen sectie opent. Het blok zelf
+              * heeft al een naam via de aria-label van de aside. */}
+            <p className="lpx-prijs">
               <span className="lpx-prijs-label">Vanaf</span>
-              <span className="lpx-prijs-bedrag">&euro;&nbsp;{PRICE_FROM_EUR},-</span>
+              <span className="lpx-prijs-bedrag">&euro;&nbsp;{PRICE_FROM_EUR},-</span>{" "}
               <span className="lpx-prijs-eenheid">per nacht</span>
-            </h2>
+            </p>
             <RequestForm voorkeur={data.lodgeParam} />
             <DirectBookingUSP tone="onLight" size={11.5} style={{ marginTop: 14, justifyContent: "center" }} />
           </div>
         </aside>
       </div>
+    </>
+  );
+}
 
-      {/* ── Vertrouwensbalk ───────────────────────────────────────── */}
-      <section className="lpx-vertrouwen" aria-label="Waarom Huis ter Huynen">
-        <ul>
-          {VERTROUWEN.map((v) => (
-            <li key={v.tekst}>
-              <Icoon naam={v.icoon} kleur="#8A6F2E" maat={20} />
-              {v.tekst}
-            </li>
-          ))}
-        </ul>
-        <p className="lpx-handschrift">
-          Twee lodges op de heide,<br />elk met een eigen hottub.
-        </p>
-      </section>
-    </div>
+/* ── De praktische kaart ──
+ * Praktische informatie, huisregels en annuleren stonden als drie losse
+ * blokken onder elkaar, elk met een eigen streep erboven. Drie objecten
+ * die hetzelfde zeggen — "dit is het kleine lettertje" — lezen rustiger
+ * als één object met lijnen erbinnen.
+ *
+ * Het staat op de pagina niet in de kolom naast het formulier maar onder
+ * het verhaal: het kleine lettertje komt pas aan bod als iemand overtuigd
+ * is, daarvóór staat het in de weg. */
+export function PraktischeKaart() {
+  return (
+  <div className="lpx-praktisch">
+    <section aria-labelledby="lpx-praktisch">
+      <h2 id="lpx-praktisch" className="lpx-h3">Praktische informatie</h2>
+      <dl className="lpx-gegevens">
+        {PRAKTISCH.map((r) => (
+          <Fragment key={r.label}>
+            <dt>{r.label}</dt>
+            <dd>{r.waarde}</dd>
+          </Fragment>
+        ))}
+      </dl>
+      <p className="lpx-kaart-noot">{PRAKTISCH_NOOT}</p>
+    </section>
+
+    <section aria-labelledby="lpx-huisregels">
+      <h2 id="lpx-huisregels" className="lpx-h3">Huisregels</h2>
+      <ul className="lpx-regels">
+        {HUISREGELS.map((r) => (
+          <li key={r.tekst}>
+            <Icoon naam={r.icoon} kleur="#8A6F2E" maat={15} />
+            {r.tekst}
+          </li>
+        ))}
+      </ul>
+      <p className="lpx-subkop">Aanvullende huisregels</p>
+      <ul className="lpx-stippen">
+        {HUISREGELS_EXTRA.map((r) => <li key={r}>{r}</li>)}
+      </ul>
+    </section>
+
+    <section aria-labelledby="lpx-annuleren">
+      <h2 id="lpx-annuleren" className="lpx-h3">Annuleren</h2>
+      <ul className="lpx-staffel">
+        {ANNULEREN.map((a) => (
+          <li key={a.periode}>
+            <span className="lpx-staffel-periode">{a.periode}</span>
+            {a.bij && <span className="lpx-staffel-bij">{a.bij}</span>}
+            <span className={`lpx-staffel-deel${a.niets ? " lpx-staffel-deel--niets" : ""}`}>
+              {a.deel}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="lpx-kaart-noot">
+        Omboeken kan tot 30 dagen voor aankomst, na goedkeuring en afhankelijk van
+        beschikbaarheid; daarvoor geldt € 25 wijzigingskosten. De volledige voorwaarden
+        staan in de <Link href="/terms" className="lpx-link">algemene voorwaarden</Link>.
+      </p>
+    </section>
+
+    {/* Het pictogram zit ín de link: het is de uitnodiging, niet een
+      * plaatje ernaast. Het woord "App" is daarmee overbodig — maar
+      * dan draagt alleen het beeld nog die betekenis, en een
+      * schermlezer ziet geen beeld. Vandaar het aria-label. */}
+    <p className="lpx-vraag">
+      Staat er iets niet bij?{" "}
+      <a
+        href={LODGE_WHATSAPP_URL}
+        className="lpx-wa"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Stuur een WhatsApp-bericht naar ${LODGE_PHONE_DISPLAY}`}
+      >
+        <Icoon naam="whatsapp" kleur="#2F4F3E" maat={18} />
+        <b>{LODGE_PHONE_DISPLAY}</b>
+      </a>
+    </p>
+  </div>
+  );
+}
+
+/* ── De vertrouwensbalk ──
+ * Sluit de inhoud af, net boven de veelgestelde vragen. */
+export function Vertrouwensbalk() {
+  return (
+  <section className="lpx-vertrouwen" aria-label="Waarom Huis ter Huynen">
+    <ul>
+      {VERTROUWEN.map((v) => (
+        <li key={v.tekst}>
+          <Icoon naam={v.icoon} kleur="#8A6F2E" maat={20} />
+          {v.tekst}
+        </li>
+      ))}
+    </ul>
+    <p className="lpx-handschrift">
+      Twee lodges op de heide,<br />elk met een eigen hottub.
+    </p>
+  </section>
   );
 }
