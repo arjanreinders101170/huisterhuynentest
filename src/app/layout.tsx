@@ -3,6 +3,7 @@ import { beoordelingSchema } from "@/data/reviews";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
+import { BookingSheet } from "@/components/BookingSheet";
 import { ConsentBanner } from "@/components/tracking/ConsentBanner";
 import { ConsentBootstrap } from "@/components/tracking/ConsentBootstrap";
 import { GoogleAds } from "@/components/tracking/GoogleAds";
@@ -326,6 +327,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <TrackingListeners />
         {children}
         <StickyMobileCTA />
+        <BookingSheet />
         <ConsentBanner />
       </body>
     </html>

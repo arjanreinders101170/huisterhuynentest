@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   readConsent,
   writeConsent,
@@ -9,6 +10,17 @@ import {
 import type { ConsentCategory, ConsentState } from "@/lib/tracking/types";
 
 type Lang = "nl" | "de";
+
+/* De taal van de balk volgt de pagina, niet de browser. Eerder las hij
+ * navigator.language: op /de kreeg een bezoeker met een Nederlandse of
+ * Engelse browser een Nederlandse cookiebalk, en op een Nederlandse pagina
+ * kreeg een Duitse browser een Duitse. */
+function taalVanPad(pad: string | null): Lang {
+  if (!pad) return "nl";
+  if (pad === "/de" || pad.startsWith("/de/")) return "de";
+  if (pad === "/datenschutz" || pad === "/impressum") return "de";
+  return "nl";
+}
 
 const COPY = {
   nl: {
@@ -71,14 +83,13 @@ export function ConsentBanner() {
   const [open, setOpen] = useState(false);
   const [layer2, setLayer2] = useState(false);
   const [state, setState] = useState<ConsentState>(DEFAULT_CONSENT);
-  const [lang, setLang] = useState<Lang>("nl");
+  const lang = taalVanPad(usePathname());
   const barRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const current = readConsent();
     setState(current.state);
     setOpen(!current.decided);
-    setLang((navigator.language || "nl").toLowerCase().startsWith("de") ? "de" : "nl");
 
     /* Returning visitors: replay the stored consent so GTM picks it up on
      * this page load. Without this, default-deny stays active and tags

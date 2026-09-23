@@ -54,7 +54,8 @@
     transition: transform .25s ease, visibility .25s;
   }
   .hth-sticky-cta[data-zichtbaar="nee"],
-  html[data-consent-open] .hth-sticky-cta {
+  html[data-consent-open] .hth-sticky-cta,
+  html[data-sheet-open] .hth-sticky-cta {
     transform: translateY(110%);
     visibility: hidden;
   }
@@ -62,6 +63,72 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .hth-sticky-cta { transition: none; }
+}
+
+/* Boekingsformulier als paneel op een telefoon (BookingSheet). De bestaande
+ * sectie #reserveren / #verfugbarkeit schuift van onderen omhoog in plaats
+ * van dat de pagina er zichtbaar naartoe scrolt. De sectie heeft inline
+ * stijlen, vandaar de !important op wat hier overschreven wordt. */
+.hth-sheet-backdrop, .hth-sheet-close { display: none; }
+@media (max-width: 768px) {
+  html[data-sheet-open] { overflow: hidden; scroll-behavior: auto; }
+  html[data-sheet-open] :is(#reserveren, #verfugbarkeit) {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    top: 7vh;
+    z-index: 9420;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    border-top: none !important;
+    border-radius: 18px 18px 0 0;
+    padding-top: 64px !important;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 -12px 40px rgba(0,0,0,.3);
+    animation: hth-sheet-in .28s cubic-bezier(.2,.8,.2,1);
+  }
+  html[data-sheet-closing] :is(#reserveren, #verfugbarkeit) {
+    animation: hth-sheet-out .22s ease-in forwards;
+  }
+  html[data-sheet-open] .hth-sheet-backdrop {
+    display: block;
+    position: fixed; inset: 0; z-index: 9410;
+    background: rgba(20,18,16,.55);
+    animation: hth-fade-in .28s ease;
+  }
+  html[data-sheet-closing] .hth-sheet-backdrop { animation: hth-fade-out .22s ease-in forwards; }
+  html[data-sheet-open] .hth-sheet-close {
+    display: inline-flex; align-items: center; gap: 6px;
+    position: fixed; z-index: 9430;
+    top: calc(7vh + 12px); right: 12px;
+    padding: 8px 14px;
+    border: 1px solid #E0D8C8; border-radius: 999px;
+    background: #FDFBF6; color: #2F4F3E;
+    font: 600 13px var(--font-dm-sans), system-ui, sans-serif;
+    cursor: pointer;
+    animation: hth-sheet-in .28s cubic-bezier(.2,.8,.2,1);
+  }
+  html[data-sheet-closing] .hth-sheet-close { display: none; }
+  /* De taalknop (9400) valt onder het scherm, de cookiebalk (9500) blijft
+   * erboven. De aftelklok is in het paneel ruimte die het formulier nodig
+   * heeft. */
+  html[data-sheet-open] .hth-countdown { display: none; }
+  /* Greepje bovenaan, zoals bij een paneel in een app. */
+  html[data-sheet-open] :is(#reserveren, #verfugbarkeit)::before {
+    content: "";
+    position: absolute; top: 10px; left: 50%;
+    width: 40px; height: 4px; margin-left: -20px;
+    border-radius: 2px; background: #D8CFBD;
+  }
+}
+@keyframes hth-sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes hth-sheet-out { from { transform: none; } to { transform: translateY(100%); } }
+@keyframes hth-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hth-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  html[data-sheet-open] :is(#reserveren, #verfugbarkeit),
+  html[data-sheet-open] .hth-sheet-backdrop,
+  html[data-sheet-open] .hth-sheet-close { animation: none; }
 }
 
 /* Hero op een telefoon: kortere bovenregel en intro, zodat de knop boven de
