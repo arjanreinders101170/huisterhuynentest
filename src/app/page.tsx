@@ -97,7 +97,7 @@ function BookingSection() {
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {daysLeft !== null && (
-          <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <div className="hth-countdown" style={{ textAlign: "center", marginBottom: 52 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 20 }}>
               <div style={{ width: 40, height: 1, background: T.gold, opacity: 0.6 }} />
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
