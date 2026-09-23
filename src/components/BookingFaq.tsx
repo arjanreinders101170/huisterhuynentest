@@ -22,6 +22,8 @@ const T = {
 interface FaqItem {
   q: string;
   a: string;
+  /* Verwijzing achter het antwoord, bijv. naar de algemene voorwaarden. */
+  zie?: { voor: string; label: string; href: string };
 }
 
 const CONTENT: Record<"nl" | "de", { title: string; sub: string; items: FaqItem[]; moreLabel?: string; moreHref?: string; mailIntro?: string }> = {
@@ -43,7 +45,8 @@ const CONTENT: Record<"nl" | "de", { title: string; sub: string; items: FaqItem[
       },
       {
         q: "Kan ik kosteloos annuleren?",
-        a: "Tot 60 dagen vóór aankomst krijgt u 100% terug (minus €25 administratiekosten). Daarna geldt een staffel: 30–60 dagen 70%, 14–30 dagen 50%, 7–14 dagen 25%. De volledige voorwaarden staan in de FAQ.",
+        a: "Tot 60 dagen vóór aankomst krijgt u 100% terug (minus €25 administratiekosten). Daarna geldt een staffel: 30–60 dagen 70%, 14–30 dagen 50%, 7–14 dagen 25%.",
+        zie: { voor: "Zie de", label: "algemene voorwaarden", href: "/terms" },
       },
       {
         q: "Mag mijn hond mee?",
@@ -72,6 +75,7 @@ const CONTENT: Record<"nl" | "de", { title: string; sub: string; items: FaqItem[
       {
         q: "Wie sind die Stornobedingungen?",
         a: "Bis 60 Tage vor Anreise erhalten Sie 100 % zurück (abzüglich 25 € Bearbeitungsgebühr). Danach gestaffelt: 30–60 Tage 70 %, 14–30 Tage 50 %, 7–14 Tage 25 %.",
+        zie: { voor: "Details in unseren", label: "AGB", href: "/agb" },
       },
       {
         q: "Darf mein Hund mit?",
@@ -136,6 +140,18 @@ export function BookingFaq({ locale = "nl" }: { locale?: "nl" | "de" }) {
             </summary>
             <p style={{ fontFamily: T.sans, fontSize: 14.5, color: T.muted, fontWeight: 300, margin: "0 0 20px", lineHeight: 1.75 }}>
               {item.a}
+              {item.zie && (
+                <>
+                  {" "}{item.zie.voor}{" "}
+                  <Link
+                    href={item.zie.href}
+                    style={{ color: T.green, fontWeight: 500, textDecoration: "underline", textUnderlineOffset: 3, textDecorationColor: T.gold }}
+                  >
+                    {item.zie.label}
+                  </Link>
+                  .
+                </>
+              )}
             </p>
           </details>
         ))}
