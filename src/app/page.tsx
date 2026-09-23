@@ -222,7 +222,7 @@ export default function LandingPage() {
               fontFamily: T.serif, fontSize: 13, fontWeight: 700,
               color: T.gold, letterSpacing: "4px", textTransform: "uppercase", marginBottom: 10,
             }}>
-              Boutique Lodge · Zeijen · Drenthe
+              <span className="hth-hero-eyebrow-long">Boutique Lodge · </span>Zeijen · Drenthe
             </div>
             <div style={{
               fontFamily: T.serif, fontSize: "clamp(38px, 6vw, 64px)",
@@ -243,17 +243,24 @@ export default function LandingPage() {
             </h1>
           </div>
 
-          <p style={{
+          <p className="hth-hero-intro" style={{
             fontFamily: T.sans, fontSize: 17, fontWeight: 300,
             lineHeight: 1.7, marginBottom: 36, color: "rgba(255,255,255,.88)",
           }}>
-            Twee unieke boutique lodges midden in het hart van Drenthe.
-            Wandel vanuit de deur door eeuwenoude strubbenbossen,
-            geniet van de heide en keer terug naar uw privé-hottub.
+            <span className="hth-hero-intro-long">
+              Twee unieke boutique lodges midden in het hart van Drenthe.
+              Wandel vanuit de deur door eeuwenoude strubbenbossen,
+              geniet van de heide en keer terug naar uw privé-hottub.
+            </span>
+            {/* Op een telefoon duwde de lange zin de knop onder de vouw. */}
+            <span className="hth-hero-intro-short">
+              Twee boutique lodges tussen eeuwenoude strubbenbossen en heide.
+              Wandel vanuit de deur en kom terug bij uw eigen hottub.
+            </span>
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, maxWidth: "100%" }}>
-            <a href="#reserveren" className="hth-hero-cta" style={{
+            <a href="#reserveren" className="hth-hero-cta" data-hero-cta style={{
               background: T.gold,
               color: "#1A2E24",
               border: "none",
@@ -264,7 +271,7 @@ export default function LandingPage() {
               letterSpacing: "0.3px",
               boxShadow: "0 6px 28px rgba(180,154,94,.55)",
             }}>
-              Bekijk beschikbare data
+              Bekijk beschikbaarheid
               <span aria-hidden style={{ fontSize: 18, lineHeight: 1 }}>→</span>
             </a>
 

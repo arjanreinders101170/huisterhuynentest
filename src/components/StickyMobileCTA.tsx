@@ -1,7 +1,7 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DirectBookingUSP } from "@/components/DirectBookingUSP";
 import { reserveerHref } from "@/lib/site";
 import { stickyBlogCta } from "@/lib/blog-cta";
 
@@ -14,12 +14,50 @@ import { stickyBlogCta } from "@/lib/blog-cta";
  * en in i18n/nl.ts → checkAvailability.
  *
  * De balk hangt in de root-layout en dekt dus ook /de/*; de taal komt daarom
- * uit het pad in plaats van uit een prop die niemand meegeeft. */
+ * uit het pad in plaats van uit een prop die niemand meegeeft.
+ *
+ * De balk stond altijd in beeld, ook bovenaan de pagina naast de hero-knop
+ * met hetzelfde doel, en de cookiebalk hing er nog boven: drie lagen die
+ * samen bijna het halve scherm namen. Nu verschijnt hij pas als de hero-knop
+ * (data-hero-cta) boven uit beeld is gescrold, en zolang de cookiekeuze open
+ * staat houdt globals.css hem verborgen (html[data-consent-open]). De
+ * voordelen staan al onder de hero-knop; de balk is daarom één regel:
+ * vanafprijs links, knop rechts. */
 
 const COPY = {
   nl: { cta: "Bekijk beschikbaarheid →", href: "/#reserveren" },
   de: { cta: "Verfügbarkeit prüfen →", href: "/de#verfugbarkeit" },
 } as const;
+
+/* Zelfde vanafprijs als op de landingspagina's (landing-seed → PRICE). */
+const PRIJS = {
+  nl: { van: "vanaf", bedrag: "€ 165", per: "per nacht" },
+  de: { van: "ab", bedrag: "165 €", per: "pro Nacht" },
+} as const;
+
+/* Pagina's zonder hero-knop: toon de balk na ruim een halve schermhoogte. */
+const DREMPEL_ZONDER_HERO = 0.6;
+
+function useNaHeroKnop(pathname: string | null) {
+  const [zichtbaar, setZichtbaar] = useState(false);
+  useEffect(() => {
+    const knop = document.querySelector<HTMLElement>("[data-hero-cta]");
+    if (knop && "IntersectionObserver" in window) {
+      // Alleen zichtbaar als de knop boven uit beeld is, niet als hij nog
+      // onder de vouw staat.
+      const io = new IntersectionObserver(([e]) => {
+        setZichtbaar(!e.isIntersecting && e.boundingClientRect.top < 0);
+      });
+      io.observe(knop);
+      return () => io.disconnect();
+    }
+    const sync = () => setZichtbaar(window.scrollY > window.innerHeight * DREMPEL_ZONDER_HERO);
+    sync();
+    window.addEventListener("scroll", sync, { passive: true });
+    return () => window.removeEventListener("scroll", sync);
+  }, [pathname]);
+  return zichtbaar;
+}
 
 export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string; locale?: "nl" | "de" }) {
   const pathname = usePathname();
@@ -37,27 +75,37 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   const blog = blogSlug ? stickyBlogCta(blogSlug) : null;
   const doel = bookingHref ?? blog?.href ?? (taal === "de" ? copy.href : reserveerHref(pathname?.replace(/^\//, "") || undefined));
   const label = blog?.knop ?? copy.cta;
+  const prijs = PRIJS[taal];
+  const zichtbaar = useNaHeroKnop(pathname);
 
   return (
     <>
       <div className="hth-sticky-cta-spacer" aria-hidden />
       <div
         className="hth-sticky-cta"
+        data-zichtbaar={zichtbaar ? "ja" : "nee"}
+        aria-hidden={!zichtbaar}
         style={{
           position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 60,
-          flexDirection: "column",
-          gap: 7, padding: "9px 12px calc(9px + env(safe-area-inset-bottom))",
+          alignItems: "center", gap: 12,
+          padding: "8px 12px calc(8px + env(safe-area-inset-bottom))",
           background: "rgba(20,18,16,.97)", borderTop: "1px solid rgba(180,154,94,.4)",
-          alignItems: "stretch",
+          fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
         }}
       >
-        <DirectBookingUSP locale={taal} tone="onDark" size={10.5} style={{ gap: "4px 12px" }} />
+        {/* Een blog-CTA (bijv. de nieuwsbrief) is geen boeking; daar geen prijs. */}
+        {!blog && <div style={{ flex: "none", fontSize: 11, lineHeight: 1.25, color: "rgba(255,255,255,.7)" }}>
+          {prijs.van}
+          <strong style={{ display: "block", fontSize: 15, color: "white", fontWeight: 700 }}>{prijs.bedrag}</strong>
+          {prijs.per}
+        </div>}
         <Link
           href={doel}
+          tabIndex={zichtbaar ? undefined : -1}
           style={{
-            textAlign: "center", padding: "13px 0", borderRadius: 10,
+            flex: 1, minWidth: 0, textAlign: "center", padding: "13px 8px", borderRadius: 10,
             background: "#B49A5E", color: "#1A2E24", fontWeight: 700, fontSize: 15,
-            textDecoration: "none", fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+            textDecoration: "none",
           }}
         >
           {label}

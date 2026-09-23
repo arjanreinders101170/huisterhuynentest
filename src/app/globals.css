@@ -43,12 +43,35 @@
   }
 }
 
-/* Sticky mobile booking bar — only on small screens */
+/* Sticky mobile booking bar — only on small screens. Hij schuift pas in beeld
+ * als de hero-knop uit beeld is (StickyMobileCTA → data-zichtbaar) en blijft
+ * weg zolang de cookiekeuze open staat: onderaan staat één balk tegelijk. */
 .hth-sticky-cta { display: none; }
 .hth-sticky-cta-spacer { display: none; }
 @media (max-width: 768px) {
-  .hth-sticky-cta { display: flex; }
-  .hth-sticky-cta-spacer { display: block; height: 92px; }
+  .hth-sticky-cta {
+    display: flex;
+    transition: transform .25s ease, visibility .25s;
+  }
+  .hth-sticky-cta[data-zichtbaar="nee"],
+  html[data-consent-open] .hth-sticky-cta {
+    transform: translateY(110%);
+    visibility: hidden;
+  }
+  .hth-sticky-cta-spacer { display: block; height: 68px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hth-sticky-cta { transition: none; }
+}
+
+/* Hero op een telefoon: kortere bovenregel en intro, zodat de knop boven de
+ * vouw staat. */
+.hth-hero-intro-short { display: none; }
+@media (max-width: 600px) {
+  .hth-hero-eyebrow-long { display: none; }
+  .hth-hero-intro-long { display: none; }
+  .hth-hero-intro-short { display: inline; }
+  .hth-hero-intro { font-size: 15px !important; line-height: 1.6 !important; margin-bottom: 24px !important; }
 }
 
 /* Cookiebalk — één smalle balk over de volle breedte, tegen de onderrand.
@@ -57,8 +80,8 @@
  * reserveert ruimte onder de pagina (ConsentBanner zet body padding-bottom),
  * dus er verdwijnt geen tekst achter.
  *
- * Op mobiel staat de boekingsbalk al tegen de onderrand; de cookiebalk gaat
- * daar net boven staan in plaats van eroverheen. */
+ * Op mobiel is de boekingsbalk verborgen zolang de cookiebalk open staat
+ * (html[data-consent-open]); de cookiebalk staat dus zelf tegen de onderrand. */
 .hth-consent-bar { bottom: 0; }
 .hth-consent-bar-inner {
   max-width: 1240px;
@@ -98,17 +121,18 @@
   .hth-consent-prefs-btn { display: none; }
 }
 @media (max-width: 768px) {
-  .hth-consent-bar { bottom: calc(92px + env(safe-area-inset-bottom)); }
-  .hth-consent-bar-inner { padding: 12px 16px; gap: 10px 12px; }
+  .hth-consent-bar-inner { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); gap: 10px 12px; }
   /* Knoppen passen hier niet meer naast de tekst; ze krijgen hun eigen regel,
    * zodat "Voorkeuren aanpassen" niet buiten beeld valt. */
   .hth-consent-text { flex-basis: 100%; font-size: 12px; line-height: 1.45; }
   .hth-consent-actions { flex: 1 1 100%; }
 }
 /* Op een telefoon zijn er nog twee knoppen (de derde staat als link achter de
- * tekst); die verdelen samen de regel. */
+ * tekst); met korte labels passen ze naast elkaar. Accepteren staat rechts,
+ * onder de duim. */
 @media (max-width: 600px) {
-  .hth-consent-actions > button { flex: 1 1 130px; }
+  .hth-consent-actions { flex-direction: row-reverse; flex-wrap: nowrap; }
+  .hth-consent-actions > button { flex: 1 1 0; min-width: 0; }
 }
 
 /* Compacte FAQ bij het boekingsformulier (<details> zonder browsermarker) */
