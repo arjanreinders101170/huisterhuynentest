@@ -745,7 +745,7 @@ export function LandingTemplate({
                         {s.table.rows.map((row, k) => (
                           <tr key={k} role="row" style={{ background: k % 2 ? "white" : "transparent" }}>
                             {row.map((cel, m) => (
-                              <td key={m} role="cell" data-label={s.table!.head[m]} style={{ padding: "10px 14px", borderBottom: `1px solid ${T.border}`, color: m === 0 ? T.text : T.muted, fontWeight: m === 0 ? 600 : 300, lineHeight: 1.5 }}>
+                              <td key={m} role="cell" data-label={s.table!.head[m]} className={cel.length > 30 ? "lp-td-long" : undefined} style={{ padding: "10px 14px", borderBottom: `1px solid ${T.border}`, color: m === 0 ? T.text : T.muted, fontWeight: m === 0 ? 600 : 300, lineHeight: 1.5 }}>
                                 {cel}
                               </td>
                             ))}

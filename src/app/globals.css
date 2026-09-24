@@ -349,22 +349,44 @@ html { scroll-behavior: smooth; }
     background: #fff !important;
     border: 1px solid #E0D8C8;
     border-radius: 10px;
-    padding: 4px 14px 10px;
+    padding: 4px 16px 6px;
     margin-bottom: 10px;
   }
+  /* Label en waarde naast elkaar, met een vaste labelkolom, zodat de
+   * waarden in elk kaartje op één verticale lijn staan. Onder elkaar
+   * gestapeld werd een rijtje van drie korte waarden een lange, rommelige
+   * kolom. */
   .lp-table-wrap td {
-    display: block;
+    display: grid;
+    grid-template-columns: 8.2em minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: baseline;
     border-bottom: 0 !important;
-    padding: 8px 0 0 !important;
+    border-top: 1px solid #EFE9DC;
+    padding: 9px 0 !important;
   }
   .lp-table-wrap td::before {
     content: attr(data-label);
-    display: block;
     font-size: 10.5px;
     font-weight: 600;
-    letter-spacing: 1.4px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
     color: #8A6F2E;
+  }
+  /* De eerste cel is de naam van de rij: die wordt de titel van het kaartje,
+   * zonder label ervoor. */
+  .lp-table-wrap td:first-child {
+    display: block;
+    border-top: 0;
+    padding: 10px 0 6px !important;
+    font-size: 16px;
+  }
+  .lp-table-wrap td:first-child::before { content: none; }
+  /* Lange tekst (een uitleg-kolom) past niet naast een label op 320px:
+   * die krijgt het label erboven en de volle breedte. */
+  .lp-table-wrap td.lp-td-long { display: block; }
+  .lp-table-wrap td.lp-td-long::before {
+    display: block;
     margin-bottom: 3px;
   }
 }
