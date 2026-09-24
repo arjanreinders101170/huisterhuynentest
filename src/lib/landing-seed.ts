@@ -183,7 +183,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
         bullets: [
           "Lodge De Eik — eigen buitensauna, privé-hottub en buitenkeuken met BBQ.",
-          "Lodge De Eik — authentieke uitstraling, eigen buitensauna, buitenkeuken met BBQ en eigen hottub.",
+          "Lodge De Eik — authentieke uitstraling, buitenkeuken met BBQ en eigen hottub.",
           "Volledig uitgeruste keuken, fijne bedden en een privé-terras in beide lodges.",
           "Gratis WiFi, een laadstation bij de lodge (laden niet inbegrepen) en persoonlijk contact met de gastheer.",
         ],
@@ -593,7 +593,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
         bullets: [
           "Lodge De Eik — buitensauna, privé-hottub en buitenkeuken met BBQ.",
-          "Lodge De Eik — eigen buitensauna, buitenkeuken met BBQ en eigen hottub onder de eiken.",
+          "Lodge De Eik — buitenkeuken met BBQ en eigen hottub onder de eiken.",
           "Beide lodges: volledig uitgeruste keuken, comfortabele bedden en een eigen afgeschermd terras.",
           "Laadstation bij de lodge, gratis WiFi en persoonlijk contact met de gastheer.",
         ],
