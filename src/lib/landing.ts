@@ -91,6 +91,11 @@ export function recordToConfig(rec: LandingPageRecord, locale?: "nl" | "de"): La
      * en leest van boven naar beneden. Een sprongmenu haalt hem juist uit dat
      * verhaal. Op de themapagina's blijft hij staan. */
     toonIndex: !(rec.slug in LODGE_OP_SLUG),
+    /* Zelfde reden, andere kant op: de lodgepagina's dragen de naam van de
+     * lodge in de H1, waardoor die kop altijd langer is dan een themakop. Op
+     * het formaat van de themapagina's vulde hij drie regels en bleef er van
+     * de hero weinig anders over. Daar dus een kleinere kop. */
+    heroCompact: rec.slug in LODGE_OP_SLUG,
   };
 }
 

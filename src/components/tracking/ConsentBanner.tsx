@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   readConsent,
   writeConsent,
@@ -10,12 +11,30 @@ import type { ConsentCategory, ConsentState } from "@/lib/tracking/types";
 
 type Lang = "nl" | "de";
 
+/* De taal van de balk volgt de pagina, niet de browser. Eerder las hij
+ * navigator.language: op /de kreeg een bezoeker met een Nederlandse of
+ * Engelse browser een Nederlandse cookiebalk, en op een Nederlandse pagina
+ * kreeg een Duitse browser een Duitse. */
+function taalVanPad(pad: string | null): Lang {
+  if (!pad) return "nl";
+  if (pad === "/de" || pad.startsWith("/de/")) return "de";
+  if (pad === "/datenschutz" || pad === "/impressum") return "de";
+  return "nl";
+}
+
 const COPY = {
   nl: {
     title: "Cookies & privacy",
     body: "Wij gebruiken cookies voor een optimale websitebeleving, bezoekersstatistieken en gepersonaliseerde advertenties. U kiest zelf welke cookies u toestaat.",
+    /* Op een telefoon nam de volledige zin het halve scherm in beslag. Daar
+     * staat de korte versie; het hele verhaal blijft achter "Voorkeuren
+     * aanpassen" en het privacybeleid. */
+    bodyShort: "Wij gebruiken cookies voor statistieken en advertenties. U kiest zelf.",
     acceptAll: "Alles accepteren",
     necessaryOnly: "Alleen noodzakelijke",
+    /* Korte labels voor een telefoon, zodat beide knoppen naast elkaar passen. */
+    acceptShort: "Accepteren",
+    necessaryShort: "Alleen nodig",
     customize: "Voorkeuren aanpassen",
     save: "Voorkeuren opslaan",
     back: "Terug",
@@ -30,8 +49,11 @@ const COPY = {
   de: {
     title: "Cookies & Datenschutz",
     body: "Wir verwenden Cookies für ein optimales Website-Erlebnis, Besucherstatistiken und personalisierte Werbung. Sie entscheiden, welche Cookies Sie zulassen.",
+    bodyShort: "Wir verwenden Cookies für Statistiken und Werbung. Sie entscheiden.",
     acceptAll: "Alle akzeptieren",
     necessaryOnly: "Nur notwendige",
+    acceptShort: "Akzeptieren",
+    necessaryShort: "Nur notwendige",
     customize: "Einstellungen anpassen",
     save: "Einstellungen speichern",
     back: "Zurück",
@@ -55,17 +77,19 @@ const PALETTE = {
   shadow: "0 12px 40px rgba(0,0,0,.28)",
 };
 
+const FONT = "var(--font-dm-sans), system-ui, -apple-system, sans-serif";
+
 export function ConsentBanner() {
   const [open, setOpen] = useState(false);
   const [layer2, setLayer2] = useState(false);
   const [state, setState] = useState<ConsentState>(DEFAULT_CONSENT);
-  const [lang, setLang] = useState<Lang>("nl");
+  const lang = taalVanPad(usePathname());
+  const barRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const current = readConsent();
     setState(current.state);
     setOpen(!current.decided);
-    setLang((navigator.language || "nl").toLowerCase().startsWith("de") ? "de" : "nl");
 
     /* Returning visitors: replay the stored consent so GTM picks it up on
      * this page load. Without this, default-deny stays active and tags
@@ -81,6 +105,48 @@ export function ConsentBanner() {
     window.addEventListener("hth:open-consent", reopen);
     return () => window.removeEventListener("hth:open-consent", reopen);
   }, []);
+
+  /* De balk staat vast onderaan het scherm en zou dus over de onderste regels
+   * van de pagina heen vallen — op een landingspagina precies over de feiten-
+   * balk. Zolang de balk staat, reserveert de body er onderaan net zoveel
+   * ruimte voor als de balk hoog is, zodat er niets achter verdwijnt. De hoogte
+   * wisselt met de schermbreedte (tekst en knoppen breken af), vandaar de
+   * ResizeObserver in plaats van een vast getal. */
+  useEffect(() => {
+    const el = barRef.current;
+    if (!open || layer2 || !el) return;
+    const sync = () => {
+      document.body.style.paddingBottom = `${el.offsetHeight}px`;
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    window.addEventListener("resize", sync);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", sync);
+      document.body.style.paddingBottom = "";
+    };
+  }, [open, layer2]);
+
+  /* Zolang de keuze open staat, houdt globals.css de boekingsbalk op een
+   * telefoon verborgen: dan staat er onderaan maar één balk tegelijk. */
+  useEffect(() => {
+    if (!open) return;
+    const root = document.documentElement;
+    root.setAttribute("data-consent-open", "");
+    return () => root.removeAttribute("data-consent-open");
+  }, [open]);
+
+  /* Escape sluit alleen de voorkeurenlaag; de keuze zelf blijft staan. */
+  useEffect(() => {
+    if (!layer2) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLayer2(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [layer2]);
 
   if (!open) return null;
   const t = COPY[lang];
@@ -110,112 +176,135 @@ export function ConsentBanner() {
     setState(prev => ({ ...prev, [cat]: !prev[cat] }));
   };
 
+  /* Voorkeuren zijn een bewuste tweede stap: die mag wél een dialoog met
+   * schermvulling zijn. De eerste indruk niet — dat is de smalle balk. */
+  if (layer2) {
+    return (
+      <div
+        className="hth-consent-overlay"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 9500,
+          background: "rgba(20,18,16,.55)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 16,
+        }}
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="hth-consent-title"
+          style={{
+            width: "100%",
+            maxWidth: 520,
+            maxHeight: "85vh",
+            overflowY: "auto",
+            background: PALETTE.dark,
+            borderRadius: 14,
+            padding: "20px 22px",
+            boxShadow: PALETTE.shadow,
+            fontFamily: FONT,
+            color: "white",
+          }}
+        >
+          <h2
+            id="hth-consent-title"
+            style={{
+              margin: "0 0 10px",
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontSize: 16,
+              fontWeight: 700,
+              color: "white",
+            }}
+          >
+            {t.title}
+          </h2>
+          <Layer2
+            intro={t.layer2Intro}
+            cats={t.cats}
+            state={state}
+            toggle={toggle}
+            save={save}
+            back={() => setLayer2(false)}
+            labels={{ save: t.save, back: t.back }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="hth-consent-title"
+      ref={barRef}
+      className="hth-consent-bar"
+      role="region"
+      aria-label={t.title}
       style={{
         position: "fixed",
-        bottom: 16,
-        left: 12,
-        right: 12,
+        left: 0,
+        right: 0,
         zIndex: 9500,
         background: PALETTE.dark,
-        borderRadius: 14,
-        padding: layer2 ? "20px 22px" : "18px 22px",
-        boxShadow: PALETTE.shadow,
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        maxWidth: 520,
-        margin: "0 auto",
+        borderTop: `1px solid ${PALETTE.gold}55`,
+        boxShadow: "0 -8px 28px rgba(0,0,0,.22)",
+        fontFamily: FONT,
         color: "white",
       }}
     >
-      {!layer2 ? (
-        <Layer1
-          title={t.title}
-          body={t.body}
-          acceptAll={acceptAll}
-          necessaryOnly={necessaryOnly}
-          customize={() => setLayer2(true)}
-          labels={{ acceptAll: t.acceptAll, necessaryOnly: t.necessaryOnly, customize: t.customize }}
-          lang={lang}
-        />
-      ) : (
-        <Layer2
-          intro={t.layer2Intro}
-          cats={t.cats}
-          state={state}
-          toggle={toggle}
-          save={save}
-          back={() => setLayer2(false)}
-          labels={{ save: t.save, back: t.back }}
-        />
-      )}
-    </div>
-  );
-}
-
-function Layer1({
-  title,
-  body,
-  acceptAll,
-  necessaryOnly,
-  customize,
-  labels,
-  lang,
-}: {
-  title: string;
-  body: string;
-  acceptAll: () => void;
-  necessaryOnly: () => void;
-  customize: () => void;
-  labels: { acceptAll: string; necessaryOnly: string; customize: string };
-  lang: Lang;
-}) {
-  return (
-    <>
-      <h2
-        id="hth-consent-title"
-        style={{
-          margin: 0,
-          fontFamily: "Georgia, 'Times New Roman', serif",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "white",
-          marginBottom: 8,
-        }}
-      >
-        {title}
-      </h2>
-      <p style={{ margin: 0, fontSize: 13, color: "rgba(255,255,255,.78)", lineHeight: 1.55 }}>
-        {body}{" "}
-        <a
-          href={lang === "de" ? "/datenschutz" : "/privacy"}
-          style={{ color: PALETTE.gold, textDecoration: "underline", textUnderlineOffset: 3 }}
-        >
-          {lang === "de" ? "Datenschutz" : "Privacybeleid"}
-        </a>
-      </p>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 8,
-          marginTop: 14,
-        }}
-      >
-        <ConsentButton onClick={acceptAll} variant="primary">
-          {labels.acceptAll}
-        </ConsentButton>
-        <ConsentButton onClick={necessaryOnly} variant="secondary">
-          {labels.necessaryOnly}
-        </ConsentButton>
-        <ConsentButton onClick={customize} variant="tertiary">
-          {labels.customize}
-        </ConsentButton>
+      <div className="hth-consent-bar-inner">
+        <p className="hth-consent-text">
+          <strong style={{ color: "white", fontWeight: 600 }}>{t.title}</strong>
+          {" — "}
+          <span className="hth-consent-long">{t.body}</span>
+          <span className="hth-consent-short">{t.bodyShort}</span>{" "}
+          <a
+            href={lang === "de" ? "/datenschutz" : "/privacy"}
+            style={{ color: PALETTE.gold, textDecoration: "underline", textUnderlineOffset: 3 }}
+          >
+            {t.privacyLink}
+          </a>
+          {/* Op een telefoon scheelt een derde knoppenregel bijna 45px; daar
+           * staat "Voorkeuren aanpassen" als link achter de tekst. Boven de
+           * 600px blijft het de knop rechts in de balk — de CSS laat er
+           * precies één van de twee zien, scheidingsteken inbegrepen. */}
+          <span className="hth-consent-prefs-inline">
+            {" · "}
+            <button
+              type="button"
+              onClick={() => setLayer2(true)}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                font: "inherit",
+                color: PALETTE.gold,
+                textDecoration: "underline",
+                textUnderlineOffset: 3,
+                cursor: "pointer",
+              }}
+            >
+              {t.customize}
+            </button>
+          </span>
+        </p>
+        <div className="hth-consent-actions">
+          <ConsentButton onClick={acceptAll} variant="primary">
+            <span className="hth-consent-long">{t.acceptAll}</span>
+            <span className="hth-consent-short">{t.acceptShort}</span>
+          </ConsentButton>
+          <ConsentButton onClick={necessaryOnly} variant="secondary">
+            <span className="hth-consent-long">{t.necessaryOnly}</span>
+            <span className="hth-consent-short">{t.necessaryShort}</span>
+          </ConsentButton>
+          <ConsentButton onClick={() => setLayer2(true)} variant="tertiary" className="hth-consent-prefs-btn">
+            {t.customize}
+          </ConsentButton>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -310,16 +399,18 @@ function ConsentButton({
   children,
   onClick,
   variant,
+  className,
 }: {
   children: React.ReactNode;
   onClick: () => void;
   variant: "primary" | "secondary" | "tertiary";
+  className?: string;
 }) {
   const base: React.CSSProperties = {
-    padding: "10px 16px",
+    padding: "9px 14px",
     borderRadius: 8,
     border: "none",
-    fontSize: 13,
+    fontSize: 12.5,
     fontWeight: 600,
     cursor: "pointer",
     whiteSpace: "nowrap",
@@ -327,7 +418,7 @@ function ConsentButton({
   };
   if (variant === "primary") {
     return (
-      <button onClick={onClick} style={{ ...base, background: PALETTE.gold, color: PALETTE.dark }}>
+      <button className={className} onClick={onClick} style={{ ...base, background: PALETTE.gold, color: PALETTE.dark }}>
         {children}
       </button>
     );
@@ -335,12 +426,13 @@ function ConsentButton({
   if (variant === "secondary") {
     return (
       <button
+        className={className}
         onClick={onClick}
         style={{
           ...base,
-          background: PALETTE.surface,
-          color: PALETTE.dark,
-          border: `1px solid ${PALETTE.border}`,
+          background: "transparent",
+          color: "white",
+          border: "1px solid rgba(255,255,255,.35)",
         }}
       >
         {children}
@@ -349,6 +441,7 @@ function ConsentButton({
   }
   return (
     <button
+      className={className}
       onClick={onClick}
       style={{
         ...base,
@@ -356,7 +449,7 @@ function ConsentButton({
         color: "rgba(255,255,255,.85)",
         textDecoration: "underline",
         textUnderlineOffset: 3,
-        padding: "10px 8px",
+        padding: "9px 6px",
         fontWeight: 500,
       }}
     >

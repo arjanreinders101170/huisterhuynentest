@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { beoordelingSchema } from "@/data/reviews";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { StickyMobileCTA } from "@/components/StickyMobileCTA";
+import { BookingSheet } from "@/components/BookingSheet";
 import { ConsentBanner } from "@/components/tracking/ConsentBanner";
 import { ConsentBootstrap } from "@/components/tracking/ConsentBootstrap";
 import { GoogleAds } from "@/components/tracking/GoogleAds";
@@ -136,7 +138,7 @@ const jsonLd = {
   "@type": "LodgingBusiness",
   name: "Huis ter Huynen",
   description:
-    "Twee luxe boutique lodges op de Drentse heide bij Zeijen. Privé hottub, sauna, wandelen en fietsen vanuit de deur. 20 minuten van Assen.",
+    "Twee luxe boutique lodges op de Drentse heide bij Zeijen. Privé hottub bij beide, buitensauna bij De Eik, wandelen en fietsen vanuit de deur. 20 minuten van Assen.",
   url: SITE_URL,
   telephone: LODGE_PHONE_E164,
   email: "lodge@huisterhuynen.nl",
@@ -222,9 +224,15 @@ const jsonLd = {
      * de afwezigheid niet van onbekend onderscheiden. */
     { "@type": "LocationFeatureSpecification", name: "Zwembad", value: false },
   ],
+  ...beoordelingSchema(),
   containsPlace: [
     {
       "@type": "Accommodation",
+      /* Vaste @id, zodat /lodge-de-heide met mainEntity naar déze knoop kan
+       * wijzen in plaats van een tweede, losse beschrijving op te voeren. Eén
+       * entiteit met één identiteit, op elke pagina waar hij voorkomt. */
+      "@id": `${SITE_URL}/lodge-de-heide#accommodation`,
+      url: `${SITE_URL}/lodge-de-heide`,
       name: "De Heide",
       description:
         "Luxe lodge op de Drentse heide voor 4 personen. Privé hottub op het terras en panoramisch uitzicht over heide en bos.",
@@ -239,6 +247,8 @@ const jsonLd = {
     },
     {
       "@type": "Accommodation",
+      "@id": `${SITE_URL}/lodge-de-eik#accommodation`,
+      url: `${SITE_URL}/lodge-de-eik`,
       name: "De Eik",
       description:
         "Ruime lodge onder de eiken voor 4 personen. Eigen buitensauna, privé hottub, vloerverwarming, airco en een buitenkeuken met BBQ.",
@@ -317,6 +327,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <TrackingListeners />
         {children}
         <StickyMobileCTA />
+        <BookingSheet />
         <ConsentBanner />
       </body>
     </html>

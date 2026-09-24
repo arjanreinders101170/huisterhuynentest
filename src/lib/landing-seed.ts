@@ -159,7 +159,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     eyebrow: "Boutique lodge · Zeijen · Drenthe",
     h1: "Luxe lodge in Drenthe",
     hero_sub:
-      "Twee boutique lodges midden in de Drentse natuur. Stijlvol ingericht, volledig privé en voorzien van sauna, hottub en alle comfort voor een verblijf dat klopt tot in het detail.",
+      "Twee boutique lodges midden in de Drentse natuur. Stijlvol ingericht, volledig privé, allebei met een eigen hottub en bij De Eik een buitensauna — alle comfort voor een verblijf dat klopt tot in het detail.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
       "Luxe lodge De Eik onder de eiken bij Zeijen in Drenthe, met buitenkeuken en eigen terras",
@@ -220,7 +220,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
     meta_title: "Luxe Lodge in Drenthe | Boutique Verblijf met Hottub bij Zeijen",
     meta_description:
-      "Luxe boutique lodge in Drenthe, op de heide bij Zeijen. Twee volledig privé lodges met hottub en sauna, 20 min van Assen. Rust, ruimte en comfort. Boek direct.",
+      "Luxe boutique lodge in Drenthe, op de heide bij Zeijen. Twee volledig privé lodges met hottub, De Eik met buitensauna. 20 min van Assen. Boek direct.",
     og_image: "/lodge-eik.jpg",
     sort_order: 2,
   },
@@ -321,13 +321,13 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     eyebrow: "Privé sauna & hottub · Zeijen · Drenthe",
     h1: "Wellness huisje in Drenthe met privé-sauna en hottub",
     hero_sub:
-      "Geen gedeelde spa, geen openingstijden, geen onbekenden in bad. Twee vrijstaande wellness huisjes op de heide bij Zeijen, met een eigen hottub op het terras en een sauna die alleen van u is.",
+      "Geen gedeelde spa, geen openingstijden, geen onbekenden in bad. Twee vrijstaande wellness huisjes op de heide bij Zeijen, allebei met een eigen hottub op het terras en bij Lodge De Eik een buitensauna die alleen van u is.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
       "Wellness huisje in Drenthe: Lodge De Eik met privé-hottub op het terras, omringd door bos bij Zeijen",
     price_from: PRICE,
     intro:
-      "Een wellness huisje in Drenthe is iets anders dan een wellnesshotel met een dagkaart. Hier is er geen balie, geen tijdslot en geen gedeelde sauna: u huurt een vrijstaand huis op de heide bij Zeijen, met een hottub op uw eigen terras die het hele jaar op 38 °C staat. Lodge De Heide heeft daarnaast een eigen sauna. Er staan maar twee huisjes op het terrein, dus wie u tegenkomt bepaalt u zelf.",
+      "Een wellness huisje in Drenthe is iets anders dan een wellnesshotel met een dagkaart. Hier is er geen balie, geen tijdslot en geen gedeelde sauna: u huurt een vrijstaand huis op de heide bij Zeijen, met een hottub op uw eigen terras die het hele jaar op 38 °C staat. Lodge De Eik heeft daarnaast een eigen buitensauna. Er staan maar twee huisjes op het terrein, dus wie u tegenkomt bepaalt u zelf.",
     sections: [
       {
         eyebrow: "Het verschil",
@@ -419,7 +419,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
     meta_title: "Wellness Huisje Drenthe | Privé Sauna & Hottub, Geen Gedeelde Spa",
     meta_description:
-      "Een wellness huisje in Drenthe waar de sauna en hottub alleen van u zijn. Twee vrijstaande lodges op de heide bij Zeijen, 24/7 op temperatuur. Vanaf €165 p.n.",
+      "Een wellness huisje in Drenthe waar het water van u alleen is. Privé-hottub bij beide lodges, buitensauna bij De Eik, 24/7 op temperatuur. Vanaf €165 p.n.",
     og_image: "",
     sort_order: 4,
   },
@@ -569,7 +569,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     eyebrow: "Uniek verblijf · Zeijen · Drenthe",
     h1: "Bijzonder overnachten in Drenthe",
     hero_sub:
-      "Niet zomaar een vakantiehuisje, maar een verblijf dat bijblijft. Twee boutique lodges op de Drentse heide — met privé-hottub, sauna en een omgeving die u nergens anders vindt.",
+      "Niet zomaar een vakantiehuisje, maar een verblijf dat bijblijft. Twee boutique lodges op de Drentse heide — met privé-hottub, een buitensauna bij De Eik en een omgeving die u nergens anders vindt.",
     hero_image: "/heide2.jpg",
     hero_image_alt:
       "Bijzonder overnachten in Drenthe: Lodge De Heide van Huis ter Huynen, omringd door de Drentse natuur bij Zeijen",
@@ -615,7 +615,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       },
     ],
     faq: [
-      "Wat maakt dit overnachten 'bijzonder'? :: De combinatie van volledige privacy, een eigen hottub en sauna, een authentiek ingerichte lodge midden in de natuur en persoonlijke service. Geen massatoerisme, geen gedeelde ruimtes — een verblijf dat voelt als uw eigen plek.",
+      "Wat maakt dit overnachten 'bijzonder'? :: De combinatie van volledige privacy, een eigen hottub op het terras — bij Lodge De Eik met een buitensauna erbij — een authentiek ingerichte lodge midden in de natuur en persoonlijke service. Geen massatoerisme, geen gedeelde ruimtes — een verblijf dat voelt als uw eigen plek.",
       "Kan ik een bijzondere gelegenheid vieren? :: Ja. Geef het bij de boeking aan — voor jubilea, verjaardagen of andere speciale momenten zorgen we waar mogelijk voor een persoonlijk welkom.",
       "Voor hoeveel personen zijn de lodges geschikt? :: Elke lodge biedt comfortabel plek aan maximaal vier personen. Twee aparte, volledig privé lodges zijn beschikbaar.",
       "Hoe ver is het van de bewoonde wereld? :: Dichtbij genoeg voor een restaurantbezoek of museum (Assen op 20 min), ver genoeg voor echte rust. Zeijen zelf is een rustiek brinkdorp met weinig doorgaand verkeer.",
@@ -631,7 +631,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "De lodges zijn al boekbaar voor 2027. Bekijk de beschikbaarheid of stel uw vraag — wij reageren binnen 24 uur persoonlijk.",
     meta_title: "Bijzonder Overnachten in Drenthe | Boutique Lodge bij Zeijen",
     meta_description:
-      "Bijzonder overnachten in Drenthe: twee boutique lodges met privé-hottub en sauna op de heide bij Zeijen. Volledig privé, 20 min van Assen. Vanaf €165 per nacht.",
+      "Bijzonder overnachten in Drenthe: twee boutique lodges met privé-hottub op de heide bij Zeijen, De Eik met buitensauna. Volledig privé. Vanaf €165 per nacht.",
     og_image: "",
     sort_order: 8,
   },
@@ -937,7 +937,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Die Lodges sind bereits für 2027 buchbar. Prüfen Sie die Verfügbarkeit oder stellen Sie Ihre Frage — wir antworten persönlich innerhalb von 24 Stunden.",
     meta_title: "Ferienhaus mit Whirlpool in Drenthe | Private Lodge bei Zeijen",
     meta_description:
-      "Ferienhaus mit privatem Whirlpool in Drenthe (NL). Zwei Boutique Lodges auf der Heide bei Zeijen, mit Whirlpool & Sauna. Ruhe, Natur und Luxus. Ab €165 pro Nacht.",
+      "Ferienhaus mit privatem Whirlpool in Drenthe (NL). Zwei Boutique Lodges auf der Heide bei Zeijen, De Eik mit Fasssauna. Ruhe, Natur und Luxus. Ab €165 pro Nacht.",
     og_image: "",
     sort_order: 11,
   },
@@ -1377,7 +1377,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     eyebrow: "Boutique Lodge · Zeijen · Drenthe",
     h1: "Luxus Lodge in Drenthe",
     hero_sub:
-      "Zwei Boutique Lodges inmitten der Drentse Natur. Stilvoll eingerichtet, vollständig privat und mit Sauna, Whirlpool und allem Komfort für einen Aufenthalt, der bis ins Detail stimmt.",
+      "Zwei Boutique Lodges inmitten der Drentse Natur. Stilvoll eingerichtet, vollständig privat, beide mit eigenem Whirlpool und De Eik mit Fasssauna — allem Komfort für einen Aufenthalt, der bis ins Detail stimmt.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
       "Luxus Lodge De Eik unter den Eichen bei Zeijen in Drenthe, mit Außenküche und eigener Terrasse",
@@ -1438,7 +1438,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Die Lodges sind bereits für 2027 buchbar. Prüfen Sie die Verfügbarkeit oder stellen Sie Ihre Frage — wir antworten persönlich innerhalb von 24 Stunden.",
     meta_title: "Luxus Lodge in Drenthe | Boutique Aufenthalt mit Whirlpool bei Zeijen",
     meta_description:
-      "Luxus Boutique Lodge in Drenthe, auf der Heide bei Zeijen. Zwei vollständig private Lodges mit Whirlpool und Sauna, 20 Min. von Assen. Ruhe, Raum und Komfort. Jetzt direkt buchen.",
+      "Luxus Boutique Lodge in Drenthe, auf der Heide bei Zeijen. Zwei vollständig private Lodges mit Whirlpool, De Eik mit Fasssauna, 20 Min. von Assen. Jetzt direkt buchen.",
     og_image: "",
     sort_order: 13,
   },
@@ -1448,20 +1448,20 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     eyebrow: "Wellness & Ruhe · Zeijen · Drenthe",
     h1: "Wellness Urlaub in Drenthe",
     hero_sub:
-      "Ein privater Whirlpool auf der Terrasse, eine eigene Sauna und die stillste Natur der Niederlande um Sie herum. Bei Huis ter Huynen ist Wellness keine Abteilung, sondern das gesamte Erlebnis.",
-    hero_image: "/lodge-heide.jpg",
+      "Ein privater Whirlpool auf der Terrasse, bei Lodge De Eik eine eigene Fasssauna, und die stillste Natur der Niederlande um Sie herum. Bei Huis ter Huynen ist Wellness keine Abteilung, sondern das gesamte Erlebnis.",
+    hero_image: "/lodge-eik.jpg",
     hero_image_alt:
       "Lodge De Eik mit privatem Whirlpool und eigener Fasssauna im Freien, unter Eichen bei Zeijen in Drenthe",
     price_from: PRICE_DE,
     intro:
-      "Ein Wellness Urlaub in Drenthe geht über eine Stunde Sauna hinaus. Hier ist die Natur selbst die Quelle der Ruhe: Stilleregionen, endlose Heide und Wälder, in denen Sie niemandem begegnen. Bei Huis ter Huynen verbinden Sie diese Ruhe mit echtem Luxus — einem privaten Whirlpool, einer eigenen Sauna in Lodge De Heide und allem Komfort, um vollständig zu sich selbst zu finden.",
+      "Ein Wellness Urlaub in Drenthe geht über eine Stunde Sauna hinaus. Hier ist die Natur selbst die Quelle der Ruhe: Stilleregionen, endlose Heide und Wälder, in denen Sie niemandem begegnen. Bei Huis ter Huynen verbinden Sie diese Ruhe mit echtem Luxus — einem privaten Whirlpool, einer eigenen Fasssauna im Freien bei Lodge De Eik und allem Komfort, um vollständig zu sich selbst zu finden.",
     sections: [
       {
         eyebrow: "Die Idee",
         heading: "Natur als Medizin, Komfort als Basis",
         body: [
           "Studien zeigen immer wieder, dass Zeit in einer stillen, grünen Umgebung Stress messbar reduziert. Drenthe ist dafür der ideale Ort: offiziell die stillste Provinz der Niederlande, mit geschützten Stilleregionen und kaum Lichtverschmutzung. Ein Spaziergang durch die Zeijerstrubben oder entlang der Drentsche Aa wirkt mehr als jede Behandlung.",
-          "Bei Huis ter Huynen kommt der Komfort hinzu, der einen Wellness Urlaub vollständig macht: warmes, sprudelndes Wasser in Ihrem privaten Whirlpool, eine Sauna, die nur Ihnen gehört, und eine Lodge, in der Sie sich sofort entspannen. Keine geteilten Räume, kein Trubel — Wellness in Ihrem eigenen Tempo.",
+          "Bei Huis ter Huynen kommt der Komfort hinzu, der einen Wellness Urlaub vollständig macht: warmes, sprudelndes Wasser in Ihrem privaten Whirlpool, in Lodge De Eik eine Fasssauna, die nur Ihnen gehört, und eine Lodge, in der Sie sich sofort entspannen. Keine geteilten Räume, kein Trubel — Wellness in Ihrem eigenen Tempo.",
         ],
       },
       {
@@ -1510,7 +1510,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Die Lodges sind bereits für 2027 buchbar. Prüfen Sie die Verfügbarkeit oder stellen Sie Ihre Frage — wir antworten persönlich innerhalb von 24 Stunden.",
     meta_title: "Wellness Urlaub in Drenthe | Lodge mit Whirlpool & Sauna",
     meta_description:
-      "Wellness Urlaub in Drenthe: private Lodge mit eigenem Whirlpool und Sauna auf der Heide bei Zeijen. Stille, Natur und Komfort, 20 Min. von Assen. Ab €165 pro Nacht.",
+      "Wellness Urlaub in Drenthe: private Lodge mit eigenem Whirlpool auf der Heide bei Zeijen, De Eik mit Fasssauna. Stille, 20 Min. von Assen. Ab €165 pro Nacht.",
     og_image: "",
     sort_order: 14,
   },
@@ -1608,9 +1608,9 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     updated_at: "2026-09-04",
     breadcrumb: "Lodge De Heide",
     eyebrow: "Lodge De Heide · Zeijen · 4 personen",
-    h1: "Lodge De Heide — privé-hottub en panoramisch uitzicht op de heide",
+    h1: "Lodge De Heide — privé-hottub en vrij uitzicht",
     hero_sub:
-      "De enige van de twee met vrij uitzicht over heide en bos. Een hottub op het terras die het hele jaar op 38 °C staat, en verder geen enkel gebouw in zicht.",
+      "De enige van de twee met vrij uitzicht over heide en bos. Een hottub op het terras, het hele jaar op 38 °C, en geen enkel gebouw in zicht.",
     hero_image: "/lodge-heide.jpg",
     hero_image_alt:
       "Lodge De Heide met privé-hottub op het terras en panoramisch uitzicht over de Drentse heide bij Zeijen",
@@ -1815,18 +1815,25 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
     updated_at: "2026-09-04",
     breadcrumb: "Lodge De Eik",
     eyebrow: "Lodge De Eik · Zeijen · 4 personen",
-    h1: "Lodge De Eik — met eigen buitensauna, buitenkeuken en hottub",
+    h1: "Lodge De Eik — buitensauna, buitenkeuken en hottub",
     hero_sub:
-      "De enige van de twee met een eigen buitensauna. Ruimte voor vier en een buitenkeuken met BBQ onder oude eiken. Een hottub op het eigen terras, en een keuken waar u de hele avond buiten kunt blijven.",
+      "De enige van de twee met een eigen buitensauna. Een buitenkeuken met BBQ onder oude eiken, en een hottub op het eigen terras.",
     hero_image: "/lodge-eik.jpg",
     hero_image_alt:
       "Lodge De Eik in Zeijen onder oude eiken, met buitenkeuken, BBQ en privé-hottub op het terras",
     price_from: PRICE,
     key_facts: [
-      "Voor :: Maximaal 4 personen",
+      /* Dezelfde vier feitelijke labels als De Heide, met precies dezelfde
+       * schrijfwijze. feitenNaarSchema herkent ze daaraan en vult daarmee
+       * floorSize, numberOfBedrooms, numberOfBathroomsTotal en occupancy.
+       * "Voor :: Maximaal 4 personen" herkende het niet: het zoekt op het
+       * label, en dat heette hier anders. */
+      "Personen :: Maximaal 4",
+      "Slaapkamers :: 2",
+      "Badkamer :: 1",
+      "Oppervlakte :: 60 m²",
       "Wellness :: Eigen buitensauna én hottub",
       "Buiten :: Buitenkeuken met BBQ",
-      "Ligging :: Zeijen, 20 min van Assen",
       "Verblijf :: Weekend, midweek of week",
     ].join("\n"),
     intro:
@@ -1846,6 +1853,44 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           "Gratis snel WiFi en gratis parkeren op eigen terrein. Er is een laadstation aanwezig bij de lodge; het laden zelf is niet inbegrepen.",
           "Digitale sloten: inchecken kan tot middernacht zonder dat iemand op u wacht.",
         ],
+      },
+      {
+        heading: "Kamerindeling",
+        body: [
+          "De indeling is gelijk aan die van De Heide: twee slaapkamers, elk met een eigen opzet, en een woonkamer waar met z'n vieren aan tafel gegeten kan worden.",
+        ],
+        cards: [
+          { titel: "Slaapkamer 1", items: [{ icon: "bed", tekst: "2-persoons bed 1×" }] },
+          { titel: "Slaapkamer 2", items: [{ icon: "bed", tekst: "1-persoons bed 2×" }] },
+          {
+            titel: "Badkamer",
+            items: [
+              { icon: "douche", tekst: "Douche 1×" },
+              { icon: "toilet", tekst: "Toilet 1×" },
+            ],
+          },
+          {
+            titel: "Woonkamer",
+            items: [
+              { icon: "tafel", tekst: "Eettafel met stoelen" },
+              { icon: "tv", tekst: "TV 1×" },
+            ],
+          },
+          {
+            titel: "Keuken",
+            items: [
+              { icon: "vaatwasser", tekst: "Afwasmachine 1×" },
+              { icon: "koelkast", tekst: "Koelkast 1×" },
+              { icon: "magnetron", tekst: "Combimagnetron 1×" },
+              { icon: "fornuis", tekst: "Fornuis 1×" },
+            ],
+          },
+        ],
+        /* Bewust niet alleen de vierkante meters: de pagina zegt verderop dat
+         * De Eik de ruimste van de twee is en dat je dat aan de hoogte merkt,
+         * niet aan het grondvlak. Zonder die zin hier zou de gelijke 60 m²
+         * die claim lijken tegen te spreken. */
+        note: "De lodge is 60 m² en biedt plaats aan maximaal vier personen. Het grondvlak is gelijk aan dat van De Heide; de ruimte zit hier in de hoogte.",
       },
       {
         eyebrow: "Voorzieningen",
