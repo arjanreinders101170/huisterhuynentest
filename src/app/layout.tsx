@@ -251,7 +251,7 @@ const jsonLd = {
       url: `${SITE_URL}/lodge-de-eik`,
       name: "De Eik",
       description:
-        "Ruime lodge onder de eiken voor 4 personen. Eigen buitensauna, privé hottub, hoge plafonds en een buitenkeuken met BBQ.",
+        "Ruime lodge onder de eiken voor 4 personen. Eigen buitensauna, privé hottub, vloerverwarming, airco en een buitenkeuken met BBQ.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },

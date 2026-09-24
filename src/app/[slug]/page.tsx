@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { SITE_URL, landingOgImageUrl, jsonLdScript } from "@/lib/site";
 import { getLandingPage, getServedLandingSlugs, recordToConfig } from "@/lib/landing";
 import { LandingTemplate, landingSchemas } from "@/components/LandingTemplate";
+import { LodgeKop, PraktischeKaart, Vertrouwensbalk } from "@/components/LodgePagina";
+import { lodgeVoorSlug, LODGE_DUBBELE_SECTIES } from "@/data/lodge-paginas";
 
 export const revalidate = 60;
 
@@ -55,13 +57,32 @@ export default async function LandingPage(
 
   const config = recordToConfig(rec);
   const schemas = landingSchemas(config);
+  /* De twee lodgepagina's krijgen een eigen kop: een fotogalerij met het
+   * aanvraagformulier ernaast, zodat de bezoeker niet eerst naar de
+   * homepage hoeft om te kunnen aanvragen. Daaronder draait dezelfde
+   * template als elders, zonder de secties die die kop al dekt. Elke
+   * andere landingspagina verandert niet. */
+  const lodge = lodgeVoorSlug(slug);
 
   return (
     <>
       {schemas.map((schema, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(schema) }} />
       ))}
-      <LandingTemplate config={config} />
+      {lodge ? (
+        <>
+          <LodgeKop data={lodge} />
+          <LandingTemplate
+            config={config}
+            zonderKop
+            overslaanKoppen={LODGE_DUBBELE_SECTIES}
+            naSecties={<><PraktischeKaart /><Vertrouwensbalk /></>}
+            reserveerDoel="#aanvraag"
+          />
+        </>
+      ) : (
+        <LandingTemplate config={config} />
+      )}
     </>
   );
 }

@@ -391,7 +391,7 @@ export default function LandingPage() {
       {/* ══════════════════════════════════════════
           LODGES
       ══════════════════════════════════════════ */}
-      <section className="hth-gutter" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
+      <section id="lodges" className="hth-gutter lp-anchor" style={{ background: T.bg, paddingTop: 80, paddingBottom: 80 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <SectionHeader
             eyebrow="Onze accommodaties"
@@ -419,7 +419,7 @@ export default function LandingPage() {
                 name: "De Eik",
                 slug: "lodge-de-eik",
                 tag: "4 personen",
-                desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Hoge plafonds, authentieke uitstraling en een volledige keuken.",
+                desc: "Een ruime lodge onder de eiken, omgebouwd tot sfeervol verblijf voor vier. Authentieke uitstraling, een volledige keuken en een eigen buitensauna.",
                 features: ["4 personen", "Privé-hottub", "Volledige keuken", "Buitenkeuken & BBQ"],
                 img: "/lodge-eik.jpg",
                 alt: "Buitenaanzicht van Lodge De Eik onder eikenbomen met buitenkeuken en BBQ",

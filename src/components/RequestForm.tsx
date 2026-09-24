@@ -5,11 +5,12 @@ import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 import { getAttribution } from "@/lib/tracking/attribution";
 import { leesReserveerParams, KIES_LODGE_EVENT } from "@/lib/reserveer-params";
+import type { LodgeParam } from "@/lib/site";
 
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
 const LODGE_DESC: Record<Lodge, string> = {
-  lodge_1: "Panoramisch heide-uitzicht, privé-hottub",
+  lodge_1: "Vrij uitzicht over de heide, privé-hottub",
   lodge_2: "Onder de eiken, buitensauna & BBQ",
 };
 
@@ -23,14 +24,21 @@ const LODGE_UIT_URL: Record<string, Lodge> = { heide: "lodge_1", eik: "lodge_2" 
  *  die één lodge verkoopt (wellness → De Heide, ruimte bij Assen → De Eik),
  *  dan staat die al goed. Zonder ?lodge= blijft De Heide de standaard.
  *  Het formulier laadt met ssr:false, dus window bestaat hier al bij de eerste
- *  render en er valt niets te hydrateren dat afwijkt. */
-function beginLodge(): Lodge {
+ *  render en er valt niets te hydrateren dat afwijkt.
+ *
+ *  Staat het formulier op de pagina van één lodge, dan zegt die pagina het
+ *  rechtstreeks via `voorkeur`. Dat kan daar niet via de query (de bezoeker
+ *  klikt nergens, de pagina gáát al over die lodge) en ook niet via het
+ *  keuze-event: het formulier laadt lui, dus de luisteraar bestaat nog niet
+ *  op het moment dat de pagina eromheen klaar is. */
+function beginLodge(voorkeur?: LodgeParam): Lodge {
+  if (voorkeur && LODGE_UIT_URL[voorkeur]) return LODGE_UIT_URL[voorkeur];
   const { lodge } = leesReserveerParams();
   return (lodge && LODGE_UIT_URL[lodge]) || "lodge_1";
 }
 
-export default function RequestForm() {
-  const [lodge, setLodge] = useState<Lodge>(beginLodge);
+export default function RequestForm({ voorkeur }: { voorkeur?: LodgeParam } = {}) {
+  const [lodge, setLodge] = useState<Lodge>(() => beginLodge(voorkeur));
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [naam, setNaam] = useState("");

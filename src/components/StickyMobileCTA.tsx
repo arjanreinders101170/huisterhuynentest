@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { reserveerHref } from "@/lib/site";
 import { stickyBlogCta } from "@/lib/blog-cta";
+import { LODGE_PAGINAS } from "@/data/lodge-paginas";
 
 /* Sticky mobile booking bar. Hidden on desktop (see globals.css media query).
  * Renders a spacer so page content isn't hidden behind the fixed bar on mobile.
@@ -77,6 +78,16 @@ export function StickyMobileCTA({ bookingHref, locale }: { bookingHref?: string;
   const label = blog?.knop ?? copy.cta;
   const prijs = PRIJS[taal];
   const zichtbaar = useNaHeroKnop(pathname);
+
+  /* Niet op de lodgepagina's. Daar staat de knop naar het aanvraagpaneel in
+   * de bovenbalk, en die blijft staan bij het scrollen — een tweede vaste
+   * knop onderaan zegt hetzelfde en eet schermruimte.
+   *
+   * Bewust ná useNaHeroKnop en niet ervoor: die hook kwam er bij het
+   * samenvoegen met main bij, en een return ertussen maakt het aantal hooks
+   * afhankelijk van het pad. React klapt er dan op uit zodra je van een
+   * lodgepagina naar een andere pagina navigeert. */
+  if (pathname && LODGE_PAGINAS.some((l) => l.canoniekePagina === pathname)) return null;
 
   return (
     <>

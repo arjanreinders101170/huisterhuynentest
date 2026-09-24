@@ -183,7 +183,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
         bullets: [
           "Lodge De Eik — eigen buitensauna, privé-hottub en buitenkeuken met BBQ.",
-          "Lodge De Eik — hoge plafonds, authentieke uitstraling, buitenkeuken met BBQ en eigen hottub.",
+          "Lodge De Eik — authentieke uitstraling, buitenkeuken met BBQ en eigen hottub.",
           "Volledig uitgeruste keuken, fijne bedden en een privé-terras in beide lodges.",
           "Gratis WiFi, een laadstation bij de lodge (laden niet inbegrepen) en persoonlijk contact met de gastheer.",
         ],
@@ -593,7 +593,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
         ],
         bullets: [
           "Lodge De Eik — buitensauna, privé-hottub en buitenkeuken met BBQ.",
-          "Lodge De Eik — hoge plafonds, buitenkeuken met BBQ en eigen hottub onder de eiken.",
+          "Lodge De Eik — buitenkeuken met BBQ en eigen hottub onder de eiken.",
           "Beide lodges: volledig uitgeruste keuken, comfortabele bedden en een eigen afgeschermd terras.",
           "Laadstation bij de lodge, gratis WiFi en persoonlijk contact met de gastheer.",
         ],
@@ -1693,7 +1693,8 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           { icon: "koelkast", tekst: "Koelkast" },
           { icon: "koffie", tekst: "Koffieapparaat" },
           { icon: "waterkoker", tekst: "Waterkoker" },
-          { icon: "verwarming", tekst: "Verwarming" },
+          { icon: "vloerverwarming", tekst: "Vloerverwarming" },
+          { icon: "airco", tekst: "Airconditioning" },
         ],
       },
       {
@@ -1836,12 +1837,12 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       "Verblijf :: Weekend, midweek of week",
     ].join("\n"),
     intro:
-      "De Eik is het huis waar alles buiten gebeurt. Onder de oude eiken staat een buitenkeuken met BBQ, met de tafel ernaast, de hottub op hetzelfde terras en een eigen barrelsauna in de tuin — een vakantiehuisje in Zeijen waar de avond buiten begint en daar ook eindigt. Binnen: hoge plafonds, ruimte voor vier en niets dat aan een vakantiepark doet denken.",
+      "De Eik is het huis waar alles buiten gebeurt. Onder de oude eiken staat een buitenkeuken met BBQ, met de tafel ernaast, de hottub op hetzelfde terras en een eigen barrelsauna in de tuin — een vakantiehuisje in Zeijen waar de avond buiten begint en daar ook eindigt. Binnen: ruimte voor vier, vloerverwarming en airco, en niets dat aan een vakantiepark doet denken.",
     sections: [
       {
         heading: "Wat er in de lodge zit",
         body: [
-          "De Eik is de ruimste van de twee. Dat merkt u vooral aan de hoogte: het is een omgebouwd gebouw met hoge plafonds, en dat maakt een verblijf met vier mensen aanzienlijk minder krap dan de vierkante meters doen vermoeden.",
+          "De Eik is de ruimste van de twee. Dat merkt u vooral buiten: de buitenkeuken en het terras onder de eiken zijn hier een tweede woonkamer, en dat maakt een verblijf met vier mensen aanzienlijk minder krap dan de vierkante meters doen vermoeden.",
         ],
         bullets: [
           "Ruimte voor maximaal vier personen, verdeeld over twee slaapplekken.",
@@ -1905,7 +1906,8 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
           { icon: "koelkast", tekst: "Koelkast" },
           { icon: "koffie", tekst: "Koffieapparaat" },
           { icon: "waterkoker", tekst: "Waterkoker" },
-          { icon: "verwarming", tekst: "Verwarming" },
+          { icon: "vloerverwarming", tekst: "Vloerverwarming" },
+          { icon: "airco", tekst: "Airconditioning" },
         ],
       },
       {
@@ -1998,7 +2000,7 @@ export const SEED_LANDING_PAGES: LandingPageRecord[] = [
       },
     ],
     faq: [
-      "Wat is er zo anders aan De Eik? :: De eigen buitensauna en de buitenkeuken met BBQ onder de eiken, plus de ruimte: hoge plafonds en de ruimste van de twee lodges. Lodge De Heide heeft in plaats daarvan het panoramisch uitzicht over heide en bos.",
+      "Wat is er zo anders aan De Eik? :: De eigen buitensauna en de buitenkeuken met BBQ onder de eiken, plus de ruimte: het is de ruimste van de twee lodges. Lodge De Heide heeft in plaats daarvan het panoramisch uitzicht over heide en bos.",
       "Is de sauna privé? :: Ja. De sauna staat buiten op het terrein van Lodge De Eik en is uitsluitend voor de gasten van deze lodge. Geen reservering, geen tijdslot, geen mede-gasten. Er is op het terrein geen gedeelde wellnessruimte.",
       "Wat voor sauna is het? :: Een barrelsauna: een houten vatsauna die buiten staat, in de tuin naast het terras. U stookt hem op wanneer u wilt; van de sauna naar de hottub is tien stappen.",
       "Kan ik het hele jaar buiten koken? :: De buitenkeuken staat onder de eiken en is het hele jaar te gebruiken; in de zomer houden de bomen de middagzon eruit. Voor slecht weer is er de volledig uitgeruste keuken binnen.",

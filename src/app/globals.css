@@ -761,3 +761,721 @@ html { scroll-behavior: smooth; }
   .hth-lodge--on { padding: 11px 12px; }
   .hth-stepper-btn { flex-basis: 40px; }
 }
+
+/* ── Lodgepagina, nieuwe opmaak (/preview/<lodge>) ───────────────────
+ *
+ * Eén fotoblok bovenaan en daaronder twee kolommen: links het verhaal,
+ * rechts het aanvraagformulier. Het formulier staat daarmee ín beeld
+ * zodra de pagina opent, in plaats van achter een sprong naar de
+ * homepage.
+ *
+ * De maten staan hier en niet als inline-stijl, omdat dit ontwerp op
+ * drie breedtes een andere indeling heeft (raster, kolommen, balk) en
+ * dat in React-stijlobjecten neerkomt op het namaken van media queries.
+ */
+.lpx {
+  background: #EAE3D2;
+  color: #2A2418;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+/* ── Bovenbalk ── */
+.lpx-kop {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #FDFBF6;
+  border-bottom: 1px solid #E0D8C8;
+}
+.lpx-kop-binnen {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px var(--hth-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.lpx-merk { text-decoration: none; display: block; flex-shrink: 0; }
+.lpx-merk-naam {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #2F4F3E;
+  line-height: 1.1;
+}
+.lpx-merk-regel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 3px;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #8A6F2E;
+}
+.lpx-merk-streep { display: block; width: 18px; height: 1px; background: #B49A5E; }
+
+.lpx-nav { display: flex; align-items: center; gap: 26px; }
+.lpx-nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2A2418;
+  text-decoration: none;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+}
+.lpx-nav-link:hover { border-bottom-color: #B49A5E; }
+
+.lpx-kop-rechts { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.lpx-taal {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #E0D8C8;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  color: #5A534C;
+  text-decoration: none;
+}
+.lpx-taal-punt { opacity: .4; font-weight: 300; }
+.lpx-kop-cta {
+  background: #2F4F3E;
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.lpx-kop-cta:hover { background: #3A6350; }
+/* Naast de merknaam past "Bekijk beschikbaarheid" niet op een telefoon:
+ * de knop staat op white-space: nowrap en zou het scherm oprekken in
+ * plaats van af te breken. Hij verkort daar zijn eigen tekst. */
+.lpx-cta-kort { display: none; }
+@media (max-width: 560px) {
+  .lpx-cta-lang { display: none; }
+  .lpx-cta-kort { display: inline; }
+}
+
+/* ── Hero ── */
+.lpx-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 6px;
+  background: #141210;
+  height: clamp(330px, 40vw, 460px);
+}
+.lpx-hero-groot { position: relative; overflow: hidden; }
+.lpx-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(10,8,4,.05) 30%, rgba(10,8,4,.82) 100%);
+}
+.lpx-hero-tekst {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: clamp(20px, 3vw, 40px);
+  color: #fff;
+}
+.lpx-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.lpx-eyebrow--licht { color: #E7D9B4; }
+.lpx-h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(30px, 4.4vw, 52px);
+  font-weight: 700;
+  line-height: 1.08;
+  margin: 0;
+  color: #fff;
+}
+.lpx-hero-sub {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(15px, 1.7vw, 21px);
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 8px 0 0;
+  color: rgba(255,255,255,.93);
+}
+.lpx-cijfers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+}
+.lpx-cijfers li {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,.9);
+}
+.lpx-hero-raster {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+}
+.lpx-hero-tegel { position: relative; overflow: hidden; }
+
+/* ── Kruimelpad ── */
+.lpx-kruimel { padding: 14px var(--hth-gutter) 0; }
+.lpx-kruimel ol {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #5A534C;
+}
+.lpx-kruimel a { color: #5A534C; text-decoration: none; }
+.lpx-kruimel a:hover { text-decoration: underline; }
+.lpx-kruimel li[aria-current] { color: #8A6F2E; font-weight: 600; }
+
+/* ── Twee kolommen ── */
+.lpx-body {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 26px var(--hth-gutter) 72px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 460px;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+}
+.lpx-inhoud { min-width: 0; }
+.lpx-lead {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(20px, 2.4vw, 27px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #2F4F3E;
+  margin: 0 0 16px;
+}
+.lpx-intro, .lpx-alinea {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #5A534C;
+  margin: 0 0 18px;
+}
+.lpx-link { color: #2F4F3E; font-weight: 600; text-underline-offset: 3px; }
+
+.lpx-voorzieningen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  gap: 12px 22px;
+  list-style: none;
+  margin: 22px 0;
+  padding: 0;
+}
+.lpx-voorzieningen li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2A2418;
+}
+
+.lpx-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lpx-labels li {
+  background: rgba(47,79,62,.07);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #2F4F3E;
+}
+
+.lpx-scheiding { border: 0; border-top: 1px solid #E0D8C8; margin: 34px 0; }
+
+/* Eén kleur voor elke sectiekop. Stond eerder deels in inkt en deels in
+ * groen, waardoor twee koppen op dezelfde pagina twee verschillende
+ * rangen leken te hebben. */
+.lpx-h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(22px, 2.8vw, 30px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #2F4F3E;
+  margin: 0 0 12px;
+}
+/* De koppen binnen de praktische kaart: een rang lager dan de koppen
+ * op de pagina zelf, want ze horen bij één blok. */
+.lpx-h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(19px, 2.2vw, 23px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #2F4F3E;
+  margin: 0 0 14px;
+}
+
+/* ── Praktische kaart ── */
+.lpx-praktisch {
+  background: #FDFBF6;
+  border: 1px solid #E0D8C8;
+  border-radius: 16px;
+  padding: clamp(22px, 2.6vw, 28px);
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.lpx-praktisch section + section { border-top: 1px solid #E0D8C8; padding-top: 30px; }
+
+/* Label links, waarde rechts, met een haarlijn per regel. De labels delen
+ * één kolombreedte, zodat de waarden één linkerrand vormen. */
+.lpx-gegevens { margin: 0; display: grid; grid-template-columns: minmax(130px, 170px) minmax(0, 1fr); }
+.lpx-gegevens dt {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: #8A6F2E;
+  padding: 13px 16px 13px 0; border-top: 1px solid #E0D8C8; line-height: 1.5;
+}
+.lpx-gegevens dd {
+  margin: 0; font-size: 14.5px; line-height: 1.6; color: #2A2418;
+  padding: 12px 0; border-top: 1px solid #E0D8C8;
+}
+.lpx-gegevens dt:first-of-type,
+.lpx-gegevens dt:first-of-type + dd { border-top: 0; padding-top: 0; }
+
+.lpx-kaart-noot {
+  font-size: 12.5px; line-height: 1.7; color: #5A534C;
+  margin: 14px 0 0; padding-top: 14px; border-top: 1px solid #E0D8C8;
+}
+
+/* De drie regels die er het meest toe doen als losse chips; de rest
+ * eronder als gewone opsomming.
+ *
+ * Ze horen op één rij te staan: samen zijn ze één antwoord op dezelfde
+ * vraag, en onder elkaar lezen ze als drie losse mededelingen. Een maat
+ * kleiner dan de rest van de kaart is de prijs daarvoor. Vanaf ongeveer
+ * 1200px past het; daaronder mogen ze alsnog afbreken, want daar is één
+ * rij niet meer haalbaar zonder de tekst onleesbaar te maken. */
+.lpx-regels { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0 0 18px; padding: 0; }
+.lpx-regels li {
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  background: #fff; border: 1px solid #E0D8C8; border-radius: 999px;
+  padding: 6px 10px 6px 8px; font-size: 11.5px; font-weight: 500;
+}
+.lpx-subkop {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: #8A6F2E; margin: 0 0 9px;
+}
+/* Expliciet disc: de basislaag van Tailwind haalt het bolletje van elke
+ * ul af, en zonder opsommingsteken leest dit als drie losse regels in
+ * plaats van als een lijst. De template doet dit elders inline. */
+.lpx-stippen { margin: 0; padding-left: 18px; list-style: disc; }
+.lpx-stippen li { font-size: 13.5px; line-height: 1.7; color: #5A534C; }
+
+/* De staffel: de periode links, wat u terugkrijgt rechts. Stond eerder
+ * als vier zinnen met vinkjes ervoor — maar een vinkje belooft iets
+ * goeds, en "geen restitutie" is dat niet.
+ *
+ * Bewust ingetogen. Dit is het kleine lettertje: het hoort vindbaar en
+ * leesbaar te zijn, niet opvallend. De percentages stonden groot en in
+ * de schreefletter en trokken daarmee meer aandacht dan het aanbod
+ * erboven. Nu dezelfde letter als de regel ernaast, alleen zwaarder. */
+.lpx-staffel { margin: 0; padding: 0; list-style: none; }
+.lpx-staffel li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline; gap: 2px 18px;
+  padding: 7px 0; border-top: 1px solid #E0D8C8;
+}
+.lpx-staffel li:first-child { border-top: 0; padding-top: 0; }
+.lpx-staffel-periode { font-size: 13.5px; line-height: 1.5; color: #5A534C; }
+.lpx-staffel-bij { grid-column: 1; font-size: 12px; line-height: 1.5; color: #8A7D6A; }
+.lpx-staffel-deel {
+  grid-row: 1; grid-column: 2;
+  font-size: 13.5px; font-weight: 600; color: #2A2418;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.lpx-staffel-deel--niets { color: #8A7D6A; font-weight: 500; }
+
+/* Sluitregel van de kaart: geen eigen blok met een lijn erboven, maar een
+ * zin die de kaart afmaakt. */
+.lpx-vraag {
+  margin: 0; font-size: 13.5px; line-height: 1.7; color: #5A534C;
+  border-top: 1px solid #E0D8C8; padding-top: 22px;
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+}
+.lpx-vraag b { font-weight: 600; }
+
+/* Pictogram en nummer samen één doel om aan te tikken, ruim genoeg voor
+ * een duim. */
+.lpx-wa {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: #2F4F3E; text-decoration: none;
+  border: 1px solid #E0D8C8; border-radius: 999px;
+  padding: 7px 14px 7px 11px; background: #fff;
+}
+.lpx-wa:hover { border-color: #2F4F3E; background: rgba(47,79,62,.05); }
+
+/* ── De vier waarop iemand deze lodge kiest ──
+ * Stonden als tien vinkjes onder elkaar. Een vinkje zegt alleen "dit is
+ * er ook", en tien gelijkwaardige regels laten het bijzondere wegvallen
+ * tussen de vaatwasser en de waterkoker. Vier stuks, elk met zijn eigen
+ * tekening in een rondje, lezen als vier redenen. */
+.lpx-toppers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 16px 24px;
+  list-style: none;
+  margin: 22px 0 26px;
+  padding: 0;
+}
+.lpx-toppers li { display: flex; align-items: flex-start; gap: 13px; }
+.lpx-topper-ic {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 999px; background: rgba(47,79,62,.08);
+}
+.lpx-topper-tekst {
+  font-size: 14.5px; line-height: 1.5; font-weight: 500;
+  color: #2A2418; padding-top: 8px;
+}
+
+/* ── De volledige lijst ── */
+.lpx-alle {
+  border-top: 1px solid #E0D8C8;
+  margin-top: 4px; padding-top: 24px;
+  display: flex; flex-direction: column; gap: 24px;
+  animation: lpxAlleOpen .22s ease both;
+}
+@keyframes lpxAlleOpen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .lpx-alle { animation: none; } }
+.lpx-alle-groep {
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: #8A6F2E; margin: 0 0 12px;
+}
+.lpx-alle-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 10px 24px; list-style: none; margin: 0; padding: 0;
+}
+.lpx-alle-items li {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; line-height: 1.5; color: #2A2418;
+}
+
+.lpx-knop-chevron { transition: transform .2s ease; }
+.lpx-knop-rand[aria-expanded="true"] .lpx-knop-chevron { transform: rotate(180deg); }
+
+.lpx-knoppen { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.lpx-knop-rand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1.5px solid #2F4F3E;
+  border-radius: 10px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2F4F3E;
+  text-decoration: none;
+}
+.lpx-knop-rand:hover { background: #2F4F3E; color: #fff; }
+.lpx-knop-tekst {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #2F4F3E;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Aanvraagkolom ──
+ * Schuift over de onderrand van de hero heen, zoals in het ontwerp. De
+ * kaart is bewust niet sticky: het formulier is hoger dan een laptop-
+ * scherm, en een sticky blok dat niet past laat zijn eigen onderkant —
+ * de verzendknop — nooit meer zien. */
+.lpx-aanvraag {
+  min-width: 0;
+  margin-top: -132px;
+  /* De foto's in de hero staan op position: relative en zouden daarmee
+   * over deze kaart heen tekenen, hoe laat in de DOM hij ook staat. Een
+   * eigen stapelcontext zet hem er weer bovenop. */
+  position: relative;
+  z-index: 3;
+}
+.lpx-aanvraag-kaart {
+  background: #FDFBF6;
+  border: 1px solid #E0D8C8;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 18px 48px rgba(47,79,62,.16);
+}
+/* "Vanaf" op zijn eigen regel, daaronder het bedrag met de eenheid op
+ * dezelfde basislijn. De scheidingslijn eronder zet de prijs apart van
+ * de velden: het is een gegeven, geen vraag aan de bezoeker. */
+.lpx-prijs {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0 0 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #E0D8C8;
+}
+.lpx-prijs-label {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #8A6F2E;
+}
+.lpx-prijs-bedrag {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  color: #2F4F3E;
+  font-variant-numeric: tabular-nums;
+}
+.lpx-prijs-eenheid {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5A534C;
+}
+/* Het formulier zit al in een kaart; zijn eigen kaartrand, schaduw en
+ * binnenmarge zouden een tweede lijst om dezelfde velden trekken. */
+.lpx-aanvraag-kaart .hth-form {
+  max-width: none;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+.lpx-aanvraag-kaart .hth-form-body { padding: 0; }
+.lpx-form-laden {
+  padding: 48px 0;
+  text-align: center;
+  font-size: 14px;
+  color: #8A7D6A;
+}
+
+/* ── Vertrouwensbalk ── */
+.lpx-vertrouwen {
+  background: #FDFBF6;
+  border-top: 1px solid #E0D8C8;
+  padding: 24px var(--hth-gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 32px;
+}
+.lpx-vertrouwen ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 36px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lpx-vertrouwen li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #2A2418;
+}
+.lpx-handschrift {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #8A6F2E;
+  text-align: right;
+  margin: 0;
+}
+
+/* ── Tablet: de navigatie past niet meer naast de rest ── */
+@media (max-width: 1100px) {
+  .lpx-nav { display: none; }
+}
+
+/* Onder de 520px is een labelkolom van 130px een derde van het scherm;
+ * label en waarde gaan daar onder elkaar. */
+@media (max-width: 520px) {
+  .lpx-gegevens { grid-template-columns: minmax(0, 1fr); }
+  .lpx-gegevens dt { padding: 12px 0 0; }
+  .lpx-gegevens dd { border-top: 0; padding: 4px 0 12px; }
+  .lpx-gegevens dt:first-of-type + dd { padding-top: 4px; }
+}
+
+/* ── Het aanvraagpaneel op een smal scherm ──
+ * Onder de 1000px staat er geen kolom meer naast de tekst, en dan duwt
+ * het formulier — met keuzes, datums en zes velden een scherm hoog — de
+ * hele pagina omlaag. Wie wil lezen scrollt er eerst langs, wie wil
+ * aanvragen scrollt ernaartoe.
+ *
+ * Daarom hoort het daar niet in de pagina maar erachter: de knop staat
+ * bovenaan altijd in beeld, en het paneel schuift eroverheen. Op een
+ * breed scherm verandert er niets.
+ *
+ * Dezelfde grens staat in LodgePaginaNieuw.tsx; verander ze samen. */
+.lpx-waas { display: none; }
+.lpx-paneel-balk { display: none; }
+
+@media (max-width: 1000px) {
+  .lpx-body { grid-template-columns: minmax(0, 1fr); }
+
+  .lpx-waas {
+    display: block;
+    position: fixed; inset: 0; z-index: 190;
+    background: rgba(20, 18, 16, .45);
+    opacity: 0; transition: opacity .25s ease;
+  }
+  .lpx-waas--open { opacity: 1; }
+
+  .lpx-aanvraag {
+    position: fixed; inset: 0; z-index: 200;
+    margin: 0; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #FDFBF6;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+    transform: translateX(100%);
+    transition: transform .28s ease;
+    visibility: hidden;
+  }
+  .lpx-aanvraag--open { transform: none; visibility: visible; }
+
+  /* Binnen het paneel is de kaart de pagina zelf: geen rand, geen
+   * schaduw, geen hoeken die van niets afsteken. */
+  .lpx-aanvraag-kaart {
+    border: 0; border-radius: 0; box-shadow: none;
+    min-height: 100%; padding: 0 var(--hth-gutter) 40px;
+  }
+
+  .lpx-paneel-balk {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; position: sticky; top: 0; z-index: 2;
+    margin: 0 calc(var(--hth-gutter) * -1) 18px;
+    padding: 14px var(--hth-gutter);
+    background: #FDFBF6; border-bottom: 1px solid #E0D8C8;
+  }
+  .lpx-paneel-titel {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 17px; font-weight: 700; color: #2A2418;
+  }
+  .lpx-paneel-sluit {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; margin-right: -9px;
+    border: 0; border-radius: 999px; background: transparent;
+    color: #2A2418; cursor: pointer;
+  }
+  .lpx-paneel-sluit:hover { background: rgba(47,79,62,.07); }
+}
+
+@media (max-width: 1000px) and (prefers-reduced-motion: reduce) {
+  .lpx-aanvraag, .lpx-waas { transition: none; }
+}
+
+/* ── Telefoon: de vier tegels onder de foto in plaats van ernaast ── */
+@media (max-width: 760px) {
+  .lpx-hero {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+  /* Hoger dan de foto vraagt: de titel, de ondertitel en de drie cijfers
+   * staan hier onder elkaar in plaats van op één regel, en zonder die
+   * hoogte drukken ze zichzelf tot over de bovenrand van de foto. */
+  .lpx-hero-groot { height: clamp(330px, 88vw, 430px); }
+  .lpx-hero-raster { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; height: 88px; }
+  .lpx-kop-cta { padding: 11px 16px; font-size: 13px; }
+  .lpx-vertrouwen { justify-content: flex-start; }
+  .lpx-handschrift { text-align: left; }
+}
+
+@media (max-width: 420px) {
+  .lpx-merk-naam { font-size: 17px; }
+  .lpx-kop-cta { padding: 10px 13px; font-size: 12.5px; }
+  .lpx-taal { display: none; }
+}
+
+/* ── Het artikel onder de tweekolom ──────────────────────────────────
+ * Gecentreerd sprong de kantlijn bij het scrollen naar rechts, precies
+ * op het moment dat het verhaal begint: de kolom erboven start op de
+ * rand van de container, het artikel 190 pixels verder naar binnen. Nu
+ * houdt het artikel dezelfde linkerrand én dezelfde breedte als die
+ * kolom, zodat de pagina één kolom tekst is met het formulier ernaast.
+ *
+ * De maat komt uit dezelfde som als .lpx-body: container 1240 min de
+ * twee gutters is 1160, en daarbinnen rechts de plek van de
+ * formulierkolom plus de kolomafstand vrijhouden. Wat overblijft is
+ * precies de linkerkolom.
+ *
+ * Het blok zelf blijft over de volle breedte staan — de achtergrondkleur
+ * van de band hoort van rand tot rand te lopen — dus de maat gaat op de
+ * binnenste container. Die krijgt zijn breedte van de template als
+ * inline-stijl (maxWidth: 780), en daar komt alleen een !important
+ * overheen. Onder de 1000px staat er geen formulierkolom naast en geldt
+ * dit niet. */
+@media (min-width: 1001px) {
+  .lp-artikel > div {
+    max-width: 1160px !important;
+    /* De blokken uit de template hebben deze marge al inline; de kaart
+     * hieronder niet, en die bleef daardoor tegen de linkerrand plakken. */
+    margin-inline: auto;
+    padding-right: calc(460px + clamp(28px, 4vw, 56px));
+  }
+}
+
+/* Tussen 640 en 1000 pixels staat er geen formulierkolom meer naast, maar
+ * bijt de leesmaat van 780 nog wel: het artikel ging daar gecentreerd
+ * staan terwijl de kop erboven de volle breedte pakt. De maat blijft —
+ * 900 pixels tekst leest niet — maar hij gaat tegen dezelfde linkerrand
+ * aan staan. */
+@media (min-width: 641px) and (max-width: 1000px) {
+  .lp-artikel > div { margin-left: 0 !important; margin-right: auto !important; }
+}
+
+/* Op een telefoon houdt .lp-pad 20 pixels aan en de kop 24 (of 16 op een
+ * heel smal scherm). Vier pixels verschil valt op zodra je scrollt, dus
+ * hier dezelfde maat als de rest van de pagina. */
+@media (max-width: 640px) {
+  .lp-artikel { padding-left: var(--hth-gutter); padding-right: var(--hth-gutter); }
+}
+
+/* De band waarin de praktische kaart staat: dezelfde zandkleur als de
+ * tweekolom erboven, zodat de kaart er als kaart op ligt. */
+.lpx-praktisch-band {
+  background: #EAE3D2;
+  padding-top: 8px;
+  padding-bottom: 56px;
+}
+.lpx-praktisch-band .lpx-praktisch { margin-top: 0; }
