@@ -1281,6 +1281,9 @@ html { scroll-behavior: smooth; }
    * eigen stapelcontext zet hem er weer bovenop. */
   position: relative;
   z-index: 3;
+  /* De bovenbalk is sticky; zonder deze marge landt de ankersprong van
+   * de knoppen met de prijs onder die balk. */
+  scroll-margin-top: 96px;
 }
 .lpx-aanvraag-kaart {
   background: #FDFBF6;
@@ -1413,8 +1416,14 @@ html { scroll-behavior: smooth; }
     position: fixed; inset: 0; z-index: 190;
     background: rgba(20, 18, 16, .45);
     opacity: 0; transition: opacity .25s ease;
+    /* Dicht is de waas onzichtbaar, maar hij ligt wel over het hele
+     * scherm. Zonder deze regel vangt hij elke tik op en doet geen
+     * enkele knop of link op de pagina het nog. */
+    pointer-events: none;
   }
-  .lpx-waas--open { opacity: 1; }
+  /* display: block hierboven wint van het hidden-attribuut. */
+  .lpx-waas[hidden] { display: none; }
+  .lpx-waas--open { opacity: 1; pointer-events: auto; }
 
   .lpx-aanvraag {
     position: fixed; inset: 0; z-index: 200;

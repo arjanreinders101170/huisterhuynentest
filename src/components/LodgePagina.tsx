@@ -59,12 +59,25 @@ export function LodgeKop({ data }: { data: LodgePaginaData }) {
     kwamVan.current?.focus();
   }, []);
 
-  const opCta = useCallback((e: React.MouseEvent) => {
-    // Breed scherm: de ankersprong doet wat hij altijd deed.
-    if (!window.matchMedia("(max-width: 1000px)").matches) return;
-    e.preventDefault();
-    kwamVan.current = e.currentTarget as HTMLElement;
-    setPaneelOpen(true);
+  /* Niet alleen de knop in de bovenbalk wijst naar #aanvraag: de template
+   * eronder heeft er ook een onder het verhaal en een in de voet. Die
+   * sprongen op een smal scherm naar een paneel dat buiten beeld staat, en
+   * deden dus niets. Eén luisteraar op het document vangt ze allemaal, in
+   * de capture-fase: een next/link handelt de klik anders zelf al af. */
+  useEffect(() => {
+    const opKlik = (e: MouseEvent) => {
+      // Breed scherm: de ankersprong doet wat hij altijd deed.
+      if (!window.matchMedia("(max-width: 1000px)").matches) return;
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const link = (e.target as Element | null)?.closest?.('a[href="#aanvraag"]');
+      if (!link) return;
+      e.preventDefault();
+      e.stopPropagation();
+      kwamVan.current = link as HTMLElement;
+      setPaneelOpen(true);
+    };
+    document.addEventListener("click", opKlik, true);
+    return () => document.removeEventListener("click", opKlik, true);
   }, []);
 
   useEffect(() => {
@@ -105,7 +118,7 @@ export function LodgeKop({ data }: { data: LodgePaginaData }) {
               <span aria-hidden className="lpx-taal-punt">·</span>
               <span>DE</span>
             </a>
-            <a href="#aanvraag" className="lpx-kop-cta" onClick={opCta}>
+            <a href="#aanvraag" className="lpx-kop-cta">
               <span className="lpx-cta-lang">Bekijk beschikbaarheid</span>
               <span className="lpx-cta-kort">Beschikbaarheid</span>{" "}
               <span aria-hidden>→</span>
