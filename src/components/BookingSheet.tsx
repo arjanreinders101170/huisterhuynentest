@@ -24,10 +24,11 @@ import { usePathname } from "next/navigation";
  * - Sluiten: knop, klik naast het paneel, Escape of de terugknop van de
  *   telefoon.
  *
- * Boven de 768px verandert er niets. */
+ * Op een telefoon schuift het van onderen omhoog, op een breed scherm staat
+ * het als venster midden over de pagina: ook daar scrolde de knop eerst
+ * langs de hele site naar beneden. */
 
 const ANKERS = ["reserveren", "verfugbarkeit"];
-const MOBIEL = "(max-width: 768px)";
 const SLUIT_DUUR = 220;
 
 const LABELS = {
@@ -114,7 +115,6 @@ export function BookingSheet() {
   useEffect(() => {
     const opKlik = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      if (!window.matchMedia(MOBIEL).matches) return;
       const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
       if (!a) return;
       const url = new URL(a.href, window.location.href);
@@ -131,7 +131,6 @@ export function BookingSheet() {
 
   // Aankomst met het anker in de URL.
   useEffect(() => {
-    if (!window.matchMedia(MOBIEL).matches) return;
     if (!ANKERS.includes(window.location.hash.slice(1))) return;
     // Het anker uit de URL halen: verversen of terug opent het paneel niet
     // opnieuw, en de browser springt er niet alsnog heen.
