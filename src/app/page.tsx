@@ -378,13 +378,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p style={{
-            fontFamily: T.sans, fontSize: 14, color: T.muted, fontWeight: 300,
-            textAlign: "center", margin: "40px auto 0", maxWidth: 560, lineHeight: 1.7,
-            fontStyle: "italic",
-          }}>
-            Dit type verblijf bestaat op slechts twee plekken in Drenthe, beide hier.
-          </p>
         </div>
       </section>
 
