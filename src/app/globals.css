@@ -1073,21 +1073,28 @@ html { scroll-behavior: smooth; }
 
 /* Eén kleur voor elke sectiekop. Stond eerder deels in inkt en deels in
  * groen, waardoor twee koppen op dezelfde pagina twee verschillende
- * rangen leken te hebben. */
+ * rangen leken te hebben.
+ *
+ * De serif is voor sfeer en merk: de hero, de lead, de handtekening
+ * onderaan. Deze koppen openen praktische secties — wat er staat, wat
+ * de regels zijn — en staan daarom in de sans, net als de prijs en het
+ * formulier. Groot is geen reden voor de serif; gevoel wel. */
 .lpx-h2 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(22px, 2.8vw, 30px);
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: clamp(20px, 2.2vw, 24px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  line-height: 1.25;
   color: #2F4F3E;
   margin: 0 0 12px;
 }
 /* De koppen binnen de praktische kaart: een rang lager dan de koppen
  * op de pagina zelf, want ze horen bij één blok. */
 .lpx-h3 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(19px, 2.2vw, 23px);
-  font-weight: 700;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: clamp(17px, 1.8vw, 19px);
+  font-weight: 600;
+  letter-spacing: -.005em;
   line-height: 1.25;
   color: #2F4F3E;
   margin: 0 0 14px;
@@ -1312,11 +1319,15 @@ html { scroll-behavior: smooth; }
   text-transform: uppercase;
   color: #8A6F2E;
 }
+/* In de sans: een prijs moet je in één blik lezen en vergelijken, niet
+ * bewonderen. Het gewicht en de maat maken hem het zwaartepunt. */
 .lpx-prijs-bedrag {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 34px;
-  font-weight: 700;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -.02em;
   line-height: 1;
+  white-space: nowrap;
   color: #2F4F3E;
   font-variant-numeric: tabular-nums;
 }
@@ -1336,6 +1347,15 @@ html { scroll-behavior: smooth; }
   overflow: visible;
 }
 .lpx-aanvraag-kaart .hth-form-body { padding: 0; }
+/* Het formulier is gedeeld met de homepage en zet de lodgenamen en de
+ * bevestiging in de serif. In deze kaart is alles functioneel — kiezen,
+ * invullen, versturen — dus hier is het overal de sans. */
+.lpx-aanvraag-kaart .hth-lodge-title,
+.lpx-aanvraag-kaart .hth-form-sent-title {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
 .lpx-form-laden {
   padding: 48px 0;
   text-align: center;
@@ -1452,8 +1472,8 @@ html { scroll-behavior: smooth; }
     background: #FDFBF6; border-bottom: 1px solid #E0D8C8;
   }
   .lpx-paneel-titel {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 17px; font-weight: 700; color: #2A2418;
+    font-family: var(--font-dm-sans), system-ui, sans-serif;
+    font-size: 16px; font-weight: 600; color: #2A2418;
   }
   .lpx-paneel-sluit {
     display: inline-flex; align-items: center; justify-content: center;
