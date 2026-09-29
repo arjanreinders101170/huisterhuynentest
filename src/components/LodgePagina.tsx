@@ -203,11 +203,14 @@ export function LodgeKop({ data }: { data: LodgePaginaData }) {
           <hr className="lpx-scheiding" />
 
           <section aria-labelledby="lpx-inventaris">
-            <h2 id="lpx-inventaris" className="lpx-h2">Wat er in de lodge zit</h2>
+            {/* "Lodge De Heide" wordt hier "De Heide": de merknaam staat al
+              * in de hero, en in een praktische kop leest de korte naam
+              * natuurlijker. */}
+            <h2 id="lpx-inventaris" className="lpx-h2">
+              Wat er in {data.naam.replace(/^Lodge /, "")} zit
+            </h2>
             <p className="lpx-alinea">
-              {data.naam} is van alle gemakken voorzien. Hieronder staat wat er werkelijk in
-              staat, zodat u niet hoeft te mailen om te weten of u een koffiezetapparaat moet
-              meenemen.
+              Alles wat er al staat, zodat u alleen meeneemt waar u zin in heeft.
             </p>
             {/* Vier, niet tien. Een vinkje zegt alleen "dit is er ook", en
               * tien gelijkwaardige regels laten het bijzondere wegvallen
@@ -296,13 +299,13 @@ export function LodgeKop({ data }: { data: LodgePaginaData }) {
               * samen" vertelde hem alleen wat hij al zag. Het bedrag komt
               * uit PRICE_FROM_EUR, zodat het niet op twee plekken los van
               * elkaar kan verouderen. */}
-            {/* Bewust geen kop. Als h2 stond de prijs tussen "Wat er in de
-              * lodge zit" en "Het uitzicht en de hottub" in de kopstructuur
+            {/* Bewust geen kop. Als h2 stond de prijs tussen "Wat er in De
+              * Heide zit" en "Het uitzicht en de hottub" in de kopstructuur
               * van de pagina — een kop die geen sectie opent. Het blok zelf
               * heeft al een naam via de aria-label van de aside. */}
             <p className="lpx-prijs">
               <span className="lpx-prijs-label">Vanaf</span>
-              <span className="lpx-prijs-bedrag">&euro;&nbsp;{PRICE_FROM_EUR},-</span>{" "}
+              <span className="lpx-prijs-bedrag">&euro;&nbsp;{PRICE_FROM_EUR}</span>{" "}
               <span className="lpx-prijs-eenheid">per nacht</span>
             </p>
             <RequestForm voorkeur={data.lodgeParam} />

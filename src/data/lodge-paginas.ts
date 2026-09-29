@@ -94,7 +94,7 @@ const HEIDE: LodgePaginaData = {
     { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
     { icoon: "airco", tekst: "Vloerverwarming en airco" },
   ],
-  labels: ["Vrij uitzicht, geen buren", "Midden in de natuur", "Ideaal voor stellen & gezinnen", "Privé-hottub"],
+  labels: ["Vrij uitzicht, geen buren", "Midden in de natuur", "Voor stellen en gezinnen", "Privé-hottub"],
   toppers: [
     { icoon: "hottub", tekst: "Privé-hottub op het terras, het hele jaar op 38 °C" },
     { icoon: "uitzicht", tekst: "Vrij uitzicht over heide en bos, geen ander gebouw in beeld" },
