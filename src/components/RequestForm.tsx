@@ -6,6 +6,7 @@ import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracki
 import { getAttribution } from "@/lib/tracking/attribution";
 import { leesReserveerParams, KIES_LODGE_EVENT } from "@/lib/reserveer-params";
 import type { LodgeParam } from "@/lib/site";
+import { bookingEngineUrl, haalAanbod, toonBedrag, type AanbodView } from "@/lib/booking-engine";
 
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
@@ -53,6 +54,11 @@ export default function RequestForm({ voorkeur }: { voorkeur?: LodgeParam } = {}
    * dat is iets anders dan "bezet": bij een mislukte fetch blijft het
    * formulier gewoon bruikbaar en vangt de server het af bij het versturen. */
   const [vrij, setVrij] = useState<Record<Lodge, boolean> | null>(null);
+  /* Prijs uit MyTourist. Voegt alleen iets toe: een bedrag en de knop naar de
+   * Booking Engine. Het beslist niet over vrij of bezet — dat blijft
+   * /api/beschikbaarheid, zodat een onvolledig ingerichte MyTourist-agenda
+   * geen aanvragen tegenhoudt. */
+  const [aanbod, setAanbod] = useState<Record<string, AanbodView> | null>(null);
   const [checking, setChecking] = useState(false);
 
   // De lodgekaarten op de homepage staan boven dit formulier en kiezen mee:
@@ -79,6 +85,7 @@ export default function RequestForm({ voorkeur }: { voorkeur?: LodgeParam } = {}
   const andereLodge: Lodge = lodge === "lodge_1" ? "lodge_2" : "lodge_1";
   const gekozenVrij = vrij ? vrij[lodge] : null;
   const andereVrij = vrij ? vrij[andereLodge] : null;
+  const gekozenAanbod = gekozenVrij === true ? aanbod?.[lodge] : undefined;
   const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending && gekozenVrij !== false;
 
   /* Eén vraag voor beide lodges, dus lodge staat bewust niet in de deps:
@@ -87,26 +94,32 @@ export default function RequestForm({ voorkeur }: { voorkeur?: LodgeParam } = {}
   useEffect(() => {
     if (!datesValid) {
       setVrij(null);
+      setAanbod(null);
       setChecking(false);
       return;
     }
     let afgebroken = false;
     setChecking(true);
 
-    fetch(`/api/beschikbaarheid?checkIn=${checkIn}&checkOut=${checkOut}`)
+    const beschikbaarheid = fetch(`/api/beschikbaarheid?checkIn=${checkIn}&checkOut=${checkOut}`)
       .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then(data => {
-        if (afgebroken) return;
         const v = data?.vrij;
-        setVrij(
-          v && typeof v.lodge_1 === "boolean" && typeof v.lodge_2 === "boolean"
-            ? { lodge_1: v.lodge_1, lodge_2: v.lodge_2 }
-            : null,
-        );
+        return v && typeof v.lodge_1 === "boolean" && typeof v.lodge_2 === "boolean"
+          ? { lodge_1: v.lodge_1 as boolean, lodge_2: v.lodge_2 as boolean }
+          : null;
       })
       /* Niets tonen is hier beter dan "bezet" of "vrij" gokken. De controle
        * bij het versturen is de echte poortwachter. */
-      .catch(() => { if (!afgebroken) setVrij(null); })
+      .catch(() => null);
+
+    /* Samen afwachten, zodat de prijs niet pas na de vrij-melding binnenspringt. */
+    Promise.all([beschikbaarheid, haalAanbod(checkIn, checkOut)])
+      .then(([v, a]) => {
+        if (afgebroken) return;
+        setVrij(v);
+        setAanbod(a);
+      })
       .finally(() => { if (!afgebroken) setChecking(false); });
 
     return () => { afgebroken = true; };
@@ -188,7 +201,7 @@ export default function RequestForm({ voorkeur }: { voorkeur?: LodgeParam } = {}
           <button
             type="button"
             className="hth-form-restart"
-            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setVrij(null); }}
+            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setVrij(null); setAanbod(null); }}
           >
             Nieuwe aanvraag
           </button>
@@ -271,6 +284,25 @@ export default function RequestForm({ voorkeur }: { voorkeur?: LodgeParam } = {}
               <p className="hth-form-note hth-form-note--ok">
                 ✓ Deze periode is beschikbaar &mdash; {nights} nacht{nights !== 1 ? "en" : ""}
               </p>
+            )}
+            {/* Prijs en boeken, rechtstreeks uit MyTourist. Het bedrag komt
+                ongewijzigd uit de reserveringsadministratie; de boeking zelf
+                gebeurt in de Booking Engine. Het aanvraagformulier hieronder
+                blijft de andere route. */}
+            {!dateError && !checking && gekozenAanbod?.status === "available" && (
+              <div className="hth-direct">
+                <p className="hth-direct-prijs">
+                  <span>Lodge {LODGE_LABELS[lodge]} &middot; {gekozenAanbod.nights} nachten</span>
+                  <strong>{toonBedrag(gekozenAanbod.totalPrice, "nl")}</strong>
+                </p>
+                <a className="hth-direct-btn" href={bookingEngineUrl("nl", checkIn, checkOut)} data-lodge={lodge}>
+                  Direct boeken &rarr;
+                </a>
+                <p className="hth-form-note hth-form-note--small">
+                  Je rondt de boeking af in ons boekingssysteem en ziet daar het definitieve totaal.
+                  Liever eerst iets vragen? Stuur hieronder een aanvraag.
+                </p>
+              </div>
             )}
             {/* Bezet, maar de andere lodge is vrij: geen doodlopende melding
                 maar de overstap in één klik, met het formulier ingevuld. */}

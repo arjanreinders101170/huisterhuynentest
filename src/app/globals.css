@@ -572,6 +572,45 @@ html { scroll-behavior: smooth; }
 }
 .hth-alt-btn:hover { background: #26402F; }
 
+/* Prijs en "Direct boeken" uit MyTourist. Alleen zichtbaar als MyTourist een
+ * bedrag gaf; het aanvraagformulier eronder blijft de andere route. */
+.hth-direct {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid #E0D8C8;
+  border-left: 3px solid #2F4F3E;
+  border-radius: 10px;
+  background: rgba(47,79,62,.05);
+}
+.hth-direct-prijs {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  font-size: 14px;
+  color: #3A3A3A;
+}
+.hth-direct-prijs strong { font-size: 18px; color: #2F4F3E; }
+.hth-direct-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #2F4F3E;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s;
+}
+.hth-direct-btn:hover { background: #26402F; }
+
 /* ── Eén hoogte voor alles wat je kunt aanraken ─────────────────────── */
 .hth-control {
   display: block;

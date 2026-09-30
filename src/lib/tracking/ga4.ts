@@ -28,6 +28,7 @@ const GA4_EVENT_MAP: Record<string, string> = {
   Contact: "contact",
   Subscribe: "newsletter_subscribe",
   BookingComRedirect: "outbound_ota",
+  BookingEngineRedirect: "outbound_booking_engine",
 };
 
 function ensureGa4Loaded(): boolean {

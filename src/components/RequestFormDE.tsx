@@ -4,6 +4,7 @@ import { checkStayDates, earliestStayDate, bookingsNotYetOpen, formatOpeningDate
          isAankomstdag, vertrekdatumsVoor, vormLabel } from "@/lib/stay-dates";
 import { pushEvent, baseEnvelope, newEventId, saveUserCache } from "@/lib/tracking/dataLayer";
 import { getAttribution } from "@/lib/tracking/attribution";
+import { bookingEngineUrl, haalAanbod, toonBedrag, type AanbodView } from "@/lib/booking-engine";
 
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
@@ -32,6 +33,9 @@ export default function RequestFormDE() {
    * enkele check: een Duitse gast kon een volle periode aanvragen zonder
    * iets te merken. null = nog niet bekend, niet "bezet". */
   const [vrij, setVrij] = useState<Record<Lodge, boolean> | null>(null);
+  /* Prijs uit MyTourist; voegt alleen bedrag en boekknop toe. Zie het
+   * NL-formulier. */
+  const [aanbod, setAanbod] = useState<Record<string, AanbodView> | null>(null);
   const [checking, setChecking] = useState(false);
 
   const minDate = earliestStayDate();
@@ -43,6 +47,7 @@ export default function RequestFormDE() {
   const andereLodge: Lodge = lodge === "lodge_1" ? "lodge_2" : "lodge_1";
   const gekozenVrij = vrij ? vrij[lodge] : null;
   const andereVrij = vrij ? vrij[andereLodge] : null;
+  const gekozenAanbod = gekozenVrij === true ? aanbod?.[lodge] : undefined;
   const canSubmit = datesValid && naam.trim() && email.includes("@") && !sending && gekozenVrij !== false;
 
   /* Eén vraag voor beide lodges, dus lodge staat niet in de deps: wisselen
@@ -50,24 +55,29 @@ export default function RequestFormDE() {
   useEffect(() => {
     if (!datesValid) {
       setVrij(null);
+      setAanbod(null);
       setChecking(false);
       return;
     }
     let afgebroken = false;
     setChecking(true);
 
-    fetch(`/api/beschikbaarheid?checkIn=${checkIn}&checkOut=${checkOut}`)
+    const beschikbaarheid = fetch(`/api/beschikbaarheid?checkIn=${checkIn}&checkOut=${checkOut}`)
       .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then(data => {
-        if (afgebroken) return;
         const v = data?.vrij;
-        setVrij(
-          v && typeof v.lodge_1 === "boolean" && typeof v.lodge_2 === "boolean"
-            ? { lodge_1: v.lodge_1, lodge_2: v.lodge_2 }
-            : null,
-        );
+        return v && typeof v.lodge_1 === "boolean" && typeof v.lodge_2 === "boolean"
+          ? { lodge_1: v.lodge_1 as boolean, lodge_2: v.lodge_2 as boolean }
+          : null;
       })
-      .catch(() => { if (!afgebroken) setVrij(null); })
+      .catch(() => null);
+
+    Promise.all([beschikbaarheid, haalAanbod(checkIn, checkOut)])
+      .then(([v, a]) => {
+        if (afgebroken) return;
+        setVrij(v);
+        setAanbod(a);
+      })
       .finally(() => { if (!afgebroken) setChecking(false); });
 
     return () => { afgebroken = true; };
@@ -148,7 +158,7 @@ export default function RequestFormDE() {
           <button
             type="button"
             className="hth-form-restart"
-            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setVrij(null); }}
+            onClick={() => { setSent(false); setCheckIn(""); setCheckOut(""); setNaam(""); setEmail(""); setBericht(""); setAantalPersonen(2); setHuisdieren(false); setVrij(null); setAanbod(null); }}
           >
             Neue Anfrage
           </button>
@@ -229,6 +239,22 @@ export default function RequestFormDE() {
               <p className="hth-form-note hth-form-note--ok">
                 ✓ Dieser Zeitraum ist verf&uuml;gbar &mdash; {nights} Nacht{nights !== 1 ? "e" : ""}
               </p>
+            )}
+            {/* Preis und Buchen direkt aus MyTourist; siehe NL-Formular. */}
+            {!dateError && !checking && gekozenAanbod?.status === "available" && (
+              <div className="hth-direct">
+                <p className="hth-direct-prijs">
+                  <span>Lodge {LODGE_LABELS[lodge]} &middot; {gekozenAanbod.nights} N&auml;chte</span>
+                  <strong>{toonBedrag(gekozenAanbod.totalPrice, "de")}</strong>
+                </p>
+                <a className="hth-direct-btn" href={bookingEngineUrl("de", checkIn, checkOut)} data-lodge={lodge}>
+                  Direkt buchen &rarr;
+                </a>
+                <p className="hth-form-note hth-form-note--small">
+                  Sie schlie&szlig;en die Buchung in unserem Buchungssystem ab und sehen dort den endg&uuml;ltigen Gesamtpreis.
+                  Lieber zuerst eine Frage stellen? Senden Sie unten eine Anfrage.
+                </p>
+              </div>
             )}
             {/* Belegt, aber die andere Lodge ist frei: Wechsel in einem Klick. */}
             {!dateError && !checking && gekozenVrij === false && andereVrij === true && (

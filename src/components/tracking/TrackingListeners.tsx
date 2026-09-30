@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { pushEvent, baseEnvelope } from "@/lib/tracking/dataLayer";
+import { isBookingEngineUrl } from "@/lib/booking-engine";
 
 /* ═══ Global click delegation for outbound + contact events ═══
  * One listener at document level catches:
@@ -8,6 +9,7 @@ import { pushEvent, baseEnvelope } from "@/lib/tracking/dataLayer";
  *   • tel: links                → Contact (phone)
  *   • mailto: links             → Contact (email)
  *   • booking.com links         → BookingComRedirect
+ *   • MyTourist Booking Engine  → BookingEngineRedirect
  * Components don't need to call anything — links just work.
  */
 
@@ -39,6 +41,13 @@ export function TrackingListeners() {
         pushEvent({
           ...baseEnvelope("Contact"),
           contact: { method: "email", destination: href, label },
+        });
+        return;
+      }
+      if (isBookingEngineUrl(href)) {
+        pushEvent({
+          ...baseEnvelope("BookingEngineRedirect"),
+          outbound: { url: href, lodge: anchor.dataset.lodge ?? null },
         });
         return;
       }
