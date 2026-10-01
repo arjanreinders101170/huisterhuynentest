@@ -37,7 +37,7 @@ const CONTENT: Record<"nl" | "de", { title: string; sub: string; items: FaqItem[
       },
       {
         q: "Zijn er extra kosten bovenop de verblijfsprijs?",
-        a: "De totaalprijs bestaat uit de verblijfskosten, schoonmaakkosten en toeristenbelasting (conform gemeente Tynaarlo). Optioneel: huisdier €25, late check-out €25, wijziging boeking €25. Omdat u direct bij ons boekt betaalt u geen commissie van een boekingssite.",
+        a: "De totaalprijs bestaat uit de verblijfskosten, schoonmaakkosten en toeristenbelasting (conform gemeente Tynaarlo). Optioneel: hond €25, late check-out €25, wijziging boeking €25. Omdat u direct bij ons boekt betaalt u geen commissie van een boekingssite.",
       },
       {
         q: "Wanneer betaal ik, en hoeveel?",
@@ -50,7 +50,7 @@ const CONTENT: Record<"nl" | "de", { title: string; sub: string; items: FaqItem[
       },
       {
         q: "Mag mijn hond mee?",
-        a: "Ja, honden zijn van harte welkom. Er gelden vaste extra schoonmaakkosten van €25 — vermeld uw hond even bij de aanvraag.",
+        a: "Ja, honden zijn toegestaan. Er gelden vaste extra schoonmaakkosten van €25 — vermeld uw hond even bij de aanvraag. Andere huisdieren zijn niet toegestaan.",
       },
     ],
     moreLabel: "Alle veelgestelde vragen",
@@ -79,7 +79,7 @@ const CONTENT: Record<"nl" | "de", { title: string; sub: string; items: FaqItem[
       },
       {
         q: "Darf mein Hund mit?",
-        a: "Ja, Hunde sind herzlich willkommen. Es fallen 25 € zusätzliche Reinigungskosten an — geben Sie Ihren Hund bitte bei der Anfrage an.",
+        a: "Ja, Hunde sind erlaubt. Es fallen 25 € zusätzliche Reinigungskosten an — geben Sie Ihren Hund bitte bei der Anfrage an. Andere Haustiere sind nicht erlaubt.",
       },
     ],
     mailIntro: "Ihre Frage ist nicht dabei? Schreiben Sie uns:",

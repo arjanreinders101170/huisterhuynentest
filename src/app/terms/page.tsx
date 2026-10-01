@@ -74,7 +74,7 @@ export default function TermsPage() {
           <h3 style={S.h3}>2.1 Boekingsproces</h3>
           <p style={S.p}>Een boeking komt tot stand zodra Huis ter Huynen een schriftelijke bevestiging (per e-mail) heeft verstuurd na ontvangst van de boeking en de aanbetaling. De gast ontvangt altijd een boekingsbevestiging met alle relevante gegevens.</p>
           <h3 style={S.h3}>2.2 Juistheid van gegevens</h3>
-          <p style={S.p}>De gast is verantwoordelijk voor de juistheid van de door hem/haar verstrekte gegevens. Bij onjuiste gegevens (zoals het werkelijk aantal gasten of huisdieren) behoudt Huis ter Huynen het recht de boeking te annuleren zonder restitutie.</p>
+          <p style={S.p}>De gast is verantwoordelijk voor de juistheid van de door hem/haar verstrekte gegevens. Bij onjuiste gegevens (zoals het werkelijk aantal gasten of honden) behoudt Huis ter Huynen het recht de boeking te annuleren zonder restitutie.</p>
           <h3 style={S.h3}>2.3 Minimumleeftijd</h3>
           <p style={S.p}>De hoofdboeker dient minimaal 18 jaar oud te zijn. Huis ter Huynen behoudt het recht te vragen naar een geldig identiteitsbewijs.</p>
           <h3 style={S.h3}>2.4 Groepsgrootte</h3>
@@ -203,8 +203,8 @@ export default function TermsPage() {
           <p style={S.p}>De gast verplicht zich de accommodatie zorgvuldig, overeenkomstig de bestemming en conform de onderstaande huisregels te gebruiken.</p>
           <h3 style={S.h3}>7.1 Roken</h3>
           <p style={S.p}>Roken is niet toegestaan binnen de accommodatie. Buiten mag worden gerookt op de daartoe bestemde plek. Bij overtreding wordt een reinigingsvergoeding van minimaal €150 in rekening gebracht.</p>
-          <h3 style={S.h3}>7.2 Huisdieren</h3>
-          <p style={S.p}>Huisdieren zijn toegestaan. Er worden vaste extra schoonmaakkosten van €25 in rekening gebracht. De gast is aansprakelijk voor eventuele schade veroorzaakt door huisdieren.</p>
+          <h3 style={S.h3}>7.2 Honden</h3>
+          <p style={S.p}>Honden zijn toegestaan; andere huisdieren niet. Per verblijf met hond worden vaste extra schoonmaakkosten van €25 in rekening gebracht. De gast is aansprakelijk voor eventuele schade veroorzaakt door de hond.</p>
           <h3 style={S.h3}>7.3 Feesten en evenementen</h3>
           <p style={S.p}>Het is niet toegestaan feesten, evenementen of bijeenkomsten te organiseren waarbij meer bezoekers aanwezig zijn dan het maximale aantal gasten zoals bepaald bij de boeking, tenzij schriftelijk anders overeengekomen.</p>
           <h3 style={S.h3}>7.4 Geluidsoverlast</h3>

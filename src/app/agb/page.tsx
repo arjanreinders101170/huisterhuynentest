@@ -95,8 +95,8 @@ export default function AgbPage() {
           <h2 style={S.h2}>7. Aufenthalt und Hausordnung</h2>
           <h3 style={S.h3}>7.1 Rauchen</h3>
           <p style={S.p}>Rauchen ist im Inneren der Unterkunft nicht gestattet. Bei Verstößen wird eine Reinigungsgebühr von mindestens €150 erhoben.</p>
-          <h3 style={S.h3}>7.2 Haustiere</h3>
-          <p style={S.p}>Haustiere sind willkommen. Es wird eine pauschale Reinigungsgebühr von €25 erhoben. Der Gast haftet für sämtliche durch Haustiere verursachten Schäden.</p>
+          <h3 style={S.h3}>7.2 Hunde</h3>
+          <p style={S.p}>Hunde sind erlaubt, andere Haustiere nicht. Für einen Aufenthalt mit Hund wird eine pauschale Reinigungsgebühr von €25 erhoben. Der Gast haftet für sämtliche durch den Hund verursachten Schäden.</p>
           <h3 style={S.h3}>7.3 Feiern und Veranstaltungen</h3>
           <p style={S.p}>Feiern, Veranstaltungen oder Zusammenkünfte mit mehr Personen als bei der Buchung vereinbart sind nicht gestattet, sofern nicht schriftlich anders vereinbart.</p>
           <h3 style={S.h3}>7.4 Ruhezeiten</h3>

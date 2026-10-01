@@ -235,13 +235,14 @@ const jsonLd = {
       url: `${SITE_URL}/lodge-de-heide`,
       name: "De Heide",
       description:
-        "Luxe lodge op de Drentse heide voor 4 personen. Privé hottub op het terras en panoramisch uitzicht over heide en bos.",
+        "Luxe lodge aan de heidekant voor 4 personen. Privé hottub onder de overkapping, buitenkeuken met kamado en vrij uitzicht over heide en bos.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       /* value:false is hier geen ontkenning maar een antwoord: zonder deze
        * regel kan een systeem niet zien of De Heide een sauna heeft die
        * alleen niet vermeld is. */
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Buitenkeuken met kamado", value: true },
         { "@type": "LocationFeatureSpecification", name: "Sauna", value: false },
       ],
     },
@@ -251,12 +252,12 @@ const jsonLd = {
       url: `${SITE_URL}/lodge-de-eik`,
       name: "De Eik",
       description:
-        "Ruime lodge onder de eiken voor 4 personen. Eigen buitensauna, privé hottub, vloerverwarming, airco en een buitenkeuken met BBQ.",
+        "Lodge onder de eiken voor 4 personen. Eigen barrelsauna, privé hottub onder de overkapping, vloerverwarming, airco en een buitenkeuken met kamado.",
       occupancy: { "@type": "QuantitativeValue", maxValue: 4 },
       amenityFeature: [
         { "@type": "LocationFeatureSpecification", name: "Privé hottub", value: true },
         { "@type": "LocationFeatureSpecification", name: "Buitensauna", alternateName: ["Barrelsauna", "Sauna"], value: true },
-        { "@type": "LocationFeatureSpecification", name: "Buitenkeuken & BBQ", value: true },
+        { "@type": "LocationFeatureSpecification", name: "Buitenkeuken met kamado", value: true },
       ],
     },
   ],

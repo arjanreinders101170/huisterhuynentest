@@ -300,7 +300,7 @@ export function LodgeKop({ data }: { data: LodgePaginaData }) {
               * uit PRICE_FROM_EUR, zodat het niet op twee plekken los van
               * elkaar kan verouderen. */}
             {/* Bewust geen kop. Als h2 stond de prijs tussen "Wat er in De
-              * Heide zit" en "Het uitzicht en de hottub" in de kopstructuur
+              * Heide zit" en "Het terras en de hottub" in de kopstructuur
               * van de pagina — een kop die geen sectie opent. Het blok zelf
               * heeft al een naam via de aria-label van de aside. */}
             <p className="lpx-prijs">

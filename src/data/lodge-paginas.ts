@@ -69,7 +69,7 @@ const HEIDE: LodgePaginaData = {
   h1: "Lodge De Heide",
   tagline: "Boutique lodge met privé-hottub en uitzicht op de heide",
   intro:
-    "Van de twee lodges op het terrein is De Heide degene met het uitzicht. Vanaf het terras kijkt u over heide en bos, zonder dat er ook maar één ander gebouw in beeld staat. De hottub staat er het hele jaar warm bij, op 38 °C. Ervoor ligt de heide, en verder niets.",
+    "De Heide is de lodge aan de heidekant. Hij staat aan de buitenrand van het park, en vanaf het terras kijkt u vrij uit over heide en bos. De hottub staat er onder de overkapping het hele jaar warm bij, op 38 °C, en naast het terras staat de buitenkeuken met kamado.",
   kerncijfers: [
     { icoon: "personen", tekst: "Max. 4 personen" },
     { icoon: "slaapkamer", tekst: "2 slaapkamers" },
@@ -90,16 +90,16 @@ const HEIDE: LodgePaginaData = {
     { icoon: "wifi", tekst: "Gratis snel WiFi" },
     { icoon: "hottub", tekst: "Privé-hottub" },
     { icoon: "parkeren", tekst: "Gratis parkeren" },
-    { icoon: "huisdier", tekst: "Hond in overleg welkom" },
+    { icoon: "huisdier", tekst: "Hond toegestaan (€ 25)" },
     { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
     { icoon: "airco", tekst: "Vloerverwarming en airco" },
   ],
-  labels: ["Vrij uitzicht, geen buren", "Midden in de natuur", "Voor stellen en gezinnen", "Privé-hottub"],
+  labels: ["Aan de heidekant", "Midden in de natuur", "Voor stellen en gezinnen", "Privé-hottub"],
   toppers: [
     { icoon: "hottub", tekst: "Privé-hottub op het terras, het hele jaar op 38 °C" },
-    { icoon: "uitzicht", tekst: "Vrij uitzicht over heide en bos, geen ander gebouw in beeld" },
+    { icoon: "uitzicht", tekst: "Vrij uitzicht over heide en bos, aan de buitenrand van het park" },
+    { icoon: "bbq", tekst: "Buitenkeuken met kamado naast het terras" },
     { icoon: "slaapkamer", tekst: "Twee slaapkamers, 60 m² voor maximaal vier personen" },
-    { icoon: "sleutel", tekst: "Digitale sloten: inchecken kan tot middernacht" },
   ],
   faciliteiten: [
     {
@@ -132,7 +132,9 @@ const HEIDE: LodgePaginaData = {
     {
       groep: "Buiten",
       items: [
-        { icoon: "hottub", tekst: "Privé-hottub op het afgeschermde terras" },
+        { icoon: "hottub", tekst: "Privé-hottub onder de overkapping" },
+        { icoon: "tafel", tekst: "Terras van ± 10 m²" },
+        { icoon: "bbq", tekst: "Buitenkeuken met kamado" },
         { icoon: "uitzicht", tekst: "Vrij uitzicht over heide en bos" },
       ],
     },
@@ -143,10 +145,9 @@ const HEIDE: LodgePaginaData = {
         { icoon: "airco", tekst: "Airconditioning" },
         { icoon: "laadpaal", tekst: "All-electric, geen gasaansluiting" },
         { icoon: "wifi", tekst: "Gratis snel WiFi" },
-        { icoon: "parkeren", tekst: "Gratis parkeren op eigen terrein" },
-        { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
+        { icoon: "parkeren", tekst: "Eigen parkeerplaats met laadstation" },
         { icoon: "sleutel", tekst: "Digitale sloten, inchecken tot middernacht" },
-        { icoon: "huisdier", tekst: "Hond in overleg (€ 25)" },
+        { icoon: "huisdier", tekst: "Hond toegestaan (€ 25)" },
       ],
     },
   ],
@@ -159,17 +160,17 @@ const EIK: LodgePaginaData = {
   naam: "Lodge De Eik",
   eyebrow: "Zeijen · Drenthe",
   h1: "Lodge De Eik",
-  tagline: "Boutique lodge met eigen buitensauna, buitenkeuken en privé-hottub",
+  tagline: "Boutique lodge onder de eiken, met eigen barrelsauna en privé-hottub",
   intro:
-    "De Eik is het huis waar alles buiten gebeurt. Onder de oude eiken staat een buitenkeuken met BBQ, met de tafel ernaast, de hottub op hetzelfde terras en een eigen barrelsauna in de tuin. Binnen: ruimte voor vier, vloerverwarming en airco, en niets dat aan een vakantiepark doet denken.",
+    "De Eik is de lodge onder de eiken, en de enige van de twee met een eigen barrelsauna in de tuin. Op het terras staat de hottub onder een overkapping, daarnaast de buitenkeuken met kamado. Binnen: ruimte voor vier, vloerverwarming en airco, en dezelfde indeling als De Heide.",
   kerncijfers: [
     { icoon: "personen", tekst: "Max. 4 personen" },
-    { icoon: "sauna", tekst: "Eigen buitensauna" },
-    { icoon: "bbq", tekst: "Buitenkeuken met BBQ" },
+    { icoon: "slaapkamer", tekst: "2 slaapkamers" },
+    { icoon: "sauna", tekst: "Eigen barrelsauna" },
   ],
   hero: {
     src: "/lodge-eik.jpg",
-    alt: "Lodge De Eik in Zeijen onder oude eiken, met buitenkeuken, BBQ en privé-hottub op het terras",
+    alt: "Lodge De Eik in Zeijen onder oude eiken, met buitenkeuken en privé-hottub op het terras",
     focus: "center 50%",
   },
   raster: [
@@ -182,22 +183,23 @@ const EIK: LodgePaginaData = {
     { icoon: "wifi", tekst: "Gratis snel WiFi" },
     { icoon: "airco", tekst: "Vloerverwarming en airco" },
     { icoon: "parkeren", tekst: "Gratis parkeren" },
-    { icoon: "huisdier", tekst: "Hond in overleg welkom" },
+    { icoon: "huisdier", tekst: "Hond toegestaan (€ 25)" },
     { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
     { icoon: "sleutel", tekst: "Self check-in tot middernacht" },
   ],
-  labels: ["Ruimste van de twee", "Sauna én hottub", "Samen buiten eten", "Het hele jaar genieten"],
+  labels: ["Onder de oude eiken", "Sauna én hottub", "Samen buiten eten", "Het hele jaar genieten"],
   toppers: [
     { icoon: "sauna", tekst: "Eigen barrelsauna in de tuin, zonder reservering of tijdslot" },
     { icoon: "hottub", tekst: "Privé-hottub op het terras, het hele jaar op 38 °C" },
-    { icoon: "bbq", tekst: "Buitenkeuken met BBQ onder de eiken" },
+    { icoon: "bbq", tekst: "Buitenkeuken met kamado naast het terras" },
     { icoon: "vloerverwarming", tekst: "All-electric met vloerverwarming en airco" },
   ],
   faciliteiten: [
     {
       groep: "Slapen en badkamer",
       items: [
-        { icoon: "bed", tekst: "Twee slaapplekken voor vier personen" },
+        { icoon: "bed", tekst: "Slaapkamer 1 — 2-persoonsbed" },
+        { icoon: "bed", tekst: "Slaapkamer 2 — twee 1-persoonsbedden" },
         { icoon: "douche", tekst: "Douche" },
         { icoon: "toilet", tekst: "Toilet" },
       ],
@@ -224,9 +226,10 @@ const EIK: LodgePaginaData = {
       groep: "Buiten",
       items: [
         { icoon: "sauna", tekst: "Eigen barrelsauna in de tuin" },
-        { icoon: "hottub", tekst: "Privé-hottub op het terras" },
-        { icoon: "bbq", tekst: "Buitenkeuken met BBQ" },
-        { icoon: "tafel", tekst: "Eettafel op hetzelfde terras" },
+        { icoon: "hottub", tekst: "Privé-hottub onder de overkapping" },
+        { icoon: "tafel", tekst: "Terras van ± 10 m²" },
+        { icoon: "bbq", tekst: "Buitenkeuken met kamado" },
+        { icoon: "uitzicht", tekst: "Vrij uitzicht, aan de buitenrand van het park" },
       ],
     },
     {
@@ -236,10 +239,9 @@ const EIK: LodgePaginaData = {
         { icoon: "airco", tekst: "Airconditioning" },
         { icoon: "laadpaal", tekst: "All-electric, geen gasaansluiting" },
         { icoon: "wifi", tekst: "Gratis snel WiFi" },
-        { icoon: "parkeren", tekst: "Gratis parkeren op eigen terrein" },
-        { icoon: "laadpaal", tekst: "Laadstation bij de lodge" },
+        { icoon: "parkeren", tekst: "Eigen parkeerplaats met laadstation" },
         { icoon: "sleutel", tekst: "Digitale sloten, inchecken tot middernacht" },
-        { icoon: "huisdier", tekst: "Hond in overleg (€ 25)" },
+        { icoon: "huisdier", tekst: "Hond toegestaan (€ 25)" },
       ],
     },
   ],
@@ -250,10 +252,9 @@ const EIK: LodgePaginaData = {
  * beide lodges woordelijk gelijk, dus staan ze hier één keer. Wijkt er
  * ooit iets af per lodge, dan verhuizen ze naar LodgePaginaData.
  *
- * "Huisdieren toegestaan (€25)" staat zo in de huisregels van de huidige
- * pagina, terwijl de veelgestelde vragen op diezelfde pagina zeggen "in
- * overleg". Hier één formulering, zodat de pagina zichzelf niet
- * tegenspreekt — en dezelfde als bij de voorzieningen hierboven.
+ * Honden zijn toegestaan voor € 25, andere huisdieren niet (art. 7.2 van
+ * de algemene voorwaarden). Overal dezelfde formulering, zodat de pagina
+ * zichzelf niet tegenspreekt — en dezelfde als op Wad & Weids.
  */
 export const PRAKTISCH: { label: string; waarde: string }[] = [
   { label: "Geschikt voor", waarde: "1 – 4 personen" },
@@ -269,7 +270,7 @@ export const PRAKTISCH_NOOT =
 
 export const HUISREGELS: { icoon: string; tekst: string }[] = [
   { icoon: "nietRoken", tekst: "Niet roken binnen" },
-  { icoon: "huisdier", tekst: "Hond in overleg (€ 25)" },
+  { icoon: "huisdier", tekst: "Hond toegestaan (€ 25)" },
   { icoon: "geenFeest", tekst: "Geen feesten of evenementen" },
 ];
 

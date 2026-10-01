@@ -259,7 +259,7 @@ export const RESERVEER_CONTEXT: Record<string, ReserveerContext> = {
   "vakantiehuis-assen": {
     van: "assen",
     lodge: "eik",
-    regel: "U bekijkt beschikbaarheid voor een vakantiehuis bij Assen — Lodge De Eik, de ruimste van de twee.",
+    regel: "U bekijkt beschikbaarheid voor een vakantiehuis bij Assen — Lodge De Eik, met eigen barrelsauna.",
   },
   "vakantiehuis-norg": {
     van: "norg",
@@ -307,7 +307,7 @@ export const RESERVEER_CONTEXT: Record<string, ReserveerContext> = {
   "lodge-de-eik": {
     van: "de-eik",
     lodge: "eik",
-    regel: "U bekijkt beschikbaarheid voor Lodge De Eik, met eigen buitensauna en BBQ onder de eiken.",
+    regel: "U bekijkt beschikbaarheid voor Lodge De Eik, met eigen barrelsauna onder de eiken.",
   },
 };
 
@@ -340,10 +340,10 @@ export function reserveerHref(slug?: string): string {
  * commitment. Deze twee records voeden zowel het keuzeblok op de commerciële
  * pagina's als de verwijzingen tussen de lodgepagina's onderling.
  *
- * Het onderscheid is bewust hard: De Eik heeft de buitensauna, de buitenkeuken
- * en de BBQ, De Heide het panoramisch uitzicht en de rust. Twee lodges die hetzelfde beloven zijn geen
- * keuze maar ruis — en op paginaniveau precies het kannibalisatieprobleem dat
- * de site al heeft.
+ * Het onderscheid moet kloppen: de lodges zijn gelijk (indeling, inventaris,
+ * buitenkeuken met kamado, terras met overkapping, vrij uitzicht). Het echte
+ * verschil is heide tegenover eiken, en de barrelsauna die alleen De Eik
+ * heeft. Hetzelfde staat op Wad & Weids.
  */
 export interface LodgePagina {
   /** Waarde van ?lodge= in de boekingsflow. */
@@ -362,8 +362,8 @@ export const LODGE_PAGINAS: LodgePagina[] = [
     param: "heide",
     naam: "Lodge De Heide",
     slug: "lodge-de-heide",
-    onderscheid: "Panoramisch uitzicht over heide en bos, en geen enkel ander gebouw in zicht.",
-    kenmerken: ["Panoramisch uitzicht", "Volledig vrij uitzicht", "Privé-hottub op het terras"],
+    onderscheid: "Aan de heidekant, met vrij uitzicht over heide en bos.",
+    kenmerken: ["Privé-hottub onder overkapping", "Buitenkeuken met kamado", "Vrij uitzicht over de heide"],
     afbeelding: "/lodge-heide.jpg",
     alt: "Lodge De Heide met privé-hottub op het terras en uitzicht over de Drentse heide",
   },
@@ -371,10 +371,10 @@ export const LODGE_PAGINAS: LodgePagina[] = [
     param: "eik",
     naam: "Lodge De Eik",
     slug: "lodge-de-eik",
-    onderscheid: "De enige met een eigen buitensauna, plus een buitenkeuken en BBQ onder de eiken.",
-    kenmerken: ["Eigen buitensauna", "Buitenkeuken & BBQ", "Privé-hottub op het terras"],
+    onderscheid: "Onder de eiken, en de enige met een eigen barrelsauna.",
+    kenmerken: ["Eigen barrelsauna", "Privé-hottub onder overkapping", "Buitenkeuken met kamado"],
     afbeelding: "/lodge-eik.jpg",
-    alt: "Lodge De Eik onder de eiken met buitenkeuken, BBQ en eigen terras",
+    alt: "Lodge De Eik onder de eiken met buitenkeuken en eigen terras",
   },
 ];
 

@@ -50,15 +50,15 @@ const wifiRegel = (label: string, includeWifi: boolean) =>
 const HEADER_NL = (includeWifi: boolean) => `LODGE-FEITEN:
 - Adres: Zuiderstraat 6 p, Zeijen (Drenthe). A28 afslag Zeijen.
 - Twee lodges: ${LODGE_NAMES.lodge_1} en ${LODGE_NAMES.lodge_2}.
-- Check-in 15:00, check-out 11:00. Late check-out tot 15:00 op aanvraag (€25).
-- Honden welkom (€25 schoonmaak). Laadstation bij de lodge.${wifiRegel("Wifi", includeWifi)}
+- Check-in 15:00, check-out 11:00. Late check-out tot uiterlijk 13:00 op aanvraag (€25).
+- Honden toegestaan (€25 schoonmaak), andere huisdieren niet. Eigen parkeerplaats met laadstation.${wifiRegel("Wifi", includeWifi)}
 - Contact: WhatsApp +31 6 42568603.`;
 
 const HEADER_DE = (includeWifi: boolean) => `LODGE-FAKTEN:
 - Adresse: Zuiderstraat 6 p, Zeijen (Drenthe). A28 Ausfahrt Zeijen.
 - Zwei Lodges: ${LODGE_NAMES.lodge_1} und ${LODGE_NAMES.lodge_2}.
-- Check-in 15:00, Check-out 11:00. Späterer Check-out bis 15:00 auf Anfrage (€25).
-- Hunde willkommen (€25 Reinigung). Ladesäule vor Ort.${wifiRegel("WLAN", includeWifi)}
+- Check-in 15:00, Check-out 11:00. Späterer Check-out bis spätestens 13:00 auf Anfrage (€25).
+- Hunde erlaubt (€25 Reinigung), andere Haustiere nicht. Eigener Stellplatz mit Ladesäule.${wifiRegel("WLAN", includeWifi)}
 - Kontakt: WhatsApp +31 6 42568603.`;
 
 export function buildHostKnowledge(lang: Lang, includeWifi = false): string {

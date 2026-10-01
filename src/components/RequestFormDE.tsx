@@ -8,8 +8,8 @@ import { getAttribution } from "@/lib/tracking/attribution";
 type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
 const LODGE_DESC: Record<Lodge, string> = {
-  lodge_1: "Panoramablick über die Heide, privater Hot Tub",
-  lodge_2: "Unter den Eichen, Fasssauna & Grill",
+  lodge_1: "Freier Blick über die Heide, privater Hot Tub",
+  lodge_2: "Unter den Eichen, Fasssauna & privater Hot Tub",
 };
 
 function diffDays(a: string, b: string): number {
@@ -279,7 +279,7 @@ export default function RequestFormDE() {
             <div className="hth-field">
               <label className={`hth-control hth-check${huisdieren ? " hth-check--on" : ""}`}>
                 <input type="checkbox" checked={huisdieren} onChange={e => setHuisdieren(e.target.checked)} />
-                <span>Ich bringe ein Haustier mit</span>
+                <span>Ich bringe einen Hund mit (€25)</span>
               </label>
             </div>
           </div>
