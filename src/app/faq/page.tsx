@@ -11,7 +11,7 @@ const C = {
 const faqItems = [
   {
     v: "Mag ik een hond meenemen?",
-    a: "Ja, honden zijn van harte welkom! Er worden vaste extra schoonmaakkosten van €25 in rekening gebracht. Vermeld uw huisdier bij de reservering. De gast is aansprakelijk voor eventuele schade veroorzaakt door huisdieren.",
+    a: "Ja, honden zijn toegestaan. Er worden vaste extra schoonmaakkosten van €25 in rekening gebracht. Vermeld uw hond bij de reservering. Andere huisdieren zijn niet toegestaan. De gast is aansprakelijk voor eventuele schade veroorzaakt door de hond.",
   },
   {
     v: "Hoe laat kan ik inchecken en uitchecken?",
@@ -73,7 +73,7 @@ const faqItems = [
   },
   {
     v: "Zijn er extra kosten bovenop de verblijfsprijs?",
-    a: "De totaalprijs bestaat uit de verblijfskosten, schoonmaakkosten en toeristenbelasting (conform gemeente Tynaarlo). Optioneel: huisdier €25, late check-out €25, wijziging boeking €25.",
+    a: "De totaalprijs bestaat uit de verblijfskosten, schoonmaakkosten en toeristenbelasting (conform gemeente Tynaarlo). Optioneel: hond €25, late check-out €25, wijziging boeking €25.",
   },
   {
     v: "Hoe werkt het boekingsproces?",

@@ -191,7 +191,7 @@ export default async function WelkomPage({ searchParams }: Props) {
                   : `Wifi: ${WIFI_SSID} · het wachtwoord vind je onder 'Verblijf' in de app`,
               },
               { emoji: "🅿️", text: "Gratis parkeren op eigen terrein" },
-              { emoji: "🐕", text: "Huisdieren welkom (overleg vooraf)" },
+              { emoji: "🐕", text: "Hond toegestaan (€ 25), andere huisdieren niet" },
               { emoji: "🤫", text: "Rust na 22:00 — geniet van de stilte" },
             ].map((item, i) => (
               <div key={i} style={{

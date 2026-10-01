@@ -293,7 +293,7 @@ Bij een boeking betaal je 30% aanbetaling; het restant is uiterlijk 30 dagen vó
 
 ## Twee privé lodges in Drenthe: Huis ter Huynen
 
-Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. Lodge De Eik heeft daarnaast een eigen buitensauna en een buitenkeuken met BBQ onder de eiken, Lodge De Heide een vrij uitzicht over heide en bos. Beide lodges zijn geschikt voor maximaal vier personen. Hoe ze erbij staan en wat er bij die vanafprijs inbegrepen zit, leest u op de pagina over ons [vakantiehuis met hottub in Drenthe](/vakantiehuis-met-hottub-drenthe).
+Huis ter Huynen in Zeijen brengt dit concept naar Drenthe: twee volledig privé lodges, Lodge De Heide en Lodge De Eik, allebei met een eigen terras en hottub, midden in de natuur en zonder gedeelde voorzieningen of receptie. Beide hebben een buitenkeuken met kamado en vrij uitzicht; Lodge De Eik heeft daarnaast een eigen barrelsauna. Beide lodges zijn geschikt voor maximaal vier personen. Hoe ze erbij staan en wat er bij die vanafprijs inbegrepen zit, leest u op de pagina over ons [vakantiehuis met hottub in Drenthe](/vakantiehuis-met-hottub-drenthe).
 
 Je boekt rechtstreeks bij de eigenaar: je geeft je data door en krijgt binnen 24 uur een persoonlijk voorstel met de volledige prijsopbouw erin — nachtprijs, schoonmaakkosten en toeristenbelasting als aparte regels, zodat er onderaan geen verrassing staat.
 
@@ -402,7 +402,7 @@ Wil je het combineren met de bloeiende heide, dan kies je half augustus tot begi
 
 ## Zo'n weekend bij Huis ter Huynen
 
-Bij Huis ter Huynen in Zeijen staan twee vrijstaande lodges op de heide, allebei met een privé hottub op het eigen terras die het hele jaar op 38 °C staat. Lodge De Eik heeft daarnaast een eigen buitensauna en een buitenkeuken met BBQ onder de eiken; Lodge De Heide heeft panoramisch uitzicht over heide en bos. Er staan maar twee huisjes op het terrein, er is geen receptie en er is geen gedeelde wellnessruimte.
+Bij Huis ter Huynen in Zeijen staan twee vrijstaande lodges op de heide, allebei met een privé hottub op het eigen terras die het hele jaar op 38 °C staat. Beide hebben een buitenkeuken met kamado en vrij uitzicht; Lodge De Eik heeft daarnaast een eigen barrelsauna. Er staan maar twee huisjes op het terrein, er is geen receptie en er is geen gedeelde wellnessruimte.
 
 Een verblijf duurt minimaal twee nachten en begint bij €165 per nacht voor de hele lodge, voor maximaal vier personen. Je boekt rechtstreeks bij de eigenaar, zonder boekingskosten, en krijgt binnen 24 uur een persoonlijk voorstel.
 

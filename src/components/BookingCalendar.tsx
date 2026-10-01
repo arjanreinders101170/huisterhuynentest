@@ -688,7 +688,7 @@ export default function BookingCalendar() {
                         </div>
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                        <label style={{ display: "block", fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 4 }}>Huisdieren</label>
+                        <label style={{ display: "block", fontFamily: T.sans, fontSize: 12, color: T.muted, marginBottom: 4 }}>Hond</label>
                         <label style={{
                           display: "flex", alignItems: "center", gap: 10, cursor: "pointer",
                           border: `1px solid ${huisdieren ? T.green : T.border}`, borderRadius: 10,
@@ -701,7 +701,7 @@ export default function BookingCalendar() {
                             onChange={e => setHuisdieren(e.target.checked)}
                             style={{ width: 16, height: 16, accentColor: T.green, cursor: "pointer", flexShrink: 0 }}
                           />
-                          <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text }}>Ik neem een huisdier mee</span>
+                          <span style={{ fontFamily: T.sans, fontSize: 13, color: T.text }}>Ik neem een hond mee (€ 25)</span>
                         </label>
                       </div>
                     </div>

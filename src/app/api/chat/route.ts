@@ -141,7 +141,7 @@ const FALLBACKS_NL: Record<string, string> = {
   stil: "Zeijerstrubben (3 min) is het stilste bos hier in de buurt. 🤫",
   deur: "Open de deur via 'Verblijf' in de app — je persoonlijke toegangscode staat daar.",
   wifi: "Het wifi-wachtwoord staat onder 'Verblijf' in de app — open die met de link uit je welkomstmail.",
-  late: "Late check-out tot 15:00 (€25) — vraag aan via 'Extra's' in de app.",
+  late: "Late check-out tot 13:00 (€25) — vraag aan via 'Extra's' in de app.",
   default: "Probeer iets specifieker — wandelen, eten, kinderen, wellness, fietsen? Of WhatsApp de gastheer op +31 6 42568603.",
 };
 const FALLBACKS_DE: Record<string, string> = {
@@ -157,7 +157,7 @@ const FALLBACKS_DE: Record<string, string> = {
   stil: "Zeijerstrubben (3 Min.) ist der ruhigste Wald in der Nähe. 🤫",
   deur: "Tür öffnen über 'Aufenthalt' in der App — Dein persönlicher Code steht dort.",
   wifi: "Das WLAN-Passwort steht unter 'Aufenthalt' in der App — öffne sie mit dem Link aus Deiner Willkommensmail.",
-  late: "Late Check-out bis 15:00 (€25) — über 'Extras' in der App buchen.",
+  late: "Late Check-out bis 13:00 (€25) — über 'Extras' in der App buchen.",
   default: "Etwas konkreter? Wandern, Essen, Kinder, Wellness, Rad? Oder WhatsApp den Gastgeber: +31 6 42568603.",
 };
 

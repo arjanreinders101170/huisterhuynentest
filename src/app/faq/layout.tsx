@@ -6,7 +6,7 @@ const SITE_URL = "https://www.huisterhuynen.nl";
 export const metadata: Metadata = {
   title: "Veelgestelde vragen (FAQ)",
   description:
-    "Antwoorden op de meest gestelde vragen over Huis ter Huynen: inchecken, huisdieren, hottub, parkeren, laadstation, annulering en meer.",
+    "Antwoorden op de meest gestelde vragen over Huis ter Huynen: inchecken, honden, hottub, parkeren, laadstation, annulering en meer.",
   alternates: {
     canonical: `${SITE_URL}/faq`,
   },
@@ -28,7 +28,7 @@ const faqSchema = {
       name: "Mag ik een hond meenemen?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Ja, honden zijn van harte welkom! Er worden vaste extra schoonmaakkosten van €25 in rekening gebracht. Vermeld uw huisdier bij de reservering. De gast is aansprakelijk voor eventuele schade veroorzaakt door huisdieren.",
+        text: "Ja, honden zijn toegestaan. Er worden vaste extra schoonmaakkosten van €25 in rekening gebracht. Vermeld uw hond bij de reservering. Andere huisdieren zijn niet toegestaan. De gast is aansprakelijk voor eventuele schade veroorzaakt door de hond.",
       },
     },
     {
@@ -92,7 +92,7 @@ const faqSchema = {
       name: "Zijn er extra kosten bovenop de verblijfsprijs?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "De totaalprijs bestaat uit de verblijfskosten, schoonmaakkosten en toeristenbelasting (conform gemeente Tynaarlo). Optioneel: huisdier €25, late check-out €25, wijziging boeking €25.",
+        text: "De totaalprijs bestaat uit de verblijfskosten, schoonmaakkosten en toeristenbelasting (conform gemeente Tynaarlo). Optioneel: hond €25, late check-out €25, wijziging boeking €25.",
       },
     },
     {

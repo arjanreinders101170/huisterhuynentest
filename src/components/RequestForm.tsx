@@ -11,7 +11,7 @@ type Lodge = "lodge_1" | "lodge_2";
 const LODGE_LABELS: Record<Lodge, string> = { lodge_1: "De Heide", lodge_2: "De Eik" };
 const LODGE_DESC: Record<Lodge, string> = {
   lodge_1: "Vrij uitzicht over de heide, privé-hottub",
-  lodge_2: "Onder de eiken, buitensauna & BBQ",
+  lodge_2: "Onder de eiken, barrelsauna & privé-hottub",
 };
 
 function diffDays(a: string, b: string): number {
@@ -320,7 +320,7 @@ export default function RequestForm({ voorkeur }: { voorkeur?: LodgeParam } = {}
             <div className="hth-field">
               <label className={`hth-control hth-check${huisdieren ? " hth-check--on" : ""}`}>
                 <input type="checkbox" checked={huisdieren} onChange={e => setHuisdieren(e.target.checked)} />
-                <span>Ik neem een huisdier mee</span>
+                <span>Ik neem een hond mee (€ 25)</span>
               </label>
             </div>
           </div>
